@@ -1,7 +1,7 @@
 
 \documentclass{article}
 
-\title{A Method of Solving PDEs using Differential Algebra and Algebraic Geometry}
+\title{A Method of Solving PDEs}
 \author{Brent Baccala}
 
 \usepackage{amsmath}
@@ -35,9 +35,8 @@
 \maketitle
 
 \begin{abstract}
-The author has developed a novel technique, based on differential algebra,
-for finding exact solutions of partial
-differential equations.
+The author has developed an algorithm, based on differential algebra,
+for finding exact, non-separable solutions of partial differential equations.
 \end{abstract}
 
 \parskip 12pt
@@ -93,8 +92,10 @@ and has used it to find a new solution to one of the most well-studied equations
 in mathematical physics, the Schr\"odinger equation for hydrogen.
 \end{comment}
 
-\subsection*{Differential Algebra}
+\subsection*{Introduction}
+%% \subsection*{Differential Algebra}
 
+J.F. Ritt introduced differential algebra.
 Given a ring $R$ (commutative, with unity) or a field $F$, we can construct a
 {\it differential ring} or {\it differential field}
 by specifying one or more derivations that commute
@@ -109,14 +110,22 @@ the letter $D$, apostrophes and/or superscripted numbers if only
 a single derivation is in use (the ODE case), or ``jet notation'' where multiple derivations are specified (the PDE case)
 and are denoted by subscripted letters, i.e, $\Psi_x$
 is the result of applying derivation $x$ (a unary operator)
-to $\Psi$.  We will always interpret this as the derivative
-of $\Psi$ with respect to $x$, although this is an analytic
-definition, and thinking of the derivation as a unary operator
-is an algebraic definition.  The distinction is quite the same
-as between the real number $\sqrt{2}$ and the polynomial
-equation $\gamma^2=2$.
+to $\Psi$.  Analytically, we will always interpret this as the derivative
+of $\Psi$ with respect to $x$;
+thinking of the derivation as a unary operator
+is an algebraic definition.  The distinction is much the same
+as between the real number $\sqrt{2}$ and the element $\gamma$
+in the algebraic extension of $\mathbf{Q}$ defined by the polynomial equation $\gamma^2=2$.
 
-We can define {\it differential ideals}, which are like conventional
+% The Risch algorithm
+
+% The use of differential Galois theory to analyze linear ODEs.
+
+% The failure of differential Galois theory to answer the obvious question about PDE.
+
+In addition to theoretical considerations, we can also 
+
+We can define {\it differential ideals}, which are like polynomial
 ideals, but are also closed under derivation.  This models
 our analytic operation of differentiation where any derivative
 of the zero function is the zero function, so if a differential
@@ -124,13 +133,15 @@ polynomial is equal to zero (and therefore a member of the ideal),
 its derivations are also equal to zero and also members of the
 differential ideal.
 
-We can reduce modulo a differential ideal.  When you think about the difficulty
-of reducing modulo a standard ideal (i.e, specifying a term ordering,
-computing a Gr\"obner basis), it is not surprising that this is
-not trivial, however it can be done.
-Many of the computer algebra algorithms developed for commutative algebra have analogs
-in differential algebra.  For example, the Rosenfeld-Gr\"obner algorithm probably
-provides the neatest differential algebra analog to Buchberger's algorithm.
+%We can reduce modulo a differential ideal.  When you think about the difficulty
+%of reducing modulo a polynomial ideal (i.e, specifying a term ordering,
+%computing a Gr\"obner basis), it is not surprising that this is
+%not trivial.  The Rosenfeld-Gr\"obner algorithm probably
+%provides the nearest differential algebra analog to Buchberger's algorithm.
+
+We can consider something like a primary decomposition of a differential ideal.
+The Rosenfeld-Gr\"obner algorithm probably
+provides the nearest differential algebra analog to primary decomposition.
 
 Nevertheless, the results of these algorithms can be somewhat disappointing,
 at least for those accustomed to working with algebraic ideals and Gr\"obner bases.
