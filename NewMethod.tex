@@ -1,7 +1,7 @@
 
 \documentclass{article}
 
-\title{A Method of Solving PDEs}
+\title{An Exact Method of Solving PDEs}
 \author{Brent Baccala}
 
 \usepackage{amsmath}
@@ -43,57 +43,68 @@ for finding exact, non-separable solutions of partial differential equations.
 
 \subsection*{Introduction}
 
-An January 2023, I discovered a previously unknown solution to the simplest Schrödinger equation for the hydrogen atom.
-
-It turns out that this wavefunction:
-
-\begin{equation}
-\Psi = J_0(2\sqrt{x+r})
-\end{equation}
-
-where $J_0$ is the ordinary Bessel function $J_0$, solves the Schrödinger equation for hydrogen:
-
-\begin{equation}
--\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
-\end{equation}
-
-with E=0.
-
-This paper explains the solution technique, which is generally applicable to all PDEs.
-
-%\begin{comment}
-A short list of methods to find exact solutions to PDEs:
-
-\begin{itemize}
-\item separation of variables
-
-Assume that the solution is a product of simpler functions, each of which depends on a subset of the variables
-\item method of characteristics
-\item transform methods (Fourier transform on space variables)
-\item symmetry methods
-\item calculus of variations
-\item Evans: Laplace's eq is invariant under rotations, so look for functions of r; this is a variant of sep of var
-\item Evans: Poisson's eq: Green's function is constructed from radially symmetric solution to Laplace's eq
-\item Evans: Poisson's eq: calculus of variations; show that solution minimizes a functional
-\item Evans: heat eq: uses several scaling symmetries to justify solution form depending on a single expression
-\item Evans: Duhamel's principle: separate out one variable (t) that appears like $u_t - Lu = f$ (L has no time deriv);
-      form the ``retarded solution'' that represents the effect of an infinitesimal $f$, then integrate over time
-\item Evans: heat eq: scaling symmetry $\rightarrow$ fundamental sol $\rightarrow$ convolution to handle arbitrary initial condition
-      $\rightarrow$ Duhamel's principle to handle the inhomogenous component
-\end{itemize}
-%\end{comment}
-
-\begin{comment}
-A short list of methods to find exact solutions to PDEs includes separation of variables,
-the method of characteristics, transform methods (including Fourier transforms),
-symmetry methods, Green's functions, Duhamel's principle, and the calculus of variations.
-The author has developed another exact solution technique based on differential algebra
-and has used it to find a new solution to one of the most well-studied equations
-in mathematical physics, the Schr\"odinger equation for hydrogen.
-\end{comment}
+% An January 2023, I discovered a previously unknown solution to the simplest Schrödinger equation for the hydrogen atom.
+%
+% It turns out that this wavefunction:
+%
+% \begin{equation}
+% \Psi = J_0(2\sqrt{x+r})
+% \end{equation}
+%
+% where $J_0$ is the ordinary Bessel function $J_0$, solves the Schrödinger equation for hydrogen:
+%
+% \begin{equation}
+% -\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
+% \end{equation}
+%
+% with E=0.
+%
+% This paper explains the solution technique, which is generally applicable to all PDEs.
+%
+% %\begin{comment}
+% A short list of methods to find exact solutions to PDEs:
+%
+% \begin{itemize}
+% \item separation of variables
+%
+% Assume that the solution is a product of simpler functions, each of which depends on a subset of the variables
+% \item method of characteristics
+% \item transform methods (Fourier transform on space variables)
+% \item symmetry methods
+% \item calculus of variations
+% \item Evans: Laplace's eq is invariant under rotations, so look for functions of r; this is a variant of sep of var
+% \item Evans: Poisson's eq: Green's function is constructed from radially symmetric solution to Laplace's eq
+% \item Evans: Poisson's eq: calculus of variations; show that solution minimizes a functional
+% \item Evans: heat eq: uses several scaling symmetries to justify solution form depending on a single expression
+% \item Evans: Duhamel's principle: separate out one variable (t) that appears like $u_t - Lu = f$ (L has no time deriv);
+%       form the ``retarded solution'' that represents the effect of an infinitesimal $f$, then integrate over time
+% \item Evans: heat eq: scaling symmetry $\rightarrow$ fundamental sol $\rightarrow$ convolution to handle arbitrary initial condition
+%       $\rightarrow$ Duhamel's principle to handle the inhomogenous component
+% \end{itemize}
+% %\end{comment}
+%
+% \begin{comment}
+% A short list of methods to find exact solutions to PDEs includes separation of variables,
+% the method of characteristics, transform methods (including Fourier transforms),
+% symmetry methods, Green's functions, Duhamel's principle, and the calculus of variations.
+% The author has developed another exact solution technique based on differential algebra
+% and has used it to find a new solution to one of the most well-studied equations
+% in mathematical physics, the Schr\"odinger equation for hydrogen.
+% \end{comment}
 
 \subsection*{Introduction}
 %% \subsection*{Differential Algebra}
+
+We can construct polynomial rings (commutative, with unity) and fields using indeterminates, such as $\mathcal{Q}[x,y,z]$,
+treating the indeterminates $x$, $y$, and $z$ mearly as elements of the ring that satisfy
+its basic ring axioms.  We call this ``commutative algebra''.
+
+We can then consider mapping the indeterminants into the coefficient field, and ask questions like,
+Which values of $x$ in $\mathcal{Q}$ satisfy $x^2=4$?  We can consider systems of polynomial
+equations, and seek to describe which values of indeterminates satisfy all of the equations
+in the system.  We introduce ideals in the polynomial ring and algebraic varieties in the
+solution space and deduce the contravariant equivalence between them.  We call this
+``algebraic geometry''.
 
 J.F. Ritt introduced differential algebra.
 Given a ring $R$ (commutative, with unity) or a field $F$, we can construct a
@@ -123,15 +134,34 @@ in the algebraic extension of $\mathbf{Q}$ defined by the polynomial equation $\
 
 % The failure of differential Galois theory to answer the obvious question about PDE.
 
-In addition to theoretical considerations, we can also 
+Combining the concepts of differential algebra and algebraic geometry together,
+we obtain {\it differential algebraic geometry},
+where we have systems of differential polynomials and seek find solutions when the
+indeterminates are mapped to... what?
 
-We can define {\it differential ideals}, which are like polynomial
-ideals, but are also closed under derivation.  This models
-our analytic operation of differentiation where any derivative
-of the zero function is the zero function, so if a differential
-polynomial is equal to zero (and therefore a member of the ideal),
-its derivations are also equal to zero and also members of the
-differential ideal.
+Mapping the indeterminates to constants, for example the complex numbers, isn't a fruitful
+course of action since the derivatives of constants are always zero, so likewise will
+our derivations map constants to zero.  Instead, we map the indeterminates to functions
+in some function space.  Exactly which function space we use (complex analytic on $C^n$, $H^2(R^n)$)
+depends on the specific problem.  Much as in the case of algebraic geometry, it is often most convenient
+to map indeterminates into the coefficient field, we can let the coefficient field
+be the function space.  This is by far the most common approach in differential algebraic geometry.
+
+However, I find it useful to consider the function space as something quite
+small and selective, that we pick for our purpose of solving some particular
+equation or equations.  In this view, we don't need to let the coefficient field of
+our differential polynomials be a function space.  We can restrict the coefficients to be constants;
+all that is required is that the constants embed nicely into our function space
+when it comes time to multiply them by functions.
+
+
+%We can define {\it differential ideals}, which are like polynomial
+%ideals, but are also closed under derivation.  This models
+%our analytic operation of differentiation where any derivative
+%of the zero function is the zero function, so if a differential
+%polynomial is equal to zero (and therefore a member of the ideal),
+%its derivations are also equal to zero and also members of the
+%differential ideal.
 
 %We can reduce modulo a differential ideal.  When you think about the difficulty
 %of reducing modulo a polynomial ideal (i.e, specifying a term ordering,
@@ -139,17 +169,62 @@ differential ideal.
 %not trivial.  The Rosenfeld-Gr\"obner algorithm probably
 %provides the nearest differential algebra analog to Buchberger's algorithm.
 
+We can define {\it differential ideals}, which are like polynomial
+ideals, but are also closed under derivation.  This models
+our analytic operation of differentiation where any derivative
+of the zero function is the zero function.
+We can consider {\it differential varieties}, the solution surfaces in our function space,
+composed of all of the functions that solve all of the differential equations in
+a given differential variety.
+In standard commutative algebra, a primary decomposition of the radical of an ideal into prime ideals leads
+to the decomposition of the corresponding varieties into the union of irreducible varieties.
 We can consider something like a primary decomposition of a differential ideal.
 The Rosenfeld-Gr\"obner algorithm probably
-provides the nearest differential algebra analog to primary decomposition.
+provides the nearest differential algebra analog to primary decomposition,
+decomposing the radical of a differential ideal into the intersection of regular differential ideals.
 
 Nevertheless, the results of these algorithms can be somewhat disappointing,
 at least for those accustomed to working with algebraic ideals and Gr\"obner bases.
-Rarely do we get a nice set of equations that easily represent all of our solutions,
-and for good reason.  In the differential algebraic geometry setting, remember that the indeterminates
-take on values in some function field.  Otherwise, how could derivation be expressed?
-The best we're likely to reduce to is an equation like $\Psi=\Psi_x$, and it's up to us
-to solve the corresponding analytic equation and conclude that $\Psi$ is a multiple of the exponential of $x$.
+Rarely does a differential polynomial decomposition lead to a nice set of equations that easily represent all of our solutions,
+and for good reason.
+
+Until now, we have not discussed boundary conditions at all, because there are none.
+%Boundary conditions
+%are generally imposed globally (what does this mean?), while differential
+%equations express strictly local behavior.  
+Differential equations express strictly local behavior; no boundary conditions
+can be imposed simply by adding differential polynomials to a differential algebra system.
+No boundary conditions implies that our solution varieties contain all
+possible solutions of the differential equations, with any boundary conditions whatsoever.
+
+Therefore, any equations derived from a Rosenfeld-Gr\"obner calculation would apply
+to all such possible solutions (not true - how about the regular ideals?),
+and there are few equations that would apply in such broad generality,
+to all solutions of a differential equation no matter what the boundary conditions.
+
+What about the function field?  Rosenfeld-Gr\"obner is an algrebraic algorithm,
+much like primary decomposition is a commutative algebra technique.  It's
+equally valid in all function fields (that map somehow into our cofficients).
+
+However, we can restrict our attension to a small function field by introducing
+additional differential polynomials into our system.  We can't restrict to
+something like $L^2$, because that requires imposing a global condition.
+We can, however, restrict the form of our solutions by requiring them
+to satisfy additional differential equations.
+
+I have obtained good results by restricting a PDE to be solved using
+ODEs of certain limited forms.  Parametizing those forms with a finite number
+of constants yields a function space parametized by constants, and therefore
+describing a solution variety in something like $\mathbb{C}^n$.  Such a
+solution space is then ammenable to the techniques of algebraic geometry,
+such as primary decomposition.
+Each prime ideal in the resulting primary decomposition can be interpreted as a family
+of solutions of the differential equation in the function space.
+
+%In the differential algebraic geometry setting, remember that the indeterminates
+%take on values in some function field.  Otherwise, how could derivation be expressed?
+%The best we're likely to reduce to is an equation like $\Psi=\Psi_x$, and it's up to us
+%to solve the corresponding analytic equation and conclude that $\Psi$ is a multiple of the exponential of $x$.
 
 The picture, in my mind, starts to look like this:
 
@@ -739,7 +814,7 @@ Wolfram Mathematica\footnote{I originally used Wolfram Alpha} can now
 analyze this equation and determine that it is equivalent
 to the Bessel function \eqref{solution}.
 
-%% \includegraphics[page=1, clip, trim=1in 9in 1in 1in, width=\textwidth]{find Bessel solution.pdf}
+\includegraphics[page=1, clip, trim=1in 9in 1in 1in, width=\textwidth]{find Bessel solution.pdf}
 
 leading to...
 
@@ -773,7 +848,7 @@ Then \eqref{solution} is an exact solution to \eqref{schrodinger}, with $E=0$.
 \label{verification}
 The result can be easily verified using Mathematica\footnote{A manual verification is presented in an appendix}, as follows:
 
-%% \includegraphics[page=1, clip, trim=1in 7in 1in 1in, width=\textwidth]{improved.pdf}
+\includegraphics[page=1, clip, trim=1in 7in 1in 1in, width=\textwidth]{improved.pdf}
 
 \subsection*{Generalization}
 \parskip 12pt
