@@ -41,7 +41,7 @@ for finding exact, non-separable solutions of partial differential equations.
 
 \parskip 12pt
 
-\subsection*{Introduction}
+% \subsection*{Introduction}
 
 % An January 2023, I discovered a previously unknown solution to the simplest Schrödinger equation for the hydrogen atom.
 %
@@ -218,7 +218,7 @@ of constants yields a function space parametized by constants, and therefore
 describing a solution variety in something like $\mathbb{C}^n$.  Such a
 solution space is then ammenable to the techniques of algebraic geometry,
 such as primary decomposition.
-Each prime ideal in the resulting primary decomposition can be interpreted as a family
+Each associated prime ideal in the resulting primary decomposition can be interpreted as a family
 of solutions of the differential equation in the function space.
 
 %In the differential algebraic geometry setting, remember that the indeterminates
@@ -228,6 +228,7 @@ of solutions of the differential equation in the function space.
 
 The picture, in my mind, starts to look like this:
 
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[node distance=50pt]
 \node (commutative algebra) [draw, text width=200pt] {Commutative algebra
       \begin{itemize}
@@ -262,7 +263,8 @@ $C^\infty(\mathbf{R}^3)$, or $H^2(\mathbf{C})$
 
 \node at (4,-6.5) {\bf We can do this!};
 
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 
 The author's algorithm is motivated by a simple observation.  We can recover the
 utility of algebraic geometry in the differential algebra setting by parameterizing
