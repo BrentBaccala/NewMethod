@@ -183,6 +183,44 @@ The Rosenfeld-Gr\"obner algorithm probably
 provides the nearest differential algebra analog to primary decomposition,
 decomposing the radical of a differential ideal into the intersection of regular differential ideals.
 
+From BLOPv2:
+
+ordinary polynomials:
+
+We have an ordering on the indeterminates.
+
+The leader of $p$ is the greatest indeterminate $x \in X$ w.r.t. R which
+appears in $p$
+
+A subset A of $R \\ K$ is said to be triangular if the leaders of its elements are
+pairwise different.
+
+
+
+Definition 17. — (critical pairs)
+A set ${p_1 , p_2 }$ of differential polynomials is said to be a critical pair if the
+leaders of $p_1$ and $p_2$ have common derivatives. If A is a set of differential
+polynomials then critical-pairs(A) denotes the set of all the pairs which can
+be formed between any two elements of A.
+
+
+Definition 22. — (regular differential systems)
+A differential system $A = 0, S \ne 0$ of a differential polynomial ring R is
+said to be a regular differential system (for a ranking R) if
+\begin{itemize}
+\item[C1] A is differentially triangular,
+\item[C2] S contains the separants of the elements of A and is partially reduced
+w.r.t. A,
+\item[C3] all the ${p, p_0 } \in$ critical-pairs(A) are solved by $A = 0, S \ne 0$ (coherence property).
+\end{itemize}
+
+The differential ideal $[A] : S \infty$ is called the regular differential ideal defined by the system.
+
+If $A$ is a system of ordinary polynomial equations, then its separants are all zero,
+it has no critical pairs, and differentially triangular is simply triangular.
+Very much like a characteristic set.
+
+
 Nevertheless, the results of these algorithms can be somewhat disappointing,
 at least for those accustomed to working with algebraic ideals and Gr\"obner bases.
 Rarely does a differential polynomial decomposition lead to a nice set of equations that easily represent all of our solutions,
@@ -266,24 +304,64 @@ $C^\infty(\mathbf{R}^3)$, or $H^2(\mathbf{C})$
 \end{tikzpicture}%
 }
 
-The author's algorithm is motivated by a simple observation.  We can recover the
+An algorithm begins to suggest itself.  To solve any given PDE,
+we pick a small function field
+parameterized by a finite number of constants, describe it using a
+system of differential polynomial equations, append the original PDE to this system, and use
+the Rosenfeld-Gr\"obner algorithm to describe this resulting system
+as an intersection of regular differential ideals.
+
+Practical experience with this algorithm suggests that, given the current
+state of software development, it is best to use a slightly inferior
+variant of this algorithm, where a standard Gr\"obner basis algorithm
+is used instead of Rosenfeld-Gr\"obner.  Considering that Rosenfeld-Gr\"obner
+is a generalization of Buchberger's algorithm, and given the computational
+complexity of computing a Gr\"obner basis, it makes sense to use
+existing Gr\"obner basis software, hoping that in the future, we
+will have a comprehensive Rosenfeld-Gr\"obner implementation that
+will handle differential polynomials as well as conventional polynomials,
+incorporate all the fruits of
+our research into the computation of Gr\"obner bases,
+and fall back into an efficient Gr\"obner basis calculation
+when presented with the degenerate case of a system of polynomial equations.
+
+We can describe a slightly inferior variant of this algorithm, that only
+requires the calculation of Gr\"obner bases to complete a primary decomposition.
 utility of algebraic geometry in the differential algebra setting by parameterizing
 the function field using only a finite number of constants, and doing so in such
 a way that the constants can be isolated into a system of polynomial equations,
-which can then be solving using algebraic geometry.  If, for example, we expect
-our solution to be in $C^2(\mathbf{R})$, then we parameterize a subset of
-$C^2(\mathbf{R})$ using some number of complex variables, say twenty, so that our resulting
-equations are polynomials in $\mathbf{C}[c_0,..,c_{19}]$ and their common
-solutions describe an algebraic variety in $\mathbf{C}^{20}$.
-Unfortunately, degree bounds seem necessary on almost everything in order
-to achieve this, and no matter how big and complicated our equations become,
-we're only searching part of the function space.
+which can then be solving using algebraic geometry.
+
+What specific restrictions must be imposed to acheive this?
+
+  - new indeterminants must be specified as ODEs
+  - we need to cancel the leading derivative
+
+%If, for example, we expect
+%our solution to be in $C^2(\mathbf{R})$, then we parameterize a subset of
+%$C^2(\mathbf{R})$ using some number of complex variables, say twenty, so that our resulting
+%equations are polynomials in $\mathbf{C}[c_0,..,c_{19}]$ and their common
+%solutions describe an algebraic variety in $\mathbf{C}^{20}$.
+%Unfortunately, degree bounds seem necessary on almost everything in order
+%to achieve this, and no matter how big and complicated our equations become,
+%we're only searching part of the function space.
+
+%An algorithm begins to suggest itself.  We can recover the
+%utility of algebraic geometry in the differential algebra setting by parameterizing
+%the function field using only a finite number of constants, and doing so in such
+%a way that the constants can be isolated into a system of polynomial equations,
+%which can then be solving using algebraic geometry.  If, for example, we expect
+%our solution to be in $C^2(\mathbf{R})$, then we parameterize a subset of
+%$C^2(\mathbf{R})$ using some number of complex variables, say twenty, so that our resulting
+%equations are polynomials in $\mathbf{C}[c_0,..,c_{19}]$ and their common
+%solutions describe an algebraic variety in $\mathbf{C}^{20}$.
+%Unfortunately, degree bounds seem necessary on almost everything in order
+%to achieve this, and no matter how big and complicated our equations become,
+%we're only searching part of the function space.
 
 In short, rather than attempt to derive differential equations that apply to all solutions
 of the PDE, we restrict our attention to an {\bf ansatz}, a subset of the function
-field in which we seek solutions.  We do this out of necessity, to parameterize
-the function field, which is almost certainly infinite dimensional as a vector space over the constants,
-using a finite number of constants.
+field in which we seek solutions, parameterized as a finite dimensional vector space over the constants.
 If we can, by luck or by theory, pick a good ansatz, then we have
 a computable algorithm to find the solutions therein.
 
