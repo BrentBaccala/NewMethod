@@ -142,115 +142,29 @@ indeterminates are mapped to... what?
 Mapping the indeterminates to constants, for example the complex numbers, isn't a fruitful
 course of action since the derivatives of constants are always zero, so likewise will
 our derivations map constants to zero.  Instead, we map the indeterminates to functions
-in some function space.  Exactly which function space we use (complex analytic on $C^n$, $H^2(R^n)$)
-depends on the specific problem.  Much as in the case of algebraic geometry, it is often most convenient
-to map indeterminates into the coefficient field, we can let the coefficient field
-be the function space.  This is by far the most common approach in differential algebraic geometry.
+in some function space.  Exactly which function space we use
+depends on the specific problem.
+Popular choices include complex analytic on $C^n$, or $H^2(R^n)$.
+%Much as in the case of algebraic geometry, it is often most convenient
+%to map indeterminates into the coefficient field, we can let the coefficient field
+%be the function space.  This is by far the most common approach in differential algebraic geometry.
 
 However, I find it useful to consider the function space as something quite
-small and selective, that we pick for our purpose of solving some particular
-equation or equations.  In this view, we don't need to let the coefficient field of
-our differential polynomials be a function space.  We can restrict the coefficients to be constants;
-all that is required is that the constants embed nicely into our function space
-when it comes time to multiply them by functions.
+small, parametized by a finite number of constants, that we pick for our purpose of solving some particular
+equation or system of equations.  The great advantage of this approach is that by using
+a finite number of parameters to describe our function space, we can
+use the tools of algebraic geometry to characterize the
+solutions as algebraic varieties.
 
-
-%We can define {\it differential ideals}, which are like polynomial
-%ideals, but are also closed under derivation.  This models
-%our analytic operation of differentiation where any derivative
-%of the zero function is the zero function, so if a differential
-%polynomial is equal to zero (and therefore a member of the ideal),
-%its derivations are also equal to zero and also members of the
-%differential ideal.
-
-%We can reduce modulo a differential ideal.  When you think about the difficulty
-%of reducing modulo a polynomial ideal (i.e, specifying a term ordering,
-%computing a Gr\"obner basis), it is not surprising that this is
-%not trivial.  The Rosenfeld-Gr\"obner algorithm probably
-%provides the nearest differential algebra analog to Buchberger's algorithm.
-
-We can define {\it differential ideals}, which are like polynomial
-ideals, but are also closed under derivation.  This models
-our analytic operation of differentiation where any derivative
-of the zero function is the zero function.
-We can consider {\it differential varieties}, the solution surfaces in our function space,
-composed of all of the functions that solve all of the differential equations in
-a given differential variety.
-In standard commutative algebra, a primary decomposition of the radical of an ideal into prime ideals leads
-to the decomposition of the corresponding varieties into the union of irreducible varieties.
-We can consider something like a primary decomposition of a differential ideal.
-The Rosenfeld-Gr\"obner algorithm probably
-provides the nearest differential algebra analog to primary decomposition,
-decomposing the radical of a differential ideal into the intersection of regular differential ideals.
-
-From BLOPv2:
-
-ordinary polynomials:
-
-We have an ordering on the indeterminates.
-
-The leader of $p$ is the greatest indeterminate $x \in X$ w.r.t. R which
-appears in $p$
-
-A subset A of $R \\ K$ is said to be triangular if the leaders of its elements are
-pairwise different.
-
-
-
-Definition 17. — (critical pairs)
-A set ${p_1 , p_2 }$ of differential polynomials is said to be a critical pair if the
-leaders of $p_1$ and $p_2$ have common derivatives. If A is a set of differential
-polynomials then critical-pairs(A) denotes the set of all the pairs which can
-be formed between any two elements of A.
-
-
-Definition 22. — (regular differential systems)
-A differential system $A = 0, S \ne 0$ of a differential polynomial ring R is
-said to be a regular differential system (for a ranking R) if
-\begin{itemize}
-\item[C1] A is differentially triangular,
-\item[C2] S contains the separants of the elements of A and is partially reduced
-w.r.t. A,
-\item[C3] all the ${p, p_0 } \in$ critical-pairs(A) are solved by $A = 0, S \ne 0$ (coherence property).
-\end{itemize}
-
-The differential ideal $[A] : S \infty$ is called the regular differential ideal defined by the system.
-
-If $A$ is a system of ordinary polynomial equations, then its separants are all zero,
-it has no critical pairs, and differentially triangular is simply triangular.
-Very much like a characteristic set.
-
-
-Nevertheless, the results of these algorithms can be somewhat disappointing,
-at least for those accustomed to working with algebraic ideals and Gr\"obner bases.
-Rarely does a differential polynomial decomposition lead to a nice set of equations that easily represent all of our solutions,
-and for good reason.
-
-Until now, we have not discussed boundary conditions at all, because there are none.
-%Boundary conditions
-%are generally imposed globally (what does this mean?), while differential
-%equations express strictly local behavior.  
-Differential equations express strictly local behavior; no boundary conditions
-can be imposed simply by adding differential polynomials to a differential algebra system.
-No boundary conditions implies that our solution varieties contain all
-possible solutions of the differential equations, with any boundary conditions whatsoever.
-
-Therefore, any equations derived from a Rosenfeld-Gr\"obner calculation would apply
-to all such possible solutions (not true - how about the regular ideals?),
-and there are few equations that would apply in such broad generality,
-to all solutions of a differential equation no matter what the boundary conditions.
-
-What about the function field?  Rosenfeld-Gr\"obner is an algrebraic algorithm,
-much like primary decomposition is a commutative algebra technique.  It's
-equally valid in all function fields (that map somehow into our cofficients).
-
-However, we can restrict our attension to a small function field by introducing
-additional differential polynomials into our system.  We can't restrict to
-something like $L^2$, because that requires imposing a global condition.
-We can, however, restrict the form of our solutions by requiring them
+We do this by introducing
+additional differential polynomials into our system.
+This doesn't let use easily restrict to
+something like $L^2$, because that requires imposing a global integral condition,
+and there's no way to specify that using only differential polynomials.
+We can, however, restrict the function space by requiring the solutions
 to satisfy additional differential equations.
 
-I have obtained good results by restricting a PDE to be solved using
+Starting with a PDE, I have obtained good results by restricting it to be solved using
 ODEs of certain limited forms.  Parametizing those forms with a finite number
 of constants yields a function space parametized by constants, and therefore
 describing a solution variety in something like $\mathbb{C}^n$.  Such a
@@ -258,6 +172,53 @@ solution space is then ammenable to the techniques of algebraic geometry,
 such as primary decomposition.
 Each associated prime ideal in the resulting primary decomposition can be interpreted as a family
 of solutions of the differential equation in the function space.
+
+Starting, for example, with the Sch\"odinger equation for hydrogen:
+
+\begin{equation}
+\label{schrodinger hydrogen}
+-\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
+\end{equation}
+
+We can require the solution to solve the following parametized ODE:
+
+\begin{equation}
+\label{classical eq in ideal}
+\begin{gathered}
+(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0
+\end{gathered}
+\end{equation}
+
+where $\Psi(v)$ is a function of some variable $v$, itself expressed in a parameterized form:
+
+\begin{equation}
+\label{ansatz 5a}
+v = v_1 x + v_2 y + v_3 z + v_4 r
+\end{equation}
+
+and expect to find that for certain constant values:
+
+\begin{equation}
+\begin{gathered}
+a_0 = b_1 = v_1 = v_2 = v_3 = 0 \\
+a_1 = v_4 = 1 \qquad
+b_0 = c_0 = 2 \qquad
+c_1 = E
+\end{gathered}
+\end{equation}
+
+we will find the classical radial equation for hydrogen:
+
+\begin{equation}
+\label{classical eq in ideal}
+\begin{gathered}
+v=r \\
+v \Psi'' + 2 \Psi' + 2(1 + E v) \Psi = 0
+\end{gathered}
+\end{equation}
+
+a result more commonly derived using separation of variables.  Solving the radial equation
+yields the ground state solution of hydrogen ($e^{-r}$ when $E=-1/2$).
 
 %In the differential algebraic geometry setting, remember that the indeterminates
 %take on values in some function field.  Otherwise, how could derivation be expressed?
