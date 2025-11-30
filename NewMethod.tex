@@ -24,6 +24,7 @@
 \usetikzlibrary{positioning}
 \usetikzlibrary{fit}
 \usetikzlibrary{backgrounds}
+\usetikzlibrary{shapes.multipart}
 
 \def\coeff{\framebox(10,10){}}
 \newcommand{\tikzmark}[1]{\tikz[overlay,remember picture] \node (#1) {};}
@@ -165,13 +166,13 @@ We can, however, restrict the function space by requiring the solutions
 to satisfy additional differential equations.
 
 An algorithm begins to suggest itself.  To solve a given differential equation,
-we pick a small function field
+we pick a small function space
 parameterized by a finite number of constants, describe it using a
 system of differential polynomial equations, append the original equation to this system, and use
 some kind of a reduction algorithm to extract a system of polynomial equations involving
 only the constants.
 
-What kinds of small function fields are useful?
+What kinds of small function spaces are useful?
 Starting with a PDE, I have obtained good results by restricting it to be solved using
 ODEs of certain limited forms.  Parametizing those forms with a finite number
 of constants yields a function space parametized by constants, and therefore
@@ -234,8 +235,9 @@ yields the ground state solution of hydrogen ($e^{-r}$ when $E=-1/2$).
 
 The picture, in my mind, starts to look like this:
 
+\begin{figure}
 \resizebox{\textwidth}{!}{%
-\begin{tikzpicture}[node distance=50pt]
+\begin{tikzpicture}[node distance=50pt, every text node part/.style={align=center}]
 \node (commutative algebra) [draw, text width=200pt] {Commutative algebra
       \begin{itemize}
         \item rings, ideals, fields, algebraic extensions
@@ -257,8 +259,8 @@ The picture, in my mind, starts to look like this:
 };
 \node (differential algebraic geometry) [draw, node distance=100pt, below of=differential algebra, text width=200pt] {Differential Algebraic Geometry
       \begin{itemize}
-        \item indeterminates now take values in function fields like $C^2(\mathbf{R})$,
-$C^\infty(\mathbf{R}^3)$, or $H^2(\mathbf{C})$
+        \item indeterminates now take values in function spaces like $C^2(\mathbf{R})$,
+$C^\omega(\mathbf{R}^3)$, $H^2(\mathbf{C})$, or...
       \end{itemize}
 };
 
@@ -267,10 +269,11 @@ $C^\infty(\mathbf{R}^3)$, or $H^2(\mathbf{C})$
 
 \draw [very thick, ->] (differential algebraic geometry.south) to[out=-135, in=-45] (algebraic geometry.south);
 
-\node at (4,-6.5) {\bf We can do this!};
+\node at (4,-6.6) {\bf We can do this!\\\bf (if we use function spaces parameterized with constants)};
 
 \end{tikzpicture}%
 }
+\end{figure}
 
 What kind of reduction step
 
@@ -291,7 +294,7 @@ when presented with the degenerate case of a system of polynomial equations.
 We can describe a slightly inferior variant of this algorithm, that only
 requires the calculation of Gr\"obner bases to complete a primary decomposition.
 utility of algebraic geometry in the differential algebra setting by parameterizing
-the function field using only a finite number of constants, and doing so in such
+the function space using only a finite number of constants, and doing so in such
 a way that the constants can be isolated into a system of polynomial equations,
 which can then be solving using algebraic geometry.
 
@@ -324,7 +327,7 @@ What specific restrictions must be imposed to acheive this?
 
 In short, rather than attempt to derive differential equations that apply to all solutions
 of the PDE, we restrict our attention to an {\bf ansatz}, a subset of the function
-field in which we seek solutions, parameterized as a finite dimensional vector space over the constants.
+space in which we seek solutions, parameterized as a finite dimensional vector space over the constants.
 If we can, by luck or by theory, pick a good ansatz, then we have
 a computable algorithm to find the solutions therein.
 
