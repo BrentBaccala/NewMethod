@@ -164,6 +164,14 @@ and there's no way to specify that using only differential polynomials.
 We can, however, restrict the function space by requiring the solutions
 to satisfy additional differential equations.
 
+An algorithm begins to suggest itself.  To solve a given differential equation,
+we pick a small function field
+parameterized by a finite number of constants, describe it using a
+system of differential polynomial equations, append the original equation to this system, and use
+some kind of a reduction algorithm to extract a system of polynomial equations involving
+only the constants.
+
+What kinds of small function fields are useful?
 Starting with a PDE, I have obtained good results by restricting it to be solved using
 ODEs of certain limited forms.  Parametizing those forms with a finite number
 of constants yields a function space parametized by constants, and therefore
@@ -185,11 +193,11 @@ We can require the solution to solve the following parametized ODE:
 \begin{equation}
 \label{classical eq in ideal}
 \begin{gathered}
-(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0
+(a_0 + a_1 v) \Psi_{vv} + (b_0 + b_1 v) \Psi_v + (c_0 + c_1 v) \Psi = 0
 \end{gathered}
 \end{equation}
 
-where $\Psi(v)$ is a function of some variable $v$, itself expressed in a parameterized form:
+where $\Psi(v)$ is a univariate function of some variable $v$, itself expressed in a parameterized form:
 
 \begin{equation}
 \label{ansatz 5a}
@@ -200,10 +208,10 @@ and expect to find that for certain constant values:
 
 \begin{equation}
 \begin{gathered}
-a_0 = b_1 = v_1 = v_2 = v_3 = 0 \\
 a_1 = v_4 = 1 \qquad
 b_0 = c_0 = 2 \qquad
-c_1 = E
+c_1 = E \\
+a_0 = b_1 = v_1 = v_2 = v_3 = 0
 \end{gathered}
 \end{equation}
 
@@ -212,8 +220,7 @@ we will find the classical radial equation for hydrogen:
 \begin{equation}
 \label{classical eq in ideal}
 \begin{gathered}
-v=r \\
-v \Psi'' + 2 \Psi' + 2(1 + E v) \Psi = 0
+r \Psi_{rr} + 2 \Psi_r + 2(1 + E r) \Psi = 0
 \end{gathered}
 \end{equation}
 
@@ -265,12 +272,7 @@ $C^\infty(\mathbf{R}^3)$, or $H^2(\mathbf{C})$
 \end{tikzpicture}%
 }
 
-An algorithm begins to suggest itself.  To solve any given PDE,
-we pick a small function field
-parameterized by a finite number of constants, describe it using a
-system of differential polynomial equations, append the original PDE to this system, and use
-the Rosenfeld-Gr\"obner algorithm to describe this resulting system
-as an intersection of regular differential ideals.
+What kind of reduction step
 
 Practical experience with this algorithm suggests that, given the current
 state of software development, it is best to use a slightly inferior
@@ -335,9 +337,62 @@ for an {\bf ansatz}:
 %% \item it must be formed from a finite sequence of linear ODE and algebraic extensions, and
 \item it expresses a restricted form for the solution to the PDE
 \item it must be expressed using differential polynomials,
-\item it must be parametized only by constants, and
-\item those constants must appear only as coefficients of the differential polynomials
+\item it may involve additional indeterminates, which may or may not be constants
 \end{itemize}
+
+To work with my limited reduction algorithm, there are some additional requirements:
+
+\begin{itemize}
+\item new indeterminates must be either constant, algebraic, or ODE
+\item the deriviations of constants, by definition, are zero
+\item algebraic elements must be specified using an minimum polynomial, which may includes constants
+\item derivations of algebraic elements are completely defined by their minimum polynomial
+\item ODE indeterminates are paired.  Each ODE extension is defined using two indeterminates,
+the dependent and the independant variable.  The dependent variable is specified using a minimum differential
+equation which only involves derivatives of the dependent variable with respect to the independent variable.
+\item derivations of the independant variable are completely defined in terms of derivations of the
+dependent variable using the chain rule.  If $\Psi$ is the independent variable and $v$ is the dependent
+variable, then $\Psi_x = \Psi_v v_x$
+\item the new inderminates must be specified in differential triangular form, or as a tower of extensions
+\end{itemize}
+
+Algorithm:
+
+\begin{itemize}
+\item form a differentially triangular set that describes the ansatz
+\item reduce (which reduction?) the PDE modulo the differentially triangular set
+\item collect like terms
+\item form a system of polynomial equations in the constants
+\end{itemize}
+
+triangular - it's like a tower; each equation introduces a new variable (i.e, leaders are different),
+  but in differential algebra, it could introduce new derivations of the same variable
+     $v_x$ = nothing involving v
+     $v_y$ = nothing involving v (this is fine, they're pairwise partially reduced, since no proper derivative of $v_x$ or $v_y$ appears in the other)
+     $v_xx$ = ... (this is a problem; $v_x$ now has a proper derivative here)
+
+What does it take for my cancellation scheme to work?
+   - it must be a tower, more or less, so triangular (more or less)
+   - each algebraic element must be introduced with a minimal polynomial, that will be used to cancel the leader's power and higher powers of leader
+   - each ODE element is introduced with a differential polynomial w.r.t. a new variable v
+   - v's first derivatives are all specified using the chain rule
+
+How hard is it to introduce a new independent variable?
+   - an equation written using derivatives w.r.t. the new independent can be written as $v_a = v_x x_a$
+
+How to introduce a new ODE?
+
+\begin{itemize}
+\item We wish to avoid introducing new derivations.
+\item We introduce new symbols, $\Psi$, $\Psi'$, $\Psi'', v$
+\item $\Psi$ is described by a minimal differential polynomial involving only $\Psi''$, $\Psi'$, $\Psi$, and $v$.
+\item We define the derivations of $\Psi$ and $\Psi'$ using the chain rule: $\Psi_x = \Psi' v_x$; $\Psi'_x = \Psi'' v_x$
+\item The derivations of $\Psi''$ are now completely defined by its minimal differential polynomial
+(assuming that polynomial is first degree in $\Psi''$, and its initial involves only $v$)
+(the derivations would be defined even without this restriction, but might involve $\Psi''$ itself)
+(the assumption allows $\Psi''$ to eliminated by differential reduction)
+\end{itemize}
+
 
 Expressing an ansatz using differential polynomials seems natural within the context of differential algebra,
 but is even more important if we wish to systematize this algorithm using
