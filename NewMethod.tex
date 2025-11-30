@@ -181,7 +181,7 @@ such as primary decomposition.
 Each associated prime ideal in the resulting primary decomposition can be interpreted as a family
 of solutions of the differential equation in the function space.
 
-Starting, for example, with the Sch\"odinger equation for hydrogen:
+Starting, for example, with the following Schr\"odinger equation for hydrogen:
 
 \begin{equation}
 \label{schrodinger hydrogen}
@@ -630,8 +630,14 @@ the union of which form the solution space of the PDE in the differential space.
 \end{enumerate}
 
 %%\section*{An Example: The New Solution of Hydrogen}
-\subsection*{An Example: A New Solution of Hydrogen}
+\subsection*{An Example: A New Pseudo-Solution of Hydrogen}
 
+We seek to demonstrate the operation of the algorithm on the following Schr\"odinger equation for hydrogen:
+
+\begin{equation}
+\label{schrodinger hydrogen}
+-\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
+\end{equation}
 
 Recall that Ansatz 5 is a second-order ODE with linear coefficients and a linear variable, i.e:
 
@@ -674,13 +680,49 @@ v = v_1 x + v_2 y + v_3 z + v_4 r
 
 \subsection*{Differential Reduction Step}
 
-I attempted to use the Rosenfeld-Gr\"obner algorithm to reduce equation \eqref{schrodinger hydrogen}
-modulo \eqref{ansatz 5}, but it ultimately ran out of memory on a 96 GB computer after
-30 hours.  Instead, I used Sage to construct a polynomial ring modulo the ideal
-$r^2-x^2-y^2-z^2$ to handle the algebraic extension (present not in the ansatz proper,
-but in the original ring used to construct the PDE).  Next I directed the software
-to expand the derivatives in \eqref{schrodinger hydrogen} and substitute for $\Psi''$ and $v$
-according to the ansatz \eqref{ansatz 5}.  The result is
+%I attempted to use the Rosenfeld-Gr\"obner algorithm to reduce equation \eqref{schrodinger hydrogen}
+%modulo \eqref{ansatz 5}, but it ultimately ran out of memory on a 96 GB computer after
+%30 hours.  Instead, I used Sage to construct a polynomial ring modulo the ideal
+%$r^2-x^2-y^2-z^2$ to handle the algebraic extension (present not in the ansatz proper,
+%but in the original ring used to construct the PDE).  Next I directed the software
+%to expand the derivatives in \eqref{schrodinger hydrogen} and substitute for $\Psi''$ and $v$
+%according to the ansatz \eqref{ansatz 5}.  The result is
+%a rational function
+%with a 228 term numerator and an 18 term denominator.  We ignore the denominator.  The numerator begins:
+
+To \eqref{ansatz 5} I appended
+$r^2-x^2-y^2-z^2$ to handle the algebraic extension used
+in the underlying polynomial ring to construct the PDE, and obtained
+the following system of differential polynomials:
+
+\begin{equation}
+\label{ansatz 5 plus}
+\begin{gathered}
+\begin{comment}
+\Psi_x = \frac{\Psi'}{v_x} \qquad
+\Psi_y = \frac{\Psi'}{v_y} \qquad
+\Psi_z = \frac{\Psi'}{v_z} \\
+\Psi'_x = \frac{\Psi''}{v_x} \qquad
+\Psi'_y = \frac{\Psi''}{v_y} \qquad
+\Psi'_z = \frac{\Psi''}{v_z} \\
+\end{comment}
+\Psi_x = \Psi' v_x \qquad
+\Psi_y = \Psi' v_y \qquad
+\Psi_z = \Psi' v_z \\
+\Psi'_x = \Psi'' v_x \qquad
+\Psi'_y = \Psi'' v_y \qquad
+\Psi'_z = \Psi'' v_z \\
+(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \\
+v = v_1 x + v_2 y + v_3 z + v_4 r \\
+r^2-x^2-y^2-z^2
+\end{gathered}
+\end{equation}
+
+\eqref{ansatz 5 plus} (ordering? also, they're equations, not polynomials) is a differentially triangular system, although this property
+is not required to ensure the correct operation of the algorithm.  Next, I used Sage,
+along with some additional Python code, to differentially reduce \eqref{schrodinger hydrogen}
+modulo \eqref{ansatz 5 plus}.
+The result is
 a rational function
 with a 228 term numerator and an 18 term denominator.  We ignore the denominator.  The numerator begins:
 
@@ -721,10 +763,13 @@ r\Psi x^3 \left(-2 E d_1 v_1 - 3 n_1 v_0^2 v_1 - n_1 v_1^3 - n_1 v_1 v_2^2 - n_1
 \end{equation}
 
 The expressions in parenthesis gives us a system of equations (only one is shown)
-involving the $v_i$, $d_i$, $m_i$ and $n_i$ variables that, if satisfied,
+involving $v_i$, $d_i$, $m_i$, $n_i$ and $E$ that, if satisfied,
 will yield a solution to \eqref{schrodinger hydrogen} in the form \eqref{ansatz 5}.  Once
-duplicate equations are dropped, the system has 34 equations.
-
+duplicate equations are dropped, the system has 34 equations.  Note that $E$, although
+not a parameter in the ansatz, is included with them because it is a constant.  The
+correct operation of the projection step is predicated on nothing more than separating
+the indeterminants into constants and non-constants, and it makes no difference whether
+the constants are introduced in the ansatz or appear in the original PDE.
 
 %%sage: latex(matrix(eqns()).transpose())
 \begin{equation}
@@ -774,17 +819,19 @@ I used a numerical algorithm to solve the system of equations in expectation
 of it being faster for larger systems, but the system \eqref{polynomial system}
 is small enough that exact methods are usable.
 \end{comment}
-\eqref{polynomial system} is simple enough that we can form
+We now form
 an ideal $I$ in $\mathbf{Q}[v_0,...,m_1,E]$ from \eqref{polynomial system}, and
-Sage can calculate a Gr\"obner basis for the radical $I$ in less than a second.
-While we could work with the Gr\"obner basis directly\footnote{A Gr\"obner basis
-of the solution ideal in lexicographic order $E>d_i>m_i>n_i>v_i$ contains 65 polynomials.}
-, I find it more
-useful to study the primary decomposition, which Sage computes using
-the Shimoyama-Yokoyama algorithm\footnote{Localization and Primary Decomposition of
-Polynomial Ideals, {\it J. Symbolic Computation} (1996) {\bf 22}, 247–277}
-as implemented in Singular.  Gr\"obner basis calculations are done
-as a subalgorithm of Shimoyama-Yokoyama.
+seek to compute its associated prime ideals.
+
+%Sage can calculate a Gr\"obner basis for the radical $I$ in less than a second.
+%While we could work with the Gr\"obner basis directly\footnote{A Gr\"obner basis
+%of the solution ideal in lexicographic order $E>d_i>m_i>n_i>v_i$ contains 65 polynomials.}
+%, I find it more
+%useful to study the primary decomposition, which Sage computes using
+%the Shimoyama-Yokoyama algorithm\footnote{Localization and Primary Decomposition of
+%Polynomial Ideals, {\it J. Symbolic Computation} (1996) {\bf 22}, 247–277}
+%as implemented in Singular.  Gr\"obner basis calculations are done
+%as a subalgorithm of Shimoyama-Yokoyama.
 
 Taking the radical of the ideal simplifies both the theory and the application,
 and can be justified because there are no nilpotent elements in our solution
