@@ -233,7 +233,7 @@ yields the ground state solution of hydrogen ($e^{-r}$ when $E=-1/2$).
 %The best we're likely to reduce to is an equation like $\Psi=\Psi_x$, and it's up to us
 %to solve the corresponding analytic equation and conclude that $\Psi$ is a multiple of the exponential of $x$.
 
-The picture, in my mind, starts to look like this:
+%The picture, in my mind, starts to look like this:
 
 \begin{figure}
 \resizebox{\textwidth}{!}{%
@@ -275,33 +275,33 @@ $C^\omega(\mathbf{R}^3)$, $H^2(\mathbf{C})$, or...
 }
 \end{figure}
 
-What kind of reduction step
+%What kind of reduction step
 
-Practical experience with this algorithm suggests that, given the current
-state of software development, it is best to use a slightly inferior
-variant of this algorithm, where a standard Gr\"obner basis algorithm
-is used instead of Rosenfeld-Gr\"obner.  Considering that Rosenfeld-Gr\"obner
-is a generalization of Buchberger's algorithm, and given the computational
-complexity of computing a Gr\"obner basis, it makes sense to use
-existing Gr\"obner basis software, hoping that in the future, we
-will have a comprehensive Rosenfeld-Gr\"obner implementation that
-will handle differential polynomials as well as conventional polynomials,
-incorporate all the fruits of
-our research into the computation of Gr\"obner bases,
-and fall back into an efficient Gr\"obner basis calculation
-when presented with the degenerate case of a system of polynomial equations.
+%Practical experience with this algorithm suggests that, given the current
+%state of software development, it is best to use a slightly inferior
+%variant of this algorithm, where a standard Gr\"obner basis algorithm
+%is used instead of Rosenfeld-Gr\"obner.  Considering that Rosenfeld-Gr\"obner
+%is a generalization of Buchberger's algorithm, and given the computational
+%complexity of computing a Gr\"obner basis, it makes sense to use
+%existing Gr\"obner basis software, hoping that in the future, we
+%will have a comprehensive Rosenfeld-Gr\"obner implementation that
+%will handle differential polynomials as well as conventional polynomials,
+%incorporate all the fruits of
+%our research into the computation of Gr\"obner bases,
+%and fall back into an efficient Gr\"obner basis calculation
+%when presented with the degenerate case of a system of polynomial equations.
 
-We can describe a slightly inferior variant of this algorithm, that only
-requires the calculation of Gr\"obner bases to complete a primary decomposition.
-utility of algebraic geometry in the differential algebra setting by parameterizing
-the function space using only a finite number of constants, and doing so in such
-a way that the constants can be isolated into a system of polynomial equations,
-which can then be solving using algebraic geometry.
+%We can describe a slightly inferior variant of this algorithm, that only
+%requires the calculation of Gr\"obner bases to complete a primary decomposition.
+%utility of algebraic geometry in the differential algebra setting by parameterizing
+%the function space using only a finite number of constants, and doing so in such
+%a way that the constants can be isolated into a system of polynomial equations,
+%which can then be solving using algebraic geometry.
 
-What specific restrictions must be imposed to acheive this?
+%What specific restrictions must be imposed to acheive this?
 
-  - new indeterminants must be specified as ODEs
-  - we need to cancel the leading derivative
+%  - new indeterminants must be specified as ODEs
+%  - we need to cancel the leading derivative
 
 %If, for example, we expect
 %our solution to be in $C^2(\mathbf{R})$, then we parameterize a subset of
@@ -427,7 +427,7 @@ of algebraic/exponential/logarithmic extensions to define an elementary differen
 extension, and differential Galois theory, which uses a finite tower of
 algebraic/exponential/integral extensions to define a liouvillian extension.
 
-For our tower, there are two types of admissible extensions: algebraic and holonomic.
+For our tower, there are two types of admissible extensions: algebraic and ODE.
 
 Algebraic extensions are formed by adjoining a primitive element which solves
 an irreducible algebraic equation (the minimal polynomial) with coefficients
@@ -438,7 +438,7 @@ Since algebraic extensions lead naturally
 to nonlinear ODE extensions, if I wish to include algebraic extensions with
 linear ODEs, they must be included explicitly (and are).
 
-A {\it holonomic extension} of differential field is a transcendental (i.e, non-algebraic)
+A {\it ODE extension} of differential field is a transcendental (i.e, non-algebraic)
 extension constructed by adjoining a primitive element that is defined using a minimal differential polynomial
 whose derivatives and coefficients are all univariate functions of a single {\it distinguished variable}.
 This distinguished variable
@@ -446,17 +446,17 @@ is also specified as part of the definition of the extension, and is selected fr
 underlying field.  The coefficients are
 selected not from the field we are extending, but rather from ${\mathbf Q}(v)$, an auxiliary field
 constructed using a placeholder indeterminate that corresponds to the distinguished variable.
-We expect to also consider coefficients selected from an extension (algebraic or holonomic)
+We expect to also consider coefficients selected from an extension (algebraic or ODE)
 of ${\mathbf Q}(v)$, but that is not required for the present work.
 
-Note: This definition of holonomic extension may not match with the D-module literature.  Check this.
+% Note: This definition of holonomic extension may not match with the D-module literature.  Check this.
 
-Example: Over the rational function field $\mathbf{C}(x)$, we can construct an holonomic
+Example: Over the rational function field $\mathbf{C}(x)$, we can construct an ODE
 extension specified by the primitive element $\Psi$, minimial differential polynomial
 $\Psi' = \Psi$, and distinguished variable $x+r$.  This is a differential polynomial
 that maps to the analytic equation $\frac{d\Psi}{dv}=\Psi$ and is solved
 by the analytic functions $Ae^v$.  Substituting in for $v$, we see that
-the functions $Ae^{x+r}$ are solutions to this holonomic extension.
+the functions $Ae^{x+r}$ are solutions to this ODE extension.
 
 I used an apostrophe when writing
 the minimial differential polynomial because this is the ODE case; there is only
@@ -476,11 +476,10 @@ in terms of the new one using the chain rule.
 %We tend to take the algebraic view, extract as much information as possible,
 %then switch to analysis.
 
-A {\it holonomic tower} is a differential field extension
-constructed from a finite number of algebraic and/or holonomic
-extensions.
+A {\it ODE tower} is a differential field extension
+constructed from a finite number of algebraic and/or ODE extensions.
 
-Our ansatzen are formed from holonomic towers with degree bounds on all
+Our ansatzen are formed from ODE towers with degree bounds on all
 distinguished variables and coefficients.  Other ansatzen can be
 conceived of using non-linear ODEs or non-ODE extensions; they
 are outside the scope of the present work.
@@ -488,7 +487,7 @@ are outside the scope of the present work.
 No algorithm is presently available to select an ansatz.
 
 I use a graphical notation to describe an ansatz.  Blue-purple boxes
-denote rings, orange boxes (whether shaded orange or not) denote holonomic extensions, and green boxes denote
+denote rings, orange boxes (whether shaded orange or not) denote ODE extensions, and green boxes denote
 algebraic extensions.  A blue box drawn immediately around an orange or green box
 denote the ring formed by adjoining the element defined by the orange or green box.
 Polynomials are drawn as a square white box and are
@@ -510,8 +509,8 @@ denominator.
     \node (ring) [ring, node distance=50pt, below of=oPsi, text width=200pt] {ring, labeled with something like\\${\mathbf C}[x,y,z]$};
     \draw[degree] (a.west) -- (a.west|-ring.north) node[right,pos=0.6] {1 (degree bound on polynomial)};
 
-    \node (ODE extension) [element, below=of ring, text width=200pt] {holonomic element\\described by a minimal differential equation and a distinguished variable};
-    \node (ODE extension 2) [element, below=of ODE extension, text width=200pt] {holonomic extension\\generated by adjoining holonomic element\\and forming the ring so generated};
+    \node (ODE extension) [element, below=of ring, text width=200pt] {ODE element\\described by a minimal differential equation and a distinguished variable};
+    \node (ODE extension 2) [element, below=of ODE extension, text width=200pt] {ODE extension\\generated by adjoining ODE element\\and forming the ring so generated};
     \node (ODE ring) [ring, fill=none, fit=(ODE extension 2)] {};
     \node (algebraic element) [algebraic, below=of ODE extension 2, text width=200pt] {algebraic element\\described by minimal polynomial};
     \node (algebraic extension) [algebraic, below=of algebraic element, text width=200pt] {algebraic extension\\generated by adjoining algebraic element\\and forming the ring so generated};
@@ -539,8 +538,8 @@ For example, consider Ansatz 5:
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 
-Ansatz 5 is a second-order holonomic element with linear coefficients and a linear variable.
-Note in particular that there is no green box around the orange one.  The holonomic
+Ansatz 5 is a second-order ODE element with linear coefficients and a linear variable.
+Note in particular that there is no green box around the orange one.  The ODE
 element must itself solve the PDE; we do not construct the full extension field it would naturally generate.
 
 The structure of Ansatz 5 can also be described using differential polynomials:
@@ -574,11 +573,11 @@ a linear variable $v$ using equation \eqref{ansatz 5a}.
 The $v_i$'s (and the $a_i$'s, $b_i$'s and $c_i$'s) are constants.
 Strictly speaking, a $v_0$ constant term
 should also be present, but I often drop the constant term from the
-distinguished variable of a holonomic extension, because taking
+distinguished variable of an ODE extension, because taking
 the derivative with respect to $x+3$ is no different from taking
 the derivative with respect to $x$.
 
-Next we introduce our new holonomic element $\Psi$, which will
+Next we introduce our new ODE element $\Psi$, which will
 also be the solution to our PDE.
 We now wish to essentially introduce a new derivation with respect to $v$.
 While I could write $\Psi_v$, I do not wish to confuse this derivation
@@ -607,7 +606,7 @@ Given a PDE defined by differential polynomials, attempt the following:
 \begin{enumerate}
 \item Select an ansatz that defines a differential space parameterized by constants
 
-\item Reduce the PDE modulo the differential ideal that characterizes the differential space (differential elimination step)
+\item Reduce the PDE modulo the ansatz (differential elimination step)
 
 \item Construct a system of polynomial equations in the constants by collecting like terms in the remaining variables (projection step)
 
@@ -641,6 +640,9 @@ We seek to demonstrate the operation of the algorithm on the following Schr\"odi
 \label{schrodinger hydrogen}
 -\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
 \end{equation}
+
+where $\nabla$ is the Laplacian, $\Psi$ is a complex-valued wavefunction defined over real 3-dimensional space,
+and $r$ is the distance to the origin.  We choose to work in Cartesian coordinates, so $r^2=x^2+y^2+z^2$.
 
 Recall that Ansatz 5 is a second-order ODE with linear coefficients and a linear variable, i.e:
 
@@ -1548,7 +1550,7 @@ to a square root, which is the simpler Ansatz 16.
     \draw[degree] (u.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 
-Two nested holonomic extensions.
+Two nested ODE extensions.
 
    {\bf Ansatz 13}
 
@@ -1633,7 +1635,7 @@ An exponential in the coefficient ring.
   \end{tikzpicture}
 }
 
-A second order holonomic extension in the coefficient ring.
+A second order ODE extension in the coefficient ring.
 
 \vbox{
 {\bf Ansatz 16}
@@ -1661,11 +1663,11 @@ A second order holonomic extension in the coefficient ring.
   \end{tikzpicture}
 }
 
-An algebraic extension nested below a holonomic extension.
+An algebraic extension nested below an ODE extension.
 
 \begin{tabular}{lccc}
  & \multicolumn{3}{c}{\bf degree bounds} \\
-             & algebraic root & $v$ & holonomic coefficients \\
+             & algebraic root & $v$ & ODE coefficients \\
 Ansatz 16    & 1  & 1  & 1 \\
 Ansatz 16.1  & 1  & 2  & 1 \\
 Ansatz 16.2  & 1  & 1  & 2 \\
