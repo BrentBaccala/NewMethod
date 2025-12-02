@@ -1,0 +1,1040 @@
+%In this view, we don't need to let the coefficient field of
+%our differential polynomials be a function space.  We can restrict the coefficients to be constants;
+%all that is required is that the constants embed nicely into our function space
+%when it comes time to multiply them by functions.
+
+
+%We can define {\it differential ideals}, which are like polynomial
+%ideals, but are also closed under derivation.  This models
+%our analytic operation of differentiation where any derivative
+%of the zero function is the zero function, so if a differential
+%polynomial is equal to zero (and therefore a member of the ideal),
+%its derivations are also equal to zero and also members of the
+%differential ideal.
+
+%We can reduce modulo a differential ideal.  When you think about the difficulty
+%of reducing modulo a polynomial ideal (i.e, specifying a term ordering,
+%computing a Gr\"obner basis), it is not surprising that this is
+%not trivial.  The Rosenfeld-Gr\"obner algorithm probably
+%provides the nearest differential algebra analog to Buchberger's algorithm.
+
+We can define {\it differential ideals}, which are like polynomial
+ideals, but are also closed under derivation.  This models
+our analytic operation of differentiation where any derivative
+of the zero function is the zero function.
+We can consider {\it differential varieties}, the solution surfaces in our function space,
+composed of all of the functions that solve all of the differential equations in
+a given differential variety.
+In standard commutative algebra, a primary decomposition of the radical of an ideal into prime ideals leads
+to the decomposition of the corresponding varieties into the union of irreducible varieties.
+We can consider something like a primary decomposition of a differential ideal.
+The Rosenfeld-Gr\"obner algorithm probably
+provides the nearest differential algebra analog to primary decomposition,
+decomposing the radical of a differential ideal into the intersection of regular differential ideals.
+
+From BLOPv2:
+
+ordinary polynomials:
+
+We have an ordering on the indeterminates.
+
+The leader of $p$ is the greatest indeterminate $x \in X$ w.r.t. R which
+appears in $p$
+
+A subset A of $R \\ K$ is said to be triangular if the leaders of its elements are
+pairwise different.
+
+
+Denote rank p = $v^d$ .
+
+The differential polynomial q is said to be partially reduced w.r.t. p if no
+proper derivative of v appears in q; it is said to be reduced w.r.t. p if q is
+partially reduced w.r.t. p and deg(q, v) < d. A set A ⊂ R \ K is said to be
+autoreduced if any element of A is reduced w.r.t. any other element of the
+set.
+Definition 13. - A set $A \in R \\ K$ is said to be differentially triangular if
+it is triangular and if its elements are pairwise partially reduced.
+
+
+Definition 17. — (critical pairs)
+A set ${p_1 , p_2 }$ of differential polynomials is said to be a critical pair if the
+leaders of $p_1$ and $p_2$ have common derivatives. If A is a set of differential
+polynomials then critical-pairs(A) denotes the set of all the pairs which can
+be formed between any two elements of A.
+
+
+Definition 22. — (regular differential systems)
+A differential system $A = 0, S \ne 0$ of a differential polynomial ring R is
+said to be a regular differential system (for a ranking R) if
+\begin{itemize}
+\item[C1] A is differentially triangular,
+\item[C2] S contains the separants of the elements of A and is partially reduced
+w.r.t. A,
+\item[C3] all the ${p, p_0 } \in$ critical-pairs(A) are solved by $A = 0, S \ne 0$ (coherence property).
+\end{itemize}
+
+The differential ideal $[A] : S \infty$ is called the regular differential ideal defined by the system.
+
+If $A$ is a system of ordinary polynomial equations, then its separants are all zero,
+it has no critical pairs, and differentially triangular is simply triangular.
+Very much like a characteristic set.
+
+
+Nevertheless, the results of these algorithms can be somewhat disappointing,
+at least for those accustomed to working with algebraic ideals and Gr\"obner bases.
+Rarely does a differential polynomial decomposition lead to a nice set of equations that easily represent all of our solutions,
+and for good reason.
+
+Until now, we have not discussed boundary conditions at all, because there are none.
+%Boundary conditions
+%are generally imposed globally (what does this mean?), while differential
+%equations express strictly local behavior.  
+Differential equations express strictly local behavior; no boundary conditions
+can be imposed simply by adding differential polynomials to a differential algebra system.
+No boundary conditions implies that our solution varieties contain all
+possible solutions of the differential equations, with any boundary conditions whatsoever.
+
+Therefore, any equations derived from a Rosenfeld-Gr\"obner calculation would apply
+to all such possible solutions (not true - how about the regular ideals?),
+and there are few equations that would apply in such broad generality,
+to all solutions of a differential equation no matter what the boundary conditions.
+
+What about the function field?  Rosenfeld-Gr\"obner is an algrebraic algorithm,
+much like primary decomposition is a commutative algebra technique.  It's
+equally valid in all function fields (that map somehow into our cofficients).
+
+
+
+
+
+
+An algorithm begins to suggest itself.  To solve any given PDE,
+we pick a small function field
+parameterized by a finite number of constants, describe it using a
+system of differential polynomial equations, append the original PDE to this system, and use
+the Rosenfeld-Gr\"obner algorithm to describe this resulting system
+as an intersection of regular differential ideals.
+
+
+
+
+
+
+
+To work with my limited reduction algorithm, there are some additional requirements:
+
+\begin{itemize}
+\item new indeterminates must be either constant, algebraic, or ODE
+\item the deriviations of constants, by definition, are zero
+\item algebraic elements must be specified using an minimum polynomial, which may includes constants
+\item derivations of algebraic elements are completely defined by their minimum polynomial
+\item ODE indeterminates are paired.  Each ODE extension is defined using two indeterminates,
+the dependent and the independant variable.  The dependent variable is specified using a minimum differential
+equation which only involves derivatives of the dependent variable with respect to the independent variable.
+\item derivations of the independant variable are completely defined in terms of derivations of the
+dependent variable using the chain rule.  If $\Psi$ is the independent variable and $v$ is the dependent
+variable, then $\Psi_x = \Psi_v v_x$
+\item the new inderminates must be specified in differential triangular form, or as a tower of extensions
+\end{itemize}
+
+Algorithm:
+
+\begin{itemize}
+\item form a differentially triangular set that describes the ansatz
+\item reduce (which reduction?) the PDE modulo the differentially triangular set
+\item collect like terms
+\item form a system of polynomial equations in the constants
+\end{itemize}
+
+triangular - it's like a tower; each equation introduces a new variable (i.e, leaders are different),
+  but in differential algebra, it could introduce new derivations of the same variable
+     $v_x$ = nothing involving v
+     $v_y$ = nothing involving v (this is fine, they're pairwise partially reduced, since no proper derivative of $v_x$ or $v_y$ appears in the other)
+     $v_xx$ = ... (this is a problem; $v_x$ now has a proper derivative here)
+
+What does it take for my cancellation scheme to work?
+   - it must be a tower, more or less, so triangular (more or less)
+   - each algebraic element must be introduced with a minimal polynomial, that will be used to cancel the leader's power and higher powers of leader
+   - each ODE element is introduced with a differential polynomial w.r.t. a new variable v
+   - v's first derivatives are all specified using the chain rule
+
+How hard is it to introduce a new independent variable?
+   - an equation written using derivatives w.r.t. the new independent can be written as $v_a = v_x x_a$
+
+How to introduce a new ODE?
+
+\begin{itemize}
+\item We wish to avoid introducing new derivations.
+\item We introduce new symbols, $\Psi$, $\Psi'$, $\Psi'', v$
+\item $\Psi$ is described by a minimal differential polynomial involving only $\Psi''$, $\Psi'$, $\Psi$, and $v$.
+\item We define the derivations of $\Psi$ and $\Psi'$ using the chain rule: $\Psi_x = \Psi' v_x$; $\Psi'_x = \Psi'' v_x$
+\item The derivations of $\Psi''$ are now completely defined by its minimal differential polynomial
+(assuming that polynomial is first degree in $\Psi''$, and its initial involves only $v$)
+(the derivations would be defined even without this restriction, but might involve $\Psi''$ itself)
+(the assumption allows $\Psi''$ to eliminated by differential reduction)
+\end{itemize}
+
+
+Expressing an ansatz using differential polynomials seems natural within the context of differential algebra,
+but is even more important if we wish to systematize this algorithm using
+something like the Rosenfeld-Gr\"obner algorithm to perform a differential reduction step.
+
+Requiring the parameters to be constants and placing them only in the coefficients
+of the differential polynomials ensures that we can ultimately reduce the problem
+of finding solutions within this parametized function space to systems
+of polynomial equations
+amenable to the techniques of algebraic geometry.
+
+
+
+
+
+
+
+
+
+%We start with the base ring/field that is used to construct the PDE itself, then form
+%a finite tower of field extensions in which we will search for our solution.  This
+%is totally in the spirit of Liouville's theorem, which uses a finite tower
+%of algebraic/exponential/logarithmic extensions to define an elementary differential
+%extension, and differential Galois theory, which uses a finite tower of
+%algebraic/exponential/integral extensions to define a liouvillian extension.
+
+For our tower, there are two types of admissible extensions: algebraic and ODE.
+
+%Algebraic extensions are formed by adjoining a primitive element which solves
+%an irreducible algebraic equation (the minimal polynomial) with coefficients
+%in the underlying field.  An algebraic extension of a differential field
+%admits only a single unique way of extending the derivations, so the minimal
+%polynomial is the only information required to specify the extension.
+%Since algebraic extensions lead naturally
+%to nonlinear ODE extensions, if I wish to include algebraic extensions with
+%linear ODEs, they must be included explicitly (and are).
+
+% Note: This definition of holonomic extension may not match with the D-module literature.  Check this.
+
+
+\begin{comment}
+\begin{equation*}
+\Psi' = \Psi_v = \Psi_x
+\end{equation*}
+\end{comment}
+
+%We tend to take the algebraic view, extract as much information as possible,
+%then switch to analysis.
+
+A {\it ODE tower} is a differential field extension
+constructed from a finite number of algebraic and/or ODE extensions.
+
+Our ansatzen are formed from ODE towers with degree bounds on all
+distinguished variables and coefficients.  Other ansatzen can be
+conceived of using non-linear ODEs or non-ODE extensions; they
+are outside the scope of the present work.
+
+No algorithm is presently available to select an ansatz.
+
+I use a graphical notation to describe an ansatz.  Blue-purple boxes
+denote rings, orange boxes (whether shaded orange or not) denote ODE extensions, and green boxes denote
+algebraic extensions.  A blue box drawn immediately around an orange or green box
+denote the ring formed by adjoining the element defined by the orange or green box.
+Polynomials are drawn as a square white box and are
+connected by a line to the ring to which they belong.  A number next to
+the line indicates a degree bound on the polynomial, and two numbers
+separated by a slash denote a rational function.  For example, 2/2 denotes
+a rational function with a second degree numerator and a second degree
+denominator.
+
+\tikzstyle{poly}=[rectangle, draw, thick, fill=white, text width=5em, align=center, rounded corners, minimum height=2em]
+\tikzstyle{poly2}=[rectangle, draw, thick, fill=white, align=center, rounded corners, minimum height=2em]
+\tikzstyle{ring}=[rectangle, draw=blue, thick, fill=blue!20, text width=5em,align=center, rounded corners, minimum height=2em]
+\tikzstyle{element}=[rectangle, draw=orange, thick, fill=orange!20, align=center, rounded corners, minimum height=2em]
+\tikzstyle{algebraic}=[rectangle, draw=green, thick, fill=green!20, align=center, rounded corners, minimum height=2em]
+\tikzstyle{degree}=[]
+
+  \begin{tikzpicture}[remember picture]
+    \node (oPsi) [poly, text width=200pt] {Polynomial selected from ring: $\framebox(10,10){}\tikzmark{a}$};
+    \node (ring) [ring, node distance=50pt, below of=oPsi, text width=200pt] {ring, labeled with something like\\${\mathbf C}[x,y,z]$};
+    \draw[degree] (a.west) -- (a.west|-ring.north) node[right,pos=0.6] {1 (degree bound on polynomial)};
+
+    \node (ODE extension) [element, below=of ring, text width=200pt] {ODE element\\described by a minimal differential equation and a distinguished variable};
+    \node (ODE extension 2) [element, below=of ODE extension, text width=200pt] {ODE extension\\generated by adjoining ODE element\\and forming the ring so generated};
+    \node (ODE ring) [ring, fill=none, fit=(ODE extension 2)] {};
+    \node (algebraic element) [algebraic, below=of ODE extension 2, text width=200pt] {algebraic element\\described by minimal polynomial};
+    \node (algebraic extension) [algebraic, below=of algebraic element, text width=200pt] {algebraic extension\\generated by adjoining algebraic element\\and forming the ring so generated};
+    \node (algebraic ring) [ring, fill=none, fit=(algebraic extension), text width=200pt] {};
+  \end{tikzpicture}
+
+\vfill\eject
+
+
+
+
+
+
+
+
+\begin{comment}
+Once the PDEs have been reduced modulo the differential ideal corresponding to a selected ansatz,
+the resulting system of polynomial equations must be solved.  The major techniques available are:
+
+\begin{enumerate}
+\item Exact primary decomposition
+
+This requires the computation of Gr\"obner bases, which often fails due to memory exhaustion
+(oom - out of memory) and the limitations of current
+
+\item Numerical approximation (gradient descent / Levenberg-Marquardt)
+
+This requires extraneous ideals/varieties to be removed as they are identified.
+I'm currently exploring this approach, as it is the fastest of the three,
+using the DHOST algorithm to compute Euclidean Distance polynomials for
+identified varieties and use this information to drive the solutions
+away from identified varieties in an attempt to find new ones.
+
+Note that this approach, while faster than the others, will never guarantee that all solutions
+to the polynomial system have been found.
+
+\item Homotopy continuation
+
+Bertini is a major software program, but Macaulay 2 also supports homotopy continuation.
+This technique is slow but, in principle, will identify all irreducible varieties.
+In practice, Bertini did not identify all five irreducible varieties for hydrogen Ansatz 5.
+\end{enumerate}
+
+\end{comment}
+
+%%\subsection*{Performance}
+\begin{longtable}{lllll}
+Ansatz 5   &Hydrogen       &Differential Elimination &Rosenfeld-Groebner    &oom, 96 GB, 30 hours\\
+           &               &                         &Manual                &quick\\
+           &               &Sol of constant system   &Bertini               &8.33 hours (laptop); only four components (why?)\\
+%%           &               &                         &$\mathbb{Q}$ radical             &quick\\
+           &               &                         &$\mathbb{Q}$ prime decomp        &quick\\
+           &               &$\mathbb{Q}$ result                 &\multicolumn{2}{l}{5 ideals; 3 extraneous; 1 known; 1 new}\\
+           &               &                         &                      &\\
+           &Helium         &Differential Elimination &Manual                &30 s\\
+           &               &Sol of constant system   &$\mathbb{Q}$ radical            &quick\\
+           &               &$\mathbb{Q}$ result                 &\multicolumn{2}{l}{7 ideals; all extraneous}\\
+           &               &                         &                      &\\
+Ansatz 5.1 &Hydrogen       &Differential Elimination &Manual                &quick\\
+\multicolumn{2}{l}{(2$^{\rm nd}$ degree $v$)} &Sol of constant system   &$\mathbb{Q}$ radical            &quick\\
+           &               &                         &$\mathbb{Q}$ prime decomp        &quick\\
+           &               &                         &                      &\\
+           &Helium         &Differential Elimination &Manual                &quick\\
+           &               &Sol of constant system   &$\mathbb{Q}$ radical            &quick\\
+           &               &$\mathbb{Q}$ result                 &\multicolumn{2}{l}{3 ideals; not yet analyzed}\\
+           &               &                         &                      &\\
+Ansatz 5.2 &Hydrogen       &Differential Elimination &Manual                &quick\\
+\multicolumn{2}{l}{(2$^{\rm nd}$ degree ODE)} &Sol of constant system   &$\mathbb{Q}$ radical            &quick\\
+           &               &                         &$\mathbb{Q}$ prime decomp        &quick\\
+           &               &                         &                      &\\
+Ansatz 5.3 &Hydrogen       &Differential Elimination &Manual                &quick\\
+\multicolumn{2}{l}{(both 2$^{\rm nd}$ degree)}   &Sol of constant system   &$\mathbb{Q}$ radical            &5 minutes\\
+           &               &                         &$\mathbb{Q}$ prime decomp        &quick\\
+           &               &                         &                      &\\
+           &Helium         &Differential Elimination &Manual                &quick\\
+           &               &Sol of constant system   &$\mathbb{Q}$ radical            &quick\\
+           &               &$\mathbb{Q}$ result                 &\multicolumn{2}{l}{4 ideals; all extraneous}\\
+           &               &                         &                      &\\
+Ansatz 6   &Helium         &Differential Elimination &Manual                &10 seconds\\
+           &               &Sol of constant system   &$\mathbb{Q}$ radical             &laptop crashed after $\sim$ 1 week\\
+           &               &                         &Bertini               &laptop crashed after $\sim$ 1 week\\
+           &               &                         &\R32003 radical        &13 min; Apr 27\\
+           &               &\R32003 result            &\multicolumn{2}{l}{4 ideals; all extraneous}\\
+           &               &                         &                      &\\
+Ansatz 11  &Hydrogen       &Differential Elimination &Manual                &18 hours, laptop\\
+           &               &Sol of constant system   &$\mathbb{Q}$ radical  &oom, 96 GB, 39 hours, c200-1\\
+           &               &                         &Singular primary dec  &oom, 96 GB, c200-1\\
+           &Helium         &Differential Elimination &Manual                &19 min\\
+           &               &                         &                      &\\
+Ansatz 12  &Hydrogen       &Differential Elimination &Manual                &quick\\
+           &               &Sol of constant system   &\R32003 radical       &30 min, laptop\\
+           &               &\R32003 result            &\multicolumn{2}{l}{11 ideals; not yet analyzed}\\
+           &               &                         &                      &\\
+Ansatz 13  &Hydrogen       &Differential Elimination &Manual                &quick\\
+           &               &Sol of constant system   &$\mathbb{Q}$ radical             &quick\\
+           &               &$\mathbb{Q}$ result                 &\multicolumn{2}{l}{3 ideals; all extraneous}\\
+           &Helium         &Differential Elimination &Manual                &quick\\
+           &               &Sol of constant system   &$\mathbb{Q}$ radical             &quick\\
+           &               &$\mathbb{Q}$ result                 &\multicolumn{2}{l}{3 ideals; all extraneous}\\
+           &               &                         &                      &\\
+Ansatz 13.3&Hydrogen       &Differential Elimination &Manual                &quick\\
+           &               &Sol of constant system   &$\mathbb{Q}$ radical             &quick\\
+           &               &$\mathbb{Q}$ result                 &\multicolumn{2}{l}{3 ideals; all extraneous}\\
+           &Helium         &Differential Elimination &Manual                &quick\\
+           &               &Sol of constant system   &$\mathbb{Q}$ radical             &quick\\
+           &               &$\mathbb{Q}$ result                 &\multicolumn{2}{l}{3 ideals; all extraneous}\\
+           &               &                         &                      &\\
+Ansatz 13.6&Helium         &Differential Elimination &Manual                &quick\\
+           &               &Sol of constant system   &\R32003 radical             &7 min\\
+           &               &$\mathbb{Q}$ result                 &\multicolumn{2}{l}{4 ideals; all extraneous}\\
+           &               &                         &                      &\\
+Ansatz 16  &Hydrogen       &Differential Elimination &Manual                &30 sec\\
+           &               &                         &                      &\\
+Ansatz 16.31&Helium        &Differential Elimination &Manual                &quick\\
+           &               &Build System of Eqns     &                      &quick\\
+           &               &Solve System of Eqns     &Singular radical      &oom, 96 GB, $\sim$ 40 hrs; Jan 19 '24\\
+           &               &                         &\R32003 radical       &work in progress\\
+           &               &                         &                      &\\
+Ansatz 16.6&Helium         &Differential Elimination &Manual                &10 min\\
+           &               &Build System of Eqns     &                      &3 hours\\
+           &               &Solve System of Eqns     &Singular radical      &oom, 96 GB, $\sim$ 24 hrs; May 7\\
+           &               &                         &Euclidean Distance    &gbasis failure; May 31\\
+\end{longtable}
+
+\begin{comment}
+Helium 5.3: (second degree ODE coeffs and v; 6060 terms; 412 eqns; 5 min to compute radical)
+   (v7, v5, v4, v3 + v6 + 2*v8, v2, v1, v0, d2, d1, d0, v6^2 + 2*v6*v8 + 2*v8^2) - leading ODE coeff zero
+   (v8, v7, v5, v3 + v6, v2, d2, d1, d0, v4^2 + 4*v6^2, v1*v4 - 2*v0*v6, v0*v4 + 2*v1*v6, v0^2 + v1^2) - leading ODE coeff zero
+   (v8, v7, v6, v5, v4, v3, v2, v1, v0, d0) - variable zero
+   (n2, n1, n0, m2, m1, m0, d2, d1, d0) - all coeffs zero
+
+Helium 6 R32003:
+
+ Ideal (c3*d0 + b3*d1, c2*d0 + b2*d1, c1*d0 + b1*d1, c0*d0 + b0*d1,
+        b3*c2 - b2*c3, b3*c1 - b1*c3, b2*c1 - b1*c2, b3*c0 - b0*c3, b2*c0 - b0*c2, b1*c0 - b0*c1)
+
+given c0,c1,c2,c3, b0
+  b1 = b0*c1/c0
+  b2 = b0*c2/c0
+  b3 = b0*c3/c0
+  b-polynomial is a constant multiple (b0/c0) of c-polynomial
+  b2 = b1*c2/c1
+  b3 = b1*c3/c1
+  b3 = b2*c3/c2
+  these last three are just a further consequence of b-polynomial being a constant multiple of c-polynomial
+  c0 = -b0*d1/d0
+  c1 = -b1*d1/d0
+  c2 = -b2*d1/d0
+  c3 = -b3*d1/d0
+  the constant multiple (b0/c0) also has to be (-d0/d1)
+
+ Ideal (d1, d0, c3, b3, c1^2 + c2^2, b2*c1 - b1*c2, b1*c1 + b2*c2, b1^2 + b2^2)
+   try again first order (second order coeff zero)
+ Ideal (c3, c2, c1, c0)
+   extraneous (denominator all zero)
+ Ideal (n1, n0, m1, m0, d1, d0)
+   extraneous (all ODE coeffs zero)
+
+Helium 13.6:
+
+[Ideal (d4, d3, d2, d1, d0, v7, v5, v4, v3 + v6 + 2*v8, v2, v1, v0, v6^2 + 2*v6*v8 + 2*v8^2)
+ Ideal (d4, d3, d2, d1, d0, v8, v7, v5, v3 + v6, v2, v4^2 + 4*v6^2, v1*v4 - 2*v0*v6, v0*v4 + 2*v1*v6, v0^2 + v1^2)
+ Ideal (d1, d0, v8, v7, v6, v5, v4, v3, v2, v1, v0)
+ Ideal (n4, n3, n2, n1, n0, m4, m3, m2, m1, m0, d4, d3, d2, d1, d0)
+
+
+Hydrogen 12 (R32003):
+
+[Ideal (a1, a0, u0, u1^2 + u2^2 + u3^2)
+ Ideal (a0, u3, u2, u1, u0)
+ Ideal (n1, m1, d1 + m0, d0, v4, E, v0*n0 - m0, v0^2 - v1^2 - v2^2 - v3^2, v1^2*n0 + v2^2*n0 + v3^2*n0 - v0*m0)
+ Ideal (m1, d1 - 16001*m0, d0, v4, v3, v2, v1, v0*n0 - m0, E*n0 - v0*n1, v0^2*n1 - E*m0)
+ Ideal (d0, v4, v3, v2, v1, v0)
+ Ideal (v4, a1, a0)
+ Ideal (d1, d0, v0, u0, u3*v2 - u2*v3, v1^2 + v2^2 + v3^2, u3*v1 - u1*v3, u2*v1 - u1*v2, u1*v1 + u2*v2 + u3*v3, u1^2 + u2^2 + u3^2)
+ Ideal (n1, n0, m1, m0, d1, d0)
+ Ideal (d1, d0, a1, a0)
+ Ideal (d1, d0, v4, v0, v1^2 + v2^2 + v3^2)
+ Ideal (c1, c0, b1, b0, a1, a0)
+
+
+\end{comment}
+
+\subsection*{Conclusion}
+
+As we've seen, using a parameterized function space allows the use of algebraic geometry
+techniques to check a PDE to see if a solution exists in that function space.
+Doing so requires putting degree bounds on the various polynomials that form
+the ansatz, in contrast to separation of variables, which puts no degree bounds
+on the polynomials but requires the solution to be separable.  As we've seen,
+even a fairly simple ansatz not only recovered a known separable solution,
+but also found a previously unknown solution that is not separable.
+
+Currently, the primary barrier to successful execution of the algorithm is
+design limitations in the various software packages used to execute it.
+For example, no current Gr\"obner basis algorithms, to my knowledge,
+will fall back on using disk-based storage once RAM becomes exhausted.
+Run times of weeks or months can be expected when searching for
+truly unknown solutions to realistic problems, but no such
+calculation is possible if the machine ``runs out of memory'',
+even though an ample disk-based backing store may be available.
+
+Any PDE can be explored using this technique.  For studying a
+non-linear PDE such as Navier-Stokes, a different set of
+ansatzen formed from non-linear ODEs might be advisable.
+
+No theoretical treatment is currently available to predict
+when these ansatzen might yield solutions.  The discovery
+of a new result using such a simple ansatz suggests, however,
+that even very modest degree bounds can yield solutions.
+
+The main thrust of the author's research, however, remains
+quantum mechanics and the hope of an ODE-based solution
+to helium.  As of May 2023, the author continues to develop
+the software tools necessary to check helium ansatz 16.6,
+in the hopes of finding a solution to helium's ground state.
+
+\subsection*{Draft Status}
+
+This paper is still a draft and is being updated regularly.
+
+\subsection*{Contact}
+
+The author maintains a discussion page for this result on his personal blog at:
+
+\begin{center}
+\small
+\url{https://www.freesoft.org/blogs/soapbox/a-new-solution-of-hydrogen/}
+\end{center}
+
+\vfill\eject
+\subsection*{Appendix: The Ansatzen}
+
+{\bf Ansatz 1}
+
+  \begin{tikzpicture}[remember picture]
+    \node (1base) [ring, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \node (ll-psi-a) at ($(1base.west)!0.1!(1base.east)$) {};
+    \node (ll-psi) [above=of ll-psi-a.center] {.};
+    \node (lr-psi) [above=of 1base.east] {.};
+    \node (ur-psi) [above=of lr-psi.center] {.};
+    \begin{scope}[on background layer]
+        \node (Psi block)[inner sep=0pt, fit=(ll-psi.center) (ur-psi.center), element] {};
+    \end{scope}
+    \node (Psi) [poly2, right=of Psi block.west] {$\Psi' = \tikzmark{aa}\coeff\,\Psi$};
+    \node (Psi label) [left=of Psi block.east] {\Large$\Psi$};
+    \node (output) [above=of Psi.west] {\Large\fbox{$B$}\tikzmark{bb}\,\Large\fbox{$\Psi$}\tikzmark{cc}};
+    \draw[degree] (aa|-Psi.south) -- (aa|-1base.north) node[right,pos=0.6] {1};
+    \draw[degree] (cc.west|-output.south) -- (cc.west|-Psi block.north) node[right,pos=0.5] {1};
+    \draw[degree] (bb.west|-output.south) -- (bb.west|-1base.north) node[right,pos=0.09] {1};
+  \end{tikzpicture}
+
+\begin{equation*}
+\begin{gathered}
+\Psi_x = \frac{\Psi'}{B_x} \qquad
+\Psi_y = \frac{\Psi'}{B_y} \qquad
+\Psi_z = \frac{\Psi'}{B_z} \\
+\Psi' = \Psi \\
+B = b_0 + b_1 x + b_2 y + b_3 z + b_4 r
+\end{gathered}
+\end{equation*}
+
+Ansatz 1 is the exponential of a first degree polynomial times a first degree polynomial.
+
+It is expected to find the classical 1s and 2s levels of hydrogen, $e^{-r}$ and $(2-r)e^{r/2}$
+
+$A,B \in \mathbf{C}[x,y,z,r]; \deg A \le 1; \deg B \le 1$
+
+$\Psi = A F; F' = F; F_x = B_x F'; F_y = B_y F'; F_z = B_z F'$
+
+or just: $\Psi = A F; F_x = B_x F; F_y = B_y F; F_z = B_z F$
+
+Example: $B=-r; A=1; E=-1/2$ $\qquad\Rightarrow\qquad$ $e^{-r}$
+
+Example: $B=-r/2; A=r-2; E=-1/8$ $\qquad\Rightarrow\qquad$ $(2-r)e^{-r/2}$
+
+\begin{comment}
+{\bf Ansatz 9}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi' + \coeff\tikzmark{b}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {0};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {0};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+
+{\bf Ansatz 8}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi' + \coeff\tikzmark{b}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+
+\end{comment}
+
+\vfill\eject
+{\bf Ansatz 5}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+
+\begin{equation*}
+\begin{gathered}
+\begin{comment}
+\Psi_x = \frac{\Psi'}{v_x} \qquad
+\Psi_y = \frac{\Psi'}{v_y} \qquad
+\Psi_z = \frac{\Psi'}{v_z} \\
+\Psi'_x = \frac{\Psi''}{v_x} \qquad
+\Psi'_y = \frac{\Psi''}{v_y} \qquad
+\Psi'_z = \frac{\Psi''}{v_z} \\
+\end{comment}
+\Psi_x = \Psi' v_x \qquad
+\Psi_y = \Psi' v_y \qquad
+\Psi_z = \Psi' v_z \\
+\Psi'_x = \Psi'' v_x \qquad
+\Psi'_y = \Psi'' v_y \qquad
+\Psi'_z = \Psi'' v_z \\
+(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \\
+v = v_1 x + v_2 y + v_3 z + v_4 r
+\end{gathered}
+\end{equation*}
+
+Ansatz 5 is a second-order ODE with linear coefficients and a linear variable.
+
+It is expected to find the classical radical equation of hydrogen,
+along with the 1s level of hydrogen, $e^{-r}$.
+
+%% $A,B,C,V \in \mathbf{C}[x,y,z,r]; \deg A \le 1; \deg B \le 1; \deg C \le 1; \deg V \le 1$
+
+%% $\Psi = F; A F'' + B F' + C F = 0; F_x = V_x F'; F_y = V_y F'; F_z = V_z F'$
+
+Example: $V=-r; A+C=-B; E=-1/2$ ($A, B, C \in \mathbf{C}$) $\Rightarrow$ $e^{-r}$
+
+\vfill\eject
+
+\vbox{
+{\bf Ansatz 6}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1/1};
+  \end{tikzpicture}
+
+Ansatz 6 extends Ansatz 5 by allowing the distinguished variable to be a linear rational function.
+}
+
+\begin{comment}
+{\bf Ansatz 7}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {2};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {2};
+    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {2};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {2/2};
+  \end{tikzpicture}
+
+Ansatz 7 is the quadratic form of Ansatz 6, and would now be specified as a sub-ansatz of 6.
+\end{comment}
+
+\begin{comment}
+{\bf Ansatz 10}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {2};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {2};
+    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {2};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {2};
+  \end{tikzpicture}
+
+Ansatz 10 is the quadratic form of Ansatz 5, and would now be specified as a sub-ansatz of 5 (ansatz 5.3).
+
+\end{comment}
+
+{\bf Ansatz 11}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\gamma^2 + \framebox(10,10){}\tikzmark{b}\,\gamma + \coeff\tikzmark{c}$};
+    \begin{scope}[on background layer]
+        \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
+        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbf{Q}[x,y,z,r,\gamma]/(r^2-x^2-y^2-z^2, \framebox(10,10){}\,\gamma^2 + \framebox(10,10){}\,\gamma + \coeff\,)$};
+        \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
+    \end{scope}
+    \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {1};
+    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (b.west) -- (b.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (c.west) -- (c.west|-base.north) node[right,pos=0.8] {1};
+  \end{tikzpicture}
+
+Ansatz 11 allows a second-degree algebraic extension to be used in the formation of the distinguished variable.
+
+I don't use it anymore because the quadratic formula tells us that the algebraic element is equivalent
+to a square root, which is the simpler Ansatz 16.
+
+{\bf Ansatz 12}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+        %\node (Psi field) [ring, fill=none, fit=(Psi block), text width=250pt] {};
+    \end{scope}
+
+    \node (Theta) [poly, node distance=110pt, below of=Psi, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Theta'' + \framebox(10,10){}\tikzmark{b}\,\Theta' + \coeff\tikzmark{c}\,\Theta$};
+    \node (Qu) [ring, below of=Theta, text width=100pt] {$\mathbf{Q}[u]$};
+    \node (u) [poly, right=of Qu] {$u$};
+    \draw[degree] (a.west) -- (a.west|-Qu.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qu.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qu.north) node[right,pos=0.6] {1};
+    \node (Theta label) [at=(v.east|-Theta.north), anchor=north east] {\Large$\Theta$};
+    \begin{scope}[on background layer]
+        \node (Theta block)[fit=(Theta) (Qu) (u), inner sep=10pt, element] {};
+        \node (Theta field) [ring, fill=none, fit=(Theta block), text width=250pt] {};
+    \end{scope}
+
+    \node (base) [ring, node distance=70pt, below=of Theta field.east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (v.south) -- (v.south|-Theta field.north) node[right,pos=0.7] {1};
+    \draw[degree] (u.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+
+Two nested ODE extensions.
+
+   {\bf Ansatz 13}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (alg ext) [poly, node distance=50pt, below=of Psi.east, anchor=east, text width=90pt] {$\framebox(10,10){}\tikzmark{aa}\,\gamma^2 + \framebox(10,10){}\tikzmark{bb}\,\gamma + \coeff\tikzmark{cc}$};
+    \begin{scope}[on background layer]
+        \node (alg ext element) [algebraic, fit=(alg ext), inner sep=5pt] {};
+        \node (alg ext field) [ring, fill=none, fit=(alg ext element), node distance=70pt] {};
+    \end{scope}
+    \node (Qv) [ring, below of=alg ext, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-alg ext field.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-alg ext field.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-alg ext field.north) node[right,pos=0.6] {1};
+    \draw[degree] (aa.west) -- (aa.west|-Qv.north) node[right,pos=0.8] {1};
+    \draw[degree] (bb.west) -- (bb.west|-Qv.north) node[right,pos=0.8] {1};
+    \draw[degree] (cc.west) -- (cc.west|-Qv.north) node[right,pos=0.8] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element, fill=none] {};
+    \end{scope}
+    \node (base) [ring, node distance=100pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+
+An algebraic extension in the coefficient ring.
+
+\vskip 12pt
+\vbox{
+   {\bf Ansatz 14}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (ode ext) [poly, node distance=50pt, below=of Psi.east, anchor=east, text width=80pt] {$\theta' = \coeff\tikzmark{cc}$};
+    \begin{scope}[on background layer]
+        \node (ode ext element) [element, fit=(ode ext), inner sep=10pt] {};
+        \node (ode ext field) [ring, fill=none, fit=(ode ext element), node distance=70pt] {};
+    \end{scope}
+    \node (Qv) [ring, node distance=50pt, below of=ode ext field, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-ode ext field.north) node[right,pos=0.6] {2};
+    \draw[degree] (b.west) -- (b.west|-ode ext field.north) node[right,pos=0.6] {2};
+    \draw[degree] (c.west) -- (c.west|-ode ext field.north) node[right,pos=0.6] {2};
+    \draw[degree] (cc.west) -- (cc.west|-Qv.north) node[right,pos=0.8] {2/2};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element, fill=none] {};
+    \end{scope}
+    \node (base) [ring, node distance=100pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {2/2};
+  \end{tikzpicture}
+}
+
+An exponential in the coefficient ring.
+
+\vskip 12pt
+\vbox{
+   {\bf Ansatz 15}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (ode ext) [poly, node distance=50pt, below=of Psi.east, anchor=east, text width=80pt] {$\framebox(10,10){}\tikzmark{aa}\,\theta'' + \framebox(10,10){}\tikzmark{bb}\,\theta' + \coeff\tikzmark{cc}\,\theta$};
+    \begin{scope}[on background layer]
+        \node (ode ext element) [element, fit=(ode ext), inner sep=10pt] {};
+        \node (ode ext field) [ring, fill=none, fit=(ode ext element), node distance=70pt] {};
+    \end{scope}
+    \node (Qv) [ring, node distance=50pt, below of=ode ext, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-ode ext field.north) node[right,pos=0.6] {2};
+    \draw[degree] (b.west) -- (b.west|-ode ext field.north) node[right,pos=0.6] {2};
+    \draw[degree] (c.west) -- (c.west|-ode ext field.north) node[right,pos=0.6] {2};
+    \draw[degree] (aa.west) -- (aa.west|-Qv.north) node[right,pos=0.8] {2};
+    \draw[degree] (bb.west) -- (bb.west|-Qv.north) node[right,pos=0.8] {2};
+    \draw[degree] (cc.west) -- (cc.west|-Qv.north) node[right,pos=0.8] {2};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element, fill=none] {};
+    \end{scope}
+    \node (base) [ring, node distance=100pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {2/2};
+  \end{tikzpicture}
+}
+
+A second order ODE extension in the coefficient ring.
+
+\vbox{
+{\bf Ansatz 16}
+
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\gamma^2 = \framebox(10,10){}\tikzmark{a}$};
+    \begin{scope}[on background layer]
+        \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
+        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbf{Q}[x,y,z,r,\gamma]/(r^2-x^2-y^2-z^2, \framebox(10,10){}\,\gamma^2 + \framebox(10,10){}\,\gamma + \coeff\,)$};
+        \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
+    \end{scope}
+    \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {1};
+    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {1};
+  \end{tikzpicture}
+}
+
+An algebraic extension nested below an ODE extension.
+
+\begin{tabular}{lccc}
+ & \multicolumn{3}{c}{\bf degree bounds} \\
+             & algebraic root & $v$ & ODE coefficients \\
+Ansatz 16    & 1  & 1  & 1 \\
+Ansatz 16.1  & 1  & 2  & 1 \\
+Ansatz 16.2  & 1  & 1  & 2 \\
+Ansatz 16.3  & 2  & 1  & 1 \\
+Ansatz 16.4  & 1  & 2  & 2 \\
+Ansatz 16.5  & 2  & 1  & 2 \\
+Ansatz 16.6  & 2  & 2  & 2 \\
+\end{tabular}
+
+Ansatz 16.3 is expected to reproduce $r=\sqrt{x^2+y^2+z^2}$.  A second degree root
+is required.
+
+Since $r$ is required to express the known solutions to hydrogen, being able to construct
+something else like $r$ makes 16.3 and 16.6 interesting targets.
+
+\begin{comment}
+%% An attempt to reform this tikz from the "bottom up" to make it easier
+\vskip 12pt
+\vbox{
+   {\bf Ansatz 15}
+
+  \begin{tikzpicture}
+
+    \node (base) [ring, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \node (ll-psi-a) at ($(base.west)!0.1!(base.east)$) {};
+    \node (ll-psi) [above=of ll-psi-a] {.};
+    \node (Qv) [ring, right of=ll-psi] {$\mathbf{Q}[v]$};
+    \node (ode ext) [poly, above=of Qv.east, anchor=east, text width=80pt] {$\framebox(10,10){}\tikzmark{aa}\,\theta'' + \framebox(10,10){}\tikzmark{bb}\,\theta' + \coeff\tikzmark{cc}\,\theta$};
+  \end{tikzpicture}
+}
+\end{comment}
+
+\vfill\eject
+\subsection*{Appendix: Manual Verification of the Result}
+For anybody wondering how Mathematica concludes that \eqref{solution} solves \eqref{schrodinger},
+the claim is that $\Psi = J_0(2\sqrt{x+r}) = (J_0 \circ 2\sqrt{v}) (x+r)$ satisfies:
+
+\begin{equation}
+\label{claim}
+\left(\frac{\delta^2}{\delta^2 x} + \frac{\delta^2}{\delta^2 y} + \frac{\delta^2}{\delta^2 z}\right) \Psi + \frac{2}{r}\Psi = 0
+\end{equation}
+
+\vskip 12pt
+
+Letting $v=x+r$, we compute the first partial derivatives of $\Psi$:
+
+\begin{equation}
+\begin{gathered}
+\frac{\delta \Psi}{\delta x} = \frac{d v}{d x} \frac{d}{d v} \left(J_0 \circ 2\sqrt{v}\right) = \frac{d v}{d x} J_0'(2\sqrt{v}) v^{-1/2} \\
+\frac{\delta \Psi}{\delta y} = \frac{d v}{d y} \frac{d}{d v} \left(J_0 \circ 2\sqrt{v}\right) = \frac{d v}{d y} J_0'(2\sqrt{v}) v^{-1/2} \\
+\frac{\delta \Psi}{\delta z} = \frac{d v}{d z} \frac{d}{d v} \left(J_0 \circ 2\sqrt{v}\right) = \frac{d v}{d z} J_0'(2\sqrt{v}) v^{-1/2}
+\end{gathered}
+\end{equation}
+
+\vskip 12pt
+
+Next we compute the partial second derivatives of $\Psi$:
+
+\begin{equation}
+\label{second partials}
+\begin{gathered}
+\frac{\delta^2 \Psi}{\delta x^2} = \frac{d^2 v}{d x^2} J_0'(2\sqrt{v}) v^{-1/2} + \left(\frac{d v}{d x}\right)^2 J_0''(2\sqrt{v}) v^{-1} - \frac{1}{2} \left(\frac{d v}{d x}\right)^2 J_0'(2\sqrt{v}) v^{-3/2} \\
+\frac{\delta^2 \Psi}{\delta y^2} = \frac{d^2 v}{d y^2} J_0'(2\sqrt{v}) v^{-1/2} + \left(\frac{d v}{d y}\right)^2 J_0''(2\sqrt{v}) v^{-1} - \frac{1}{2} \left(\frac{d v}{d y}\right)^2 J_0'(2\sqrt{v}) v^{-3/2} \\
+\frac{\delta^2 \Psi}{\delta z^2} = \frac{d^2 v}{d z^2} J_0'(2\sqrt{v}) v^{-1/2} + \left(\frac{d v}{d z}\right)^2 J_0''(2\sqrt{v}) v^{-1} - \frac{1}{2} \left(\frac{d v}{d z}\right)^2 J_0'(2\sqrt{v}) v^{-3/2}
+\end{gathered}
+\end{equation}
+
+\vskip 12pt
+
+We need to know the derivatives of $v=r+x$ with respect to the coordinates:
+
+\vskip 12pt
+
+\begin{equation}
+\label{first v}
+\begin{gathered}
+\frac{d v}{d x} = \frac{d}{d x} (x+r) = 1 + \frac{x}{r} \\
+\frac{d v}{d y} = \frac{d}{d y} (x+r) = \frac{y}{r} \\
+\frac{d v}{d z} = \frac{d}{d z} (x+r) = \frac{z}{r}
+\end{gathered}
+\end{equation}
+
+\vskip 12pt
+
+\begin{equation}
+\label{second v}
+\begin{gathered}
+\frac{d^2 v}{d x^2} = \frac{d}{d x} \left(1 + \frac{x}{r}\right) = \frac{r - x(x/r)}{r^2} = \frac{r^2 - x^2}{r^3} \\
+\frac{d^2 v}{d y^2} = \frac{r^2 - y^2}{r^3} \\
+\frac{d^2 v}{d z^2} = \frac{r^2 - z^2}{r^3}
+\end{gathered}
+\end{equation}
+
+\vskip 20pt
+
+Substituting \eqref{first v} and \eqref{second v} into \eqref{second partials}, and \eqref{second partials}
+into the LHS of \eqref{claim}, we obtain:
+
+\begin{equation*}
+\begin{aligned}
+&\frac{d^2 v}{d x^2} J_0'(2\sqrt{v}) v^{-1/2} + \left(\frac{d v}{d x}\right)^2 J_0''(2\sqrt{v}) v^{-1} - \frac{1}{2} \left(\frac{d v}{d x}\right)^2 J_0'(2\sqrt{v}) v^{-3/2} \\
++& \frac{d^2 v}{d y^2} J_0'(2\sqrt{v}) v^{-1/2} + \left(\frac{d v}{d y}\right)^2 J_0''(2\sqrt{v}) v^{-1} - \frac{1}{2} \left(\frac{d v}{d y}\right)^2 J_0'(2\sqrt{v}) v^{-3/2} \\
++& \frac{d^2 v}{d z^2} J_0'(2\sqrt{v}) v^{-1/2} + \left(\frac{d v}{d z}\right)^2 J_0''(2\sqrt{v}) v^{-1} - \frac{1}{2} \left(\frac{d v}{d z}\right)^2 J_0'(2\sqrt{v}) v^{-3/2} \\
++& \frac{2}{r} J_0(2\sqrt{v})
+\end{aligned}
+\end{equation*}
+
+\begin{equation*}
+\begin{aligned}
+=&\frac{r^2-x^2}{r^3} J_0'(2\sqrt{v}) v^{-1/2} + (1+\frac{x}{r})^2 J_0''(2\sqrt{v}) v^{-1} - \frac{1}{2} (1+\frac{x}{r})^2 J_0'(2\sqrt{v}) v^{-3/2} \\
+&+ \frac{r^2-y^2}{r^3} J_0'(2\sqrt{v}) v^{-1/2} + \left(\frac{y}{r}\right)^2 J_0''(2\sqrt{v}) v^{-1} - \frac{1}{2} \left(\frac{y}{r}\right)^2 J_0'(2\sqrt{v}) v^{-3/2} \\
+&+ \frac{r^2-z^2}{r^3} J_0'(2\sqrt{v}) v^{-1/2} + \left(\frac{z}{r}\right)^2 J_0''(2\sqrt{v}) v^{-1} - \frac{1}{2} \left(\frac{z}{r}\right)^2 J_0'(2\sqrt{v}) v^{-3/2} \\
+&+ \frac{2}{r} J_0(2\sqrt{v})
+\end{aligned}
+\end{equation*}
+
+\begin{equation*}
+\begin{aligned}
+=&\frac{3r^2-x^2-y^2-z^2}{r^3} J_0'(2\sqrt{v}) v^{-1/2} + (1+2\frac{x}{r} +\frac{x^2}{r^2} + \frac{y^2}{r^2} + \frac{z^2}{r^2}) J_0''(2\sqrt{v}) v^{-1} \\
+&- \frac{1}{2} (1+2\frac{x}{r} +\frac{x^2}{r^2}+ \frac{y^2}{r^2} + \frac{z^2}{r^2}) J_0'(2\sqrt{v}) v^{-3/2}
++ \frac{2}{r} J_0(2\sqrt{v})
+\end{aligned}
+\end{equation*}
+
+\begin{equation*}
+=\frac{2}{r} J_0'(2\sqrt{v}) v^{-1/2} + (2+2\frac{x}{r}) J_0''(2\sqrt{v}) v^{-1} - \frac{1}{2} (2+2\frac{x}{r}) J_0'(2\sqrt{v}) v^{-3/2} + \frac{2}{r} J_0(2\sqrt{v})
+\end{equation*}
+
+\begin{equation*}
+=\frac{2}{r} J_0'(2\sqrt{v}) v^{-1/2} + 2\frac{x+r}{r} J_0''(2\sqrt{v}) v^{-1} - \frac{x+r}{r} J_0'(2\sqrt{v}) v^{-3/2}
++ \frac{2}{r} J_0(2\sqrt{v})
+\end{equation*}
+
+Remembering that $v=x+r$,
+
+%%\begin{equation*}
+%%=\frac{2}{r} J_0'(2\sqrt{v}) v^{-1/2} + 2\frac{x+r}{r} J_0''(2\sqrt{v}) v^{-1} - \frac{1}{r} J_0'(2\sqrt{v}) v^{-1/2}
+%%+ \frac{2}{r} J_0(2\sqrt{v})
+%%\end{equation*}
+
+\begin{equation*}
+=\frac{2}{r} J_0'(2\sqrt{v}) v^{-1/2} + \frac{2}{r} J_0''(2\sqrt{v}) - \frac{1}{r} J_0'(2\sqrt{v}) v^{-1/2}
++ \frac{2}{r} J_0(2\sqrt{v})
+\end{equation*}
+
+\begin{equation*}
+=\frac{2}{r} J_0''(2\sqrt{v}) + \frac{1}{r} J_0'(2\sqrt{v}) v^{-1/2} + \frac{2}{r} J_0(2\sqrt{v})
+\end{equation*}
+
+\begin{equation*}
+=\frac{2}{r} J_0''(2\sqrt{v}) + \frac{2}{r\cdot2\sqrt{v}} J_0'(2\sqrt{v}) + \frac{2}{r} J_0(2\sqrt{v})
+\end{equation*}
+
+\begin{equation}
+\label{last eq in derivation}
+=\frac{2}{r} \left( J_0''(2\sqrt{v}) + \frac{1}{2\sqrt{v}} J_0'(2\sqrt{v}) + J_0(2\sqrt{v})\right)
+\end{equation}
+
+Now, the ordinary Bessel function $J_0(x)$ satisfies:
+
+\begin{equation*}
+x^2 J_0''(x) + xJ_0'(x) + x^2J_0(x) = 0
+\end{equation*}
+
+dividing through by $x^2$ and changing variables, we get:
+
+\begin{equation*}
+J_0''(2\sqrt{v}) + \frac{1}{2\sqrt{v}}J_0'(2\sqrt{v}) + J_0(2\sqrt{v}) = 0
+\end{equation*}
+
+which shows that \eqref{last eq in derivation} is zero, and establishes the proof of \eqref{claim}.
+

@@ -117,15 +117,16 @@ with addition and obey the Leibniz rule for multiplication [Ritt]:
 D(ab) = (Da)b + a(Db)
 \end{equation*}
 
-Various notations are in common use for the derivations, including
-the letter $D$, apostrophes and/or superscripted numbers if only
-a single derivation is in use (the ODE case), or ``jet notation'' where multiple derivations are specified (the PDE case)
-and are denoted by subscripted letters, i.e, $\Psi_x$
+Various notations are in common use for the derivations;
+%, including
+%the letter $D$, apostrophes and/or superscripted numbers if only
+%a single derivation is in use (the ODE case), or
+I generally use``jet notation'' where derivations are denoted by subscripted letters, i.e, $\Psi_x$
 is the result of applying derivation $x$ (a unary operator)
 to $\Psi$.  Analytically, we will always interpret this as the derivative
 of $\Psi$ with respect to $x$;
 thinking of the derivation as a unary operator
-is an algebraic definition.  The distinction is much the same
+is an algebraic concept.  The distinction is much the same
 as between the real number $\sqrt{2}$ and the element $\gamma$
 in the algebraic extension of $\mathbf{Q}$ defined by the polynomial equation $\gamma^2=2$.
 
@@ -403,8 +404,6 @@ All derivations of $\Psi''$ are now completely defined by these differential pol
 %(the derivations would be defined even without this restriction, but might involve $\Psi''$ itself)
 %(the assumption allows $\Psi''$ to eliminated by differential reduction)
 
-For example, consider Ansatz 5:
-
 \tikzstyle{poly}=[rectangle, draw, thick, fill=white, text width=5em, align=center, rounded corners, minimum height=2em]
 \tikzstyle{poly2}=[rectangle, draw, thick, fill=white, align=center, rounded corners, minimum height=2em]
 \tikzstyle{ring}=[rectangle, draw=blue, thick, fill=blue!20, text width=5em,align=center, rounded corners, minimum height=2em]
@@ -412,7 +411,7 @@ For example, consider Ansatz 5:
 \tikzstyle{algebraic}=[rectangle, draw=green, thick, fill=green!20, align=center, rounded corners, minimum height=2em]
 \tikzstyle{degree}=[]
 
-{\bf Ansatz 5}
+%% {\bf Ansatz 5}
 
 \begin{figure}
 \centering
@@ -432,24 +431,26 @@ For example, consider Ansatz 5:
   \end{tikzpicture}
 \end{figure}
 
-Ansatz 5 is a second-order ODE element with linear coefficients and a linear variable
-(polynomial degrees are signified by the black numbers next to the lines connecting them to the rings they are selected from).
+For example, consider the ansatz formed from 
+a second-order ODE element with first-degree coefficients and a distinguished variable formed
+as a first-degree polynomial in the underlying differential polynomial ring.
+See figure 2, where polynomial degrees are signified by the black numbers next to the lines connecting them to the rings they are selected from.
 %Note in particular that there is no green box around the orange one.  The ODE
 %element must itself solve the PDE; we do not construct the full extension field it would naturally generate.
 We do not construct any more complicated function from $\Psi$ (although we could);
 the element $\Psi$ must itself solve the PDE.
 
-The structure of Ansatz 5 can also be described using differential polynomials:
+The structure of this ansatz is described using differential polynomials as follows.
 
-\begin{equation}
-\label{ansatz 5a}
-v = v_1 x + v_2 y + v_3 z + v_4 r
-\end{equation}
+A differential polynomial involving only $\Psi''$, $\Psi'$, $\Psi$, $v$, and constants,
+and using no non-constant indeterminates or existing derivations:
 
 \begin{equation}
 \label{ansatz 5b}
 (a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \\
 \end{equation}
+
+The derivations of $\Psi$ and $\Psi'$, defined using the chain rule:
 
 \begin{equation}
 \label{ansatz 5c}
@@ -461,6 +462,13 @@ v = v_1 x + v_2 y + v_3 z + v_4 r
 \Psi'_y = \Psi'' v_y \qquad
 \Psi'_z = \Psi'' v_z \\
 \end{gathered}
+\end{equation}
+
+The distinguished variable $v$:
+
+\begin{equation}
+\label{ansatz 5a}
+v = v_1 x + v_2 y + v_3 z + v_4 r
 \end{equation}
 
 Our differential ring is equipped with three derivations $x$, $y$, and $z$
@@ -543,7 +551,7 @@ and $r$ is the distance to the origin.  We choose to work in Cartesian coordinat
 and use Hartree atomic units to render the equation dimensionless, though for our purposes we can
 ignore any physical interpretation of the problem and treat it simply as an equation to be solved.
 
-Recall that Ansatz 5 is a second-order ODE with linear coefficients and a linear variable, i.e:
+We'll use the ansatz from the previous section, a second-order ODE with linear coefficients and a linear distinguished variable, i.e:
 
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
     \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
@@ -970,6 +978,7 @@ is complementary to separation of variables, where we check a PDE to see if any 
 its solutions can be expressed as a product of factors, each depending on only
 a single variable.
 
+\begin{comment}
 As my primary interest lies in quantum mechanics, I have investigated the PDEs
 that model hydrogen and helium.
 
@@ -981,5 +990,6 @@ $\Psi$ is assumed to have no angular dependence, which has been known since
 at least the time of Hylleraas to be a valid assumption for the ground state.
 
 In both cases, I use Hartree atomic units to render the equations dimensionless.
+\end{comment}
 
 \end{document}
