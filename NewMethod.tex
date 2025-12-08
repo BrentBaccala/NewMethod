@@ -107,7 +107,7 @@ in the system.  We introduce ideals in the polynomial ring and algebraic varieti
 solution space and deduce the contravariant equivalence between them.  We call this
 ``algebraic geometry''.
 
-J.F. Ritt introduced differential algebra.
+J.F. Ritt introduced differential algebra \cite{Ritt}.
 Given a ring $R$ (commutative, with unity) or a field $F$, we can construct a
 {\it differential ring} or {\it differential field}
 by specifying one or more derivations that commute
@@ -509,6 +509,8 @@ and specify how they behave with respect to the existing derivations.
 Having defined an ansatz, we now use it to reduce our original PDE.  For this purpose,
 we use Ritt's full reduction algorithm.
 
+A compact description of the relevant concepts can be found in Section 3 of \cite{blop}.
+
 [describe Ritt's algorithm]
 
 \subsection*{Projection}
@@ -517,6 +519,35 @@ Having defined an ansatz and used it to reduce the original PDE, we now project
 that reduced equation into the solution space of the constants.  We do this
 by factoring each polynomial terms into its constant and non-constant indeterminants,
 and gathering together like terms with identical non-constant factors.
+
+\begin{comment}
+Any particular selection of constants produces a system of differential polynomials that defines a differential ideal.
+
+Which of those differential ideals reduce the original PDE to zero?
+
+i.e, I^i S^s PDE = [A]
+
+(A, I, and S are parameterized by constants)
+
+if all of the A's are equal to zero, then either the PDE is equal to zero or one of the I's and/or S's is equal to zero
+
+for some selection of the constants, this creates a specific A, I, and S.  Q: does this solve the PDE?
+   what does this question mean?
+   does setting all of the A's to zero (i.e, make them all true) imply that the PDE is zero?
+   it implies that either the PDE is zero, or an I/S is zero
+
+in my case, I'm ``ignoring the denominator'', meaning that I'm ignoring I and S.  If I or S were to be zero,
+then the PDE would not have to be zero, i.e, would not have to be satisfied
+
+So, we want to check that the ``denominator'' (I and S) is not zero.  If they were, the PDE might not be satisfied.
+
+If an I or an S is zero, then we could add it to the system and check again
+
+For any solution in the variety of the constants, if I/S is zero, then it might not solve the PDE.
+Q: what do we do then?
+
+Q: if some selection of constants solves the PDE, do we always find it using this algorithm?
+\end{comment}
 
 \subsection*{Solution Algorithm}
 
@@ -634,9 +665,8 @@ r^2-x^2-y^2-z^2
 is not required to ensure the correct operation of the algorithm.  Next, I used Sage,
 along with some additional Python code, to differentially reduce \eqref{schrodinger hydrogen}
 modulo \eqref{ansatz 5 plus}, using Ritt's reduction algorithm.
-The result is
-a rational function
-with a 228 term numerator and an 18 term denominator.  We ignore the denominator.  The numerator begins:
+The result is a rational function
+with a 228 term numerator and an 18 term denominator.  The numerator begins:
 
 % I used a Sage-based computer program with the following ansatz.
 \begin{comment}
@@ -657,6 +687,13 @@ Reduce the input PDE \eqref{schrodinger} modulo differential ideal \eqref{ansatz
 %% -8r\Psi x^5 b_1 b_2^2 n_1 - r\Psi x^5 b_1 b_4^2 n_1 - r \Psi x^5 b_1 b_6^2 n_1 - 2r\Psi x^5 b_2 b_3 b_4 n_1 - \cdots
 -2r\Psi x^3 E d_1 v_1 - 3r\Psi x^3 n_1 v_0^2 v_1 - r\Psi x^3 n_1 v_1^3 - r\Psi x^3 n_1 v_1 v_2^2 - r\Psi x^3 n_1 v_1 v_3^2 - \cdots
 \end{equation}
+
+The denominator, after replacing $x^2+y^2+z^2$ with $r$, reads:
+
+\begin{equation}
+2 r^3 (a_1 (v_1 x + v_2 y + v_3 z + v_4 r) + a_0)
+\end{equation}
+
 
 In this run of the program, I was using different names for the constants than
 I use in the paper.  $d_i$, $m_i$, $n_i$ instead of $a_i$, $b_i$, $c_i$.
@@ -991,5 +1028,42 @@ at least the time of Hylleraas to be a valid assumption for the ground state.
 
 In both cases, I use Hartree atomic units to render the equations dimensionless.
 \end{comment}
+
+\begin{thebibliography}{9}
+
+\bibitem{blop}
+F. Boulier, D. Lazard, F. Ollivier and M. Petitot, “Computing representations for radicals
+of finitely generated differential ideals”, Special issue “Jacobi’s Legacy” of AAECC, 20, (1), 73–121, 2009.
+
+\bibitem{Czapor87}
+S. R. Czapor. Solving algebraic equations via Buchberger’s algorithm. In Proc. EUROCAL’87,
+volume 378 of Lect. Notes Comp. Sci., pages 260 -- 269, 1987.
+
+\bibitem{Grabe95}
+Hans-Gert Gr\"abe (1995). ``Triangular systems and factorized Gr\"obner bases''
+
+\bibitem{Grabe96}
+Hans-Gert Gr\"abe (1996). ``Minimal Primary Decomposition and Factorized Gr\"obner Bases''
+
+\bibitem{Grabe06}
+Gr\"abe (2006).  ``The Groebner Factorizer and Polynomial System Solving'',
+Talk given at the Special Semester on Groebner Bases, Linz 2006.
+
+\url{https://www.ricam.oeaw.ac.at/specsem/srs/groeb/download/06_02_Solver.pdf}
+
+\bibitem{GTZ}
+Gianni, P., Trager, B., Zacharias, G.: ``Gr\"obner bases and primary decomposition of polynomial ideals''.
+{\it J. Symb. Comp.} 6 (1988), 149 - 167.
+
+\bibitem{Ritt}
+Joseph Fels Ritt. Differential Algebra. Dover Publications Inc., New York,
+1950. \url{http://www.ams.org/online_bks/coll33}
+
+\bibitem[DGPS]{DGPS}
+Decker, W.; Greuel, G.-M.; Pfister, G.; Sch{\"o}nemann, H.:
+\newblock {\sc Singular} {4-4-0} --- {A} computer algebra system for polynomial computations.
+\newblock {https://www.singular.uni-kl.de} (2024).
+
+\end{thebibliography}
 
 \end{document}
