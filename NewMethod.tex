@@ -510,6 +510,7 @@ Having defined an ansatz, we now use it to reduce our original PDE.  For this pu
 we use Ritt's full reduction algorithm.
 
 A compact description of the relevant concepts can be found in Section 3 of \cite{blop}.
+A comparison of various techniques used to solve systems of polynomial and differential polynomial equations can be found in \cite{aistleitner}.
 
 [describe Ritt's algorithm]
 
@@ -668,6 +669,11 @@ modulo \eqref{ansatz 5 plus}, using Ritt's reduction algorithm.
 The result is a rational function
 with a 228 term numerator and an 18 term denominator.  The numerator begins:
 
+Ordering: right now, we use term ordering with lex(r) then degrevlex on the rest, so our terms are ordered first by $r$,
+then degrevlex.  But I'm collecting terms (in build\_system\_of\_equations) by looping over the numerator and
+collecting like terms.
+
+
 % I used a Sage-based computer program with the following ansatz.
 \begin{comment}
 I found this solution roughly as follows.\footnote{
@@ -688,15 +694,12 @@ Reduce the input PDE \eqref{schrodinger} modulo differential ideal \eqref{ansatz
 -2r\Psi x^3 E d_1 v_1 - 3r\Psi x^3 n_1 v_0^2 v_1 - r\Psi x^3 n_1 v_1^3 - r\Psi x^3 n_1 v_1 v_2^2 - r\Psi x^3 n_1 v_1 v_3^2 - \cdots
 \end{equation}
 
-The denominator, after replacing $x^2+y^2+z^2$ with $r$, reads:
+The denominator, after replacing $x^2+y^2+z^2$ with $r^2$, reads:
 
 \begin{equation}
 2 r^3 (a_1 (v_1 x + v_2 y + v_3 z + v_4 r) + a_0)
 \end{equation}
 
-
-In this run of the program, I was using different names for the constants than
-I use in the paper.  $d_i$, $m_i$, $n_i$ instead of $a_i$, $b_i$, $c_i$.
 
 \subsection*{Projection Step}
 
@@ -707,14 +710,14 @@ $\Psi$, and $\Psi'$, so
 we collect like terms in $x$, $y$, $z$, $r$, $\Psi$, and $\Psi'$, organizing the numerator like this:
 
 \begin{equation}
-%%\left(-8 b_1 b_2^2 n_1 - b_1 b_4^2 n_1 - b_1 b_6^2 n_1 - 2 b_2 b_3 b_4 n_1 - 2b_2 b_5 b_6 n_1 \right) r\Psi x^5 - \cdots
-r\Psi x^3 \left(-2 E d_1 v_1 - 3 n_1 v_0^2 v_1 - n_1 v_1^3 - n_1 v_1 v_2^2 - n_1 v_1 v_3^2\right) - \cdots
+%sage: print(latex(Factorization([(e,1) for e in list(system_of_like_terms.items())[0]], sort=False)).replace('Zeta','Psi'))
+%(r \Psi' x^{3}) \cdot (v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} + 3 v_{1} v_{4}^{2} b_{1})
+% then drop the parens and the \cdot and add plus sign and \cdots at the end
+r \Psi' x^{3} (v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} + 3 v_{1} v_{4}^{2} b_{1}) + \cdots
 \end{equation}
 
 The expressions in parenthesis gives us a system of equations (only one is shown)
-involving
-% $v_i$, $d_i$, $m_i$, $n_i$ and $E$
-only constants
+involving only constants
 that, if satisfied,
 will yield a solution to \eqref{schrodinger hydrogen} in the form \eqref{ansatz 5}.  Once
 duplicate equations are dropped, the system has 34 equations.  Note that $E$, although
@@ -724,45 +727,50 @@ the indeterminants into constants and non-constants, and it makes no difference 
 the constants are introduced in the ansatz or appear in the original PDE.
 
 %%sage: latex(matrix(eqns()).transpose())
+%% The problem with making this a "figure" is that it's a numbered system of equations
+%%\begin{figure}
 \begin{equation}
 \label{polynomial system}
+% sage: latex(matrix(eqns_RQQ).transpose())
+% then remove \left( and \right)
 \begin{array}{r}
--2 \, n_{1} v_{0}^{3} - 4 \, n_{1} v_{0} v_{1}^{2} - 4 \, n_{1} v_{0} v_{2}^{2} - 2 \, n_{1} v_{0} v_{3}^{2} - 4 \, E d_{1} v_{0} \\
--2 \, n_{1} v_{0}^{3} - 4 \, n_{1} v_{0} v_{1}^{2} - 2 \, n_{1} v_{0} v_{2}^{2} - 4 \, n_{1} v_{0} v_{3}^{2} - 4 \, E d_{1} v_{0} \\
--2 \, n_{1} v_{0}^{3} - 2 \, n_{1} v_{0} v_{1}^{2} - 4 \, n_{1} v_{0} v_{2}^{2} - 4 \, n_{1} v_{0} v_{3}^{2} - 4 \, E d_{1} v_{0} \\
--4 \, m_{1} v_{0} v_{1} v_{2} \\
--4 \, m_{1} v_{0} v_{1} v_{3} \\
--4 \, m_{1} v_{0} v_{2} v_{3} \\
--4 \, n_{1} v_{0} v_{1} v_{2} \\
--4 \, n_{1} v_{0} v_{1} v_{3} \\
--4 \, n_{1} v_{0} v_{2} v_{3} \\
--3 \, m_{1} v_{0}^{2} v_{1} -  \, m_{1} v_{1}^{3} -  \, m_{1} v_{1} v_{2}^{2} -  \, m_{1} v_{1} v_{3}^{2} \\
--3 \, m_{1} v_{0}^{2} v_{2} -  \, m_{1} v_{1}^{2} v_{2} -  \, m_{1} v_{2}^{3} -  \, m_{1} v_{2} v_{3}^{2} \\
--3 \, m_{1} v_{0}^{2} v_{3} -  \, m_{1} v_{1}^{2} v_{3} -  \, m_{1} v_{2}^{2} v_{3} -  \, m_{1} v_{3}^{3} \\
--2 \, m_{1} v_{0}^{3} - 4 \, m_{1} v_{0} v_{1}^{2} - 4 \, m_{1} v_{0} v_{2}^{2} - 2 \, m_{1} v_{0} v_{3}^{2} \\
--2 \, m_{1} v_{0}^{3} - 4 \, m_{1} v_{0} v_{1}^{2} - 2 \, m_{1} v_{0} v_{2}^{2} - 4 \, m_{1} v_{0} v_{3}^{2} \\
--3 \, n_{1} v_{0}^{2} v_{1} -  \, n_{1} v_{1}^{3} -  \, n_{1} v_{1} v_{2}^{2} -  \, n_{1} v_{1} v_{3}^{2} - 2 \, E d_{1} v_{1} \\
--3 \, n_{1} v_{0}^{2} v_{2} -  \, n_{1} v_{1}^{2} v_{2} -  \, n_{1} v_{2}^{3} -  \, n_{1} v_{2} v_{3}^{2} - 2 \, E d_{1} v_{2} \\
--3 \, n_{1} v_{0}^{2} v_{3} -  \, n_{1} v_{1}^{2} v_{3} -  \, n_{1} v_{2}^{2} v_{3} -  \, n_{1} v_{3}^{3} - 2 \, E d_{1} v_{3} \\
--2 \, m_{1} v_{0}^{3} - 2 \, m_{1} v_{0} v_{1}^{2} - 4 \, m_{1} v_{0} v_{2}^{2} - 4 \, m_{1} v_{0} v_{3}^{2} \\
-- \, n_{0} v_{0}^{2} -  \, n_{0} v_{1}^{2} -  \, n_{0} v_{2}^{2} -  \, n_{0} v_{3}^{2} - 2 \, E d_{0} - 2 \, d_{1} v_{0} \\
--2 \, n_{0} v_{0} v_{1} - 2 \, d_{1} v_{1} \\
--2 \, n_{0} v_{0} v_{2} - 2 \, d_{1} v_{2} \\
--2 \, n_{0} v_{0} v_{3} - 2 \, d_{1} v_{3} \\
--2 \, d_{1} v_{0} v_{1} - 2 \, m_{0} v_{0} v_{1} \\
--2 \, d_{1} v_{0} v_{2} - 2 \, m_{0} v_{0} v_{2} \\
--2 \, d_{1} v_{0} v_{3} - 2 \, m_{0} v_{0} v_{3} \\
-- \, n_{1} v_{0}^{3} - 3 \, n_{1} v_{0} v_{1}^{2} -  \, n_{1} v_{0} v_{2}^{2} -  \, n_{1} v_{0} v_{3}^{2} - 2 \, E d_{1} v_{0} \\
-- \, n_{1} v_{0}^{3} -  \, n_{1} v_{0} v_{1}^{2} - 3 \, n_{1} v_{0} v_{2}^{2} -  \, n_{1} v_{0} v_{3}^{2} - 2 \, E d_{1} v_{0} \\
-- \, n_{1} v_{0}^{3} -  \, n_{1} v_{0} v_{1}^{2} -  \, n_{1} v_{0} v_{2}^{2} - 3 \, n_{1} v_{0} v_{3}^{2} - 2 \, E d_{1} v_{0} \\
--2 \, d_{1} v_{0}^{2} -  \, m_{0} v_{0}^{2} -  \, m_{0} v_{1}^{2} -  \, m_{0} v_{2}^{2} -  \, m_{0} v_{3}^{2} \\
--2 \, d_{0} \\
--2 \, d_{0} v_{0} \\
-- \, m_{1} v_{0}^{3} - 3 \, m_{1} v_{0} v_{1}^{2} -  \, m_{1} v_{0} v_{2}^{2} -  \, m_{1} v_{0} v_{3}^{2} \\
-- \, m_{1} v_{0}^{3} -  \, m_{1} v_{0} v_{1}^{2} - 3 \, m_{1} v_{0} v_{2}^{2} -  \, m_{1} v_{0} v_{3}^{2} \\
-- \, m_{1} v_{0}^{3} -  \, m_{1} v_{0} v_{1}^{2} -  \, m_{1} v_{0} v_{2}^{2} - 3 \, m_{1} v_{0} v_{3}^{2}
+4 v_{1} v_{3} v_{4} b_{1} \\
+v_{1}^{2} v_{2} b_{1} + v_{2}^{3} b_{1} + v_{2} v_{3}^{2} b_{1} + 3 v_{2} v_{4}^{2} b_{1} \\
+-2 v_{4} a_{0} \\
+4 v_{1}^{2} v_{4} b_{1} + 4 v_{2}^{2} v_{4} b_{1} + 2 v_{3}^{2} v_{4} b_{1} + 2 v_{4}^{3} b_{1} \\
+3 v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
+v_{1}^{2} v_{3} b_{1} + v_{2}^{2} v_{3} b_{1} + v_{3}^{3} b_{1} + 3 v_{3} v_{4}^{2} b_{1} \\
+2 v_{1}^{2} v_{4} c_{1} + 4 v_{2}^{2} v_{4} c_{1} + 4 v_{3}^{2} v_{4} c_{1} + 2 v_{4}^{3} c_{1} - 4 E v_{4} a_{1} \\
+4 v_{1} v_{3} v_{4} c_{1} \\
+v_{1}^{2} v_{3} c_{1} + v_{2}^{2} v_{3} c_{1} + v_{3}^{3} c_{1} + 3 v_{3} v_{4}^{2} c_{1} - 2 E v_{3} a_{1} \\
+2 v_{2} v_{4} c_{0} - 2 v_{2} a_{1} \\
+-2 v_{2} v_{4} a_{1} + 2 v_{2} v_{4} b_{0} \\
+4 v_{1}^{2} v_{4} c_{1} + 4 v_{2}^{2} v_{4} c_{1} + 2 v_{3}^{2} v_{4} c_{1} + 2 v_{4}^{3} c_{1} - 4 E v_{4} a_{1} \\
+3 v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
+v_{1}^{2} v_{4} c_{1} + 3 v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
+4 v_{1}^{2} v_{4} c_{1} + 2 v_{2}^{2} v_{4} c_{1} + 4 v_{3}^{2} v_{4} c_{1} + 2 v_{4}^{3} c_{1} - 4 E v_{4} a_{1} \\
+4 v_{2} v_{3} v_{4} c_{1} \\
+v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + 3 v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
+2 v_{3} v_{4} c_{0} - 2 v_{3} a_{1} \\
+-2 a_{0} \\
+-2 v_{4}^{2} a_{1} + v_{1}^{2} b_{0} + v_{2}^{2} b_{0} + v_{3}^{2} b_{0} + v_{4}^{2} b_{0} \\
+2 v_{1}^{2} v_{4} b_{1} + 4 v_{2}^{2} v_{4} b_{1} + 4 v_{3}^{2} v_{4} b_{1} + 2 v_{4}^{3} b_{1} \\
+v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + 3 v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
+4 v_{1} v_{2} v_{4} c_{1} \\
+v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} + 3 v_{1} v_{4}^{2} b_{1} \\
+-2 v_{3} v_{4} a_{1} + 2 v_{3} v_{4} b_{0} \\
+v_{1}^{2} c_{0} + v_{2}^{2} c_{0} + v_{3}^{2} c_{0} + v_{4}^{2} c_{0} - 2 E a_{0} - 2 v_{4} a_{1} \\
+2 v_{1} v_{4} c_{0} - 2 v_{1} a_{1} \\
+v_{1}^{2} v_{2} c_{1} + v_{2}^{3} c_{1} + v_{2} v_{3}^{2} c_{1} + 3 v_{2} v_{4}^{2} c_{1} - 2 E v_{2} a_{1} \\
+-2 v_{1} v_{4} a_{1} + 2 v_{1} v_{4} b_{0} \\
+v_{1}^{2} v_{4} b_{1} + 3 v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
+v_{1}^{3} c_{1} + v_{1} v_{2}^{2} c_{1} + v_{1} v_{3}^{2} c_{1} + 3 v_{1} v_{4}^{2} c_{1} - 2 E v_{1} a_{1} \\
+4 v_{1} v_{2} v_{4} b_{1} \\
+4 v_{1}^{2} v_{4} b_{1} + 2 v_{2}^{2} v_{4} b_{1} + 4 v_{3}^{2} v_{4} b_{1} + 2 v_{4}^{3} b_{1} \\
+4 v_{2} v_{3} v_{4} b_{1}
 \end{array}
 \end{equation}
+%% \end{figure}
 
 \subsection*{Prime Decomposition}
 
@@ -797,14 +805,19 @@ the following decomposition into prime ideals:
 sage: I.radical().primary_decomposition()
 \end{verbatim}
 
+\newcommand{\Bold}[1]{\mathbf{#1}}
+
 \begin{subequations}
 \label{ideal}
+%sage: latex(I.minimal_associated_primes())
 \begin{align}
-& \left(n_{1}, n_{0}, m_{1}, m_{0}, d_{1}, d_{0}\right)\label{ideal:5} \\
-& \left(v_{3}, v_{2}, v_{1}, v_{0}, d_{0}\right)\label{ideal:4}\\
-& \left(v_{1}^{2} + v_{2}^{2} + v_{3}^{2}, v_{0}, d_{1}, d_{0}\right)\label{ideal:3}\\
-& \left(v_{3}, v_{2}, v_{1}, m_{1}, m_{0} - n_{0} v_{0}, 2 d_{1} + n_{0} v_{0}, d_{0}, E n_{0} - n_{1} v_{0}\right)\label{ideal:2}\\
-& \left(v_{0}^{2} - v_{1}^{2} - v_{2}^{2} - v_{3}^{2}, n_{1}, m_{1}, m_{0} - n_{0} v_{0}, d_{1} + n_{0} v_{0}, d_{0}, E\right)\label{ideal:1}
+% sage: sorted([latex(tuple(P.gens())) for P in I.minimal_associated_primes()])
+% remove the list brackets and commas, add & at the beginning of each line, add \label and \\ at end of each line, normalize a fraction
+& \left(a_{0}, v_{4}, v_{3}, v_{2}, v_{1}\right)\label{ideal:5} \\
+& \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}\right)\label{ideal:4} \\
+& \left(v_{1}^{2} + v_{2}^{2} + v_{3}^{2}, a_{1}, a_{0}, v_{4}\right)\label{ideal:3} \\
+& \left(v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, -v_{4}^{2} c_{1} + E b_{0}, b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}\right)\label{ideal:2} \\
+& \left(v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}, c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E\right)\label{ideal:1}
 \end{align}
 \end{subequations}
 
@@ -812,8 +825,8 @@ Several of these varieties solve the system of equations, but do not lead to a m
 In brief,
 
 \begin{itemize}
-\item[\eqref{ideal:5}] sets all coefficients of the ODE to zero, so we discard it,
-\item[\eqref{ideal:4}] sets the variable $v$ to zero, so we discard it,
+\item[\eqref{ideal:5}] sets the variable $v$ to zero, so we discard it,
+\item[\eqref{ideal:4}] sets all coefficients of the ODE to zero, so we discard it,
 \item[\eqref{ideal:3}] sets the coefficient of
 %$\frac{d^2\Psi}{dv^2}$
 $D^2\Psi$
@@ -823,13 +836,13 @@ in the ODE to zero, resulting in a first-order ODE, so we discard it, too,
 
 \end{itemize}
 
-How to understand ideal \eqref{ideal:2}?  $d_0$ is an ideal generator,
-so $d_0=0$, and we can always multiply our homogenous differential polynomial by a constant without affecting our result, so we can set $d_1=1$.
+How to understand ideal \eqref{ideal:2}?  $a_0$ is an ideal generator,
+so $a_0=0$, and we can always multiply our homogenous differential polynomial by a constant without affecting our result, so we can set $a_1=1$.
 Likewise, we can multiply our variable $v$ by a constant and that will only change our coefficients by constants,
-and $v_1=v_2=v_3=0$, so we can normalize by setting $v_0=1$.  This simplifies ideal \eqref{ideal:2} to:
+and $v_1=v_2=v_3=0$, so we can normalize by setting $v_4=1$.  This immediately implies that $b_0 = c_0 = 2$ and simplifies ideal \eqref{ideal:2} to:
 
 \begin{equation}
-\left(v_{3}, v_{2}, v_{1}, v_{0} - 1, n_{0} + 2, m_{1}, m_{0} + 2, d_{1} - 1, d_{0}, 2 E + n_{1}\right)
+\left(v_{3}, v_{2}, v_{1}, v_{4} - 1, c_{0} - 2, 2 E - c_{1}, b_{1}, 2 - b_{0}, a_{1} - 1, a_{0}\right)
 \end{equation}
 
 \begin{equation}
@@ -855,14 +868,14 @@ expand out the derivative to obtain \eqref{classical eq in ideal}.  Its presence
 expected and won't be commented on further.
 
 Ideal \eqref{ideal:1} was not expected, and contains our new solution.
-$d_0$ is an ideal generator,
-so $d_0=0$, and we can set $d_1=1$, by the same logic as above.
-Our coordinates are in real space, so our $v_i$ coefficients must be real (why?), so all of their squares must
-be positive, and since $v_0^2-v_1^2-v_2^2-v_3^3=0$, $v_0$ must be non-zero.  So we can normalize by setting $v_0=1$.
-That simplifies \eqref{ideal:1} to this ideal:
+$a_0$ is an ideal generator,
+so $a_0=0$, and we can set $a_1=1$, by the same logic as above.
+If we limit our $v_i$ coefficients to be real, all of their squares must
+be positive, and since $v_1^2+v_2^2+v_3^3-v_4^2=0$, $v_4$ must be non-zero.  So we can normalize by setting $v_4=1$.
+Substituting in these values, we find ideal generators that imply $b_0=1$ and simplify \eqref{ideal:1} to this ideal:
 
 \begin{equation}
-\left(v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - 1, v_{0} - 1, n_{1}, n_{0} + 1, m_{1}, m_{0} + 1, d_{1} - 1, d_{0}, E\right)
+\left(v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - 1, v_{4} - 1, c_{0} - 1, c_{1}, b_{1}, 1 - b_{0}, a_1 - 1, a_{0}, E\right)
 \end{equation}
 
 This ideal corresponds to the following system of equations:
@@ -870,14 +883,14 @@ This ideal corresponds to the following system of equations:
 \begin{equation}
 \begin{gathered}
 E = 0 \\
-d_0 = 0 \qquad
-d_1 = 1 \\
-m_0 = -1 \qquad
-m_1 = 0 \\
-n_0 = -1 \qquad
-n_1 = 0 \\
-v_0 = 1 \qquad
-v_1^2 + v_2^2 + v_3^2 = 1
+a_0 = 0 \qquad
+a_1 = 1 \\
+b_0 = -1 \qquad
+b_1 = 0 \\
+c_0 = -1 \qquad
+c_1 = 0 \\
+v_1^2 + v_2^2 + v_3^2 = 1 \qquad
+v_4 = 1
 \end{gathered}
 \end{equation}
 
@@ -887,7 +900,8 @@ is a solution of \eqref{schrodinger} under these conditions:
 \begin{equation}
 \label{related solution}
 \begin{gathered}
-v \frac{\delta^2\Psi}{\delta v^2} + \frac{\delta\Psi}{\delta v} + \Psi = 0 \\
+% v \frac{\delta^2\Psi}{\delta v^2} + \frac{\delta\Psi}{\delta v} + \Psi = 0 \\
+v \Psi'' + \Psi' + \Psi = 0 \\
 v = v_1 x+ v_2 y+ v_3 z+r \\
 v_1^2 + v_2^2 + v_3^2 = 1
 \end{gathered}
@@ -1063,6 +1077,12 @@ Joseph Fels Ritt. Differential Algebra. Dover Publications Inc., New York,
 Decker, W.; Greuel, G.-M.; Pfister, G.; Sch{\"o}nemann, H.:
 \newblock {\sc Singular} {4-4-0} --- {A} computer algebra system for polynomial computations.
 \newblock {https://www.singular.uni-kl.de} (2024).
+
+\bibitem{aistleitner}
+Christian Aistleitner:
+Relations between Gr\"obner bases, differential Gr\"obner bases, and differential characteristic sets.
+Linz, Dezember 2010.
+\url{https://www3.risc.jku.at/publications/download/risc_4229/master.pdf}
 
 \end{thebibliography}
 
