@@ -186,14 +186,13 @@ of solutions of the differential equation in the function space.
 Starting, for example, with the following Schr\"odinger equation for hydrogen:
 
 \begin{equation}
-\label{schrodinger hydrogen}
+% \label{schrodinger hydrogen}
 -\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
 \end{equation}
 
 We can require the solution to solve the following parametized ODE:
 
 \begin{equation}
-\label{classical eq in ideal}
 \begin{gathered}
 (a_0 + a_1 v) \Psi_{vv} + (b_0 + b_1 v) \Psi_v + (c_0 + c_1 v) \Psi = 0
 \end{gathered}
@@ -202,7 +201,7 @@ We can require the solution to solve the following parametized ODE:
 where $\Psi(v)$ is a univariate function of some variable $v$, itself expressed in a parameterized form:
 
 \begin{equation}
-\label{ansatz 5a}
+% \label{ansatz 5a}
 v = v_1 x + v_2 y + v_3 z + v_4 r
 \end{equation}
 
@@ -220,7 +219,7 @@ a_0 = b_1 = v_1 = v_2 = v_3 = 0
 we will find the classical radial equation for hydrogen:
 
 \begin{equation}
-\label{classical eq in ideal}
+% \label{classical eq in ideal}
 \begin{gathered}
 r \Psi_{rr} + 2 \Psi_r + 2(1 + E r) \Psi = 0
 \end{gathered}
@@ -585,6 +584,7 @@ ignore any physical interpretation of the problem and treat it simply as an equa
 
 We'll use the ansatz from the previous section, a second-order ODE with linear coefficients and a linear distinguished variable, i.e:
 
+\begin{center}
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
     \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
     \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v]$};
@@ -599,6 +599,7 @@ We'll use the ansatz from the previous section, a second-order ODE with linear c
     \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
+\end{center}
 
 \begin{equation}
 \label{ansatz 5}
@@ -669,11 +670,6 @@ modulo \eqref{ansatz 5 plus}, using Ritt's reduction algorithm.
 The result is a rational function
 with a 228 term numerator and an 18 term denominator.  The numerator begins:
 
-Ordering: right now, we use term ordering with lex(r) then degrevlex on the rest, so our terms are ordered first by $r$,
-then degrevlex.  But I'm collecting terms (in build\_system\_of\_equations) by looping over the numerator and
-collecting like terms.
-
-
 % I used a Sage-based computer program with the following ansatz.
 \begin{comment}
 I found this solution roughly as follows.\footnote{
@@ -690,8 +686,9 @@ Reduce the input PDE \eqref{schrodinger} modulo differential ideal \eqref{ansatz
 
 \begin{equation}
 \label{schrodinger modulo ansatz 5}
-%% -8r\Psi x^5 b_1 b_2^2 n_1 - r\Psi x^5 b_1 b_4^2 n_1 - r \Psi x^5 b_1 b_6^2 n_1 - 2r\Psi x^5 b_2 b_3 b_4 n_1 - \cdots
--2r\Psi x^3 E d_1 v_1 - 3r\Psi x^3 n_1 v_0^2 v_1 - r\Psi x^3 n_1 v_1^3 - r\Psi x^3 n_1 v_1 v_2^2 - r\Psi x^3 n_1 v_1 v_3^2 - \cdots
+%sage: print(latex(sum(eq_a_reduceRing_n.terms()[0:4])).replace('Zeta', 'Psi'))
+% then add "+ \cdots" at the end
+r \Psi' x^{3} v_{1}^{3} b_{1} + r \Psi' x y^{2} v_{1}^{3} b_{1} + r \Psi' x z^{2} v_{1}^{3} b_{1} + r \Psi' x^{2} y v_{1}^{2} v_{2} b_{1} + \cdots
 \end{equation}
 
 The denominator, after replacing $x^2+y^2+z^2$ with $r^2$, reads:
@@ -699,6 +696,11 @@ The denominator, after replacing $x^2+y^2+z^2$ with $r^2$, reads:
 \begin{equation}
 2 r^3 (a_1 (v_1 x + v_2 y + v_3 z + v_4 r) + a_0)
 \end{equation}
+
+Ordering: right now, we use term ordering with lex(r) then degrevlex on the rest, so our terms are ordered first by $r$,
+then degrevlex.  But I'm collecting terms (in build\_system\_of\_equations) by looping over the numerator and
+collecting like terms.  Note that the first four terms above were ordered using the term ordering.
+
 
 
 \subsection*{Projection Step}
@@ -829,7 +831,8 @@ In brief,
 \item[\eqref{ideal:4}] sets all coefficients of the ODE to zero, so we discard it,
 \item[\eqref{ideal:3}] sets the coefficient of
 %$\frac{d^2\Psi}{dv^2}$
-$D^2\Psi$
+%$D^2\Psi$
+$\Psi''$
 in the ODE to zero, resulting in a first-order ODE, so we discard it, too,
 \item[\eqref{ideal:2}] corresponds to the classical solutions (see below), and
 \item[\eqref{ideal:1}] gives us our new solution (see below).
@@ -895,7 +898,7 @@ v_4 = 1
 \end{equation}
 
 Substituting these values back into our ansatz, we conclude that $\Psi(v)$
-is a solution of \eqref{schrodinger} under these conditions:
+is a solution of \eqref{schrodinger hydrogen} under these conditions:
 
 \begin{equation}
 \label{related solution}
@@ -948,7 +951,7 @@ leading to...
 
 where $x,y,z$ are Cartesian coordinates, $r=\sqrt{x^2+y^2+z^2}$,
 and $J_0$ is the ordinary Bessel function $J_0$.
-\eqref{solution} is an exact solution to \eqref{schrodinger}, with $E=0$.
+\eqref{solution} is an exact solution to \eqref{schrodinger hydrogen}, with $E=0$.
 
 Note that this solution could not be obtained by the method of separation of variables, as it is non-separable
 (i.e, it can not be written in the form $R(r)\Theta(\theta)\Psi(\psi)$ or $X(x)Y(y)Z(z)$).
@@ -984,7 +987,7 @@ and $F$ is any linear combination of the Bessel functions $J_0$ and $Y_0$.
 
 \vskip 12pt
 
-Any finite linear combination of functions of the form \eqref{generalized solution} also solves \eqref{schrodinger}.
+Any finite linear combination of functions of the form \eqref{generalized solution} also solves \eqref{schrodinger hydrogen}.
 
 \subsection*{Software}
 
