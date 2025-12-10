@@ -926,7 +926,13 @@ Wolfram Mathematica\footnote{I originally used Wolfram Alpha} can now
 analyze this equation and determine that it is equivalent
 to the Bessel function \eqref{solution}.
 
-\includegraphics[page=1, clip, trim=1in 9in 1in 1in, width=\textwidth]{find Bessel solution.pdf}
+\begin{scriptsize}
+\begin{verbatim}
+In[1]:= DSolve[x*y''[x] + y'[x] + y[x] == 0, y[x], x]
+
+Out[1]= {{y[x] -> BesselJ[0, 2 Sqrt[x]] C[1] + 2 BesselY[0, 2 Sqrt[x]] C[2]}}
+\end{verbatim}
+\end{scriptsize}
 
 leading to...
 
@@ -963,9 +969,33 @@ Note that this solution could not be obtained by the method of separation of var
 %\subsection*{Verification}
 
 \label{verification}
-The result can be easily verified using Mathematica\footnote{A manual verification is presented in an appendix}, as follows:
+%The result can be easily verified using Mathematica\footnote{A manual verification is presented in an appendix}, as follows:
+The result can be easily verified using Mathematica \cite{mathematica}, as follows:
 
-\includegraphics[page=1, clip, trim=1in 7in 1in 1in, width=\textwidth]{improved.pdf}
+\begin{scriptsize}
+\begin{verbatim}
+In[1]:= Psif := Psi[x, y, z]
+
+In[2]:= r[x_, y_, z_] = Sqrt[x^2 + y^2 + z^2]
+
+              2    2    2
+Out[2]= Sqrt[x  + y  + z ]
+
+In[3]:= eqn = - 1 / 2 * Laplacian[Psif, {x, y, z}] - 1 / r[x, y, z] * Psif == 0
+
+                                    (0,0,2)               (0,2,0)               (2,0,0)
+             Psi[x, y, z]       -Psi       [x, y, z] - Psi       [x, y, z] - Psi       [x, y, z]
+Out[3]= -(------------------) + ---------------------------------------------------------------- == 0
+                2    2    2                                    2
+          Sqrt[x  + y  + z ]
+
+In[4]:= sol[x_, y_, z_] := BesselJ[0, 2 * Sqrt[x + r[x, y, z]]]
+
+In[5]:= FullSimplify[eqn /. Psi -> ({x, y, z} |-> sol[x, y, z])]
+
+Out[5]= True
+\end{verbatim}
+\end{scriptsize}
 
 \subsection*{Generalization}
 \parskip 12pt
@@ -1087,6 +1117,8 @@ Relations between Gr\"obner bases, differential Gr\"obner bases, and differentia
 Linz, Dezember 2010.
 \url{https://www3.risc.jku.at/publications/download/risc_4229/master.pdf}
 
+\bibitem{mathematica}
+Wolfram Research, Inc., Mathematica, Version 14.0, Champaign, IL (2023).
 \end{thebibliography}
 
 \end{document}
