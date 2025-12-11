@@ -169,8 +169,8 @@ to satisfy additional differential equations.
 An algorithm begins to suggest itself.  To solve a given differential equation,
 we pick a small function space
 parameterized by a finite number of constants, describe it using a
-system of differential polynomial equations, append the original equation to this system, and use
-some kind of a reduction algorithm to extract a system of polynomial equations involving
+system of differential polynomial equations, then use
+some kind of a reduction algorithm on the original equation to extract a system of polynomial equations involving
 only the constants.
 
 What kinds of small function spaces are useful?
@@ -352,7 +352,7 @@ a finite number of ODEs.
 
 Futhermore, I restrict to linear ODEs,
 %first because their theory and practice is more refined, and second
-because the PDEs I am primarily interested in solving (Schr\"odinger's equation)
+because the PDEs I am primarily interested in solving (various forms of Schr\"odinger's equation)
 are linear, so I'm hopeful that linear ODEs will suffice to solve them.
 
 How to introduce a new ODE?  First, we wish to avoid the complexities of introducing new derivations,
@@ -867,8 +867,8 @@ though it is more commonly written in this form:
 \end{equation}
 
 where $l$ is the orbital quantum number, which can be zero.  Set $l=0$, $v=r$ and $\Psi=R$ and
-expand out the derivative to obtain \eqref{classical eq in ideal}.  Its presence here was
-expected and won't be commented on further.
+expand out the derivative to obtain \eqref{classical eq in ideal}.  This solution has been
+known for a hundred years; its presence here was expected and won't be commented on further.
 
 Ideal \eqref{ideal:1} was not expected, and contains our new solution.
 $a_0$ is an ideal generator,
@@ -970,7 +970,7 @@ Note that this solution could not be obtained by the method of separation of var
 
 \label{verification}
 %The result can be easily verified using Mathematica\footnote{A manual verification is presented in an appendix}, as follows:
-The result can be easily verified using Mathematica \cite{mathematica}, as follows:
+The result can be easily verified using Wolfram Mathematica \cite{mathematica}, as follows:
 
 \begin{scriptsize}
 \begin{verbatim}
@@ -996,6 +996,22 @@ In[5]:= FullSimplify[eqn /. Psi -> ({x, y, z} |-> sol[x, y, z])]
 Out[5]= True
 \end{verbatim}
 \end{scriptsize}
+
+\subsection*{Physical Interpretation}
+
+Since \eqref{solution} is a solution to a simple Schr\"odinger equation for hydrogen,
+it is reasonable to ask if it has any physical interpretation.
+
+In order to be a physically realistic solution, a function must both solve the Schr\"odinger equation
+and be a valid wavefunction in $L^2(\Omega)$, where $\Omega$ is the domain of the function,
+in this case, $\mathbb{R}^3$.
+
+None of these Bessel function solutions are in $L^2(\mathbb{R}^3)$, which means these solutions
+are not valid wavefunctions and do not, therefore, correspond to any physically realized quantum mechanical state.
+
+This situation is not unusual.  Classical solutions to hydrogen exist for all energy ($E$) values,
+but the solutions are only in $L^2(\mathbb{R}^3)$ for specific values of $E$;
+only these wavefunctions are observed as orbitals.
 
 \subsection*{Generalization}
 \parskip 12pt
@@ -1029,7 +1045,7 @@ It's a Sage script that works fine with Sage 9.0 on Ubuntu 20.
 
 %Use it to find the witness point \eqref{witness point} by
 %running Sage as follows:
-Use it to find ideal \eqref{ideal} by
+Use it to find the primary decomposition \eqref{ideal} by
 running Sage as follows:
 
 \begin{verbatim}
@@ -1037,9 +1053,10 @@ load('helium.sage')     # loads the script
 prep_hydrogen(5)        # select PDE:hydrogen and ansatz:5
 init()                  # finish setting everything up
 I=ideal(eqns_RQQ)       # constuct ideal from equations
-I.radical().primary_decomposition()
+I.minimal_associated_primes()
 \end{verbatim}
 
+\begin{comment}
 Here are some other convenient variables and functions in the script:
 
 \begin{verbatim}
@@ -1052,9 +1069,14 @@ F_eq_a_n                # expanded numerator (in R)
 F_eq_a_d                # expanded denominator (in R)
 eqns_RQQ                # system of equations to solve
 \end{verbatim}
+\end{comment}
 
 %%\section*{Current Implementation Status}
 \subsection*{Current Implementation Status}
+
+The utility of this algorithm is currently limited by our Gr\"obner basis software.
+
+\subsection*{Conclusion}
 
 The algorithm presented above can be used to check any PDE to see if any of its solutions
 can be expressed using an ODE structured according to a specific ansatz.  This technique
