@@ -268,7 +268,7 @@ $C^\omega(\mathbf{R}^3)$, $H^2(\mathbf{C})$, or...
 
 \draw [very thick, ->] (differential algebraic geometry.south) to[out=-135, in=-45] (algebraic geometry.south);
 
-\node at (4,-6.6) {\bf We can do this!\\\bf (if we use function spaces parameterized with constants)};
+\node at (4,-6.6) {\bf We can do this\\\bf if we use function spaces parameterized with constants};
 
 \end{tikzpicture}%
 }
@@ -349,19 +349,28 @@ this algorithm, but as these are the types of solutions I am interested in,
 all of the current ansatzen attempt to express solutions to the PDE using
 a finite number of ODEs.
 
-Futhermore, I restrict to linear ODEs,
+Futhermore, I restrict to homogeneous linear ODEs,
 %first because their theory and practice is more refined, and second
 because the PDEs I am primarily interested in solving (various forms of Schr\"odinger's equation)
-are linear, so I'm hopeful that linear ODEs will suffice to solve them.
+are homogeneous and linear, so I'm hopeful that homogeneous linear ODEs will suffice to solve them.
+This is not a fundamental requirement or limitation of the algorithm.
 
-How to introduce a new ODE?  First, we wish to avoid the complexities of introducing new derivations,
-so we seek to specify how the ODE behaves under the existing derivations.
+A $n^{\rm th}$-order homogeneous linear ODE takes the form:
 
-We adjoin a new indeterminant that is defined using a differential polynomial
-whose coefficients are all univariate functions of a single {\it distinguished variable} $v$,
+\begin{equation}
+a_n(v) y^{(n)} + a_{n-1}(v) y^{(n-1)} \cdots a_1(v) y' + a_0(v) y = 0
+\end{equation}
+
+where $y^{(n)}, y^{(n-1)}, ... y'$ are derivatives of the dependent variable $y$ with respect to the independent variable $v$.
+
+% How to introduce a new ODE?  First, we wish to avoid the complexities of introducing new derivations,
+% so we seek to specify how the ODE behaves under the existing derivations.
+
+We introduce the dependent variable $y$ by adjoining a new indeterminant that is defined using a differential polynomial
+whose coefficients are all univariate functions of a single {\it independent variable} $v$,
 and whose derivatives, at least conceptionally, are all taken with respect to that
-distinguished variable.  This distinguished variable $v$ is also a new indeterminant.
-In the present formulation $v$ is selected from the underlying field and is itself parameterized by constants,
+independent variable.  This independent variable $v$ is also a new indeterminant,
+selected from the underlying field and itself parameterized by constants,
 which is expressed using a simple equality between the new indeterminant $v$ and its parameterized form.
 
 The coefficients of the ODE's defining differential polynomial are
@@ -378,8 +387,8 @@ by the analytic functions $Ae^v$ ($A$ is an arbitrary constant).  Substituting i
 the functions $Ae^{x+r}$ are solutions to this ODE extension.
 
 I use apostrophes, and not the jet notation subscripts, when writing
-the minimial differential polynomial because this is the ODE case; there is only
-a single derivation allowed in the new differential polynomial.
+the differential polynomial in the ODE case to emphasize that we are not introducing a new derivation,
+nor is the ODE's derivative any of the existing derivations.
 
 How can derivations with respect to a new variable be connected with the existing derivations?
 We can expess our previously existing derivations in terms of the new one using the chain rule.
@@ -394,7 +403,7 @@ In short, to introduce a new ODE (second-order, for the purposes of illustration
 \item We introduce a new differential polynomial involving only $\Psi''$, $\Psi'$, $\Psi$, $v$, and constants,
 and using no non-constant indeterminates or existing derivations
 \item We define the derivations of $\Psi$ and $\Psi'$ using the chain rule: \break $\Psi_x = \Psi' v_x$; $\Psi'_x = \Psi'' v_x$
-\item We equate the distinguished variable $v$ to some parameterized differential polynomial
+\item We equate the independent variable $v$ to some parameterized differential polynomial
 \end{itemize}
 
 All derivations of $\Psi''$ are now completely defined by these differential polynomials.
@@ -1065,6 +1074,21 @@ algebraic extension:
 \end{center}
 
 
+\begin{equation}
+\label{ansatz 16.1}
+\begin{gathered}
+\Psi_x = \Psi' v_x \qquad
+\Psi_y = \Psi' v_y \qquad
+\Psi_z = \Psi' v_z \\
+\Psi'_x = \Psi'' v_x \qquad
+\Psi'_y = \Psi'' v_y \qquad
+\Psi'_z = \Psi'' v_z \\
+(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \\
+v = v_1 x + v_2 y + v_3 z + v_4 r + v_5 \gamma \\
+\gamma^2 = g_1 x + g_2 y + g_3 z + g_4 r + g_5
+\end{gathered}
+\end{equation}
+
 It is also possible to introduce additional extensions into the univariate ring from which the ODE's coefficients
 are selected, i.e.:
 
@@ -1088,6 +1112,21 @@ are selected, i.e.:
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \end{center}
+
+\begin{equation}
+\label{ansatz 17}
+\begin{gathered}
+\Psi_x = \Psi' v_x \qquad
+\Psi_y = \Psi' v_y \qquad
+\Psi_z = \Psi' v_z \\
+\Psi'_x = \Psi'' v_x \qquad
+\Psi'_y = \Psi'' v_y \qquad
+\Psi'_z = \Psi'' v_z \\
+(a_0 + a_1 v + a_2 w) \Psi'' + (b_0 + b_1 v + b_2 w) \Psi' + (c_0 + c_1 v + c_2 w) \Psi = 0 \\
+(d_0 + d_1 v) w'' + (e_0 + e_1 v) w' + (f_0 + f_1 v) w = 0 \\
+v = v_1 x + v_2 y + v_3 z + v_4 r
+\end{gathered}
+\end{equation}
 
 \subsection*{Software}
 
