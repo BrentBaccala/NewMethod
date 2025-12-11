@@ -1035,6 +1035,61 @@ and $F$ is any linear combination of the Bessel functions $J_0$ and $Y_0$.
 
 Any finite linear combination of functions of the form \eqref{generalized solution} also solves \eqref{schrodinger hydrogen}.
 
+\subsection*{Generalization}
+
+More complex ansatzen can be constructed.  For example, here is an ansatz that introduces the square root
+of a first degree polynomial, then allows the ODE's independent variable to be selected from the resulting
+algebraic extension:
+
+\begin{center}
+\begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+  \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+  \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v]$};
+  \node (v) [poly, right=of Qv] {$v$};
+  \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
+  \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
+  \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
+  \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+  \begin{scope}[on background layer]
+      \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+  \end{scope}
+  \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\gamma^2 = \framebox(10,10){}\tikzmark{a}$};
+  \begin{scope}[on background layer]
+      \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
+      \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbf{Q}[x,y,z,r,\gamma]/(r^2-x^2-y^2-z^2, \gamma^2 - \coeff\,)$};
+      \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
+  \end{scope}
+  \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {1};
+  \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+  \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {1};
+\end{tikzpicture}
+\end{center}
+
+
+It is also possible to introduce additional extensions into the univariate ring from which the ODE's coefficients
+are selected, i.e.:
+
+\begin{center}
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\coeff\tikzmark{a}\,\Psi'' + \coeff\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qvw) [ring, below of=Psi, text width=100pt] {$\mathbf{Q}[v,w]$ \vskip 5pt $\coeff\tikzmark{wa}\,w'' + \coeff\tikzmark{wb}\,w' + \coeff\tikzmark{wc}\,w$};
+    \node (Qv) [ring, below of=Qvw, text width=100pt] {$\mathbf{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qvw.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qvw.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qvw.north) node[right,pos=0.6] {1};
+    \draw[degree] (wa.west) -- (wa.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (wb.west) -- (wb.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (wc.west) -- (wc.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (Qvw) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (base) [ring, node distance=20pt, below=of Psi block.south, anchor=north, text width=250pt] {$\mathbf{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+\end{center}
+
 \subsection*{Software}
 
 The program used to construct the system of equations is available here:
