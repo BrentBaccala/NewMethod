@@ -2,7 +2,7 @@
 \documentclass{article}
 
 \title{An Exact Method of Solving PDEs}
-\author{Brent Baccala}
+\author{Brent Baccala\footnote{Email address: \tt cosine@freesoft.org}}
 
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -514,10 +514,17 @@ and specify how they behave with respect to the existing derivations.
 \subsection*{Differential Reduction}
 
 Having defined an ansatz, we now use it to reduce our original PDE.  For this purpose,
-we use Ritt's full reduction algorithm.
-
+we use Ritt's full reduction algorithm; see \cite{Ritt} Chapter I, \S 6 or \cite{Kolchin}, Chapter I, \S 9.
 A compact description of the relevant concepts can be found in Section 3 of \cite{blop}.
 A comparison of various techniques used to solve systems of polynomial and differential polynomial equations can be found in \cite{aistleitner}.
+
+We define a ranking on the indeterminants and their derivations, which is a distinct concept from an ordering on the monomials, as used,
+for example, in defining a Gr\"obner basis.  We
+define the {\it leader} of a polynomial as the highest ranking indeterminant that appears in the polynomial.
+
+To reduce a differential polynomial $p$ by a system $S$ of differential polynomials,
+we see if there exists a polynomial in $S$ any higher derivative of the leader of a polynomial in $S$ appears in $p$.
+If so, we pick the highest ranking
 
 [describe Ritt's algorithm]
 
@@ -525,8 +532,14 @@ A comparison of various techniques used to solve systems of polynomial and diffe
 
 Having defined an ansatz and used it to reduce the original PDE, we now project
 that reduced equation into the solution space of the constants.  We do this
-by factoring each polynomial terms into its constant and non-constant indeterminants,
-and gathering together like terms with identical non-constant factors.
+by factoring each polynomial term into its constant and non-constant indeterminants,
+and gathering together like terms with identical non-constant factors.  Setting the
+constant coefficients of each term to zero produces a system of polynomial equations,
+involving only the constants, that will solve the original PDE when satisfied.
+
+This system of equations defines an algebraic variety, but it need not be irreducible.
+Several algorithms have been proposed and implemented to decompose an algebraic
+variety into its irreducible components.
 
 \begin{comment}
 Any particular selection of constants produces a system of differential polynomials that defines a differential ideal.
@@ -1220,6 +1233,10 @@ Gianni, P., Trager, B., Zacharias, G.: ``Gr\"obner bases and primary decompositi
 \bibitem{Ritt}
 Joseph Fels Ritt. Differential Algebra. Dover Publications Inc., New York,
 1950. \url{http://www.ams.org/online_bks/coll33}
+
+\bibitem{Kolchin}
+Ellis Robert Kolchin. Differential Algebra and Algebraic Groups. Academic
+Press, New York, 1973.
 
 \bibitem[DGPS]{DGPS}
 Decker, W.; Greuel, G.-M.; Pfister, G.; Sch{\"o}nemann, H.:
