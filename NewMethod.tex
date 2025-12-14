@@ -943,7 +943,7 @@ We now have to solve a second order ODE:
 v \Psi''(v) + \Psi'(v) + \Psi(v) = 0
 \end{equation}
 
-Wolfram Mathematica\footnote{I originally used Wolfram Alpha} can now
+Wolfram Mathematica \cite{mathematica} can now
 analyze this equation and determine that it is equivalent
 to the Bessel function \eqref{solution}.
 
@@ -1147,35 +1147,8 @@ The program used to construct the system of equations is available here:
 
 \centerline{\url{https://github.com/BrentBaccala/helium}}
 
-It's a Sage script that works fine with Sage 9.0 on Ubuntu 20.
-
-%Use it to find the witness point \eqref{witness point} by
-%running Sage as follows:
-Use it to find the primary decomposition \eqref{ideal} by
-running Sage as follows:
-
-\begin{verbatim}
-load('helium.sage')     # loads the script
-prep_hydrogen(5)        # select PDE:hydrogen and ansatz:5
-init()                  # finish setting everything up
-I=ideal(eqns_RQQ)       # constuct ideal from equations
-I.minimal_associated_primes()
-\end{verbatim}
-
-\begin{comment}
-Here are some other convenient variables and functions in the script:
-
-\begin{verbatim}
-A, B, C, V              # trial forms of various polynomials
-eq_a                    # the PDE in its original form
-R                       # polynomial ring over integers
-F                       # fraction field of R
-F_eq_a                  # the PDE modulo the ansatz
-F_eq_a_n                # expanded numerator (in R)
-F_eq_a_d                # expanded denominator (in R)
-eqns_RQQ                # system of equations to solve
-\end{verbatim}
-\end{comment}
+{\tt joca.sage} is a Sage script that has been verified to work with Sage 10.6
+and was used for the calculations in this paper.
 
 %%\section*{Current Implementation Status}
 \subsection*{Current Implementation Status}
