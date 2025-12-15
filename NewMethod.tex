@@ -92,7 +92,7 @@ for finding exact, non-separable solutions of partial differential equations.
 % in mathematical physics, the Schr\"odinger equation for hydrogen.
 % \end{comment}
 
-\subsection*{Introduction}
+\section{Introduction}
 %% \subsection*{Differential Algebra}
 
 We can construct polynomial rings (commutative, with unity) and fields using indeterminates, such as $\mathcal{Q}[x,y,z]$,
@@ -272,6 +272,8 @@ $C^\omega(\mathbb{R}^3)$, $H^2(\mathbb{C})$, or...
 
 \end{tikzpicture}%
 }
+\caption{The interrelation between relevant branches of mathematics}
+\label{concept figure}
 \end{figure}
 
 %What kind of reduction step
@@ -330,7 +332,8 @@ space in which we seek solutions, parameterized as a finite dimensional vector s
 If we can, by luck or by theory, pick a good ansatz, then we have
 a computable algorithm to find the solutions therein.
 
-\subsection*{The Ansatz}
+\section{Solution Algorithm}
+\subsection{The Ansatz}
 
 These are the primary requirements
 for an {\bf ansatz}:
@@ -349,8 +352,7 @@ this algorithm, but as these are the types of solutions I am interested in,
 all of the current ansatzen attempt to express solutions to the PDE using
 a finite number of ODEs.
 
-Futhermore, I restrict to homogeneous linear ODEs,
-%first because their theory and practice is more refined, and second
+For the present work, I restrict to homogeneous linear ODEs,
 because the PDEs I am primarily interested in solving (various forms of Schr\"odinger's equation)
 are homogeneous and linear, so I'm hopeful that homogeneous linear ODEs will suffice to solve them.
 This is not a fundamental requirement or limitation of the algorithm.
@@ -368,7 +370,7 @@ where $y^{(n)}, y^{(n-1)}, ... y'$ are derivatives of the dependent variable $y$
 
 We introduce the dependent variable $y$ by adjoining a new indeterminant that is defined using a differential polynomial
 whose coefficients are all univariate functions of a single {\it independent variable} $v$,
-and whose derivatives, at least conceptionally, are all taken with respect to that
+and whose derivatives are all taken with respect to that
 independent variable.  This independent variable $v$ is also a new indeterminant,
 selected from the underlying field and itself parameterized by constants,
 which is expressed using a simple equality between the new indeterminant $v$ and its parameterized form.
@@ -386,14 +388,14 @@ that maps to the analytic equation $\frac{d\Psi}{dv}=\Psi$ and is solved
 by the analytic functions $Ae^v$ ($A$ is an arbitrary constant).  Substituting in $v=x+r$, we see that
 the functions $Ae^{x+r}$ are solutions to this ODE extension.
 
-I use apostrophes, and not the jet notation subscripts, when writing
-the differential polynomial in the ODE case to emphasize that we are not introducing a new derivation,
-nor is the ODE's derivative any of the existing derivations.
-
-How can derivations with respect to a new variable be connected with the existing derivations?
+How can derivations with respect to a new independent variable be connected with the existing derivations?
 We can expess our previously existing derivations in terms of the new one using the chain rule.
 In fact, all that required is to specify how the new interderminates behave under the existing
 derivations, and that relationship is simply ${\rm d}\Psi/{\rm d}x = {\rm d}\Psi/{\rm d}v\cdot {\rm d}v/{\rm d}x$
+
+I use apostrophes, and not the jet notation subscripts, when writing
+the differential polynomial in the ODE case to emphasize that we are not introducing a new derivation,
+nor is the ODE's derivative any of the existing derivations.
 
 In short, to introduce a new ODE (second-order, for the purposes of illustration):
 
@@ -436,12 +438,14 @@ All derivations of $\Psi''$ are now completely defined by these differential pol
     \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
+\caption{An ansatz for a second-order homogenous ODE}
+\label{ansatz 5 figure}
 \end{figure}
 
 For example, consider the ansatz formed from 
 a second-order ODE element with first-degree coefficients and a distinguished variable formed
 as a first-degree polynomial in the underlying differential polynomial ring.
-See figure 2, where polynomial degrees are signified by the black numbers next to the lines connecting them to the rings they are selected from.
+See figure \ref{ansatz 5 figure}, where polynomial degrees are signified by the black numbers next to the lines connecting them to the rings they are selected from.
 %Note in particular that there is no green box around the orange one.  The ODE
 %element must itself solve the PDE; we do not construct the full extension field it would naturally generate.
 We do not construct any more complicated function from $\Psi$ (although we could);
@@ -505,34 +509,46 @@ Finally, we need to connect our new derivation with the existing derivations.
 Equations \eqref{ansatz 5c} show how to evaluate
 the derivatives of $\Psi$ and $\Psi'$ with respect to the
 existing derivations in the differential ring (it's just the chain rule).
-Although conceptually we introduce another derivation, it is important
+Although conceptually we introduce another derivative, with respect to the ODE's independent variable, it is important
 to note that we do not have to add any new derivations to the original differential ring.
 All that is needed is
 to add $\Psi$, $\Psi'$, and $\Psi''$ as new indeterminates
 and specify how they behave with respect to the existing derivations.
+The behavior of $\Psi$ and $\Psi'$ is specified with the chain rule;
+once their behavior has been defined, the behavior of $\Psi''$ is implied by the ODE.
 
-\subsection*{Differential Reduction}
+\subsection{Differential Reduction}
 
 Having defined an ansatz, we now use it to reduce our original PDE.  For this purpose,
 we use Ritt's full reduction algorithm; see \cite{Ritt} Chapter I, \S 6 or \cite{Kolchin}, Chapter I, \S 9.
 A compact description of the relevant concepts can be found in Section 3 of \cite{blop}.
 A comparison of various techniques used to solve systems of polynomial and differential polynomial equations can be found in \cite{aistleitner}.
 
-We define a ranking on the indeterminants and their derivations, which is a distinct concept from an ordering on the monomials, as used,
-for example, in defining a Gr\"obner basis.  We
-define the {\it leader} of a polynomial as the highest ranking indeterminant that appears in the polynomial.
+Ritt's reduction algorithm operates on differential polynomials contained in a differential ring,
+and requires a {\it ranking} to be specified on the indeterminants and their derivatives.
+This is a distinct concept from an ordering on the monomials, as used, for example, in defining a Gr\"obner basis.
 
-To reduce a differential polynomial $p$ by a system $S$ of differential polynomials,
-we see if there exists a polynomial in $S$ any higher derivative of the leader of a polynomial in $S$ appears in $p$.
-If so, we pick the highest ranking
+The {\it leader} of a polynomial as the highest ranking indeterminant or derivative of an indeterminant that appears in the polynomial.
 
-[describe Ritt's algorithm]
+A differential polynomial $p$ is said to be {\it partially reduced} with respect to a differential polynomial $q$ if
+no proper derivative of $q$'s leader appears in $p$, and {\it fully reduced} if it is partially reduced and
+$q$'s leader, if it appears in $p$, appears at a lower degree than its degree in $q$.
 
-\subsection*{Projection}
+% To reduce a differential polynomial $p$ by a system $S$ of differential polynomials,
+% we see if there exists a polynomial in $S$ any higher derivative of the leader of a polynomial in $S$ appears in $p$.
+% If so, we pick the highest ranking
+
+Ritt's full reduction algorithm reduces a differential polynomial $p$ by a system $S$ of differential polynomials
+and produces differential polynomials $r$ (the remainder) and $h$ (the ``denominator'')
+such that $r$ is fully reduced with respect to all of the differential polynomials in $S$
+and $(hp - r)$ is an element of the differential ideal $[S]$ generated by the elements of $S$ and all their derivatives.
+
+\subsection{Projection}
 
 Having defined an ansatz and used it to reduce the original PDE, we now project
 that reduced equation into the solution space of the constants.  We do this
 by factoring each polynomial term into its constant and non-constant indeterminants,
+treating derivatives as separate indeterminates,
 and gathering together like terms with identical non-constant factors.  Setting the
 constant coefficients of each term to zero produces a system of polynomial equations,
 involving only the constants, that will solve the original PDE when satisfied.
@@ -540,6 +556,13 @@ involving only the constants, that will solve the original PDE when satisfied.
 This system of equations defines an algebraic variety, but it need not be irreducible.
 Several algorithms have been proposed and implemented to decompose an algebraic
 variety into its irreducible components.
+
+Taking the radical of the ideal simplifies both the theory and the application,
+and can be justified because there are no nilpotent elements in our solution
+space, which is just $n$-dimensional complex space.  The
+primary decomposition of a radical ideal is also a prime decomposition,
+as the distinction between primary and prime ideals is only significant
+for non-radical ideals with nilpotent elements.
 
 \begin{comment}
 Any particular selection of constants produces a system of differential polynomials that defines a differential ideal.
@@ -570,7 +593,7 @@ Q: what do we do then?
 Q: if some selection of constants solves the PDE, do we always find it using this algorithm?
 \end{comment}
 
-\subsection*{Solution Algorithm}
+\subsection{Solution Algorithm}
 
 To summarize, given a PDE defined by one or more differential polynomials, do the following:
 
@@ -589,7 +612,8 @@ the union of which form the solution space of the PDE in the differential functi
 \end{enumerate}
 
 %%\section*{An Example: The New Solution of Hydrogen}
-\subsection*{An Example: A New Pseudo-Solution of Hydrogen}
+%%\section{Example: A New Pseudo-Solution of Hydrogen}
+\section{Example: A New Solution of Hydrogen}
 
 We seek to demonstrate the operation of the algorithm on the following Schr\"odinger equation for hydrogen:
 
@@ -603,7 +627,7 @@ and $r$ is the distance to the origin.  We choose to work in Cartesian coordinat
 and use Hartree atomic units to render the equation dimensionless, though for our purposes we can
 ignore any physical interpretation of the problem and treat it simply as an equation to be solved.
 
-We'll use the ansatz from the previous section, a second-order ODE with linear coefficients and a linear distinguished variable, i.e:
+We'll use the ansatz from the previous section, a second order ODE with first degree coefficients and a first degree distinguished variable, i.e:
 
 \begin{center}
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
@@ -644,7 +668,7 @@ v = v_1 x + v_2 y + v_3 z + v_4 r
 \end{gathered}
 \end{equation}
 
-\subsection*{Differential Reduction Step}
+\subsection{Differential Reduction Step}
 
 %I attempted to use the Rosenfeld-Gr\"obner algorithm to reduce equation \eqref{schrodinger hydrogen}
 %modulo \eqref{ansatz 5}, but it ultimately ran out of memory on a 96 GB computer after
@@ -665,31 +689,33 @@ the following system of differential polynomials:
 \label{ansatz 5 plus}
 \begin{gathered}
 \begin{comment}
-\Psi_x = \frac{\Psi'}{v_x} \qquad
-\Psi_y = \frac{\Psi'}{v_y} \qquad
-\Psi_z = \frac{\Psi'}{v_z} \\
-\Psi'_x = \frac{\Psi''}{v_x} \qquad
-\Psi'_y = \frac{\Psi''}{v_y} \qquad
-\Psi'_z = \frac{\Psi''}{v_z} \\
+\Psi_x - \frac{\Psi'}{v_x} \qquad
+\Psi_y - \frac{\Psi'}{v_y} \qquad
+\Psi_z - \frac{\Psi'}{v_z} \\
+\Psi'_x - \frac{\Psi''}{v_x} \qquad
+\Psi'_y - \frac{\Psi''}{v_y} \qquad
+\Psi'_z - \frac{\Psi''}{v_z} \\
 \end{comment}
-\Psi_x = \Psi' v_x \qquad
-\Psi_y = \Psi' v_y \qquad
-\Psi_z = \Psi' v_z \\
-\Psi'_x = \Psi'' v_x \qquad
-\Psi'_y = \Psi'' v_y \qquad
-\Psi'_z = \Psi'' v_z \\
-(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \\
-v = v_1 x + v_2 y + v_3 z + v_4 r \\
-r^2-x^2-y^2-z^2
+\Psi_x - \Psi' v_x \qquad
+\Psi_y - \Psi' v_y \qquad
+\Psi_z - \Psi' v_z \\
+\Psi'_x - \Psi'' v_x \qquad
+\Psi'_y - \Psi'' v_y \qquad
+\Psi'_z - \Psi'' v_z \\
+(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi \\
+v - (v_1 x + v_2 y + v_3 z + v_4 r) \\
+r^2 - (x^2 + y^2 + z^2)
 \end{gathered}
 \end{equation}
 
+\begin{comment}
 \eqref{ansatz 5 plus} (ordering? also, they're equations, not polynomials) is a differentially triangular system, although this property
 is not required to ensure the correct operation of the algorithm.  Next, I used Sage,
 along with some additional Python code, to differentially reduce \eqref{schrodinger hydrogen}
 modulo \eqref{ansatz 5 plus}, using Ritt's reduction algorithm.
 The result is a rational function
 with a 228 term numerator and an 18 term denominator.  The numerator begins:
+\end{comment}
 
 % I used a Sage-based computer program with the following ansatz.
 \begin{comment}
@@ -705,26 +731,36 @@ Use Cartesian coordinates.  Let $v$ be a linear polynomial in the coordinates an
 Reduce the input PDE \eqref{schrodinger} modulo differential ideal \eqref{ansatz 5}, obtaining
 \end{comment}
 
+We want $\Psi''$ to be eliminated in favor of $\Psi'$ and $\Psi$, and we want the derivatives of $v$ to be eliminated
+in favor of $r$ (something like $v_x - v_4 r/x$), so we use this ranking:
+
+\begin{equation}
+\Psi'' > \Psi' > \Psi > v > r > {\rm constants}
+\end{equation}
+
+Applying Ritt's full reduction algorithm to \eqref{schrodinger hydrogen} modulo \eqref{ansatz 5}, we obtain
+a remainder that begins:
+
 \begin{equation}
 \label{schrodinger modulo ansatz 5}
 %sage: print(latex(sum(eq_a_reduceRing_n.terms()[0:4])).replace('Zeta', 'Psi'))
 % then add "+ \cdots" at the end
-r \Psi' x^{3} v_{1}^{3} b_{1} + r \Psi' x y^{2} v_{1}^{3} b_{1} + r \Psi' x z^{2} v_{1}^{3} b_{1} + r \Psi' x^{2} y v_{1}^{2} v_{2} b_{1} + \cdots
+%r \Psi' x^{3} v_{1}^{3} b_{1} + r \Psi' x y^{2} v_{1}^{3} b_{1} + r \Psi' x z^{2} v_{1}^{3} b_{1} + r \Psi' x^{2} y v_{1}^{2} v_{2} b_{1} + \cdots
+%-2*E*a0*Psi*r - 2*E*a1*v1*x*Psi*r - 2*E*a1*v2*y*Psi*r - 2*E*a1*v3*z*Psi*r
+32 x^{3} \Psi' r v_{1}^{3} b_{1} + 32 x y^{2} \Psi' r v_{1}^{3} b_{1} + 32 x z^{2} \Psi' r v_{1}^{3} b_{1} + 32 x^{2} y \Psi' r v_{1}^{2} v_{2} b_{1} + \cdots
 \end{equation}
 
-The denominator, after replacing $x^2+y^2+z^2$ with $r^2$, reads:
+% The denominator, after replacing $x^2+y^2+z^2$ with $r^2$, reads:
+
+$h$ (the ``denominator'') reads:
 
 \begin{equation}
-2 r^3 (a_1 (v_1 x + v_2 y + v_3 z + v_4 r) + a_0)
+% 2 r^3 (a_1 (v_1 x + v_2 y + v_3 z + v_4 r) + a_0)
+%64 v r^{2} a_{1} + 64 r^{2} a_{0}
+64 r^{2} (v a_{1} + a_{0})
 \end{equation}
 
-Ordering: right now, we use term ordering with lex(r) then degrevlex on the rest, so our terms are ordered first by $r$,
-then degrevlex.  But I'm collecting terms (in build\_system\_of\_equations) by looping over the numerator and
-collecting like terms.  Note that the first four terms above were ordered using the term ordering.
-
-
-
-\subsection*{Projection Step}
+\subsection{Projection Step}
 
 Having reduced our PDE \eqref{schrodinger hydrogen} by the differential ideal defined by \eqref{ansatz 5},
 we now wish to project our solution into the vector space of the constants.  We're looking for
@@ -795,38 +831,11 @@ v_{1}^{3} c_{1} + v_{1} v_{2}^{2} c_{1} + v_{1} v_{3}^{2} c_{1} + 3 v_{1} v_{4}^
 \end{equation}
 %% \end{figure}
 
-\subsection*{Prime Decomposition}
+\subsection{Prime Decomposition}
 
-\begin{comment}
-I used a numerical algorithm to solve the system of equations in expectation
-of it being faster for larger systems, but the system \eqref{polynomial system}
-is small enough that exact methods are usable.
-\end{comment}
 We now form
-an ideal $I$ in $\mathbb{Q}[v_0,...,m_1,E]$ from \eqref{polynomial system}, and
-seek to compute its associated prime ideals.
-
-%Sage can calculate a Gr\"obner basis for the radical $I$ in less than a second.
-%While we could work with the Gr\"obner basis directly\footnote{A Gr\"obner basis
-%of the solution ideal in lexicographic order $E>d_i>m_i>n_i>v_i$ contains 65 polynomials.}
-%, I find it more
-%useful to study the primary decomposition, which Sage computes using
-%the Shimoyama-Yokoyama algorithm\footnote{Localization and Primary Decomposition of
-%Polynomial Ideals, {\it J. Symbolic Computation} (1996) {\bf 22}, 247–277}
-%as implemented in Singular.  Gr\"obner basis calculations are done
-%as a subalgorithm of Shimoyama-Yokoyama.
-
-Taking the radical of the ideal simplifies both the theory and the application,
-and can be justified because there are no nilpotent elements in our solution
-space, which is just 11-dimensional complex space ${\mathbb C}^{11}$.  The
-primary decomposition of a radical ideal is also a prime decomposition,
-as the distinction between primary and prime ideals is only significant
-for non-radical ideals with nilpotent elements.  Sage/Singular computes
-the following decomposition into prime ideals:
-
-\begin{verbatim}
-sage: I.radical().primary_decomposition()
-\end{verbatim}
+an ideal $I$ in $\mathbb{Q}[a_0,...,v_4,E]$ from \eqref{polynomial system}, and
+compute its associated prime ideals:
 
 \newcommand{\Bold}[1]{\mathbb{#1}}
 
@@ -856,7 +865,7 @@ In brief,
 $\Psi''$
 in the ODE to zero, resulting in a first-order ODE, so we discard it, too,
 \item[\eqref{ideal:2}] corresponds to the classical solutions (see below), and
-\item[\eqref{ideal:1}] gives us our new solution (see below).
+\item[\eqref{ideal:1}] gives us a new solution (see below).
 
 \end{itemize}
 
@@ -891,7 +900,7 @@ where $l$ is the orbital quantum number, which can be zero.  Set $l=0$, $v=r$ an
 expand out the derivative to obtain \eqref{classical eq in ideal}.  This solution has been
 known for a hundred years; its presence here was expected and won't be commented on further.
 
-Ideal \eqref{ideal:1} was not expected, and contains our new solution.
+Ideal \eqref{ideal:1} was not expected, and contains a previously unknown solution.
 $a_0$ is an ideal generator,
 so $a_0=0$, and we can set $a_1=1$, by the same logic as above.
 If we limit our $v_i$ coefficients to be real, all of their squares must
@@ -955,21 +964,7 @@ Out[1]= {{y[x] -> BesselJ[0, 2 Sqrt[x]] C[1] + 2 BesselY[0, 2 Sqrt[x]] C[2]}}
 \end{verbatim}
 \end{scriptsize}
 
-leading to...
-
-% \vfill\eject
-
-%\subsection*{The Main Result}
-%\parskip 0pt
-
-%Consider the following simple Sch\"odinger equation for the hydrogen atom:
-
-%\begin{equation}
-%\label{schrodinger}
-%-\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
-%\end{equation}
-
-%Let $J_0$ be the ordinary Bessel function $J_0$, and set
+leading to the following exact solution to \eqref{schrodinger hydrogen}, with $E=0$:
 
 \begin{equation}
 \label{solution}
@@ -978,7 +973,6 @@ leading to...
 
 where $x,y,z$ are Cartesian coordinates, $r=\sqrt{x^2+y^2+z^2}$,
 and $J_0$ is the ordinary Bessel function $J_0$.
-\eqref{solution} is an exact solution to \eqref{schrodinger hydrogen}, with $E=0$.
 
 Note that this solution could not be obtained by the method of separation of variables, as it is non-separable
 (i.e, it can not be written in the form $R(r)\Theta(\theta)\Psi(\psi)$ or $X(x)Y(y)Z(z)$).
@@ -1018,7 +1012,7 @@ Out[5]= True
 \end{verbatim}
 \end{scriptsize}
 
-\subsection*{Physical Interpretation}
+\subsection{Physical Interpretation}
 
 Since \eqref{solution} is a solution to a simple Schr\"odinger equation for hydrogen,
 it is reasonable to ask if it has any physical interpretation.
@@ -1034,7 +1028,7 @@ This situation is not unusual.  Classical solutions to hydrogen exist for all en
 but the solutions are only in $L^2(\mathbb{R}^3)$ for specific values of $E$;
 only these wavefunctions are observed as orbitals.
 
-\subsection*{Generalization}
+\subsection{Generalization of the Example}
 \parskip 12pt
 
 The choice of $x$ is arbitrary, and any ordinary Bessel function can be used:
@@ -1052,11 +1046,12 @@ a_1^2+a_2^2+a_3^2=1
 
 and $F$ is any linear combination of the Bessel functions $J_0$ and $Y_0$.
 
-\vskip 12pt
+Futhermore, since wavefunctions are complex-valued, restricting the $v_i$ coefficients
+to be real is unnecessary.
 
 Any finite linear combination of functions of the form \eqref{generalized solution} also solves \eqref{schrodinger hydrogen}.
 
-\subsection*{Generalization}
+\section{Generalization of the Algorithm}
 
 More complex ansatzen can be constructed.  For example, here is an ansatz that introduces the square root
 of a first degree polynomial, then allows the ODE's independent variable to be selected from the resulting
@@ -1141,27 +1136,44 @@ v = v_1 x + v_2 y + v_3 z + v_4 r
 \end{gathered}
 \end{equation}
 
-\subsection*{Software}
+Polynomials of any (finite) degree can be used in lieu of the linear polynomials.
 
-The program used to construct the system of equations is available here:
+Non-linear and inhomogeneous ODEs can be used to construct the ansatzen.
+
+\section{Software}
+
+The script used to perform the calculations in this paper is available here:
 
 \centerline{\url{https://github.com/BrentBaccala/helium}}
 
-{\tt joca.sage} is a Sage script that has been verified to work with Sage 10.6
-and was used for the calculations in this paper.
+{\tt joca.sage} is a SageMath script, verified to work with SageMath 10.6.
+
+SageMath \cite{sage} integrates dozens of open source mathematical programs and libraries into
+a unified, Python-based framework.  For this calculation, it uses Fran\c{c}ois Boulier's
+{\tt DifferentialAlgebra} package \cite{DifferentialAlgebra} to perform the Ritt reduction
+step, and Singular \cite{DGPS}'s implementation of the GTZ algorithm \cite{GTZ}
+to compute the associated prime ideals of \eqref{polynomial system}
 
 %%\section*{Current Implementation Status}
-\subsection*{Current Implementation Status}
+\subsection{Current Implementation Status}
 
 The utility of this algorithm is currently limited by our Gr\"obner basis software.
 
-\subsection*{Conclusion}
+\section{Conclusion}
 
 The algorithm presented above can be used to check any PDE to see if any of its solutions
-can be expressed using an ODE structured according to a specific ansatz.  This technique
+can be expressed using an ODE structured according to a specific ansatz, defined by
+differential polynomials and parameterized by a finite number of constants.
+This technique
 is complementary to separation of variables, where we check a PDE to see if any of
 its solutions can be expressed as a product of factors, each depending on only
-a single variable.
+a single variable, with no restrictions to differential polynomials.
+
+An obvious question is how to select an ansatz.  A PDE with no boundary conditions
+is likely to have a solution space that is not only infinite, but infinite
+dimensional, and probably not even with a countably infinite basis.
+Differential Galois theory depends on having a finite dimensional solution space,
+and is therefore unlikely to be much help.
 
 \begin{comment}
 As my primary interest lies in quantum mechanics, I have investigated the PDEs
