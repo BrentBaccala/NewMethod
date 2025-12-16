@@ -1140,6 +1140,23 @@ Polynomials of any (finite) degree can be used in lieu of the linear polynomials
 
 Non-linear and inhomogeneous ODEs can be used to construct the ansatzen.
 
+\section{Selection of an Ansatz}
+
+The most obvious question remains: how to select an ansatz?
+
+I do not have any very good answer to that question.  The ansatz used for the hydrogen example
+was an educated guess.  It was designed to be general enough to find the existing
+classical solution, to be used for testing the software.  The appearance of \eqref{ideal:1}
+was not anticipated.
+
+Nevertheless, let me comment briefly on the theoretical picture
+
+An obvious question is how to select an ansatz.  A PDE with no boundary conditions
+is likely to have a solution space that is not only infinite, but infinite
+dimensional, and probably not even with a countably infinite basis.
+Differential Galois theory depends on having a finite dimensional solution space,
+and is therefore unlikely to be much help.
+
 \section{Software}
 
 The script used to perform the calculations in this paper is available here:
@@ -1155,9 +1172,11 @@ step, and Singular \cite{DGPS}'s implementation of the GTZ algorithm \cite{GTZ}
 to compute the associated prime ideals of \eqref{polynomial system}
 
 %%\section*{Current Implementation Status}
-\subsection{Current Implementation Status}
+%%\subsection{Current Implementation Status}
+\subsection{Future Work}
 
 The utility of this algorithm is currently limited by our Gr\"obner basis software.
+In particular, I have formed a system of 3456 equations...
 
 \section{Conclusion}
 
@@ -1169,11 +1188,16 @@ is complementary to separation of variables, where we check a PDE to see if any 
 its solutions can be expressed as a product of factors, each depending on only
 a single variable, with no restrictions to differential polynomials.
 
-An obvious question is how to select an ansatz.  A PDE with no boundary conditions
-is likely to have a solution space that is not only infinite, but infinite
-dimensional, and probably not even with a countably infinite basis.
-Differential Galois theory depends on having a finite dimensional solution space,
-and is therefore unlikely to be much help.
+The name of the software repository ({\tt helium}) informs a primary goal
+of my research: to find a closed form expression for helium's ground state.
+In that repository, you will find several years of fumbling attempts in
+that direction, of which {\tt joca.sage} is the most refined.
+\footnote{{\tt helium.sage} is also notable for containing a very aggressive, though inefficient,
+factorizing implementation of the GTZ algorithm, but that's the subject of another paper.}
+Although ``solving helium'' is widely regarded as impossible, I know
+of no proof that helium's ground state wavefunction can not be formed
+from a finite number of linear homogenous ODEs.  Lacking any good theory
+to inform the selection of an ansatz, I have turned to...
 
 \begin{comment}
 As my primary interest lies in quantum mechanics, I have investigated the PDEs
