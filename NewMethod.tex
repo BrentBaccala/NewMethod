@@ -740,7 +740,13 @@ in favor of $r$ (something like $v_x - v_4 r/x$), so we use this ranking:
 \end{equation}
 
 Applying Ritt's full reduction algorithm to \eqref{schrodinger hydrogen} modulo \eqref{ansatz 5}, we obtain
-a remainder that begins:
+the remainder:
+
+\begin{equation}
+32 ( x^{2} + y^{2} + z^{2} ) p
+\end{equation}
+
+where $p$ is an 85 term differential polynomial that begins:
 
 \begin{equation}
 \label{schrodinger modulo ansatz 5}
@@ -748,7 +754,7 @@ a remainder that begins:
 % then add "+ \cdots" at the end
 %r \Psi' x^{3} v_{1}^{3} b_{1} + r \Psi' x y^{2} v_{1}^{3} b_{1} + r \Psi' x z^{2} v_{1}^{3} b_{1} + r \Psi' x^{2} y v_{1}^{2} v_{2} b_{1} + \cdots
 %-2*E*a0*Psi*r - 2*E*a1*v1*x*Psi*r - 2*E*a1*v2*y*Psi*r - 2*E*a1*v3*z*Psi*r
-32 x^{3} \Psi' r v_{1}^{3} b_{1} + 32 x y^{2} \Psi' r v_{1}^{3} b_{1} + 32 x z^{2} \Psi' r v_{1}^{3} b_{1} + 32 x^{2} y \Psi' r v_{1}^{2} v_{2} b_{1} + \cdots
+x \Psi' r v_{1}^{3} b_{1} + y \Psi' r v_{1}^{2} v_{2} b_{1} + x \Psi' r v_{1} v_{2}^{2} b_{1} + y \Psi' r v_{2}^{3} b_{1} + \cdots
 \end{equation}
 
 % The denominator, after replacing $x^2+y^2+z^2$ with $r^2$, reads:
@@ -776,23 +782,153 @@ we collect like terms in $x$, $y$, $z$, $r$, $\Psi$, and $\Psi'$, organizing the
 r \Psi' x^{3} (v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} + 3 v_{1} v_{4}^{2} b_{1}) + \cdots
 \end{equation}
 
-The expressions in parenthesis gives us a system of equations (only one is shown)
+The expressions in parenthesis (only one is shown) gives us a system of equations
 involving only constants
 that, if satisfied,
-will yield a solution to \eqref{schrodinger hydrogen} in the form \eqref{ansatz 5}.  Once
-duplicate equations are dropped, the system has 34 equations.  Note that $E$, although
+will yield a solution to \eqref{schrodinger hydrogen} in the form \eqref{ansatz 5}.
+Note that $E$, although
 not a parameter in the ansatz, is included with them because it is a constant.  The
 correct operation of the algorithm is predicated on nothing more than separating
 the indeterminants into constants and non-constants, and it makes no difference whether
 the constants are introduced in the ansatz or appear in the original PDE.
+The system has 28 equations:
 
-%%sage: latex(matrix(eqns()).transpose())
 %% The problem with making this a "figure" is that it's a numbered system of equations
-%%\begin{figure}
 \begin{equation}
 \label{polynomial system}
+% sage: load('joca.sage')
+% sage: bwb = build_system_of_equations(PolyRing(r.args[2]), PolyRing_constants)
+% sage: latex(matrix(sorted(bwb)).transpose())
+% then copy-and-paste
+\begin{array}{r}
+-2 v_{1} v_{4} a_{1} + 2 v_{1} v_{4} b_{0} \\
+-2 v_{2} v_{4} a_{1} + 2 v_{2} v_{4} b_{0} \\
+-2 v_{3} v_{4} a_{1} + 2 v_{3} v_{4} b_{0} \\
+-2 v_{4}^{2} a_{1} + v_{1}^{2} b_{0} + v_{2}^{2} b_{0} + v_{3}^{2} b_{0} + v_{4}^{2} b_{0} \\
+-2 v_{4} a_{0} \\
+-2 a_{0} \\
+2 v_{3} v_{4} c_{0} - 2 v_{3} a_{1} \\
+2 v_{2} v_{4} c_{0} - 2 v_{2} a_{1} \\
+2 v_{1} v_{4} c_{0} - 2 v_{1} a_{1} \\
+v_{1}^{2} c_{0} + v_{2}^{2} c_{0} + v_{3}^{2} c_{0} + v_{4}^{2} c_{0} - 2 E a_{0} - 2 v_{4} a_{1} \\
+4 v_{2} v_{3} v_{4} c_{1} \\
+4 v_{1} v_{3} v_{4} c_{1} \\
+4 v_{1} v_{2} v_{4} c_{1} \\
+v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + 3 v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
+v_{1}^{2} v_{4} c_{1} + 3 v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
+3 v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
+v_{1}^{2} v_{3} c_{1} + v_{2}^{2} v_{3} c_{1} + v_{3}^{3} c_{1} + 3 v_{3} v_{4}^{2} c_{1} - 2 E v_{3} a_{1} \\
+v_{1}^{2} v_{2} c_{1} + v_{2}^{3} c_{1} + v_{2} v_{3}^{2} c_{1} + 3 v_{2} v_{4}^{2} c_{1} - 2 E v_{2} a_{1} \\
+v_{1}^{3} c_{1} + v_{1} v_{2}^{2} c_{1} + v_{1} v_{3}^{2} c_{1} + 3 v_{1} v_{4}^{2} c_{1} - 2 E v_{1} a_{1} \\
+4 v_{2} v_{3} v_{4} b_{1} \\
+4 v_{1} v_{3} v_{4} b_{1} \\
+4 v_{1} v_{2} v_{4} b_{1} \\
+v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + 3 v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
+v_{1}^{2} v_{4} b_{1} + 3 v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
+3 v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
+v_{1}^{2} v_{3} b_{1} + v_{2}^{2} v_{3} b_{1} + v_{3}^{3} b_{1} + 3 v_{3} v_{4}^{2} b_{1} \\
+v_{1}^{2} v_{2} b_{1} + v_{2}^{3} b_{1} + v_{2} v_{3}^{2} b_{1} + 3 v_{2} v_{4}^{2} b_{1} \\
+v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} + 3 v_{1} v_{4}^{2} b_{1}
+\end{array}
+\end{equation}
+
+% This is the unsorted list of equations
+\begin{comment}
+\begin{equation}
+\label{polynomial system}
+% sage: load('joca.sage')
+% sage: bwb = build_system_of_equations(PolyRing(r.args[2]), PolyRing_constants)
+% sage: latex(matrix(bwb).transpose())
+% then copy-and-paste
+\begin{array}{r}
+4 v_{1} v_{2} v_{4} c_{1} \\
+4 v_{1} v_{3} v_{4} c_{1} \\
+-2 a_{0} \\
+v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + 3 v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
+v_{1}^{2} v_{4} b_{1} + 3 v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
+v_{1}^{2} v_{2} c_{1} + v_{2}^{3} c_{1} + v_{2} v_{3}^{2} c_{1} + 3 v_{2} v_{4}^{2} c_{1} - 2 E v_{2} a_{1} \\
+v_{1}^{2} v_{4} c_{1} + 3 v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
+4 v_{1} v_{3} v_{4} b_{1} \\
+-2 v_{1} v_{4} a_{1} + 2 v_{1} v_{4} b_{0} \\
+4 v_{1} v_{2} v_{4} b_{1} \\
+-2 v_{3} v_{4} a_{1} + 2 v_{3} v_{4} b_{0} \\
+v_{1}^{2} c_{0} + v_{2}^{2} c_{0} + v_{3}^{2} c_{0} + v_{4}^{2} c_{0} - 2 E a_{0} - 2 v_{4} a_{1} \\
+2 v_{1} v_{4} c_{0} - 2 v_{1} a_{1} \\
+-2 v_{2} v_{4} a_{1} + 2 v_{2} v_{4} b_{0} \\
+v_{1}^{2} v_{2} b_{1} + v_{2}^{3} b_{1} + v_{2} v_{3}^{2} b_{1} + 3 v_{2} v_{4}^{2} b_{1} \\
+4 v_{2} v_{3} v_{4} b_{1} \\
+v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} + 3 v_{1} v_{4}^{2} b_{1} \\
+v_{1}^{2} v_{3} b_{1} + v_{2}^{2} v_{3} b_{1} + v_{3}^{3} b_{1} + 3 v_{3} v_{4}^{2} b_{1} \\
+-2 v_{4}^{2} a_{1} + v_{1}^{2} b_{0} + v_{2}^{2} b_{0} + v_{3}^{2} b_{0} + v_{4}^{2} b_{0} \\
+3 v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
+-2 v_{4} a_{0} \\
+v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + 3 v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
+v_{1}^{2} v_{3} c_{1} + v_{2}^{2} v_{3} c_{1} + v_{3}^{3} c_{1} + 3 v_{3} v_{4}^{2} c_{1} - 2 E v_{3} a_{1} \\
+3 v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
+2 v_{2} v_{4} c_{0} - 2 v_{2} a_{1} \\
+4 v_{2} v_{3} v_{4} c_{1} \\
+v_{1}^{3} c_{1} + v_{1} v_{2}^{2} c_{1} + v_{1} v_{3}^{2} c_{1} + 3 v_{1} v_{4}^{2} c_{1} - 2 E v_{1} a_{1} \\
+2 v_{3} v_{4} c_{0} - 2 v_{3} a_{1}
+\end{array}
+\end{equation}
+\end{comment}
+
+% This is the system of 34 equations that results if we don't remove the 32(x^2 + y^2 + z^2) factor
+\begin{comment}
+\begin{equation}
+\label{polynomial system}
+% sage: load('joca.sage')
+% sage: latex(matrix(eqns).transpose())
+% then copy-and-paste
+\begin{array}{r}
+-64 v_{4}^{2} a_{1} + 32 v_{1}^{2} b_{0} + 32 v_{2}^{2} b_{0} + 32 v_{3}^{2} b_{0} + 32 v_{4}^{2} b_{0} \\
+32 v_{1}^{2} v_{3} c_{1} + 32 v_{2}^{2} v_{3} c_{1} + 32 v_{3}^{3} c_{1} + 96 v_{3} v_{4}^{2} c_{1} - 64 E v_{3} a_{1} \\
+64 v_{1} v_{4} c_{0} - 64 v_{1} a_{1} \\
+-64 v_{1} v_{4} a_{1} + 64 v_{1} v_{4} b_{0} \\
+128 v_{1} v_{2} v_{4} c_{1} \\
+128 v_{1} v_{2} v_{4} b_{1} \\
+32 v_{1}^{2} c_{0} + 32 v_{2}^{2} c_{0} + 32 v_{3}^{2} c_{0} + 32 v_{4}^{2} c_{0} - 64 E a_{0} - 64 v_{4} a_{1} \\
+64 v_{3} v_{4} c_{0} - 64 v_{3} a_{1} \\
+-64 a_{0} \\
+32 v_{1}^{3} c_{1} + 32 v_{1} v_{2}^{2} c_{1} + 32 v_{1} v_{3}^{2} c_{1} + 96 v_{1} v_{4}^{2} c_{1} - 64 E v_{1} a_{1} \\
+96 v_{1}^{2} v_{4} c_{1} + 32 v_{2}^{2} v_{4} c_{1} + 32 v_{3}^{2} v_{4} c_{1} + 32 v_{4}^{3} c_{1} - 64 E v_{4} a_{1} \\
+32 v_{1}^{2} v_{4} c_{1} + 96 v_{2}^{2} v_{4} c_{1} + 32 v_{3}^{2} v_{4} c_{1} + 32 v_{4}^{3} c_{1} - 64 E v_{4} a_{1} \\
+32 v_{1}^{2} v_{4} c_{1} + 32 v_{2}^{2} v_{4} c_{1} + 96 v_{3}^{2} v_{4} c_{1} + 32 v_{4}^{3} c_{1} - 64 E v_{4} a_{1} \\
+-64 v_{4} a_{0} \\
+128 v_{1} v_{3} v_{4} c_{1} \\
+96 v_{1}^{2} v_{4} b_{1} + 32 v_{2}^{2} v_{4} b_{1} + 32 v_{3}^{2} v_{4} b_{1} + 32 v_{4}^{3} b_{1} \\
+128 v_{1}^{2} v_{4} b_{1} + 128 v_{2}^{2} v_{4} b_{1} + 64 v_{3}^{2} v_{4} b_{1} + 64 v_{4}^{3} b_{1} \\
+32 v_{1}^{2} v_{4} b_{1} + 96 v_{2}^{2} v_{4} b_{1} + 32 v_{3}^{2} v_{4} b_{1} + 32 v_{4}^{3} b_{1} \\
+128 v_{1}^{2} v_{4} b_{1} + 64 v_{2}^{2} v_{4} b_{1} + 128 v_{3}^{2} v_{4} b_{1} + 64 v_{4}^{3} b_{1} \\
+32 v_{1}^{2} v_{3} b_{1} + 32 v_{2}^{2} v_{3} b_{1} + 32 v_{3}^{3} b_{1} + 96 v_{3} v_{4}^{2} b_{1} \\
+64 v_{1}^{2} v_{4} b_{1} + 128 v_{2}^{2} v_{4} b_{1} + 128 v_{3}^{2} v_{4} b_{1} + 64 v_{4}^{3} b_{1} \\
+32 v_{1}^{2} v_{4} b_{1} + 32 v_{2}^{2} v_{4} b_{1} + 96 v_{3}^{2} v_{4} b_{1} + 32 v_{4}^{3} b_{1} \\
+32 v_{1}^{2} v_{2} c_{1} + 32 v_{2}^{3} c_{1} + 32 v_{2} v_{3}^{2} c_{1} + 96 v_{2} v_{4}^{2} c_{1} - 64 E v_{2} a_{1} \\
+128 v_{2} v_{3} v_{4} b_{1} \\
+128 v_{1} v_{3} v_{4} b_{1} \\
+32 v_{1}^{2} v_{2} b_{1} + 32 v_{2}^{3} b_{1} + 32 v_{2} v_{3}^{2} b_{1} + 96 v_{2} v_{4}^{2} b_{1} \\
+128 v_{1}^{2} v_{4} c_{1} + 128 v_{2}^{2} v_{4} c_{1} + 64 v_{3}^{2} v_{4} c_{1} + 64 v_{4}^{3} c_{1} - 128 E v_{4} a_{1} \\
+128 v_{1}^{2} v_{4} c_{1} + 64 v_{2}^{2} v_{4} c_{1} + 128 v_{3}^{2} v_{4} c_{1} + 64 v_{4}^{3} c_{1} - 128 E v_{4} a_{1} \\
+64 v_{1}^{2} v_{4} c_{1} + 128 v_{2}^{2} v_{4} c_{1} + 128 v_{3}^{2} v_{4} c_{1} + 64 v_{4}^{3} c_{1} - 128 E v_{4} a_{1} \\
+64 v_{2} v_{4} c_{0} - 64 v_{2} a_{1} \\
+-64 v_{3} v_{4} a_{1} + 64 v_{3} v_{4} b_{0} \\
+-64 v_{2} v_{4} a_{1} + 64 v_{2} v_{4} b_{0} \\
+32 v_{1}^{3} b_{1} + 32 v_{1} v_{2}^{2} b_{1} + 32 v_{1} v_{3}^{2} b_{1} + 96 v_{1} v_{4}^{2} b_{1} \\
+128 v_{2} v_{3} v_{4} c_{1}
+\end{array}
+\end{equation}
+\end{comment}
+
+% This is the system of 34 equations from the older version of the code
+% that doesn't seem to be consistently ordered (it changes every time I run the script)
+\begin{comment}
+\begin{equation}
+% sage: load('helium.sage')
+% sage: prep_hydrogen(5)
+% sage: init()
 % sage: latex(matrix(eqns_RQQ).transpose())
-% then remove \left( and \right)
+% then copy-and-paste
+\label{polynomial system}
 \begin{array}{r}
 4 v_{1} v_{3} v_{4} b_{1} \\
 v_{1}^{2} v_{2} b_{1} + v_{2}^{3} b_{1} + v_{2} v_{3}^{2} b_{1} + 3 v_{2} v_{4}^{2} b_{1} \\
@@ -830,7 +966,7 @@ v_{1}^{3} c_{1} + v_{1} v_{2}^{2} c_{1} + v_{1} v_{3}^{2} c_{1} + 3 v_{1} v_{4}^
 4 v_{2} v_{3} v_{4} b_{1}
 \end{array}
 \end{equation}
-%% \end{figure}
+\end{comment}
 
 \subsection{Prime Decomposition}
 
