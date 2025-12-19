@@ -371,6 +371,10 @@ Ansatz 13.6&Helium         &Differential Elimination &Manual                &qui
            &               &                         &                      &\\
 Ansatz 16  &Hydrogen       &Differential Elimination &Manual                &30 sec\\
            &               &                         &                      &\\
+Ansatz 16.3&Helium         &Differential Elimination &Manual                &quick\\
+           &               &Solve System of Eqns     &\E32003 radical       &2.75 days, 96 GB, Dec 18 '25\\
+           &               &                         &                      &8 ideals; all extraneous\\
+           &               &                         &                      &\\
 Ansatz 16.31&Helium        &Differential Elimination &Manual                &quick\\
            &               &Build System of Eqns     &                      &quick\\
            &               &Solve System of Eqns     &Singular radical      &oom, 96 GB, $\sim$ 40 hrs; Jan 19 '24\\
