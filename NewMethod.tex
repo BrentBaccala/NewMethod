@@ -1154,10 +1154,16 @@ Since \eqref{solution} is a solution to a simple Schr\"odinger equation for hydr
 it is reasonable to ask if it has any physical interpretation.
 
 In order to be a physically realistic solution, a function must both solve the Schr\"odinger equation
-and be a valid wavefunction in $L^2(\Omega)$, where $\Omega$ is the domain of the function,
+and be a valid wavefunction.  Since a wavefunction $\Psi$'s modulus squared $|\Psi|^2$ is a probability density function
+for the position of the particles (in this case, the electron),
+%and must have a finite integral,
+it follows that a valid
+wavefunction must be in $L^2(\Omega)$, where $\Omega$ is the domain of the function,
 in this case, $\mathbb{R}^3$.
 
-None of these Bessel function solutions are in $L^2(\mathbb{R}^3)$, which means these solutions
+Bessel's integral form for $J_0$ is \cite[\href{https://dlmf.nist.gov/10.9.E1}{Eq (10.9.1)}]{DLMF}; for its graph see \cite[\href{https://dlmf.nist.gov/10.3.F1}{Figure 10.3.1}]{DLMF}.
+
+\eqref{solution} is not in $L^2(\mathbb{R}^3)$.  Its value is 1 along the negative $x$-axis, which means these solutions
 are not valid wavefunctions and do not, therefore, correspond to any physically realized quantum mechanical state.
 
 This situation is not unusual.  Classical solutions to hydrogen exist for all energy ($E$) values,
@@ -1403,6 +1409,15 @@ Wolfram Research, Inc., Mathematica, Version 14.0, Champaign, IL (2023).
 \bibitem{sage}
 \emph{{S}ageMath, the {S}age {M}athematics {S}oftware {S}ystem ({V}ersion
   10.6)}, The Sage Developers, 2025, {\tt https://www.sagemath.org}.
+
+\begin{comment}
+M. Abramowitz and I. A. Stegun (Eds.) (1964) Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables. National Bureau of Standards Applied Mathematics Series, U.S. Government Printing Office, Washington, D.C
+\end{comment}
+
+
+\bibitem{DLMF}
+NIST Digital Library of Mathematical Functions. https://dlmf.nist.gov/, Release 1.2.5 of 2025-12-15. F. W. J. Olver, A. B. Olde Daalhuis, D. W. Lozier, B. I. Schneider, R. F. Boisvert, C. W. Clark, B. R. Miller, B. V. Saunders, H. S. Cohl, and M. A. McClain, eds.
+
 
 \bibitem{DifferentialAlgebra}
 Fran\c{c}ois Boulier, \emph{DifferentialAlgebra} (Version 5.3), 2025.\\
