@@ -531,6 +531,22 @@ Ritt's reduction algorithm operates on differential polynomials contained in a d
 and requires a {\it ranking} to be specified on the indeterminants and their derivatives.
 This is a distinct concept from an ordering on the monomials, as used, for example, in defining a Gr\"obner basis.
 
+A ranking is an ordering on indeterminates and their derivatives that meets two compatibility conditions:
+
+\begin{equation}
+\begin{gathered}
+u < v \implies \delta u < \delta v \quad \forall \delta,u,v \\
+u < \delta u \quad \forall \delta,u
+\end{gathered}
+\end{equation}
+
+The {\it order} of a derivation ${\rm ord}\ \delta$ is the sum of all its powers.  A ranking is said to be {\it orderly}
+if meets the additional condition:
+
+\begin{equation}
+{\rm ord}\ \delta < {\rm ord}\ \theta \implies \delta u < \theta v \quad \forall \delta,\theta,u,v
+\end{equation}
+
 The {\it leader} of a polynomial as the highest ranking indeterminant or derivative of an indeterminant that appears in the polynomial.
 
 A differential polynomial $p$ is said to be {\it partially reduced} with respect to a differential polynomial $q$ if
@@ -1185,7 +1201,7 @@ Out[5]= True
 \subsection{Physical Interpretation}
 
 Since \eqref{solution} is a solution to a simple Schr\"odinger equation for hydrogen,
-it is reasonable to ask if it has any physical interpretation.
+it is reasonable to ask if it has any physical interpretation.  It does not.
 
 In order to be a physically realistic solution, a function must both solve the Schr\"odinger equation
 and be a valid wavefunction.  For a given wavefunction $\Psi$, the modulus squared $|\Psi|^2$ is a probability density function
@@ -1194,16 +1210,35 @@ for the position of the electron (\cite{pauling and wilson} \S 10a),
 so it follows that a valid
 wavefunction must be in $L^2(\mathbb{R}^3)$, since its total probability must be finite.
 
-Bessel's integral form for $J_0$ is \cite[\href{https://dlmf.nist.gov/10.9.E1}{Eq (10.9.1)}]{DLMF}; for its graph see \cite[\href{https://dlmf.nist.gov/10.3.F1}{Figure 10.3.1}]{DLMF}.
+%Bessel's original definition of $J_0$ (\cite[p. 19]{Watson}; \cite[\href{https://dlmf.nist.gov/10.9.E1}{Eq (10.9.1)}]{DLMF}) is:
+Bessel's original definition of $J_0$ \cite[\href{https://dlmf.nist.gov/10.9.E1}{Eq (10.9.1)}]{DLMF} is:
 
-Equation \eqref{solution} is not in $L^2(\mathbb{R}^3)$.  $J_0(0)=1$, as can be seen from both
-its integral form (\cite[\href{https://dlmf.nist.gov/10.9.E1}{Eq (10.9.1)}]{DLMF}) and its graph (\cite[\href{https://dlmf.nist.gov/10.3.F1}{Figure 10.3.1}]{DLMF}).
-Therefore, equation \eqref{solution} is 1 along the negative $x$-axis, which means these solutions
-are not valid wavefunctions and do not, therefore, correspond to any physically realized quantum mechanical state.
+\begin{equation}
+\label{J0 definition}
+J_0(z) = \frac{1}{2\pi}\int_0^{2\pi} \cos(z\sin\theta) d\theta
+\end{equation}
 
-This situation is not unusual.  Classical solutions to hydrogen exist for all energy ($E$) values,
-but the solutions are only in $L^2(\mathbb{R}^3)$ for specific values of $E$;
-only these wavefunctions are observed as orbitals.
+% Bessel's integral form for $J_0$ is ; for its graph see \cite[\href{https://dlmf.nist.gov/10.3.F1}{Figure 10.3.1}]{DLMF}.
+
+$J_0(z)$ is continuous everywhere on the real line and $J_0(0)=1$.  Also, $2\sqrt{x+r}$ is continuous
+everywhere in $\mathbb{R}^3$ and is zero along the negative $x$-axis.  Therefore, there is a small
+tube around the negative $x$-axis where $J_0(2\sqrt{x+r}) \approx 1$.
+This tube has positive measure and infinite extent, so $J_0(2\sqrt{x+r}) \notin L^2(\mathbb{R}^3)$,
+% and \eqref{solution}
+is not valid a wavefunction and does not correspond to any physically realized quantum mechanical state.
+
+% These facts imply that for any
+% $\delta>0$ there exists an $\epsilon>0$ such that $J_0(2\sqrt{x+r}) > 1-\epsilon$ for any point within
+% a distance of $\delta$ from the negative $x$-axis. (uniform continuity?)
+
+% Equation \eqref{solution} is not in $L^2(\mathbb{R}^3)$.  $J_0(0)=1$, as can be seen from both
+% its integral form (\cite[\href{https://dlmf.nist.gov/10.9.E1}{Eq (10.9.1)}]{DLMF}) and its graph (\cite[\href{https://dlmf.nist.gov/10.3.F1}{Figure 10.3.1}]{DLMF}).
+% Therefore, equation \eqref{solution} is 1 along the negative $x$-axis, which means these solutions
+% are not valid wavefunctions and do not, therefore, correspond to any physically realized quantum mechanical state.
+
+This situation is not unusual.  Classical solutions to hydrogen exist (as hypergeometric series) for all energy values,
+but these solutions are only in $L^2(\mathbb{R}^3)$ for specific values of $E$;
+only these wavefunctions are observed as atomic orbitals.
 
 \subsection{Generalization of the Example}
 \parskip 12pt
@@ -1326,13 +1361,33 @@ was an educated guess.  It was designed to be general enough to find the existin
 classical solution, to be used for testing the software.  The appearance of \eqref{ideal:1}
 was not anticipated.
 
-Nevertheless, let me comment briefly on the theoretical picture
+Nevertheless, let me comment briefly on the theoretical picture.
 
-An obvious question is how to select an ansatz.  A PDE with no boundary conditions
+Picard-Vessiot theory.
+Great progress has been made since the time of Kolchin in analyzing ordinary
+differential equations.  An $n$-order linear ODE,
+restricted to analytic solutions (complex? what function space?), will have at most an $n$-dimensional
+solution space.  After selecting an arbitrary basis, all of these
+solutions can be represented by an $n$-tuple of complex constants.
+Any automorphism (permutation?) of these solutions can be represented by
+an $n \times n$ matrix, so differential Galois theory can be reduced
+to the analysis of $GL_n(\mathbb{C})$, which has facilitated the work of Kovacic, Singer, and Bronstein.
+
+No such easy reduction is available for PDEs.
+A PDE with no boundary conditions
 is likely to have a solution space that is not only infinite, but infinite
 dimensional, and probably not even with a countably infinite basis.
-Differential Galois theory depends on having a finite dimensional solution space,
-and is therefore unlikely to be much help.
+In such an environment, differential Galois groups
+can not be represented as subgroups of $GL_n$,
+so the theory of algebraic groups is therefore unlikely to be much help.
+Furthermore, note that Kovacic developed an algorithm to handle
+second order ODEs not by developing an algorithm to determine the
+differential Galois group of a given DE, but rather by
+categorizing all possible algebraic subgroups of $SL_2$
+and developing an algorithm to handle each case.
+Taking a similar approach for PDEs would require categorizing
+all possible linear mappings between function spaces,
+which does not seem feasible.
 
 \section{Software}
 
@@ -1353,7 +1408,13 @@ to compute the associated prime ideals of \eqref{polynomial system}
 \subsection{Future Work}
 
 The utility of this algorithm is currently limited by our Gr\"obner basis software.
-In particular, I have formed a system of 3456 equations...
+For example, I have formed a system of 1570 equations with 1,296,960 terms
+to test whether helium can be solved using a second-order ODE with second
+degree coefficients and a second degree independent variable.  Various
+attempts to compute a Gr\"obner basis for this system exhaust the
+memory on a computer with 96 GB RAM, but the software lacks the ability to
+fall back effectively on mass storage when RAM is exhausted, nor
+can it use memory spread out over a cluster.
 
 \section{Conclusion}
 
@@ -1453,6 +1514,9 @@ M. Abramowitz and I. A. Stegun (Eds.) (1964) Handbook of Mathematical Functions 
 \bibitem{DLMF}
 NIST Digital Library of Mathematical Functions. https://dlmf.nist.gov/, Release 1.2.5 of 2025-12-15. F. W. J. Olver, A. B. Olde Daalhuis, D. W. Lozier, B. I. Schneider, R. F. Boisvert, C. W. Clark, B. R. Miller, B. V. Saunders, H. S. Cohl, and M. A. McClain, eds.
 
+\bibitem{Watson}
+{\it A Treatise On The Theory Of Bessel Functions}
+Watson.
 
 \bibitem{DifferentialAlgebra}
 Fran\c{c}ois Boulier, \emph{DifferentialAlgebra} (Version 5.3), 2025.\\
