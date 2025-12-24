@@ -572,16 +572,22 @@ and gathering together like terms with identical non-constant factors.  Setting 
 constant coefficients of each like term to zero produces a system of polynomial equations,
 involving only the constants, that will solve the original PDE when satisfied.
 
+\begin{comment}
 Taking the radical of the ideal simplifies both the theory and the calculation,
 and can be justified because there are no nilpotent elements in our solution
 space, which is just $n$-dimensional complex space.  The
 primary decomposition of a radical ideal is also a prime decomposition,
 as the distinction between primary and prime ideals is only significant
-for non-radical ideals with nilpotent elements.
+for non-radical ideals.
+\end{comment}
 
-%This system of equations defines an algebraic variety, but it need not be irreducible.
-%Several algorithms have been proposed and implemented to decompose an algebraic
-%variety into its irreducible components.
+This system of equations defines an algebraic variety in $\mathbb{C}^n$, but it need not be irreducible,
+meaning that it can be expressed as the union of simpler, irreducible varieties, and it generally
+advantageous to compute such a decomposition.
+There is a well-known correspondence between prime ideals and irreducible varieties
+(\cite{iva} Corollary 4.5.4)), and
+several algorithms have been proposed and implemented to compute the minimal associated prime ideals
+that describe such an irreducible decomposition (\cite{GTZ}, among others).
 
 \begin{comment}
 Any particular selection of constants produces a system of differential polynomials that defines a differential ideal.
@@ -623,9 +629,9 @@ To summarize, given a PDE defined by one or more differential polynomials, do th
 
 \item Construct a system of polynomial equations in the constants by collecting like terms in the remaining variables (projection step)
 
-\item Form a polynomial ideal from that system of equations, and compute its associated prime ideals
+\item Form a polynomial ideal from that system of equations, and compute its minimal associated prime ideals
 
-\item Each prime ideal corresponds to a variety in the vector space of constants,
+\item Each prime ideal corresponds to an irreducible variety in the space of constants,
 the union of which form the solution space of the PDE in the differential function space
 
 \end{enumerate}
@@ -1517,6 +1523,11 @@ NIST Digital Library of Mathematical Functions. https://dlmf.nist.gov/, Release 
 \bibitem{Watson}
 {\it A Treatise On The Theory Of Bessel Functions}
 Watson.
+
+\bibitem{iva}
+Cox, D., Little, J., and O'Shea, D. (2015).
+{\it Ideals, Varieties, and Algorithms: An Introduction to Computational Algebraic Geometry and Commutative Algebra}
+(4th ed.). Springer
 
 \bibitem{DifferentialAlgebra}
 Fran\c{c}ois Boulier, \emph{DifferentialAlgebra} (Version 5.3), 2025.\\
