@@ -106,7 +106,50 @@ We can then consider mapping the indeterminants into the coefficient field, and 
 equations, and seek to describe which values of indeterminates satisfy all of the equations
 in the system.  We introduce ideals in the polynomial ring and algebraic varieties in the
 solution space and deduce the contravariant equivalence between them.  We call this
-``algebraic geometry''.
+``algebraic geometry''.  See Figure \ref{concept figure}.
+
+\begin{figure}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[node distance=50pt, every text node part/.style={align=center}]
+\node (commutative algebra) [draw, text width=200pt] {Commutative algebra
+      \begin{itemize}
+        \item rings, ideals, fields, algebraic extensions
+        \item indeterminates are simply objects that obey the commutative, associative, distributive axioms
+        \item Ex: $x^2+y^2+z^2=1$
+      \end{itemize}
+};
+\node (algebraic geometry) [draw, node distance=100pt, below of=commutative algebra, text width=200pt] {Algebraic Geometry
+      \begin{itemize}
+        \item indeterminates now take values in a field like $\mathbb{C}, \mathbb{R}, \mathbb{Q}, \overline{\mathbb{Q}}, \mathbb{F}_p$
+        \item Ex: surface of unit sphere in $\mathbb{R}^3$
+      \end{itemize}
+};
+\node (differential algebra) [draw, node distance=225pt, right of=commutative algebra, text width=200pt] {Differential algebra
+      \begin{itemize}
+        \item a third primitive operator (derivation) is added to addition and multiplication
+        \item differential rings, differential ideals, differential transcendental extensions
+        \item Ex: $\Psi_{xx}=\Psi_{t}$
+      \end{itemize}
+};
+\node (differential algebraic geometry) [draw, node distance=100pt, below of=differential algebra, text width=200pt] {Differential Algebraic Geometry
+      \begin{itemize}
+        \item indeterminates now take values in function spaces like $C^2(U)$, $H^2(\mathbb{R}^3)$
+        \item Ex: $\Psi = e^{-x^2/4t}/\sqrt{t}$
+      \end{itemize}
+};
+
+\draw [very thick, ->] (commutative algebra.south) -- (algebraic geometry.north);
+\draw [very thick, ->] (differential algebra.south) -- (differential algebraic geometry.north);
+
+\draw [very thick, ->] (differential algebraic geometry.south) to[out=-135, in=-45] coordinate[midway] (mid) (algebraic geometry.south) ;
+
+\node [below of=mid, node distance=20pt] {\bf We can do this\\\bf if we use function spaces parameterized with constants};
+
+\end{tikzpicture}%
+}
+\caption{The interrelation between four relevant branches of mathematics}
+\label{concept figure}
+\end{figure}
 
 J.F. Ritt introduced differential algebra \cite{Ritt}.
 Starting with a ring $R$ or a field $F$, we can construct a
@@ -251,49 +294,6 @@ yields the ground state solution of hydrogen ($e^{-r}$ when $E=-1/2$).
 %to solve the corresponding analytic equation and conclude that $\Psi$ is a multiple of the exponential of $x$.
 
 %The picture, in my mind, starts to look like this:
-
-\begin{figure}
-\resizebox{\textwidth}{!}{%
-\begin{tikzpicture}[node distance=50pt, every text node part/.style={align=center}]
-\node (commutative algebra) [draw, text width=200pt] {Commutative algebra
-      \begin{itemize}
-        \item rings, ideals, fields, algebraic extensions
-        \item indeterminates are simply objects that obey the commutative, associative, distributive axioms
-        \item Ex: $x^2+y^2+z^2=1$
-      \end{itemize}
-};
-\node (algebraic geometry) [draw, node distance=100pt, below of=commutative algebra, text width=200pt] {Algebraic Geometry
-      \begin{itemize}
-        \item indeterminates now take values in a field like $\mathbb{C}, \mathbb{R}, \mathbb{Q}, \overline{\mathbb{Q}}, \mathbb{F}_p$
-        \item Ex: surface of unit sphere in $\mathbb{R}^3$
-      \end{itemize}
-};
-\node (differential algebra) [draw, node distance=225pt, right of=commutative algebra, text width=200pt] {Differential algebra
-      \begin{itemize}
-        \item a third primitive operator (derivation) is added to addition and multiplication
-        \item differential rings, differential ideals, differential transcendental extensions
-        \item Ex: $\Psi_{xx}=\Psi_{t}$
-      \end{itemize}
-};
-\node (differential algebraic geometry) [draw, node distance=100pt, below of=differential algebra, text width=200pt] {Differential Algebraic Geometry
-      \begin{itemize}
-        \item indeterminates now take values in function spaces like $C^2(U)$, $H^2(\mathbb{R}^3)$
-        \item Ex: $\Psi = e^{-x^2/4t}/\sqrt{t}$
-      \end{itemize}
-};
-
-\draw [very thick, ->] (commutative algebra.south) -- (algebraic geometry.north);
-\draw [very thick, ->] (differential algebra.south) -- (differential algebraic geometry.north);
-
-\draw [very thick, ->] (differential algebraic geometry.south) to[out=-135, in=-45] coordinate[midway] (mid) (algebraic geometry.south) ;
-
-\node [below of=mid, node distance=20pt] {\bf We can do this\\\bf if we use function spaces parameterized with constants};
-
-\end{tikzpicture}%
-}
-\caption{The interrelation between four relevant branches of mathematics}
-\label{concept figure}
-\end{figure}
 
 %What kind of reduction step
 
