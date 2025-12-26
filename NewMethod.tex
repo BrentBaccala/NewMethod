@@ -1468,7 +1468,16 @@ to compute the associated prime ideals of \eqref{polynomial system}
 
 %%\section*{Current Implementation Status}
 %%\subsection{Current Implementation Status}
-\subsection{Future Work}
+\section{Future Work}
+
+The difficulties of selecting an ansatz have already be touched upon.
+One possible approach to ansatz selection would be to impose boundary
+conditions (or the like) prior to any kind of analysis with differential algebra.
+In the case of quantum mechanics, imposing $H^2(\Omega)$, where $\Omega$ is the state space
+of whatever physical system we're analyzing, is an obvious restriction.
+Some kind of theoretical analysis, exploring what restrictions must be placed
+on ansatzen to force the functions into $H^2(\Omega)$, might yield
+useful techniques to better select ansatzen.
 
 The utility of this algorithm is currently limited by our Gr\"obner basis software.
 For example, I have formed a system of 1570 equations with 1,296,960 terms
@@ -1481,6 +1490,19 @@ can it use memory spread out over a cluster.
 
 The ranking was selected in somewhat of an ad hoc manner.  A more systematic
 method of analyzing an ansatz to determine a suitable ranking would be useful.
+
+While discarding ideals \eqref{ideal:5} and \eqref{ideal:4} seems justified
+(the independent variable must not be zero, and the ODE must have some non-zero coefficients),
+discarding ideal \eqref{ideal:3} (setting the ODE's second-order term to zero)
+seems somewhat arbitrary.  We would like to
+analyze the first-order ODE case as a special case of the second-order ODE.
+The Rosenfeld-Gr\"obner algorithm \cite{blop} may provide a suitable tool for such
+an analysis, as it decomposes a system of differential polynomials into
+a family of overlapping systems with regularity properties that include requiring
+the {\it initials} of the differential polynomials to be non-zero.  For an $n$-order ODE,
+requiring its initial to be non-zero would require its $n$-th order term to be non-zero,
+so Rosenfeld-Gr\"obner should split \eqref{ideal:3} into a separate system.
+Unfortunately, our current implementation of Rosenfeld-Gr\"obner (\cite{DifferentialAlgebra})...
 
 \section{Conclusion}
 
