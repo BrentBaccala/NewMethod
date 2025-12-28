@@ -29,6 +29,7 @@
 
 \def\coeff{\framebox(10,10){}}
 \newcommand{\tikzmark}[1]{\tikz[overlay,remember picture] \node (#1) {};}
+\newcommand{\markedcoeff}[1]{\framebox(10,10){}\tikzmark{#1}\,}
 \def\R32003{$F_{32003}$}
 
 \begin{document}
@@ -1453,6 +1454,36 @@ Non-linear ODEs.  For a linear homogeneous second-order ODE, we have $\Psi''$, $
 multiplied by polynomials in $v$.  Our differential polynomial is first degree in $\Psi'', \Psi', \Psi$.
 For a non-linear ODE, we can introduce higher degrees.  For example, a second
 degree second order ODE would add $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$, and $\Psi^2$ to the ansatz.
+
+\begin{figure}
+\centering
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=300pt] {\small$\markedcoeff{a}\Psi''^2 + \markedcoeff{b}\Psi''\Psi' + \markedcoeff{c}\Psi''\Psi + \markedcoeff{d}\Psi'^2 + \markedcoeff{e}\Psi'\Psi + \markedcoeff{f}\Psi^2 + \markedcoeff{g}\Psi'' + \markedcoeff{h}\Psi' + \markedcoeff{i}\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt, node distance=50pt] {$\mathbb{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \coordinate (bwb) at ($(Psi.south)!0.5!(Qv.north)$);
+    \draw[degree] (a.west) -- (a.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (a.west) -- (a.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (b.west) -- (b.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (c.west) -- (c.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (d.west) -- (d.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (e.west) -- (e.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (f.west) -- (f.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (g.west) -- (g.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (h.west) -- (h.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (i.west) -- (i.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (a.west|-bwb.north) -- (i.west|-bwb.north);
+    \coordinate (bwb2) at (a.west|-bwb.north);
+    \draw[degree] (Qv.north|-bwb2) -- (Qv.north);
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=300pt] {differential ring};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+\caption{A nonlinear second order homogeneous ansatz}
+\label{nonlinear ansatz figure}
+\end{figure}
 
 Inhomogenous ODEs.  Just like the non-linear case, a new polynomial in $v$, which could be seen a zero-th degree in $\Psi,\Psi',\Psi''$.
 
