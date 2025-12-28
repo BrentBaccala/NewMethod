@@ -211,6 +211,38 @@ is an algebraic concept.  The distinction is much the same
 as between the real number $\sqrt{2}$ and the element $\gamma$
 in the algebraic extension of $\mathbb{Q}$ defined modulo the ideal $(\gamma^2-2)$.
 
+Ritt's convention was to write differential rings by stating their coefficient
+field, then listing the associated indeterminates of derivations enclosed in curly
+braces.  Each listed indeterminate corresponds to both a derivation (prefixed by $d$)
+and its associated indeterminate.
+
+For most of this paper, we'll be working in the following differential ring:
+
+\newcommand{\ols}[1]{\mskip.5\thinmuskip\overline{\mskip-.5\thinmuskip {#1} \mskip-.5\thinmuskip}\mskip.5\thinmuskip} % overline short
+\newcommand{\olsi}[1]{\,\overline{\!{#1}}} % overline short italic
+
+\begin{equation}
+\begin{gathered}
+%%   R= \mathbb{Q}\{x,y,z\}[E,a_0,...,v_4,r,\Psi,\Psi',\Psi'',v] \mod (r^2-x^2-y^2-z^2) \\
+%%   R= \mathbb{Q}\{x,y,z\}[E,a_0,...,v_4,r,\Psi,\Psi',\Psi'',v] \\
+%%   {\rm where\ } a_0,...,v_4 = a_0,a_1,b_0,b_1,c_0,c_1,v_1,v_2,v_3,v_4 \\
+   R= \mathbb{Q}\{x,y,z\}[E,a_0,a_1,b_0,b_1,c_0,c_1,v_1,v_2,v_3,v_4,r,\Psi,\Psi',\Psi'',v] \\
+\end{gathered}
+\end{equation}
+
+To elaborate,
+\begin{itemize}
+   \item $\mathbb{Q}\{x,y,z\}$ (and thus $R$) is a differential ring with derivations $dx$, $dy$ and $dz$ and matching indeterminates $x$, $y$, and $z$
+   \item $\mathbb{Q}\{x,y,z\}$ is extended by adjoining sixteen indeterminates with no matching derivations
+   \item $E,a_0,..,v_4$ are constants, which are mapped to zero by all derivations
+   \item $r$, $\Psi$, $\Psi'$, $\Psi''$, and $v$ are indeterminates that will ultimately be mapped into a function space,
+   so often we can think of them as functions.  All we can really say about them at this point,
+   aside from trivial statements like $dx(\Psi) = \Psi_x$
+   is that they are not constants.
+%%   \item An algebraic extension is used to relate $r$ to the radius
+   \item Later we will specify a ranking.
+\end{itemize}
+
 % The Risch algorithm
 
 % The use of differential Galois theory to analyze linear ODEs.
@@ -1488,6 +1520,12 @@ memory on a computer with 96 GB RAM, but the software lacks the ability to
 fall back effectively on mass storage when RAM is exhausted, nor
 can it use memory spread out over a cluster.
 
+I've developed working software that can parallize the computation
+of the minimal associated primes through factorization and monotone dualization.
+It's inefficient, which is a major drawback for me, as my compute resources
+are somewhat limited.  I've been devoting more of my recent efforts towards more
+efficient algorithms.
+
 The ranking was selected in somewhat of an ad hoc manner.  A more systematic
 method of analyzing an ansatz to determine a suitable ranking would be useful.
 
@@ -1524,6 +1562,41 @@ Although ``solving helium'' is widely regarded as impossible, I know
 of no proof that helium's ground state wavefunction can not be formed
 from a finite number of linear homogenous ODEs.  Lacking any good theory
 to inform the selection of an ansatz, I have turned to...
+
+Lacking a solution to helium, we can explore other important PDEs.  The Navier-Stokes
+equation comes to mind.  I'd like to see an ansatz like this explored for Navier-Stokes:
+
+[insert diagram]
+
+We'd like to introduce non-linear ODEs.  For a linear homogeneous second-order ODE, we have $\Psi''$, $\Psi'$, and $\Psi$,
+multiplied by polynomials in $v$.  For a non-linear ODE, we can introduce higher powers.  For example, a second
+degree nonlinear ODE would introduce $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$, and $\Psi^2$.
+A inhomogenous term could also be introduced - a polynomial in $v$, which could be seen a zero-th degree term in $\Psi$.
+
+Parameterized ODEs.  We could allow coefficients in the ODE to involve indeterminates other than $v$,
+so long as they overlap with any of the indeterminates in $v$, or intersect with anything like
+an algebraic extension ($r^2-x^2-y^2-z^2$) that would connect variables together.  In short,
+there would need to be two independent sets of indeterminates, one that $v$ is expressed in terms of,
+and one that the coefficients of the ODE are expressed in terms of.  Then we would have to solve
+a parameterized ODE, one whose coefficients varied according to one set of independent variables,
+and whose independent variable depended on a different set on them.
+
+Can we?  If we allow $x$, what if $v$ depends on $x$?
+It makes most sense if $v$ remains independent from the parameters.  I don't see any easy way
+  to enforce this other than allowing $v$ to depend on one set of indeterminates and allowing another set into the coefficients,
+  then having a bunch of different ansatzen to test
+
+As with helium, we can work incrementally towards it using smaller ansatzen.
+
+Perhaps the biggest takeaway message is that we may now face a situation
+similar to that of the big AI companies, once they had developed transfomer
+architectures and it was clear that a massively expensive computation effort
+was likely to yield spectacular results.
+
+We can solve differential equations with Gr\"obner bases,
+and we may even be on the verge of solving helium and/or Navier-Stokes
+but we're primarily limited by inefficienies of our algorithms
+
 
 \begin{comment}
 As my primary interest lies in quantum mechanics, I have investigated the PDEs
