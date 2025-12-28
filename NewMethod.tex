@@ -1551,20 +1551,7 @@ Some kind of theoretical analysis, exploring what restrictions must be placed
 on ansatzen to force the functions into $H^2(\Omega)$, might yield
 useful techniques to better select ansatzen.
 
-The utility of this algorithm is currently limited by our Gr\"obner basis software.
-For example, I have formed a system of 1570 equations with 1,296,960 terms
-to test whether helium can be solved using a second-order ODE with second
-degree coefficients and a second degree independent variable.  Various
-attempts to compute a Gr\"obner basis for this system exhaust the
-memory on a computer with 96 GB RAM, but the software lacks the ability to
-fall back effectively on mass storage when RAM is exhausted, nor
-can it use memory spread out over a cluster.
-
-I've developed working software that can parallize the computation
-of the minimal associated primes through factorization and monotone dualization.
-It's inefficient, which is a major drawback for me, as my compute resources
-are somewhat limited.  I've been devoting more of my recent efforts towards more
-efficient algorithms.
+What relationship is there between the constant ideals and the function space?
 
 The ranking was selected in somewhat of an ad hoc manner.  A more systematic
 method of analyzing an ansatz to determine a suitable ranking would be useful.
@@ -1581,6 +1568,21 @@ the {\it initials} of the differential polynomials to be non-zero.  For an $n$-o
 requiring its initial to be non-zero would require its $n$-th order term to be non-zero,
 so Rosenfeld-Gr\"obner should split \eqref{ideal:3} into a separate system.
 Unfortunately, our current implementation of Rosenfeld-Gr\"obner (\cite{DifferentialAlgebra})...
+
+The utility of this algorithm is currently limited by our Gr\"obner basis software.
+For example, I have formed a system of 1570 equations with 1,296,960 terms
+to test whether helium can be solved using a second-order ODE with second
+degree coefficients and a second degree independent variable.  Various
+attempts to compute a Gr\"obner basis for this system exhaust the
+memory on a computer with 96 GB RAM, but the software lacks the ability to
+fall back effectively on mass storage when RAM is exhausted, nor
+can it use memory spread out over a cluster.
+
+I've developed working software that can parallize the computation
+of the minimal associated primes through factorization and monotone dualization.
+It's inefficient, which is a major drawback for me, as my compute resources
+are somewhat limited.  I've been devoting more of my recent efforts towards more
+efficient algorithms.
 
 \section{Conclusion}
 
