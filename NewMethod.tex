@@ -1443,9 +1443,49 @@ v = v_1 x + v_2 y + v_3 z + v_4 r
 \end{gathered}
 \end{equation}
 
+Algebraic extension.
+
 Polynomials of any (finite) degree can be used in lieu of the linear polynomials.
 
-Non-linear and inhomogeneous ODEs can be used to construct the ansatzen.
+Generalization of the ODE extension. Non-linear and inhomogeneous ODEs can be used to construct the ansatzen, as follows.
+
+Non-linear ODEs.  For a linear homogeneous second-order ODE, we have $\Psi''$, $\Psi'$, and $\Psi$,
+multiplied by polynomials in $v$.  Our differential polynomial is first degree in $\Psi'', \Psi', \Psi$.
+For a non-linear ODE, we can introduce higher degrees.  For example, a second
+degree second order ODE would add $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$, and $\Psi^2$ to the ansatz.
+
+Inhomogenous ODEs.  Just like the non-linear case, a new polynomial in $v$, which could be seen a zero-th degree in $\Psi,\Psi',\Psi''$.
+
+Intermediate ODE used to construct the coefficient ring of the ODE proper.
+
+Parameterized ODEs.  We could allow coefficients in the ODE to involve indeterminates other than $v$,
+so long as they overlap with any of the indeterminates in $v$, or intersect with anything like
+an algebraic extension ($r^2-x^2-y^2-z^2$) that would connect variables together.  In short,
+there would need to be two independent sets of indeterminates, one that $v$ is expressed in terms of,
+and one that the coefficients of the ODE are expressed in terms of.  Then we would have to solve
+a parameterized ODE, one whose coefficients varied according to one set of independent variables,
+and whose independent variable depended on a different set on them.  The advantage being that
+the parameters can be treated as constants for the purpose of solving the ODE.
+I don't know of any way to enforce this requirement (allowing $v$ to
+depend on one set of indeterminates and allowing another set into the coefficients),
+other than having a bunch of different ansatzen to test, but of course one large ansatz could
+be constructed that would enforce nothing, but would still allow for ODE solutions of the form described next.
+
+What if the dependencies of the ODE coefficients and the ODE variable can't be separated into two different sets of variables?
+
+Then we're going to get an ODE something like this (two dimensional, for illustrative purposes):
+
+\begin{equation}
+\label{weird ODE}
+f(u,v) \frac{d^2\Psi}{dv^2} + g(u,v) \frac{d\Psi}{dv} + h(u,v) \Psi = 0
+\end{equation}
+
+the point being that we can't separate the $v$ dependency out of the coefficients.
+
+I'm not aware of any theory to handle an ODE of the form \eqref{weird ODE}, but one might exist,
+or be developed.  Would it be useful?  Perhaps.  \eqref{weird ODE} is still simpler than a PDE because
+it only involves one derivative.  The algorithm described in this paper could test for the existence
+of such solutions.  I'm somewhat skeptical of their utility.
 
 \section{Selection of an Ansatz}
 
@@ -1567,42 +1607,6 @@ Lacking a solution to helium, we can explore other important PDEs.  The Navier-S
 equation comes to mind.  I'd like to see an ansatz like this explored for Navier-Stokes:
 
 [insert diagram]
-
-Generalization of the ODE extension.
-
-Non-linear ODEs.  For a linear homogeneous second-order ODE, we have $\Psi''$, $\Psi'$, and $\Psi$,
-multiplied by polynomials in $v$.  For a non-linear ODE, we can introduce higher powers.  For example, a second
-degree nonlinear ODE would introduce $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$, and $\Psi^2$.
-
-Inhomogenous ODEs.  Just like the non-linear case, a new polynomial in $v$, which could be seen a zero-th degree in $\Psi,\Psi',\Psi''$.
-
-Parameterized ODEs.  We could allow coefficients in the ODE to involve indeterminates other than $v$,
-so long as they overlap with any of the indeterminates in $v$, or intersect with anything like
-an algebraic extension ($r^2-x^2-y^2-z^2$) that would connect variables together.  In short,
-there would need to be two independent sets of indeterminates, one that $v$ is expressed in terms of,
-and one that the coefficients of the ODE are expressed in terms of.  Then we would have to solve
-a parameterized ODE, one whose coefficients varied according to one set of independent variables,
-and whose independent variable depended on a different set on them.  The advantage being that
-the parameters can be treated as constants for the purpose of solving the ODE.
-I don't know of any way to enforce this requirement (allowing $v$ to
-depend on one set of indeterminates and allowing another set into the coefficients),
-other than having a bunch of different ansatzen to test, but of course one large ansatz could
-be constructed that would enforce nothing, but would still allow for ODE solutions of the form described next.
-
-What if the dependencies of the ODE coefficients and the ODE variable can't be separated into two different sets of variables?
-
-Then we're going to get an ODE something like this (two dimensional, for illustrative purposes):
-
-\begin{equation}
-f(u,v) \frac{d^2\Psi}{dv^2} + g(u,v) \frac{d\Psi}{dv} + h(u,v) \Psi = 0
-\end{equation}
-
-the point being that we can't separate the $v$ dependency out of the coefficients.
-
-I'm not aware of any theory to handle an ODE of the form \eqref{weird ODE}, but one might exist,
-or be developed.  Would it be useful?  Perhaps.  \eqref{weird ODE} is still simpler than a PDE because
-it only involves one derivative.  The algorithm described in this paper could test for the existence
-of such solutions.  I'm somewhat skeptical of their utility.
 
 
 As with helium, we can work incrementally towards it using smaller ansatzen.
