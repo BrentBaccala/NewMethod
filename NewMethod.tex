@@ -1451,9 +1451,25 @@ Polynomials of any (finite) degree can be used in lieu of the linear polynomials
 Generalization of the ODE extension. Non-linear and inhomogeneous ODEs can be used to construct the ansatzen, as follows.
 
 Non-linear ODEs.  For a linear homogeneous second-order ODE, we have $\Psi''$, $\Psi'$, and $\Psi$,
-multiplied by polynomials in $v$.  Our differential polynomial is first degree in $\Psi'', \Psi', \Psi$.
+multiplied by polynomials in $v$, so our differential polynomial is first degree in $\Psi$ and its derivatives $\Psi'$ and $\Psi''$.
 For a non-linear ODE, we can introduce higher degrees.  For example, a second
 degree second order ODE would add $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$, and $\Psi^2$ to the ansatz.
+See Figure \ref{nonlinear ansatz figure}
+
+\begin{equation}
+\label{ansatz 18}
+\begin{gathered}
+\Psi_x = \Psi' v_x \qquad
+\Psi_y = \Psi' v_y \qquad
+\Psi_z = \Psi' v_z \\
+\Psi'_x = \Psi'' v_x \qquad
+\Psi'_y = \Psi'' v_y \qquad
+\Psi'_z = \Psi'' v_z \\
+(a_0 + a_1 v) \Psi''^2 + (b_0 + b_1 v) \Psi''\Psi' + (c_0 + c_1 v) \Psi''\Psi + (d_0 + d_1 v) \Psi'^2 + (e_0 + e_1 v) \Psi'\Psi \\
++ (f_0 + f_1 v) \Psi^2 + (g_0 + g_1 v) \Psi'' + (h_0 + h_1 v) \Psi' + (i_0 + i_1 v) \Psi = 0 \\
+v = v_1 x + v_2 y + v_3 z + v_4 r
+\end{gathered}
+\end{equation}
 
 \begin{figure}
 \centering
@@ -1481,11 +1497,12 @@ degree second order ODE would add $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi
     \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=300pt] {differential ring};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
-\caption{A nonlinear second order homogeneous ansatz}
+\caption{A nonlinear second order second degree homogeneous ansatz}
 \label{nonlinear ansatz figure}
 \end{figure}
 
-Inhomogenous ODEs.  Just like the non-linear case, a new polynomial in $v$, which could be seen a zero-th degree in $\Psi,\Psi',\Psi''$.
+Inhomogenous ODEs.  Very similar to the non-linear case, we add a new polynomial in $v$,
+which could be seen a zero-th degree coefficient of $\Psi, \Psi', \Psi''$.
 
 Intermediate ODE used to construct the coefficient ring of the ODE proper.
 
