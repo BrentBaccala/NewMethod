@@ -38,8 +38,12 @@
 \maketitle
 
 \begin{abstract}
-The author has developed an algorithm, based on differential algebra,
+The author has developed an algorithm
 for finding exact, non-separable solutions of partial differential equations.
+The algorithm uses Ritt's full reduction algorithm and the GTZ algorithm
+to find ODEs that solve the PDE.  The algorithm has been implemented
+in software and has been used to find a previously unknown solution
+to hydrogen's Schr\"odinger equation.
 \end{abstract}
 
 \parskip 12pt
@@ -577,7 +581,7 @@ that we don't need to actually introduce any new derivations,
 so I'll write this as $\Psi'$.  Treat $\Psi$, $\Psi'$, and
 $\Psi''$ as new indeterminates.
 $\Psi$ must satisfy the minimial differential polynomial, which
-we specify in equation \eqref{ansatz 5b}, also introducing
+we specify in equation \eqref{ansatz 5b}, which also introduces
 degree bounds on the coefficients.
 
 Finally, we need to connect our new derivatives with the existing derivations.
@@ -1370,21 +1374,11 @@ can be introduced, either in parallel, allowing the ODE solutions to be combined
 that solves the PDE, or in series, allowing either the coefficients or the independent variable of one ODE
 to be formed from the solutions to a second ODE.
 
-Algebraic extensions can be introduced explicitly or implicitly.  Implicitly, considering that for a given algebraic extension:
-
-\begin{equation}
-f_n(x) y^n + \cdots + f_1(x) y + f_0(x) \qquad f_i(x) \in \mathbb{C}[x]
-\end{equation}
-
-we can form the derivative with respect to $x$ as follows:
-
-\begin{equation}
-y' = \frac{f'_n(x) y^n + \cdots + f'_1(x) y + f'_0(x)}{n f_n(x) y^{n-1} + \cdots + f_1(x)}
-\end{equation}
-
-Algebraic extensions can also be introduced explicitly.  For example, here is an ansatz that introduces the square root
+In addition to ODE extensions, algebraic extensions can be introduced either explicitly or implicitly.
+[figure] Introducing a higher degree algebraic extension is also possible.
+Figure \ref{ansatz 11}, a somewhat simpler variant on the same idea, shows an ansatz that introduces the square root
 of a first degree polynomial, then allows the ODE's independent variable to be selected from the resulting
-algebraic extension (Figure \ref{ansatz 11}):
+algebraic extension.  Its differential equations read:
 
 \begin{figure}
 \begin{center}
@@ -1431,8 +1425,9 @@ r^2 = x^2 + y^2 + z^2
 \end{equation}
 
 It is also possible to introduce additional extensions into the univariate ring from which the ODE's coefficients
-are selected, i.e.:
+are selected (Figure \ref{ansatz 17 figure}), i.e.:
 
+\begin{figure}
 \begin{center}
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
     \node (Psi) [poly, text width=100pt] {$\coeff\tikzmark{a}\,\Psi'' + \coeff\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
@@ -1453,6 +1448,9 @@ are selected, i.e.:
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \end{center}
+\caption{an ansatz with a nested ODE extension}
+\label{ansatz 17 figure}
+\end{figure}
 
 \begin{equation}
 \label{ansatz 17}
@@ -1525,6 +1523,22 @@ v = v_1 x + v_2 y + v_3 z + v_4 r
 \caption{A nonlinear second order second degree homogeneous ansatz}
 \label{nonlinear ansatz figure}
 \end{figure}
+
+Nonlinear ODEs permit algebraic extensions to be introduced implicitly.  Consider that for a given algebraic extension:
+
+\begin{equation}
+f_n(x) y^n + \cdots + f_1(x) y + f_0(x) \qquad f_i(x) \in \mathbb{C}[x]
+\end{equation}
+
+we can form the derivative with respect to $x$ as follows:
+
+\begin{equation}
+y' = \frac{f'_n(x) y^n + \cdots + f'_1(x) y + f'_0(x)}{n f_n(x) y^{n-1} + \cdots + f_1(x)}
+\end{equation}
+
+This is a non-linear ODE that is first order, $n$ degree in $y$.  It is also worthwhile to
+note that if we limit our ansatz to linear ODEs, then any algebraic extensions need
+to be introduced explicitly; i.e, a linear ODE will not match algebraic extensions.
 
 Inhomogenous ODEs.  Very similar to the non-linear case, we add a new polynomial in $v$,
 which could be seen a zero-th degree coefficient of $\Psi, \Psi', \Psi''$.
