@@ -1165,6 +1165,8 @@ and $v_1=v_2=v_3=0$, so we can normalize by setting $v_4=1$.  This immediately i
 \left(v_{3}, v_{2}, v_{1}, v_{4} - 1, c_{0} - 2, 2 E - c_{1}, b_{1}, 2 - b_{0}, a_{1} - 1, a_{0}\right)
 \end{equation}
 
+Setting these polynomials to zero and substituting into \eqref{ansatz 5b} and \eqref{ansatz 5a}, we obtain:
+
 \begin{equation}
 \label{classical eq in ideal}
 \begin{gathered}
@@ -1239,8 +1241,8 @@ v \Psi''(v) + \Psi'(v) + \Psi(v) = 0
 \end{equation}
 
 Wolfram Mathematica \cite{mathematica} can now
-analyze this equation and determine that it is equivalent
-to the Bessel function \eqref{solution}.
+analyze this equation and determine that it is solved
+by the Bessel function \eqref{solution}.
 
 \begin{scriptsize}
 \begin{verbatim}
@@ -1257,7 +1259,7 @@ leading to the following exact solution to \eqref{schrodinger hydrogen}, with $E
 \Psi = J_0(2\sqrt{x+r})
 \end{equation}
 
-where $x,y,z$ are Cartesian coordinates, $r=\sqrt{x^2+y^2+z^2}$,
+where $x,y,z$ are Cartesian coordinates, $r=\sqrt{x^2+y^2+z^2}$, $E=0$,
 and $J_0$ is the ordinary Bessel function $J_0$.
 
 Note that this solution could not be obtained by the method of separation of variables, as it is non-separable
@@ -1301,7 +1303,7 @@ Out[5]= True
 \subsection{Physical Interpretation}
 
 Since \eqref{solution} is a solution to a simple Schr\"odinger equation for hydrogen,
-it is reasonable to ask if it has any physical interpretation.  It does not.
+it is reasonable to ask if it has any physical interpretation.  (It does not.)
 
 In order to be a physically realistic solution, a function must both solve the Schr\"odinger equation
 and be a valid wavefunction.  For a given wavefunction $\Psi$, the modulus squared $|\Psi|^2$ is a probability density function
