@@ -896,6 +896,10 @@ $h$ (the ``denominator'') reads:
 64 r^{2} (v a_{1} + a_{0})
 \end{equation}
 
+Remembering that the reduction algorithm returns a remainder so that $(hp - r)$ is in the differential ideal,
+we see that $h=0$ could lead to extraneous solutions, so we require $h\ne 0$, so neither $r$ nor $(v a_1 + a_0)$
+can be zero.  In other words, the radius can't be zero, and the ODE's second order coefficient must be non-zero.
+
 \begin{comment}
 What does this mean?
 
@@ -1361,10 +1365,28 @@ Any finite linear combination of functions of the form \eqref{generalized soluti
 
 \section{Generalization of the Algorithm}
 
-More complex ansatzen can be constructed.  For example, here is an ansatz that introduces the square root
-of a first degree polynomial, then allows the ODE's independent variable to be selected from the resulting
-algebraic extension:
+The algorithm can search for solutions to arbitrary PDEs in more complex ansatzen.  Multiple ODE extensions
+can be introduced, either in parallel, allowing the ODE solutions to be combined together into a polynomial
+that solves the PDE, or in series, allowing either the coefficients or the independent variable of one ODE
+to be formed from the solutions to a second ODE.
 
+Algebraic extensions can be introduced explicitly or implicitly.  Implicitly, considering that for a given algebraic extension:
+
+\begin{equation}
+f_n(x) y^n + \cdots + f_1(x) y + f_0(x) \qquad f_i(x) \in \mathbb{C}[x]
+\end{equation}
+
+we can form the derivative with respect to $x$ as follows:
+
+\begin{equation}
+y' = \frac{f'_n(x) y^n + \cdots + f'_1(x) y + f'_0(x)}{n f_n(x) y^{n-1} + \cdots + f_1(x)}
+\end{equation}
+
+Algebraic extensions can also be introduced explicitly.  For example, here is an ansatz that introduces the square root
+of a first degree polynomial, then allows the ODE's independent variable to be selected from the resulting
+algebraic extension (Figure \ref{ansatz 11}):
+
+\begin{figure}
 \begin{center}
 \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
   \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
@@ -1388,7 +1410,9 @@ algebraic extension:
   \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {1};
 \end{tikzpicture}
 \end{center}
-
+\caption{An ansatz with an explicit algebraic extension}
+\label{ansatz 11}
+\end{figure}
 
 \begin{equation}
 \label{ansatz 16.1}
@@ -1401,7 +1425,8 @@ algebraic extension:
 \Psi'_z = \Psi'' v_z \\
 (a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \\
 v = v_1 x + v_2 y + v_3 z + v_4 r + v_5 \gamma \\
-\gamma^2 = g_1 x + g_2 y + g_3 z + g_4 r + g_5
+\gamma^2 = g_1 x + g_2 y + g_3 z + g_4 r + g_5 \\
+r^2 = x^2 + y^2 + z^2
 \end{gathered}
 \end{equation}
 
