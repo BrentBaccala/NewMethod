@@ -510,7 +510,7 @@ All derivatives of $\Psi''$ are now completely defined by these differential pol
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
     \end{scope}
-    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}\{x,y,z\}[r]/(r^2-x^2-y^2-z^2)$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \caption{An ansatz for a second-order homogenous ODE}
@@ -559,7 +559,7 @@ v = v_1 x + v_2 y + v_3 z + v_4 r
 
 Our differential ring is equipped with three derivations $dx$, $dy$, and $dz$
 (this is not apparent in the graphical representation).  Our base ring
-is $\mathbb{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$, and from this we select
+is $\mathbb{Q}\{x,y,z\}[r]/(r^2-x^2-y^2-z^2)$, and from this we select
 a linear variable $v$ using equation \eqref{ansatz 5a}.
 The $v_i$'s (and the $a_i$'s, $b_i$'s and $c_i$'s) are constants.
 Strictly speaking, a $v_0$ constant term
@@ -740,7 +740,7 @@ We'll use the ansatz from the previous section, a second order ODE with first de
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
     \end{scope}
-    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}\{x,y,z\}[r]/(r^2-x^2-y^2-z^2)$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \end{center}
@@ -1380,11 +1380,11 @@ algebraic extension:
   \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\gamma^2 = \framebox(10,10){}\tikzmark{a}$};
   \begin{scope}[on background layer]
       \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
-      \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}[x,y,z,r,\gamma]/(r^2-x^2-y^2-z^2, \gamma^2 - \coeff\,)$};
+      \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}\{x,y,z\}[r,\gamma]/(r^2-x^2-y^2-z^2, \gamma^2 - \coeff\,)$};
       \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
   \end{scope}
   \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {1};
-  \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+  \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}\{x,y,z\}[r]/(r^2-x^2-y^2-z^2)$};
   \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {1};
 \end{tikzpicture}
 \end{center}
@@ -1424,7 +1424,7 @@ are selected, i.e.:
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (Qvw) (v), inner sep=10pt, element] {};
     \end{scope}
-    \node (base) [ring, node distance=20pt, below=of Psi block.south, anchor=north, text width=250pt] {$\mathbb{Q}[x,y,z,r]/(r^2-x^2-y^2-z^2)$};
+    \node (base) [ring, node distance=20pt, below=of Psi block.south, anchor=north, text width=250pt] {$\mathbb{Q}\{x,y,z\}[r]/(r^2-x^2-y^2-z^2)$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \end{center}
