@@ -752,14 +752,6 @@ We'll use the ansatz from the previous section, a second order ODE with first de
 \begin{equation}
 \label{ansatz 5}
 \begin{gathered}
-\begin{comment}
-\Psi_x = \frac{\Psi'}{v_x} \qquad
-\Psi_y = \frac{\Psi'}{v_y} \qquad
-\Psi_z = \frac{\Psi'}{v_z} \\
-\Psi'_x = \frac{\Psi''}{v_x} \qquad
-\Psi'_y = \frac{\Psi''}{v_y} \qquad
-\Psi'_z = \frac{\Psi''}{v_z} \\
-\end{comment}
 \Psi_x = \Psi' v_x \qquad
 \Psi_y = \Psi' v_y \qquad
 \Psi_z = \Psi' v_z \\
@@ -793,10 +785,10 @@ the following system of differential polynomials:
 \begin{gather}
 \Psi_x - \Psi' v_x \qquad
 \Psi_y - \Psi' v_y \qquad
-\Psi_z - \Psi' v_z \\
+\Psi_z - \Psi' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}a,b,c} \\
 \Psi'_x - \Psi'' v_x \qquad
 \Psi'_y - \Psi'' v_y \qquad
-\Psi'_z - \Psi'' v_z \\
+\Psi'_z - \Psi'' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}d,e,f} \\
 (a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi \label{ansatz 5 plus:1} \\
 v - (v_1 x + v_2 y + v_3 z + v_4 r) \label{ansatz 5 plus:2} \\
 r^2 - (x^2 + y^2 + z^2)
