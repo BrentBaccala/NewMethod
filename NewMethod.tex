@@ -1044,7 +1044,8 @@ Non-linear ODEs can be constructed.  For a linear homogeneous second-order ODE, 
 multiplied by polynomials in $v$, so our differential polynomial is first degree in $\Psi$ and its derivatives $\Psi'$ and $\Psi''$.
 For a non-linear ODE, we can introduce higher degrees.  For example, a second
 degree second order ODE would add $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$, and $\Psi^2$ to the ansatz.
-See Figure \ref{nonlinear ansatz figure}
+See Figure \ref{nonlinear ansatz figure}.  This time, rather than use $\Psi$ to solve the PDE directly,
+we define linear polynomials $u,v,w,p$ that will be used to write the PDE.
 
 \begin{equation}
 \label{ansatz 18}
@@ -1057,7 +1058,11 @@ See Figure \ref{nonlinear ansatz figure}
 \Psi'_z = \Psi'' v_z \\
 (a_0 + a_1 v) \Psi''^2 + (b_0 + b_1 v) \Psi''\Psi' + (c_0 + c_1 v) \Psi''\Psi + (d_0 + d_1 v) \Psi'^2 + (e_0 + e_1 v) \Psi'\Psi \\
 + (f_0 + f_1 v) \Psi^2 + (g_0 + g_1 v) \Psi'' + (h_0 + h_1 v) \Psi' + (i_0 + i_1 v) \Psi = 0 \\
-v = v_1 x + v_2 y + v_3 z
+v = v_1 x + v_2 y + v_3 z \\
+u = u_1 x + u_2 y + u_3 z + u_4 \Psi \\
+v = v_1 x + v_2 y + v_3 z + v_4 \Psi \\
+w = w_1 x + w_2 y + w_3 z + w_4 \Psi \\
+p = p_1 x + p_2 y + p_3 z + p_4 \Psi \\
 \end{gathered}
 \end{equation}
 
@@ -1905,6 +1910,9 @@ equation comes to mind.  I'd like to see an ansatz like this explored for Navier
 
 
 As with helium, we can work incrementally towards it using smaller ansatzen.
+The ansatz in Figure \ref{nonlinear ansatz figure} is a step in the direction
+of analyzing Navier-Stokes.  $\bar{v} = (u,v,w)$ is meant to be a velocity field
+and $p$ is the pressure, all varying as functions of position $(x,y,z)$.
 
 Perhaps the biggest takeaway message is that we may now face a situation
 similar to that of the big AI companies, once they had developed transfomer
