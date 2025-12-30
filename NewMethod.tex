@@ -221,33 +221,6 @@ field, then listing the associated indeterminates of derivations enclosed in cur
 braces.  Each listed indeterminate corresponds to both a derivation (prefixed by $d$)
 and its associated indeterminate.
 
-For most of this paper, we'll be working in the following differential ring:
-
-\newcommand{\ols}[1]{\mskip.5\thinmuskip\overline{\mskip-.5\thinmuskip {#1} \mskip-.5\thinmuskip}\mskip.5\thinmuskip} % overline short
-\newcommand{\olsi}[1]{\,\overline{\!{#1}}} % overline short italic
-
-\begin{equation}
-\begin{gathered}
-%%   R= \mathbb{Q}\{x,y,z\}[E,a_0,...,v_4,r,\Psi,\Psi',\Psi'',v] \mod (r^2-x^2-y^2-z^2) \\
-%%   R= \mathbb{Q}\{x,y,z\}[E,a_0,...,v_4,r,\Psi,\Psi',\Psi'',v] \\
-%%   {\rm where\ } a_0,...,v_4 = a_0,a_1,b_0,b_1,c_0,c_1,v_1,v_2,v_3,v_4 \\
-   R= \mathbb{Q}\{x,y,z\}[E,a_0,a_1,b_0,b_1,c_0,c_1,v_1,v_2,v_3,v_4,r,\Psi,\Psi',\Psi'',v] \\
-\end{gathered}
-\end{equation}
-
-To elaborate,
-\begin{itemize}
-   \item $\mathbb{Q}\{x,y,z\}$ (and thus $R$) is a differential ring with derivations $dx$, $dy$ and $dz$ and matching indeterminates $x$, $y$, and $z$
-   \item $\mathbb{Q}\{x,y,z\}$ is extended by adjoining sixteen indeterminates with no matching derivations
-   \item $E,a_0,..,v_4$ are constants, which are mapped to zero by all derivations
-   \item $r$, $\Psi$, $\Psi'$, $\Psi''$, and $v$ are indeterminates that will ultimately be mapped into a function space,
-   so often we can think of them as functions.  All we can really say about them at this point,
-   aside from trivial statements like $dx(\Psi) = \Psi_x$
-   is that they are not constants.
-%%   \item An algebraic extension is used to relate $r$ to the radius
-   \item Later we will specify a ranking.
-\end{itemize}
-
 % The Risch algorithm
 
 % The use of differential Galois theory to analyze linear ODEs.
@@ -302,7 +275,9 @@ such as primary decomposition.
 Each associated prime ideal in the resulting primary decomposition can be interpreted as a family
 of solutions of the differential equation in the function space.
 
-{\bf Example:} Starting with the following Schr\"odinger equation for hydrogen:
+\section{A Motivating Example}
+
+Starting with the following Schr\"odinger equation for hydrogen:
 
 \begin{equation}
 % \label{schrodinger hydrogen}
@@ -758,6 +733,33 @@ where $\nabla$ is the Laplacian, $\Psi$ is a complex-valued wavefunction defined
 and $r$ is the distance to the origin.  We choose to work in Cartesian coordinates, so $r^2=x^2+y^2+z^2$,
 and use Hartree atomic units to render the equation dimensionless, though for our purposes we can
 ignore any physical interpretation of the problem and treat it simply as an equation to be solved.
+
+We'll work mostly in the following differential ring:
+
+\newcommand{\ols}[1]{\mskip.5\thinmuskip\overline{\mskip-.5\thinmuskip {#1} \mskip-.5\thinmuskip}\mskip.5\thinmuskip} % overline short
+\newcommand{\olsi}[1]{\,\overline{\!{#1}}} % overline short italic
+
+\begin{equation}
+\begin{gathered}
+%%   R= \mathbb{Q}\{x,y,z\}[E,a_0,...,v_4,r,\Psi,\Psi',\Psi'',v] \mod (r^2-x^2-y^2-z^2) \\
+%%   R= \mathbb{Q}\{x,y,z\}[E,a_0,...,v_4,r,\Psi,\Psi',\Psi'',v] \\
+%%   {\rm where\ } a_0,...,v_4 = a_0,a_1,b_0,b_1,c_0,c_1,v_1,v_2,v_3,v_4 \\
+   R= \mathbb{Q}\{x,y,z\}[E,a_0,a_1,b_0,b_1,c_0,c_1,v_1,v_2,v_3,v_4,r,\Psi,\Psi',\Psi'',v] \\
+\end{gathered}
+\end{equation}
+
+To elaborate,
+\begin{itemize}
+   \item $\mathbb{Q}\{x,y,z\}$ (and thus $R$) is a differential ring with derivations $dx$, $dy$ and $dz$ and matching indeterminates $x$, $y$, and $z$
+   \item $\mathbb{Q}\{x,y,z\}$ is extended by adjoining sixteen indeterminates with no matching derivations
+   \item $E,a_0,..,v_4$ are constants, which are mapped to zero by all derivations
+   \item $r$, $\Psi$, $\Psi'$, $\Psi''$, and $v$ are indeterminates that will ultimately be mapped into a function space,
+   so often we can think of them as functions.  All we can really say about them at this point,
+   aside from trivial statements like $dx(\Psi) = \Psi_x$
+   is that they are not constants.
+%%   \item An algebraic extension is used to relate $r$ to the radius
+   \item Later we will specify a ranking.
+\end{itemize}
 
 \subsection{Ansatz}
 
