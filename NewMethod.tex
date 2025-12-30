@@ -399,27 +399,29 @@ The {\bf ansatz} is equations \eqref{ansatz 1a} and \eqref{ansatz 1b}.  The goal
 \section{Solution Algorithm}
 \subsection{The Ansatz}
 
-These are the primary requirements
-for an {\bf ansatz}:
+The primary requirement for an {\bf ansatz} is that it be expressed using differential polynomials,
+as this makes it ammenable to the techniques of differential algebra.  This excludes any
+kind of boundary conditions (which would require evaluating functions at some boundary)
+or Sobolov space restrictions (which would require evaluating integrals of the function),
+but admits almost any differential equation imaginable.
 
-\begin{itemize}
-%% \item it must be formed from a finite sequence of linear ODE and algebraic extensions, and
-\item it expresses a restricted form for the solution to the PDE
-\item it is expressed using differential polynomials,
-\item it may involve additional indeterminates, which may or may not be constants
-\end{itemize}
+Restricting from differential equations to differential
+polynomials is not a sever limitation, as so many elementary and special functions
+can be described as the solutions of differential polynomials.  For example, both
+$y=\cos \theta$ and $y=\sin \theta$ are solutions to the differential polynomial equation
+$y_{\theta\theta} + y = 0$, and can easily be introduced into the system (if desired)
+by adding $y_{\theta\theta} +y$ to the system.
 
-%Additionally, I am specifically looking for solutions that can be constructed using ODEs.
-One of the most fundamental questions to ask of a PDE is whether can it
-be solved using ODEs.  We can't definitely answer this question using
-this algorithm, but as these are the types of solutions I am interested in,
-all of the current ansatzen attempt to express solutions to the PDE using
-a finite number of ODEs.
+My primary goal is to ``solve'' a PDE by finding solutions described using ODEs.
 
-For the present work, I restrict to homogeneous linear ODEs,
-because the PDEs I am primarily interested in solving (various forms of Schr\"odinger's equation)
-are homogeneous and linear, so I'm hopeful that homogeneous linear ODEs will suffice to solve them.
-This is not a fundamental limitation of the algorithm.
+Therefore, all of my current ansatzen attempt to express solutions to the PDE using
+a finite number of ODEs.  They do not necessarily have to be linear or homogenous,
+but for the moment let's consider a homogenous linear example.
+
+% For the present work, I restrict to homogeneous linear ODEs,
+% because the PDEs I am primarily interested in solving (various forms of Schr\"odinger's equation)
+% are homogeneous and linear, so I'm hopeful that homogeneous linear ODEs will suffice to solve them.
+% This is not a fundamental limitation of the algorithm.
 
 A $n^{\rm th}$-order homogeneous linear ODE takes the form:
 
@@ -428,22 +430,20 @@ a_n(v) y^{(n)} + a_{n-1}(v) y^{(n-1)} \cdots a_1(v) y' + a_0(v) y = 0
 \end{equation}
 
 where $y^{(n)}, y^{(n-1)}, ... y'$ are derivatives of the dependent variable $y$ with respect to the independent variable $v$.
+Note that all of the coefficient functions are univariate functions of $v$.
 
 % How to introduce a new ODE?  First, we wish to avoid the complexities of introducing new derivations,
 % so we seek to specify how the ODE behaves under the existing derivations.
 
-We introduce the dependent variable $y$ by adjoining a new indeterminant that is defined using a differential polynomial
-whose coefficients are all univariate functions of a single {\it independent variable} $v$,
-and whose derivatives are all taken with respect to that
-independent variable.  This independent variable $v$ is also a new indeterminant,
-selected from the underlying field and itself parameterized by constants,
-which is expressed using a simple equality between the new indeterminant $v$ and its parameterized form.
+To describe this equation using differential polynomials, we introduce $n+2$ new indeterminates.
+We need $n+1$ indeterminates for $y$ and its first $n$ derivatives, and we
+introduce another indeterminate for the {\it independent variable} $v$.
 
-The coefficients of the ODE's defining differential polynomial are
+We create a differential polynomial
+whose coefficients are polynomials in $v$ with constant coefficients.
+In other words, these coefficients of the ODE's defining differential polynomial are
 selected not from the existing field, but rather from ${\mathbb Q}(v)$, an auxiliary field
 constructed using the independent variable $v$.
-We could also consider coefficients selected from an extension
-of ${\mathbb Q}(v)$, but that is not required for the present work.
 
 {\bf Example:} Over the rational function field $\mathbb{C}(x)$, we can construct an ODE
 extension specified by the dependent indeterminate $\Psi$, independent indeterminate $v$, and differential polynomial
@@ -452,11 +452,21 @@ maps to the analytic equation $\frac{d\Psi}{dv}=\Psi$ and is solved
 by the analytic functions $Ae^v$ ($A$ is an arbitrary constant).  If $v=x+r$, then
 the functions $Ae^{x+r}$ are solutions to this ODE extension.
 
-How can derivatives with respect to a new independent variable be connected with the existing derivations?
-We can expess our previously existing derivatives in terms of the new one using the chain rule.
-In fact, all that required is to specify how the new interderminates behave under the existing
-derivations, and that relationship is simply ${\rm d}\Psi/{\rm d}x = {\rm d}\Psi/{\rm d}v\cdot {\rm d}v/{\rm d}x$ (analytically).
-Algebraically, we'll introduce a new indeterminate $\Psi'$ and write $\Psi_x = \Psi' v_x$
+How do the existing derivations operate on the new indeterminates?  The independent variable needs
+no special attention; it is the operation of the derivations on the dependent variable and its derivatives that must be specified.
+% We can expess our previously existing derivatives in terms of the new one using the chain rule.
+All that required is the chain rule.  We need to specify how the new interderminates behave under the existing
+derivations, and that relationship is analytically:
+
+\begin{equation}
+\frac{{\rm d}\Psi}{{\rm d}x} = \frac{{\rm d}\Psi}{{\rm d}v} \frac{{\rm d}v}{{\rm d}x}
+\end{equation}
+
+Algebraically, we write:
+
+\begin{equation}
+\Psi_x = \Psi' v_x
+\end{equation}
 
 I use apostrophes, and not the jet notation subscripts, when writing
 the differential polynomial in the ODE case to emphasize that we are not introducing a new derivation,
@@ -1434,6 +1444,9 @@ v = v_1 x + v_2 y + v_3 z + v_4 r + v_5 \gamma \\
 r^2 = x^2 + y^2 + z^2
 \end{gathered}
 \end{equation}
+
+We could also consider coefficients of the differential polynomial selected from an extension
+of ${\mathbb Q}(v)$, either algebraic or ODE.
 
 It is also possible to introduce additional extensions into the univariate ring from which the ODE's coefficients
 are selected (Figure \ref{ansatz 17 figure}), i.e.:
