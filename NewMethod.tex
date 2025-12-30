@@ -802,7 +802,7 @@ Multiple extensions can be assembled together into a tower.  Both ODE and algebr
 Figure \ref{ansatz 12 figure}'s ansatz shows two nested ODE extensions.
 
 \begin{subequations}
-\label{ansatz 11 plus}
+\label{ansatz 12 plus}
 \begin{gather}
 \Psi_x = \Psi' v_x \qquad
 \Psi_y = \Psi' v_y \qquad
@@ -810,16 +810,16 @@ Figure \ref{ansatz 12 figure}'s ansatz shows two nested ODE extensions.
 \Psi'_x = \Psi'' v_x \qquad
 \Psi'_y = \Psi'' v_y \qquad
 \Psi'_z = \Psi'' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}d,e,f} \\
-(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \label{ansatz 11 plus:1} \\
-v = v_1 x + v_2 y + v_3 z + v_4 r + v_5 \Theta \label{ansatz 11 plus:2} \\
+(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \label{ansatz 12 plus:1} \\
+v = v_1 x + v_2 y + v_3 z + v_4 r + v_5 \Theta \label{ansatz 12 plus:2} \\
 \Theta_x = \Theta' v_x \qquad
 \Theta_y = \Theta' v_y \qquad
 \Theta_z = \Theta' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}i,j,k} \\
 \Theta'_x = \Theta'' v_x \qquad
 \Theta'_y = \Theta'' v_y \qquad
 \Theta'_z = \Theta'' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}l,m,n} \\
-(d_0 + d_1 u) \Theta'' + (e_0 + e_1 u) \Theta' + (f_0 + f_1 u) \Theta = 0 \label{ansatz 11 plus:1} \\
-u = u_1 x + u_2 y + u_3 z + u_4 r \label{ansatz 11 plus:2} \\
+(d_0 + d_1 u) \Theta'' + (e_0 + e_1 u) \Theta' + (f_0 + f_1 u) \Theta = 0 \label{ansatz 12 plus:3} \\
+u = u_1 x + u_2 y + u_3 z + u_4 r \label{ansatz 12 plus:4} \\
 r^2 = x^2 + y^2 + z^2
 \end{gather}
 \end{subequations}
@@ -872,8 +872,8 @@ Figure \ref{ansatz 11 figure}'s ansatz allows a second-degree algebraic extensio
 \Psi'_x = \Psi'' v_x \qquad
 \Psi'_y = \Psi'' v_y \qquad
 \Psi'_z = \Psi'' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}d,e,f} \\
-(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \label{ansatz 5 plus:1} \\
-v = (v_1 x + v_2 y + v_3 z + v_4 r + v_5 \gamma) \label{ansatz 5 plus:2} \\
+(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \label{ansatz 11 plus:1} \\
+v = (v_1 x + v_2 y + v_3 z + v_4 r + v_5 \gamma) \label{ansatz 11 plus:2} \\
 g_0 = (g_{00} x + g_{01} y + g_{02} z + g_{03} r) \\
 g_1 = (g_{10} x + g_{11} y + g_{12} z + g_{13} r) \\
 g_2 = (g_{20} x + g_{21} y + g_{22} z + g_{23} r) \\
@@ -917,12 +917,13 @@ and a square root used in the formation of the independent variable}
 \end{figure}
 
 Second degree algebraic extensions can be specified more concisely using a square root.  Higher degree parameterized
-polynomials can be used, second degree, in this case.  Note that a different set of derivations is used
-($r_1, r_2, r_{12}$ instead of $x,y,z$) and that no algebraic extension is specified to define $r$, presumably
+polynomials can be used, second degree, in this case.
+
+Note that a different set of derivations is used and that no algebraic extension is specified to define $r$, presumably
 because it isn't needed to construct the PDE.
 
 \begin{subequations}
-\label{ansatz 11 plus}
+\label{ansatz 16 plus}
 \begin{gather}
 \Psi_{r_1} = \Psi' v_{r_1} \qquad
 \Psi_{r_2} = \Psi' v_{r_2} \qquad
@@ -934,7 +935,7 @@ because it isn't needed to construct the PDE.
 v = v_1 r_1 + v_2 r_2 + v_3 r_{12} + v_4 \gamma + v_5 r_1^2 + v_6 r_2^2 \nonumber\\
 + v_7 r_{12}^2 + v_8 r_1 r_2 + v_9 r_1 r_{12} + v_{10} r_2 r_{12} + v_{11} \gamma r_1 + v_{12} \gamma r_2 + v_{13} \gamma r_{12} \label{ansatz 16 plus:2} \\
 \gamma^2 = g_0 + g_1 r_1 + g_2 r_2 + g_3 r_{12} + g_4 r_1^2 + g_5 r_2^2 + g_6 r_{12}^2 \nonumber\\
-+ g_7 r_1 r_2 + g_8 r_1 r_{12} + g_9 r_2 r_{12} \label{ansatz 16 plus:2}
++ g_7 r_1 r_2 + g_8 r_1 r_{12} + g_9 r_2 r_{12} \label{ansatz 16 plus:3}
 \end{gather}
 \end{subequations}
 
@@ -1023,7 +1024,7 @@ v = v_1 x + v_2 y + v_3 z
 Algebraic extensions can be introduced in the ODE coefficient ring.
 
 \begin{equation}
-\label{ansatz 17}
+\label{ansatz 13}
 \begin{gathered}
 \Psi_x = \Psi' v_x \qquad
 \Psi_y = \Psi' v_y \qquad
@@ -1770,7 +1771,7 @@ to be formed from the solutions to a second ODE.
 
 In addition to ODE extensions, algebraic extensions can be introduced either explicitly or implicitly.
 [figure] Introducing a higher degree algebraic extension is also possible.
-Figure \ref{ansatz 11}, a somewhat simpler variant on the same idea, shows an ansatz that introduces the square root
+Figure \ref{ansatz 11 figure}, a somewhat simpler variant on the same idea, shows an ansatz that introduces the square root
 of a first degree polynomial, then allows the ODE's independent variable to be selected from the resulting
 algebraic extension.  Its differential equations read:
 
