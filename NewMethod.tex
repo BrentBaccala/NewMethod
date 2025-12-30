@@ -275,6 +275,12 @@ such as primary decomposition.
 Each associated prime ideal in the resulting primary decomposition can be interpreted as a family
 of solutions of the differential equation in the function space.
 
+In short, rather than attempt to derive differential equations that apply to all solutions
+of the PDE, we restrict our attention to an {\bf ansatz}, a subset of the function
+space in which we seek solutions, parameterized as a finite dimensional vector space over the constants.
+If we can, by luck or by theory, pick a good ansatz, then we have
+a computable algorithm to find the solutions therein.
+
 \section{A Motivating Example}
 
 Starting with the following Schr\"odinger equation for hydrogen:
@@ -290,13 +296,14 @@ We can require the solution to solve the following parametized ODE:
 \begin{gathered}
 (a_0 + a_1 v) \frac{d^2\Psi(v)}{dv^2} + (b_0 + b_1 v) \frac{d\Psi(v)}{dv} + (c_0 + c_1 v) \Psi(v) = 0
 \end{gathered}
+\label{ansatz 1a}
 \end{equation}
 
 where $\Psi(v)$ is a univariate function of some variable $v$, itself expressed in a parameterized form:
 
 \begin{equation}
-% \label{ansatz 5a}
 v = v_1 x + v_2 y + v_3 z + v_4 r
+\label{ansatz 1b}
 \end{equation}
 
 and expect to find that for certain constant values:
@@ -308,6 +315,7 @@ b_0 = c_0 = 2 \qquad
 c_1 = E \\
 a_0 = b_1 = v_1 = v_2 = v_3 = 0
 \end{gathered}
+\label{ansatz 1sol}
 \end{equation}
 
 we will obtain the classical radial equation for hydrogen:
@@ -320,7 +328,14 @@ r \frac{d^2\Psi(r)}{dr^2} + 2 \frac{d\Psi(r)}{dr} + 2(1 + E r) \Psi(r) = 0
 \end{equation}
 
 a result more commonly derived using separation of variables.  Solving the radial equation
-yields the ground state solution of hydrogen ($e^{-r}$ when $E=-1/2$).
+yields the ground state solution of hydrogen:
+
+\begin{equation}
+\begin{gathered}
+\Psi(r)=e^{-r} \\
+E=-1/2
+\end{gathered}
+\end{equation}
 
 %In the differential algebraic geometry setting, remember that the indeterminates
 %take on values in some function field.  Otherwise, how could derivation be expressed?
@@ -379,11 +394,7 @@ yields the ground state solution of hydrogen ($e^{-r}$ when $E=-1/2$).
 %to achieve this, and no matter how big and complicated our equations become,
 %we're only searching part of the function space.
 
-In short, rather than attempt to derive differential equations that apply to all solutions
-of the PDE, we restrict our attention to an {\bf ansatz}, a subset of the function
-space in which we seek solutions, parameterized as a finite dimensional vector space over the constants.
-If we can, by luck or by theory, pick a good ansatz, then we have
-a computable algorithm to find the solutions therein.
+The {\bf ansatz} is equations \eqref{ansatz 1a} and \eqref{ansatz 1b}.  The goal of the algorithm is to find all solutions like \eqref{ansatz 1sol}.
 
 \section{Solution Algorithm}
 \subsection{The Ansatz}
