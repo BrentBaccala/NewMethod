@@ -1075,6 +1075,14 @@ v = v_1 x + v_2 y + v_3 z
     \node (v) [poly, text width=20pt, node distance=20pt, right=of u] {v};
     \node (w) [poly, text width=20pt, node distance=20pt, right=of v] {w};
     \node (p) [poly, text width=20pt, node distance=20pt, right=of w] {p};
+    \coordinate (bwb2) at ($(u.south)!0.5!(Psi block field.north)$);
+    \draw[degree] (u.south) -- (u.south|-bwb2.north) node[right, pos=0.5] {1};
+    \draw[degree] (v.south) -- (v.south|-bwb2.north) node[right, pos=0.5] {1};
+    \draw[degree] (w.south) -- (w.south|-bwb2.north) node[right, pos=0.5] {1};
+    \draw[degree] (p.south) -- (p.south|-bwb2.north) node[right, pos=0.5] {1};
+    \draw[degree] (u.south|-bwb2.north) -- (p.south|-bwb2.north);
+    \coordinate (bwb3) at ($(u.south|-bwb2.north)!0.5!(p.south|-bwb2.north)$);
+    \draw[degree] (bwb3) -- (bwb3|-Psi block field.north);
   \end{tikzpicture}
 }
 \end{minipage}%
