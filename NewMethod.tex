@@ -40,7 +40,7 @@
 
 \begin{abstract}
 The author has developed an algorithm
-for finding exact, non-separable solutions of partial differential equations.
+for finding exact, non-sep\-arable solutions of partial differential equations.
 The algorithm uses Ritt's full reduction algorithm and the GTZ algorithm
 to find ODEs that solve the PDE.  The algorithm has been implemented
 in software and has been used to find a previously unknown solution
@@ -655,9 +655,9 @@ the union of which form the solution space of the PDE in the differential functi
 
 \begin{figure}[H]
 \fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule}
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
 \centering
-\scalebox{0.75}{
+\scalebox{0.73}{
   \begin{tikzpicture}[remember picture]
     \node (oPsi) [poly, text width=200pt] {Polynomial selected from ring: $\framebox(10,10){}\tikzmark{a}$};
     \node (ring) [ring, node distance=50pt, below of=oPsi, text width=200pt] {differential ring, labeled like\\${\mathbb C}\{x,y,z\}$};
@@ -702,7 +702,7 @@ Over the next several pages, I'll describe several possible ansatzen.
 
 \begin{figure}[H]
 \fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule}
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
 \centering
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
     \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
@@ -785,7 +785,7 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE.
 
 \begin{figure}[H]
 \fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule}
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
 \centering
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
     \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
@@ -852,7 +852,7 @@ r^2 = x^2 + y^2 + z^2
 
 \begin{figure}[H]
 \fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule}
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
 \centering
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
     \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
@@ -879,8 +879,7 @@ r^2 = x^2 + y^2 + z^2
   \end{tikzpicture}
 \end{minipage}%
 }
-\caption{An ansatz for a second-order linear homogenous ODE with first degree coefficients and first degree independent variable,
-and an algebraic extension used in the formation of the independent variable}
+\caption{An ansatz for a second-order linear homogenous ODE with first degree coefficients and first degree independent variable, and an algebraic extension used in the formation of the independent variable}
 \label{ansatz 11 figure}
 \end{figure}
 
@@ -910,7 +909,7 @@ r^2 - (x^2 + y^2 + z^2)
 
 \begin{figure}[H]
 \fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule}
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
   \centering
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
     \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
@@ -935,8 +934,7 @@ r^2 - (x^2 + y^2 + z^2)
   \end{tikzpicture}
 \end{minipage}
 }
-\caption{An ansatz for a second-order linear homogenous ODE with second degree coefficients and second degree independent variable,
-and a square root used in the formation of the independent variable}
+\caption{An ansatz for a second-order linear homogenous ODE with second degree coefficients and second degree independent variable, and a square root used in the formation of the independent variable}
 \label{ansatz 16 figure}
 \end{figure}
 
@@ -967,7 +965,7 @@ v = v_1 r_1 + v_2 r_2 + v_3 r_{12} + v_4 \gamma + v_5 r_1^2 + v_6 r_2^2 \nonumbe
 
 \begin{figure}[H]
 \fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule}
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
 \begin{center}
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
     \node (Psi) [poly, text width=100pt] {$\coeff\tikzmark{a}\,\Psi'' + \coeff\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
@@ -1016,7 +1014,7 @@ v = v_1 x + v_2 y + v_3 z
 
 \begin{figure}[H]
 \fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule}
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
 \centering
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
     \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
@@ -1067,7 +1065,7 @@ v = v_1 x + v_2 y + v_3 z
 
 \begin{figure}[H]
 \fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule}
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
 \centering
 \scalebox{0.9}{
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
@@ -1135,8 +1133,9 @@ like Navier-Stokes.
 \Psi'_x = \Psi'' v_x \qquad
 \Psi'_y = \Psi'' v_y \qquad
 \Psi'_z = \Psi'' v_z \\
-(a_0 + a_1 v) \Psi''^2 + (b_0 + b_1 v) \Psi''\Psi' + (c_0 + c_1 v) \Psi''\Psi + (d_0 + d_1 v) \Psi'^2 + (e_0 + e_1 v) \Psi'\Psi \\
-+ (f_0 + f_1 v) \Psi^2 + (g_0 + g_1 v) \Psi'' + (h_0 + h_1 v) \Psi' + (i_0 + i_1 v) \Psi = 0 \\
+(a_0 + a_1 v) \Psi''^2 + (b_0 + b_1 v) \Psi''\Psi' + (c_0 + c_1 v) \Psi''\Psi \\
+\quad + (d_0 + d_1 v) \Psi'^2 + (e_0 + e_1 v) \Psi'\Psi + (f_0 + f_1 v) \Psi^2 \\
+\quad + (g_0 + g_1 v) \Psi'' + (h_0 + h_1 v) \Psi' + (i_0 + i_1 v) \Psi = 0 \\
 v = v_1 x + v_2 y + v_3 z \\
 u = u_1 x + u_2 y + u_3 z + u_4 \Psi \\
 v = v_1 x + v_2 y + v_3 z + v_4 \Psi \\
@@ -1150,7 +1149,7 @@ p = p_1 x + p_2 y + p_3 z + p_4 \Psi \\
 \vfill\eject
 \section{Example: A New Solution of Hydrogen}
 
-We seek to demonstrate the operation of the algorithm on the following Schr\"odinger equation for hydrogen:
+We seek to demonstrate the operation of the algorithm on the following Schr\"o\-dinger equation for hydrogen:
 
 \begin{equation}
 \label{schrodinger hydrogen}
@@ -1706,7 +1705,7 @@ Note that this solution could not be obtained by the method of separation of var
 %The result can be easily verified using Mathematica\footnote{A manual verification is presented in an appendix}, as follows:
 The result can be easily verified using Wolfram Mathematica \cite{mathematica}, as follows:
 
-\begin{scriptsize}
+\begin{tiny}
 \begin{verbatim}
 In[1]:= Psif := Psi[x, y, z]
 
@@ -1729,7 +1728,7 @@ In[5]:= FullSimplify[eqn /. Psi -> ({x, y, z} |-> sol[x, y, z])]
 
 Out[5]= True
 \end{verbatim}
-\end{scriptsize}
+\end{tiny}
 
 \subsection{Physical Interpretation}
 
