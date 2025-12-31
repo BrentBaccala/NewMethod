@@ -407,7 +407,7 @@ or Sobolov space restrictions (which would require evaluating integrals of the f
 but admits almost any differential equation imaginable.
 
 Restricting from differential equations to differential
-polynomials is not a sever limitation, as so many elementary and special functions
+polynomials is not a severe limitation, as so many elementary and special functions
 can be described as the solutions of differential polynomials.  For example, both
 $y=\cos \theta$ and $y=\sin \theta$ are solutions to the differential polynomial equation
 $y_{\theta\theta} + y = 0$, and can easily be introduced into the system (if desired)
@@ -509,8 +509,30 @@ we use Ritt's full reduction algorithm; see \cite{Ritt} Chapter I, \S 6 or \cite
 A compact description of the relevant concepts can be found in Section 3 of \cite{blop}.
 %% A comparison of various techniques used to solve systems of polynomial and differential polynomial equations can be found in \cite{aistleitner}.
 
-Ritt's reduction algorithm operates on differential polynomials contained in a differential ring,
-and requires a {\it ranking} to be specified on the indeterminants and their derivatives.
+Ritt's reduction algorithm operates on differential polynomials in a differential ring,
+so the PDE must be specified as a differential polynomial.  This only presents a challenge
+if the PDE involves operations other than the basic polynomial operations of addition,
+subtraction, multiplication and division.  Roots can be constructed using algebraic
+extensions.  If the PDE is expressed using other functions, however, they must be replaced
+with differential polynomial analogues.  The difficulty of doing this depends on the
+exact nature of the functions.
+
+For example, consider a PDE involving the function $\cos x$.  We can replace this with a new indeterminate, say $f$,
+and write $f'' = -f$, where the derivative is taken with respect to $x$ and the same technique from the
+previous section is used to connect this with the existing derivations.
+Likewise, $g=\exp x$ can be expressed using $g' = g$ and $h=\ln x$ using $h' = x'/x$.
+
+This does not seem to present a serious problem.  In fact, it is quite common to find
+a space of solutions for a differential equation, and then to impose additional
+restrictions (such as boundary conditions) to further restrict those solutions.
+The solutions of $f'' = f$, for example, will be of the form $A\cos x + B\sin x$,
+and imposing the boundary conditions $f(0)=1$ and $f'(0)=0$ would restrict $f$
+to be $\cos x$.  Likewise, we can use $f$ for our calculations with differential polynomials and,
+at the conclusion of the calculations,
+restrict $f$ to be $\cos x$, not to meet a boundary condition, but to force
+$f$ to be of the form required by the PDE.
+
+Ritt's reduction algorithm also requires a {\it ranking} to be specified on the indeterminants and their derivatives.
 This is a distinct concept from an ordering on the monomials, as used, for example, in defining a Gr\"obner basis.
 
 A ranking on a differential ring $R$ is an ordering on the ring's indeterminates and their derivatives that meets two compatibility conditions:
