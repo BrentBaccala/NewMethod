@@ -246,7 +246,7 @@ or a Sobolov space like $H^2(\mathbb{R}^n)$.
 %be the function space.  This is by far the most common approach in differential algebraic geometry.
 
 However, I find it useful to consider the function space as something quite
-small, parametized by a finite number of constants, that we pick for our purpose of solving some particular
+small, parameterized by a finite number of constants, that we pick for our purpose of solving some particular
 equation or system of equations.  The great advantage of this approach is that by using
 a finite number of parameters to describe our function space, we can
 use the tools of algebraic geometry to characterize the
@@ -269,8 +269,8 @@ only the constants.
 
 What kinds of small function spaces are useful?
 Starting with a PDE, I have obtained good results by restricting it to be solved using
-ODEs of certain limited forms.  Parametizing those forms with a finite number
-of constants yields a function space parametized by constants, and therefore
+ODEs of certain limited forms.  Parameterizing those forms with a finite number
+of constants yields a function space parameterized by constants, and therefore
 describing a solution variety in something like $\mathbb{C}^n$.  Such a
 solution space is then ammenable to the techniques of algebraic geometry,
 such as primary decomposition.
@@ -292,7 +292,7 @@ Starting with the following Schr\"odinger equation for hydrogen:
 -\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
 \end{equation}
 
-We can require the solution to solve the following parametized ODE:
+We can require the solution to solve the following parameterized ODE:
 
 \begin{equation}
 \begin{gathered}
@@ -503,15 +503,9 @@ of parameters, to make the computation tractable.
 
 Several example ansatzen will be presented in Section \ref{A Collection of Ansatzen}.
 
-\subsection{Differential Reduction}
+\subsection{The PDE}
 
-Having defined an ansatz, we now use it to reduce our original PDE.  For this purpose,
-we use Ritt's full reduction algorithm; see \cite{Ritt} Chapter I, \S 6 or \cite{Kolchin}, Chapter I, \S 9.
-A compact description of the relevant concepts can be found in Section 3 of \cite{blop}.
-%% A comparison of various techniques used to solve systems of polynomial and differential polynomial equations can be found in \cite{aistleitner}.
-
-Ritt's reduction algorithm operates on differential polynomials in a differential ring,
-so the PDE must be specified as a differential polynomial.  This only presents a challenge
+The PDE must be specified as a differential polynomial.  This only presents a challenge
 if the PDE involves operations other than the basic polynomial operations of addition,
 subtraction, multiplication and division.  Roots can be constructed using algebraic
 extensions.  If the PDE is expressed using other functions, however, they must be replaced
@@ -533,7 +527,14 @@ at the conclusion of the calculations,
 restrict $f$ to be $\cos x$, not to meet a boundary condition, but to force
 $f$ to be of the form required by the PDE.
 
-Ritt's reduction algorithm also requires a {\it ranking} to be specified on the indeterminants and their derivatives.
+\subsection{Differential Reduction}
+
+Having defined an ansatz, we now use it to reduce our original PDE.  For this purpose,
+we use Ritt's full reduction algorithm; see \cite{Ritt} Chapter I, \S 6 or \cite{Kolchin}, Chapter I, \S 9.
+A compact description of the relevant concepts can be found in Section 3 of \cite{blop}.
+%% A comparison of various techniques used to solve systems of polynomial and differential polynomial equations can be found in \cite{aistleitner}.
+
+Ritt's reduction algorithm requires a {\it ranking} to be specified on the indeterminants and their derivatives.
 This is a distinct concept from an ordering on the monomials, as used, for example, in defining a Gr\"obner basis.
 
 A ranking on a differential ring $R$ is an ordering on the ring's indeterminates and their derivatives that meets two compatibility conditions:
@@ -1088,10 +1089,10 @@ v = v_1 x + v_2 y + v_3 z
     \draw[degree] (Qv.north|-bwb2) -- (Qv.north);
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
-        \node (Psi block title) [node distance=20pt, above=of Psi block.north, anchor=center, text centered] {$\mathbb{Q}\{x,y,z\}[\Psi,\Psi',\Psi'']$};
+        \node (Psi block title) [node distance=20pt, above=of Psi block.north, anchor=center, text centered] {$\mathbb{Q}\{x,y,z,t\}[\Psi,\Psi',\Psi'']$};
         \node (Psi block field) [ring, fill=none, fit=(Psi block) (Psi block title)] {};
     \end{scope}
-    \node (base) [ring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}\{x,y,z\}$};
+    \node (base) [ring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}\{x,y,z,t\}$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
 
     \node (u) [poly, text width=20pt, node distance=20pt, above=of Psi block field.north west] {u};
@@ -1121,26 +1122,27 @@ degree second order ODE would add $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi
 See Figure \ref{nonlinear ansatz figure}.
 
 This time, rather than use $\Psi$ to solve the PDE directly,
-we define linear polynomials $u,v,w,p$ that will be used to write a system of PDEs,
-like Navier-Stokes.
+we define linear polynomials $u,v,w,p$ that will be used to write a system of PDEs.
 
 \begin{equation}
 \label{ansatz 18}
 \begin{gathered}
 \Psi_x = \Psi' v_x \qquad
 \Psi_y = \Psi' v_y \qquad
-\Psi_z = \Psi' v_z \\
+\Psi_z = \Psi' v_z \qquad
+\Psi_t = \Psi' v_t \\
 \Psi'_x = \Psi'' v_x \qquad
 \Psi'_y = \Psi'' v_y \qquad
-\Psi'_z = \Psi'' v_z \\
+\Psi'_z = \Psi'' v_z \qquad
+\Psi'_t = \Psi'' v_t \\
 (a_0 + a_1 v) \Psi''^2 + (b_0 + b_1 v) \Psi''\Psi' + (c_0 + c_1 v) \Psi''\Psi \\
 \quad + (d_0 + d_1 v) \Psi'^2 + (e_0 + e_1 v) \Psi'\Psi + (f_0 + f_1 v) \Psi^2 \\
 \quad + (g_0 + g_1 v) \Psi'' + (h_0 + h_1 v) \Psi' + (i_0 + i_1 v) \Psi = 0 \\
-v = v_1 x + v_2 y + v_3 z \\
-u = u_1 x + u_2 y + u_3 z + u_4 \Psi \\
-v = v_1 x + v_2 y + v_3 z + v_4 \Psi \\
-w = w_1 x + w_2 y + w_3 z + w_4 \Psi \\
-p = p_1 x + p_2 y + p_3 z + p_4 \Psi \\
+v = v_1 x + v_2 y + v_3 z + v_4 t \\
+u = u_1 x + u_2 y + u_3 z + u_4 t + u_5 \Psi \\
+v = v_1 x + v_2 y + v_3 z + v_4 t + v_5 \Psi \\
+w = w_1 x + w_2 y + w_3 z + w_4 t + w_5 \Psi \\
+p = p_1 x + p_2 y + p_3 z + p_4 t + p_5 \Psi \\
 \end{gathered}
 \end{equation}
 
@@ -1267,7 +1269,7 @@ This requires that $\Psi_x$ be ranked above both $\Psi'$ and $v_x$.
 \eqref{ranking 1} and \eqref{ranking compatibility} already imply that $\Psi_x > v_x$.
 $\Psi_x$ will be ranked higher than $\Psi'$ if \eqref{ranking 1} is ranked
 in an {\it orderly} manner,
-meaning that all of the derivatives (like $\Psi_x$) rank higher than the pure indeterminates (like $\Psi'$).
+meaning that all of the derivatives (like $\Psi_x$) rank higher than the pure indeterminates (like $\Psi$ and $\Psi'$).
 
 We want the derivatives of $v$ to be eliminated in favor of $r$, so we need $v > r$.
 For example, applying $dx$ to \eqref{ansatz 5 plus:2}, we obtain
@@ -1816,7 +1818,8 @@ then allows the ODE's independent variable to be selected from the resulting
 algebraic extension.
 
 Parameterized polynomials of any (finite) degree can be used in lieu of the linear polynomials.  Figure \ref{ansatz 16 figure}
-illustrates the use of second degree polynomials.
+illustrates the use of second degree polynomials.  Polynomials can be further restricted.  Perhaps we have some
+theoretical consideration which suggests that the independent variable should be symmetric.
 
 Nonlinear ODEs can be introduced, as shown in Figure \ref{ansatz 17 figure}.
 
@@ -1872,20 +1875,38 @@ of such solutions.  I'm somewhat skeptical of their utility.
 
 The most obvious question remains: how to select an ansatz?
 
-I do not have any very good answer to that question.  The ansatz used for the hydrogen example
-was an educated guess.  It was designed to be general enough to find the existing
-classical solution, to be used for testing the software.  The appearance of \eqref{ideal:1}
-was not anticipated.
+Our goal is to build a finite tower of ODE and/or algebraic extensions that can be used
+to express solutions of a PDE.
 
-Nevertheless, let me comment briefly on the theoretical picture.
+First, can we build such a finite tower to express all of the solutions of the PDE?
+This seems unlikely, as the solutions of a PDE would include solutions for all possible
+boundary conditions.
 
-Picard-Vessiot theory.
-Great progress has been made since the time of Kolchin in analyzing ordinary
-differential equations.  An $n$-order linear ODE,
-restricted to analytic solutions (complex? what function space?), will have at most an $n$-dimensional
-solution space.  After selecting an arbitrary basis, all of these
-solutions can be represented by an $n$-tuple of complex constants.
-Any automorphism (permutation?) of these solutions can be represented by
+For example, the simple heat equation $u_t = u_{xx}$ admits an infinity of solutions of the form
+
+\begin{equation}
+u(x,t) = \frac{1}{\sqrt{4\pi t}}e^{-\frac{(x-x_0)^2}{4t}} \qquad \forall x_0\in\mathbb{R}
+\end{equation}
+
+No single exponential extension can be constructed to express all of these solutions.
+In fact, a different extension is required for each real value of $x_0$, yielding a
+uncountable infinite basis.
+
+So, while the PDE problem is superficially similar to the problem of symbolic integration,
+which asks if a finite tower of extensions can be used to express an integral,
+the nature of the problem is quite different because in the integration case we can express all of its solutions
+in a single extension.  In fact, given one solution to the integration problem, we know that all of its solutions
+are related by adding a constant $C$, which implies that a field containing one solution contains all solutions.
+In the symbolic integration case, we expect to find a single field extension that contains all solutions,
+while in the PDE case we expect this to be impossible.
+
+What about differential Galois theory?
+Picard-Vessiot theory has been of great utility in analyzing ordinary differential equations.  An $n^{\rm th}$ order linear ODE,
+% restricted to analytic solutions (complex? what function space?),
+will have at most an $n$-dimensional
+solution space.  After selecting an arbitrary basis, any
+solution can be represented by an $n$-tuple of complex constants.
+Any automorphism that permutes these solutions can be represented by
 an $n \times n$ matrix, so differential Galois theory can be reduced
 to the analysis of $GL_n(\mathbb{C})$, which has facilitated the work of Kovacic, Singer, and Bronstein.
 
@@ -1896,14 +1917,27 @@ dimensional, and probably not even with a countably infinite basis.
 In such an environment, differential Galois groups
 can not be represented as subgroups of $GL_n$,
 so the theory of algebraic groups is therefore unlikely to be much help.
-Furthermore, note that Kovacic developed an algorithm to handle
+
+Kovacic developed an algorithm \cite{Kovacic} to handle
 second order ODEs not by developing an algorithm to determine the
-differential Galois group of a given DE, but rather by
+differential Galois group of a given equation, but rather by
+using first a change of variables to restrict to $SL_2$, then
 categorizing all possible algebraic subgroups of $SL_2$
 and developing an algorithm to handle each case.
 Taking a similar approach for PDEs would require categorizing
 all possible linear mappings between function spaces,
 which does not seem feasible.
+
+% We'd have to characterize the solution we seek.  Conditions like lowest energy level don't seem
+% useful because they require evaluating a global integral.
+
+In short, the differential algebra techniques used to analyze integrals and linear ODEs do not seem amenable
+to handling PDEs, and no theory is available at this time to guide the selection of an ansatz.
+The ansatz used for the hydrogen example
+was an educated guess.  It was designed to be general enough to find the existing
+classical solution, and so to be used for testing the software.  The appearance of \eqref{ideal:1}
+was not anticipated, as the solutions was previously unknown,
+and serves to illustrate the mysterious nature of these ansatzen.
 
 \section{Software}
 
@@ -1937,6 +1971,11 @@ What relationship is there between the constant ideals and the function space?
 The ranking was selected in somewhat of an ad hoc manner.  A more systematic
 method of analyzing an ansatz to determine a suitable ranking would be useful.
 
+The algorithm, insofar as it relies on separating constant and non-constant indeterminates,
+produces correct solutions, but there is no proof that all possible solutions will be
+found.  Different rankings produce systems with more non-constant indeterminates,
+suggesting that finding all possible solutions places requirements on the ranking.
+
 While discarding ideals \eqref{ideal:5} and \eqref{ideal:4} seems justified
 (the independent variable must not be zero, and the ODE must have some non-zero coefficients),
 discarding ideal \eqref{ideal:3} (setting the ODE's second-order term to zero)
@@ -1948,7 +1987,8 @@ a family of overlapping systems with regularity properties that include requirin
 the {\it initials} of the differential polynomials to be non-zero.  For an $n$-order ODE,
 requiring its initial to be non-zero would require its $n$-th order term to be non-zero,
 so Rosenfeld-Gr\"obner should split \eqref{ideal:3} into a separate system.
-Unfortunately, our current implementation of Rosenfeld-Gr\"obner (\cite{DifferentialAlgebra})...
+Unfortunately, our current implementation of Rosenfeld-Gr\"obner (\cite{DifferentialAlgebra})
+runs for five days on this system without termination.
 
 The utility of this algorithm is currently limited by our Gr\"obner basis software.
 For example, I have formed a system of 1570 equations with 1,296,960 terms
@@ -1986,28 +2026,17 @@ that direction, of which {\tt joca.sage} is the most refined.
 Although ``solving helium'' is widely regarded as impossible, I know
 of no proof that helium's ground state wavefunction can not be formed
 from a finite number of linear homogenous ODEs.  Lacking any good theory
-to inform the selection of an ansatz, I have turned to...
+to inform the selection of an ansatz, I have turned to educated guesswork.
 
-Lacking a solution to helium, we can explore other important PDEs.  The Navier-Stokes
-equation comes to mind.  I'd like to see an ansatz like this explored for Navier-Stokes:
-
-[insert diagram]
-
-
+We can explore other important PDEs, such as the Navier-Stokes equation.
 As with helium, we can work incrementally towards it using smaller ansatzen.
-The ansatz in Figure \ref{nonlinear ansatz figure} is a step in the direction
+Ansatz \eqref{ansatz 18} is a step in the direction
 of analyzing Navier-Stokes.  $\mathbf{\bar{v}} = (u,v,w)$ is meant to be a velocity field
-and $p$ is the pressure, all varying as functions of position $(x,y,z)$.
+and $p$ is the pressure, all varying as functions of position $(x,y,z)$ and time $t$.
 
-Perhaps the biggest takeaway message is that we may now face a situation
-similar to that of the big AI companies, once they had developed transfomer
-architectures and it was clear that a massively expensive computation effort
-was likely to yield spectacular results.
-
-We can solve differential equations with Gr\"obner bases,
-and we may even be on the verge of solving helium and/or Navier-Stokes
-but we're primarily limited by inefficienies of our algorithms
-
+We can solve differential equations with Gr\"obner bases, and this
+technique, given enough compute resources, allows us to check for simple ODE-based solutions,
+but we're primarily limited by inefficiencies of our software.
 
 \begin{comment}
 As my primary interest lies in quantum mechanics, I have investigated the PDEs
@@ -2094,6 +2123,9 @@ Watson.
 Cox, D., Little, J., and O'Shea, D. (2015).
 {\it Ideals, Varieties, and Algorithms: An Introduction to Computational Algebraic Geometry and Commutative Algebra}
 (4th ed.). Springer
+
+\bibitem{Kovacic}
+Kovacic, J. J. (1986). "An algorithm for solving second order linear homogeneous differential equations". Journal of Symbolic Computation, 2(1), 3–43
 
 \bibitem{DifferentialAlgebra}
 Fran\c{c}ois Boulier, \emph{DifferentialAlgebra} (Version 5.3), 2025.\\
