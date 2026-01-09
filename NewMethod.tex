@@ -100,7 +100,7 @@ to hydrogen's Schr\"odinger equation.
 % in mathematical physics, the Schr\"odinger equation for hydrogen.
 % \end{comment}
 
-\section{Introduction}
+\section*{Introduction}
 %% \subsection*{Differential Algebra}
 
 We can construct polynomial rings and fields using indeterminates, such as $\mathbb{Q}[x,y]$,
@@ -283,7 +283,20 @@ space in which we seek solutions, parameterized as a finite dimensional vector s
 If we can, by luck or by theory, pick a good ansatz, then we have
 a computable algorithm to find the solutions therein.
 
+\subsection*{Organization of the Paper}
+
+Section \ref{sec:A Motivating Example} is a motivating example;
+section \ref{sec:Solution Algorithm} presents the algorithm, which fits a given
+PDE to a given {\bf ansatz} defined using differential polynomials.
+Section \ref{A Collection of Ansatzen} shows various ansatzen.
+Section \ref{sec:Example} illustrates the algorithm by computing a previously unknown solution to the hydrogen Schr\"odinger equation.
+Section \ref{sec:Generalization of the Algorithm} discusses how the algorithm can be generalized
+and section \ref{sec:Selection of an Ansatz} discuss the theoretical issues surrounding selection of an ansatz.
+Section \ref{sec:Software} outlines the software used in the example from section \ref{sec:Example}.
+Section \ref{sec:Future Work} discusses future work and section \ref{sec:Conclusion} is the conclusion.
+
 \section{A Motivating Example}
+\label{sec:A Motivating Example}
 
 Starting with the following Schr\"odinger equation for hydrogen:
 
@@ -399,6 +412,7 @@ E=-1/2
 The {\bf ansatz} is equations \eqref{ansatz 1a} and \eqref{ansatz 1b}.  The goal of the algorithm is to find all solutions like \eqref{ansatz 1sol}.
 
 \section{Solution Algorithm}
+\label{sec:Solution Algorithm}
 \subsection{The Ansatz}
 
 The primary requirement for an {\bf ansatz} is that it be expressed using differential polynomials,
@@ -1150,6 +1164,7 @@ p = p_1 x + p_2 y + p_3 z + p_4 t + p_5 \Psi \\
 %%\section{Example: A New Pseudo-Solution of Hydrogen}
 \vfill\eject
 \section{Example: A New Solution of Hydrogen}
+\label{sec:Example}
 
 We seek to demonstrate the operation of the algorithm on the following Schr\"o\-dinger equation for hydrogen:
 
@@ -1798,6 +1813,7 @@ Futhermore, since wavefunctions are complex-valued, restricting the $v_i$ coeffi
 to be real is unnecessary.
 
 \section{Generalization of the Algorithm}
+\label{sec:Generalization of the Algorithm}
 
 The algorithm can search for solutions to arbitrary PDEs or systems of PDEs in more complex ansatzen.
 A collection of sample ansatzen was presented in Section \ref{A Collection of Ansatzen}.  To handle
@@ -1872,6 +1888,7 @@ it only involves one derivative.  The algorithm described in this paper could te
 of such solutions.  I'm somewhat skeptical of their utility.
 
 \section{Selection of an Ansatz}
+\label{sec:Selection of an Ansatz}
 
 The most obvious question remains: how to select an ansatz?
 
@@ -1940,6 +1957,7 @@ was not anticipated, as the solutions was previously unknown,
 and serves to illustrate the mysterious nature of these ansatzen.
 
 \section{Software}
+\label{sec:Software}
 
 The script used to perform the calculations in this paper is available here:
 
@@ -1956,6 +1974,7 @@ to compute the associated prime ideals of \eqref{polynomial system}
 %%\section*{Current Implementation Status}
 %%\subsection{Current Implementation Status}
 \section{Future Work}
+\label{sec:Future Work}
 
 The difficulties of selecting an ansatz have already be touched upon.
 One possible approach to ansatz selection would be to impose boundary
@@ -2008,6 +2027,7 @@ but it's inefficient, so
 I've been devoting more of my recent efforts towards more efficient algorithms.
 
 \section{Conclusion}
+\label{sec:Conclusion}
 
 The algorithm presented above can be used to check any PDE to see if any of its solutions
 can be expressed using an ODE structured according to a specific ansatz, defined by
