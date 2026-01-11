@@ -150,7 +150,7 @@ solution space and deduce the contravariant equivalence between them (\cite{iva}
 
 \draw [very thick, ->] (differential algebraic geometry.south) to[out=-135, in=-45] coordinate[midway] (mid) (algebraic geometry.south) ;
 
-\node [below of=mid, node distance=20pt] {\bf We can do this if we use ``ansatzen''\\\bf (function spaces parameterized with constants)};
+\node [below of=mid, node distance=20pt] {\bf We can do this if we use ``ans\"atze''\\\bf (function spaces parameterized with constants)};
 
 \end{tikzpicture}%
 }
@@ -282,13 +282,14 @@ of the PDE, we restrict our attention to an {\bf ansatz}, a subset of the functi
 space in which we seek solutions, parameterized as a finite dimensional vector space over the constants.
 If we can, by luck or by theory, pick a good ansatz, then we have
 a computable algorithm to find the solutions therein.
+Section \ref{A Collection of Ansatze} illustrates a half dozen ans\"atze that can be used.
 
 \subsection*{Organization of the Paper}
 
 Section \ref{sec:A Motivating Example} is a motivating example;
 section \ref{sec:Solution Algorithm} presents the algorithm, which fits a given
 PDE to a given {\bf ansatz} defined using differential polynomials.
-Section \ref{A Collection of Ansatzen} shows various ansatzen.
+Section \ref{A Collection of Ansatze} shows various ans\"atze.
 Section \ref{sec:Example} illustrates the algorithm by computing a previously unknown solution to the hydrogen Schr\"odinger equation.
 Section \ref{sec:Generalization of the Algorithm} discusses how the algorithm can be generalized
 and section \ref{sec:Selection of an Ansatz} discuss the theoretical issues surrounding selection of an ansatz.
@@ -430,7 +431,7 @@ by adding $y_{\theta\theta} +y$ to the system.
 
 My primary goal is to ``solve'' a PDE by finding solutions described using ODEs.
 
-Therefore, all of my current ansatzen attempt to express solutions to the PDE using
+Therefore, all of my current ans\"atze attempt to express solutions to the PDE using
 a finite number of ODEs.  They do not necessarily have to be linear or homogenous,
 but for the moment let's consider a homogenous linear example.
 
@@ -515,7 +516,7 @@ to construct the PDE directly.
 A good ansatz will be flexible enough to match the solution sought, but require only a small number
 of parameters, to make the computation tractable.
 
-Several example ansatzen will be presented in Section \ref{A Collection of Ansatzen}.
+Several example ans\"atze will be presented in Section \ref{A Collection of Ansatze}.
 
 \subsection{The PDE}
 
@@ -693,8 +694,8 @@ the union of which form the solution space of the PDE in the differential functi
 \label{key}
 \end{figure}
 
-\section{A Collection of Ansatzen}
-\label{A Collection of Ansatzen}
+\section{A Collection of Ans\"atze}
+\label{A Collection of Ansatze}
 
 There is no one correct ansatz, and no theory to guide their selection.
 At the moment, ansatz selection is guided by educated guesses about what
@@ -711,7 +712,7 @@ separated by a slash denote a rational function.  For example, 2/2 denotes
 a rational function with a second degree numerator and a second degree
 denominator.
 
-Over the next several pages, I'll describe several possible ansatzen.
+Over the next several pages, I'll describe several possible ans\"atze.
 
 \vfill\eject
 
@@ -1815,8 +1816,8 @@ to be real is unnecessary.
 \section{Generalization of the Algorithm}
 \label{sec:Generalization of the Algorithm}
 
-The algorithm can search for solutions to arbitrary PDEs or systems of PDEs in more complex ansatzen.
-A collection of sample ansatzen was presented in Section \ref{A Collection of Ansatzen}.  To handle
+The algorithm can search for solutions to arbitrary PDEs or systems of PDEs in more complex ans\"atze.
+A collection of sample ans\"atze was presented in Section \ref{A Collection of Ansatze}.  To handle
 systems of PDEs, multiple PDEs can be reduced modulo a single ansatz.  Each PDE will generate a
 system of equations in the constants.  Combining all of these equations together will produce
 a system of equations that, when satisfied, will solve all of the PDEs simultaneously.
@@ -1868,7 +1869,7 @@ and one used to express the coefficients of the ODE.  This yields a
 and whose independent variable depended on a different set of them.
 The parameters can be treated as constants for the purpose of solving the ODE.
 I don't know of any way to enforce this requirement
-other than having multiple ansatzen, each with a different partitioning of the indeterminates.
+other than having multiple ans\"atze, each with a different partitioning of the indeterminates.
 One large ansatz could be constructed that would enforce nothing, but would still allow for ODE solutions of the form described next.
 
 What if the dependencies of the ODE coefficients and the ODE variable can't be partitioned into two different sets of variables?
@@ -1954,7 +1955,7 @@ The ansatz used for the hydrogen example
 was an educated guess.  It was designed to be general enough to find the existing
 classical solution, and so to be used for testing the software.  The appearance of \eqref{ideal:1}
 was not anticipated, as the solutions was previously unknown,
-and serves to illustrate the mysterious nature of these ansatzen.
+and serves to illustrate the mysterious nature of these ans\"atze.
 
 \section{Software}
 \label{sec:Software}
@@ -1982,8 +1983,8 @@ conditions (or the like) prior to any kind of analysis with differential algebra
 In the case of quantum mechanics, imposing $H^2(\Omega)$, where $\Omega$ is the state space
 of whatever physical system we're analyzing, is an obvious restriction.
 Some kind of theoretical analysis, exploring what restrictions must be placed
-on ansatzen to force the functions into $H^2(\Omega)$, might yield
-useful techniques to better select ansatzen.
+on ans\"atze to force the functions into $H^2(\Omega)$, might yield
+useful techniques to better select ans\"atze.
 
 What relationship is there between the constant ideals and the function space?
 
@@ -2049,7 +2050,7 @@ from a finite number of linear homogenous ODEs.  Lacking any good theory
 to inform the selection of an ansatz, I have turned to educated guesswork.
 
 We can explore other important PDEs, such as the Navier-Stokes equation.
-As with helium, we can work incrementally towards it using smaller ansatzen.
+As with helium, we can work incrementally towards it using smaller ans\"atze.
 Ansatz \eqref{ansatz 18} is a step in the direction
 of analyzing Navier-Stokes.  $\mathbf{\bar{v}} = (u,v,w)$ is meant to be a velocity field
 and $p$ is the pressure, all varying as functions of position $(x,y,z)$ and time $t$.
