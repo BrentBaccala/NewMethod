@@ -369,20 +369,20 @@ We use apostrophes, and not the jet notation subscripts, when writing
 the differential polynomial in the ODE case to emphasize that we are not introducing a new derivation,
 nor is the ODE's derivative any of the existing derivatives.
 
-In short, to construct a new ODE extension (second-order, for the purposes of illustration):
+In short, to construct a new ODE extension:
 
 \begin{itemize}
 % \item We wish to avoid introducing new derivations.
-\item We introduce new indeterminates $\Psi$, $\Psi'$, $\Psi'', v$
-\item We introduce a new differential polynomial involving only $\Psi''$, $\Psi'$, $\Psi$, $v$, and constants,
-and using no non-constant indeterminates (other than $v$) or derivatives
-\item We define the derivatives of $\Psi$ and $\Psi'$ using the chain rule
+\item We introduce new indeterminates $\Psi, \Psi',..., \Psi^{(n)}, v$
+\item We introduce a new differential polynomial involving only the new indeterminates and constants,
+and using no other non-constant indeterminates or derivatives
+\item We define the derivatives of $\Psi, \Psi',...,\Psi^{(n-1)}$ using the chain rule
 %: \hfil\break $\Psi_x = \Psi' v_x$ \qquad $\Psi'_x = \Psi'' v_x$
 %% \item We equate the independent variable $v$ to some parameterized differential polynomial
 \end{itemize}
 
 {\bf Example:} In the differential ring $\mathbb{C}\{x,y\}$, we can construct an ODE
-extension specified by the dependent indeterminate $\Psi$, independent indeterminate $v$, and differential polynomial
+extension specified by the dependent indeterminate $\Psi$, its derivative $\Psi'$, independent indeterminate $v$, and differential polynomial
 $\Psi' = \Psi$.  This differential polynomial
 maps to the analytic equation $\frac{d\Psi}{dv}=\Psi$ and is solved
 by the analytic functions $Ae^v$ ($A$ is an arbitrary constant).  If $v=x^2+y$, then
@@ -414,7 +414,7 @@ using the technique of the previous subsection.
 % by adding the differential polynomial equation $y_{\theta\theta} +y=0$ to the system.
 
 For example, consider introducing the function $\cos x$ in the differential ring $\mathbb{Q}\{x,y\}$.
-We can replace this with a new indeterminate, say $f$,
+We can replace $\cos x$ with a new indeterminate, say $f$,
 and write $f'' = -f$, where the derivative is taken with respect to $x$.  The technique from the
 previous section is used to connect this with the existing derivations, as follows:
 
@@ -445,7 +445,7 @@ restrictions (such as boundary conditions) to further restrict those solutions.
 Likewise, we can use $f$ for our calculations with differential polynomials and,
 at the conclusion of the calculations,
 restrict $f$ to be $\cos x$, not to meet a boundary condition, but to force
-$f$ to be of the form required by the original problem.
+$f$ to be the function required by the original problem.
 
 %The best we're likely to reduce to is an equation like $\Psi=\Psi_x$, and it's up to us
 %to solve the corresponding analytic equation and conclude that $\Psi$ is a multiple of the exponential of $x$.
