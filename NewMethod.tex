@@ -205,7 +205,7 @@ Section \ref{sec:Future Work} discusses future work and section \ref{sec:Conclus
         \item Ex: $x^2+y^2+z^2=1$
       \end{itemize}
 };
-\node (algebraic geometry) [draw, node distance=100pt, below of=commutative algebra, text width=200pt] {Algebraic Geometry
+\node (algebraic geometry) [draw, node distance=125pt, below of=commutative algebra, text width=200pt] {Algebraic Geometry
       \begin{itemize}
         \item indeterminates now take values in a field like $\mathbb{C}, \mathbb{R}, \mathbb{Q}, \overline{\mathbb{Q}}, \mathbb{F}_p$
         \item Ex: surface of unit sphere in $\mathbb{R}^3$
@@ -218,15 +218,15 @@ Section \ref{sec:Future Work} discusses future work and section \ref{sec:Conclus
         \item Ex: $\Psi_{xx}=\Psi_{t}$
       \end{itemize}
 };
-\node (differential algebraic geometry) [draw, node distance=100pt, below of=differential algebra, text width=200pt] {Differential Algebraic Geometry
+\node (differential algebraic geometry) [draw, node distance=125pt, below of=differential algebra, text width=200pt] {Differential Algebraic Geometry
       \begin{itemize}
         \item indeterminates now take values in function spaces like $C^2(U)$, $H^2(\mathbb{R}^3)$
         \item Ex: $\Psi = e^{-x^2/4t}/\sqrt{t}$
       \end{itemize}
 };
 
-\draw [very thick, ->] (commutative algebra.south) -- (algebraic geometry.north);
-\draw [very thick, ->] (differential algebra.south) -- (differential algebraic geometry.north);
+\draw [very thick, ->] (commutative algebra.south) -- (algebraic geometry.north) node[right,pos=0.5] {map indeterminates\\to constants};
+\draw [very thick, ->] (differential algebra.south) -- (differential algebraic geometry.north) node[right,pos=0.5] {map indeterminates\\to functions};
 
 \draw [very thick, ->] (differential algebraic geometry.south) to[out=-135, in=-45] coordinate[midway] (mid) (algebraic geometry.south) ;
 
