@@ -103,17 +103,146 @@ to hydrogen's Schr\"odinger equation.
 \section*{Introduction}
 %% \subsection*{Differential Algebra}
 
-We can construct polynomial rings and fields using indeterminates, such as $\mathbb{Q}[x,y]$,
-treating the indeterminates $x$ and $y$ merely as elements of the ring that satisfy
-its basic ring axioms.  In this paper, all rings will be commutative, with a unity element,
-and of characteristic zero. We call this ``commutative algebra''.
+Starting with the following Schr\"odinger equation for hydrogen:
 
-We can then consider mapping the indeterminants into the coefficient field, and ask questions like,
-``Which values of $x$ and $y$ in $\mathbb{Q}$ satisfy $x^2+y^2=4$?''  We can consider systems of polynomial
-equations, and seek to describe which values of indeterminates satisfy all of the equations
-in the system.  We introduce ideals in the polynomial ring and algebraic varieties in the
-solution space and deduce the contravariant equivalence between them (\cite{iva} \S 4.2)).  We call this
-``algebraic geometry''.  See Figure \ref{concept figure}.
+\begin{equation}
+\label{schrodinger hydrogen}
+-\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
+\end{equation}
+
+We can require the solution to solve the following parameterized ODE:
+
+\begin{equation}
+\begin{gathered}
+(a_0 + a_1 v) \frac{d^2\Psi(v)}{dv^2} + (b_0 + b_1 v) \frac{d\Psi(v)}{dv} + (c_0 + c_1 v) \Psi(v) = 0
+\end{gathered}
+\label{ansatz 1a}
+\end{equation}
+
+where $\Psi(v)$ is a univariate function of some variable $v$, itself expressed in a parameterized form:
+
+\begin{equation}
+v = v_1 x + v_2 y + v_3 z + v_4 r
+\label{ansatz 1b}
+\end{equation}
+
+and expect to find that for certain constant values:
+
+\begin{equation}
+\begin{gathered}
+a_1 = v_4 = 1 \qquad
+b_0 = c_0 = 2 \qquad
+c_1 = E \\
+a_0 = b_1 = v_1 = v_2 = v_3 = 0
+\end{gathered}
+\label{ansatz 1sol}
+\end{equation}
+
+we will obtain the classical radial equation for hydrogen:
+
+\begin{equation}
+% \label{classical eq in ideal}
+\begin{gathered}
+r \frac{d^2\Psi(r)}{dr^2} + 2 \frac{d\Psi(r)}{dr} + 2(1 + E r) \Psi(r) = 0
+\end{gathered}
+\end{equation}
+
+a result more commonly derived using separation of variables.  Solving the radial equation
+yields the ground state solution of hydrogen:
+
+\begin{equation}
+\begin{gathered}
+\Psi(r)=e^{-r} \\
+E=-1/2
+\end{gathered}
+\end{equation}
+
+What might not be expected is to find a different set of constant values:
+
+that produce a different ODE:
+
+which can be solved to find a previously unknown solution to \eqref{schrodinger hydrogen}:
+
+\begin{equation}
+\label{solution}
+\Psi = J_0(2\sqrt{x+r})
+\end{equation}
+
+where $x,y,z$ are Cartesian coordinates, $r=\sqrt{x^2+y^2+z^2}$, $E=0$,
+and $J_0$ is the ordinary Bessel function $J_0$.
+
+
+%In the differential algebraic geometry setting, remember that the indeterminates
+%take on values in some function field.  Otherwise, how could derivation be expressed?
+%The best we're likely to reduce to is an equation like $\Psi=\Psi_x$, and it's up to us
+%to solve the corresponding analytic equation and conclude that $\Psi$ is a multiple of the exponential of $x$.
+
+%The picture, in my mind, starts to look like this:
+
+%What kind of reduction step
+
+%Practical experience with this algorithm suggests that, given the current
+%state of software development, it is best to use a slightly inferior
+%variant of this algorithm, where a standard Gr\"obner basis algorithm
+%is used instead of Rosenfeld-Gr\"obner.  Considering that Rosenfeld-Gr\"obner
+%is a generalization of Buchberger's algorithm, and given the computational
+%complexity of computing a Gr\"obner basis, it makes sense to use
+%existing Gr\"obner basis software, hoping that in the future, we
+%will have a comprehensive Rosenfeld-Gr\"obner implementation that
+%will handle differential polynomials as well as conventional polynomials,
+%incorporate all the fruits of
+%our research into the computation of Gr\"obner bases,
+%and fall back into an efficient Gr\"obner basis calculation
+%when presented with the degenerate case of a system of polynomial equations.
+
+%We can describe a slightly inferior variant of this algorithm, that only
+%requires the calculation of Gr\"obner bases to complete a primary decomposition.
+%utility of algebraic geometry in the differential algebra setting by parameterizing
+%the function space using only a finite number of constants, and doing so in such
+%a way that the constants can be isolated into a system of polynomial equations,
+%which can then be solving using algebraic geometry.
+
+%What specific restrictions must be imposed to acheive this?
+
+%  - new indeterminants must be specified as ODEs
+%  - we need to cancel the leading derivative
+
+%If, for example, we expect
+%our solution to be in $C^2(\mathbf{R})$, then we parameterize a subset of
+%$C^2(\mathbb{R})$ using some number of complex variables, say twenty, so that our resulting
+%equations are polynomials in $\mathbb{C}[c_0,..,c_{19}]$ and their common
+%solutions describe an algebraic variety in $\mathbb{C}^{20}$.
+%Unfortunately, degree bounds seem necessary on almost everything in order
+%to achieve this, and no matter how big and complicated our equations become,
+%we're only searching part of the function space.
+
+%An algorithm begins to suggest itself.  We can recover the
+%utility of algebraic geometry in the differential algebra setting by parameterizing
+%the function field using only a finite number of constants, and doing so in such
+%a way that the constants can be isolated into a system of polynomial equations,
+%which can then be solving using algebraic geometry.  If, for example, we expect
+%our solution to be in $C^2(\mathbb{R})$, then we parameterize a subset of
+%$C^2(\mathbb{R})$ using some number of complex variables, say twenty, so that our resulting
+%equations are polynomials in $\mathbb{C}[c_0,..,c_{19}]$ and their common
+%solutions describe an algebraic variety in $\mathbb{C}^{20}$.
+%Unfortunately, degree bounds seem necessary on almost everything in order
+%to achieve this, and no matter how big and complicated our equations become,
+%we're only searching part of the function space.
+
+The {\bf ansatz} is equations \eqref{ansatz 1a} and \eqref{ansatz 1b}.  The goal of the algorithm is to find all solutions like \eqref{ansatz 1sol}.
+
+
+\subsection*{Organization of the Paper}
+
+Section \ref{sec:A Motivating Example} is a motivating example;
+section \ref{sec:Solution Algorithm} presents the algorithm, which fits a given
+PDE to a given {\bf ansatz} defined using differential polynomials.
+Section \ref{A Collection of Ansatze} shows various ans\"atze.
+Section \ref{sec:Example} illustrates the algorithm by computing a previously unknown solution to the hydrogen Schr\"odinger equation.
+Section \ref{sec:Generalization of the Algorithm} discusses how the algorithm can be generalized
+and section \ref{sec:Selection of an Ansatz} discuss the theoretical issues surrounding selection of an ansatz.
+Section \ref{sec:Software} outlines the software used in the example from section \ref{sec:Example}.
+Section \ref{sec:Future Work} discusses future work and section \ref{sec:Conclusion} is the conclusion.
 
 \begin{figure}
 \resizebox{\textwidth}{!}{%
@@ -157,6 +286,12 @@ solution space and deduce the contravariant equivalence between them (\cite{iva}
 \caption{The interrelation between four relevant branches of mathematics}
 \label{concept figure}
 \end{figure}
+
+
+\section{Solution Algorithm}
+\label{sec:Solution Algorithm}
+
+\subsection{Differential Algebra Preliminaries}
 
 J.F. Ritt introduced differential algebra \cite{Ritt}.
 Starting with a ring $R$ or a field $F$, we can construct a
@@ -284,161 +419,7 @@ If we can, by luck or by theory, pick a good ansatz, then we have
 a computable algorithm to find the solutions therein.
 Section \ref{A Collection of Ansatze} illustrates a half dozen ans\"atze that can be used.
 
-\subsection*{Organization of the Paper}
-
-Section \ref{sec:A Motivating Example} is a motivating example;
-section \ref{sec:Solution Algorithm} presents the algorithm, which fits a given
-PDE to a given {\bf ansatz} defined using differential polynomials.
-Section \ref{A Collection of Ansatze} shows various ans\"atze.
-Section \ref{sec:Example} illustrates the algorithm by computing a previously unknown solution to the hydrogen Schr\"odinger equation.
-Section \ref{sec:Generalization of the Algorithm} discusses how the algorithm can be generalized
-and section \ref{sec:Selection of an Ansatz} discuss the theoretical issues surrounding selection of an ansatz.
-Section \ref{sec:Software} outlines the software used in the example from section \ref{sec:Example}.
-Section \ref{sec:Future Work} discusses future work and section \ref{sec:Conclusion} is the conclusion.
-
-\section{A Motivating Example}
-\label{sec:A Motivating Example}
-
-Starting with the following Schr\"odinger equation for hydrogen:
-
-\begin{equation}
-% \label{schrodinger hydrogen}
--\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
-\end{equation}
-
-We can require the solution to solve the following parameterized ODE:
-
-\begin{equation}
-\begin{gathered}
-(a_0 + a_1 v) \frac{d^2\Psi(v)}{dv^2} + (b_0 + b_1 v) \frac{d\Psi(v)}{dv} + (c_0 + c_1 v) \Psi(v) = 0
-\end{gathered}
-\label{ansatz 1a}
-\end{equation}
-
-where $\Psi(v)$ is a univariate function of some variable $v$, itself expressed in a parameterized form:
-
-\begin{equation}
-v = v_1 x + v_2 y + v_3 z + v_4 r
-\label{ansatz 1b}
-\end{equation}
-
-and expect to find that for certain constant values:
-
-\begin{equation}
-\begin{gathered}
-a_1 = v_4 = 1 \qquad
-b_0 = c_0 = 2 \qquad
-c_1 = E \\
-a_0 = b_1 = v_1 = v_2 = v_3 = 0
-\end{gathered}
-\label{ansatz 1sol}
-\end{equation}
-
-we will obtain the classical radial equation for hydrogen:
-
-\begin{equation}
-% \label{classical eq in ideal}
-\begin{gathered}
-r \frac{d^2\Psi(r)}{dr^2} + 2 \frac{d\Psi(r)}{dr} + 2(1 + E r) \Psi(r) = 0
-\end{gathered}
-\end{equation}
-
-a result more commonly derived using separation of variables.  Solving the radial equation
-yields the ground state solution of hydrogen:
-
-\begin{equation}
-\begin{gathered}
-\Psi(r)=e^{-r} \\
-E=-1/2
-\end{gathered}
-\end{equation}
-
-%In the differential algebraic geometry setting, remember that the indeterminates
-%take on values in some function field.  Otherwise, how could derivation be expressed?
-%The best we're likely to reduce to is an equation like $\Psi=\Psi_x$, and it's up to us
-%to solve the corresponding analytic equation and conclude that $\Psi$ is a multiple of the exponential of $x$.
-
-%The picture, in my mind, starts to look like this:
-
-%What kind of reduction step
-
-%Practical experience with this algorithm suggests that, given the current
-%state of software development, it is best to use a slightly inferior
-%variant of this algorithm, where a standard Gr\"obner basis algorithm
-%is used instead of Rosenfeld-Gr\"obner.  Considering that Rosenfeld-Gr\"obner
-%is a generalization of Buchberger's algorithm, and given the computational
-%complexity of computing a Gr\"obner basis, it makes sense to use
-%existing Gr\"obner basis software, hoping that in the future, we
-%will have a comprehensive Rosenfeld-Gr\"obner implementation that
-%will handle differential polynomials as well as conventional polynomials,
-%incorporate all the fruits of
-%our research into the computation of Gr\"obner bases,
-%and fall back into an efficient Gr\"obner basis calculation
-%when presented with the degenerate case of a system of polynomial equations.
-
-%We can describe a slightly inferior variant of this algorithm, that only
-%requires the calculation of Gr\"obner bases to complete a primary decomposition.
-%utility of algebraic geometry in the differential algebra setting by parameterizing
-%the function space using only a finite number of constants, and doing so in such
-%a way that the constants can be isolated into a system of polynomial equations,
-%which can then be solving using algebraic geometry.
-
-%What specific restrictions must be imposed to acheive this?
-
-%  - new indeterminants must be specified as ODEs
-%  - we need to cancel the leading derivative
-
-%If, for example, we expect
-%our solution to be in $C^2(\mathbf{R})$, then we parameterize a subset of
-%$C^2(\mathbb{R})$ using some number of complex variables, say twenty, so that our resulting
-%equations are polynomials in $\mathbb{C}[c_0,..,c_{19}]$ and their common
-%solutions describe an algebraic variety in $\mathbb{C}^{20}$.
-%Unfortunately, degree bounds seem necessary on almost everything in order
-%to achieve this, and no matter how big and complicated our equations become,
-%we're only searching part of the function space.
-
-%An algorithm begins to suggest itself.  We can recover the
-%utility of algebraic geometry in the differential algebra setting by parameterizing
-%the function field using only a finite number of constants, and doing so in such
-%a way that the constants can be isolated into a system of polynomial equations,
-%which can then be solving using algebraic geometry.  If, for example, we expect
-%our solution to be in $C^2(\mathbb{R})$, then we parameterize a subset of
-%$C^2(\mathbb{R})$ using some number of complex variables, say twenty, so that our resulting
-%equations are polynomials in $\mathbb{C}[c_0,..,c_{19}]$ and their common
-%solutions describe an algebraic variety in $\mathbb{C}^{20}$.
-%Unfortunately, degree bounds seem necessary on almost everything in order
-%to achieve this, and no matter how big and complicated our equations become,
-%we're only searching part of the function space.
-
-The {\bf ansatz} is equations \eqref{ansatz 1a} and \eqref{ansatz 1b}.  The goal of the algorithm is to find all solutions like \eqref{ansatz 1sol}.
-
-\section{Solution Algorithm}
-\label{sec:Solution Algorithm}
-\subsection{The Ansatz}
-
-The primary requirement for an {\bf ansatz} is that it be expressed using differential polynomials,
-as this makes it ammenable to the techniques of differential algebra.  This excludes any
-kind of boundary conditions (which would require evaluating functions at some boundary)
-or Sobolov space restrictions (which would require evaluating integrals of the function),
-but admits almost any differential equation imaginable.
-
-Restricting from differential equations to differential
-polynomials is not a severe limitation, as so many elementary and special functions
-can be described as the solutions of differential polynomials.  For example, both
-$y=\cos \theta$ and $y=\sin \theta$ are solutions to the differential polynomial equation
-$y_{\theta\theta} + y = 0$, and can easily be introduced into the system (if desired)
-by adding $y_{\theta\theta} +y$ to the system.
-
-My primary goal is to ``solve'' a PDE by finding solutions described using ODEs.
-
-Therefore, all of my current ans\"atze attempt to express solutions to the PDE using
-a finite number of ODEs.  They do not necessarily have to be linear or homogenous,
-but for the moment let's consider a homogenous linear example.
-
-% For the present work, I restrict to homogeneous linear ODEs,
-% because the PDEs I am primarily interested in solving (various forms of Schr\"odinger's equation)
-% are homogeneous and linear, so I'm hopeful that homogeneous linear ODEs will suffice to solve them.
-% This is not a fundamental limitation of the algorithm.
+\subsection{Describing ODEs}
 
 An $n^{\rm th}$-order homogeneous linear ODE takes the form:
 
@@ -500,6 +481,51 @@ and using no non-constant indeterminates or derivatives
 \item We equate the independent variable $v$ to some parameterized differential polynomial
 \end{itemize}
 
+\subsection{Describing Non-Polynomial Functions}
+
+Restricting from differential equations to differential
+polynomials is not a severe limitation, as so many elementary and special functions
+can be described as the solutions of differential polynomials.  For example, both
+$y=\cos \theta$ and $y=\sin \theta$ are solutions to the differential polynomial equation
+$y_{\theta\theta} + y = 0$, and can easily be introduced into the system (if desired)
+by adding $y_{\theta\theta} +y$ to the system.
+
+For example, consider a PDE involving the function $\cos x$.  We can replace this with a new indeterminate, say $f$,
+and write $f'' = -f$, where the derivative is taken with respect to $x$ and the same technique from the
+previous section is used to connect this with the existing derivations.
+Likewise, $g=\exp x$ can be expressed using $g' = g$ and $h=\ln x$ using $h' = x'/x$.
+
+This does not seem to present a serious problem.  In fact, it is quite common to find
+a space of solutions for a differential equation, and then to impose additional
+restrictions (such as boundary conditions) to further restrict those solutions.
+The solutions of $f'' = f$, for example, will be of the form $A\cos x + B\sin x$,
+and imposing the boundary conditions $f(0)=1$ and $f'(0)=0$ would restrict $f$
+to be $\cos x$.  Likewise, we can use $f$ for our calculations with differential polynomials and,
+at the conclusion of the calculations,
+restrict $f$ to be $\cos x$, not to meet a boundary condition, but to force
+$f$ to be of the form required by the PDE.
+
+\subsection{The Ansatz}
+
+The primary requirement for an {\bf ansatz} is that it be expressed using differential polynomials,
+as this makes it ammenable to the techniques of differential algebra.  This excludes any
+kind of boundary conditions (which would require evaluating functions at some boundary)
+or Sobolov space restrictions (which would require evaluating integrals of the function),
+but admits almost almost any differential equation imaginable.
+
+My primary goal is to ``solve'' a PDE by finding solutions described using ODEs.
+
+Therefore, all of my current ans\"atze attempt to express solutions to the PDE using
+a finite number of ODEs.  They do not necessarily have to be linear or homogenous,
+but for the moment let's consider a homogenous linear example.
+
+% For the present work, I restrict to homogeneous linear ODEs,
+% because the PDEs I am primarily interested in solving (various forms of Schr\"odinger's equation)
+% are homogeneous and linear, so I'm hopeful that homogeneous linear ODEs will suffice to solve them.
+% This is not a fundamental limitation of the algorithm.
+
+ODEs.
+
 Algebraic extensions can be constructed in a similar manner, with a key restriction.
 They must be parameterized by a finite number of constants, so they can not express
 an arbitrary algebraic extension of indefinite degree.
@@ -527,20 +553,7 @@ extensions.  If the PDE is expressed using other functions, however, they must b
 with differential polynomial analogues.  The difficulty of doing this depends on the
 exact nature of the functions.
 
-For example, consider a PDE involving the function $\cos x$.  We can replace this with a new indeterminate, say $f$,
-and write $f'' = -f$, where the derivative is taken with respect to $x$ and the same technique from the
-previous section is used to connect this with the existing derivations.
-Likewise, $g=\exp x$ can be expressed using $g' = g$ and $h=\ln x$ using $h' = x'/x$.
-
-This does not seem to present a serious problem.  In fact, it is quite common to find
-a space of solutions for a differential equation, and then to impose additional
-restrictions (such as boundary conditions) to further restrict those solutions.
-The solutions of $f'' = f$, for example, will be of the form $A\cos x + B\sin x$,
-and imposing the boundary conditions $f(0)=1$ and $f'(0)=0$ would restrict $f$
-to be $\cos x$.  Likewise, we can use $f$ for our calculations with differential polynomials and,
-at the conclusion of the calculations,
-restrict $f$ to be $\cos x$, not to meet a boundary condition, but to force
-$f$ to be of the form required by the PDE.
+Non-polynomial functions.
 
 \subsection{Differential Reduction}
 
@@ -1172,7 +1185,7 @@ p = p_1 x + p_2 y + p_3 z + p_4 t + p_5 \Psi \\
 We seek to demonstrate the operation of the algorithm on the following Schr\"o\-dinger equation for hydrogen:
 
 \begin{equation}
-\label{schrodinger hydrogen}
+%\label{schrodinger hydrogen}
 -\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
 \end{equation}
 
