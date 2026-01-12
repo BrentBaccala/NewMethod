@@ -159,30 +159,50 @@ E=-1/2
 
 What might not be expected is to find a different set of constant values:
 
+\begin{equation}
+\label{J0 sol}
+\begin{gathered}
+E = 0 \\
+a_0 = 0 \qquad
+a_1 = 1 \\
+b_0 = -1 \qquad
+b_1 = 0 \\
+c_0 = -1 \qquad
+c_1 = 0 \\
+v_1 = 1 \qquad
+v_2 = 0 \qquad
+v_3 = 0 \qquad
+v_4 = 1
+\end{gathered}
+\end{equation}
+
 that produce a different ODE:
+
+\begin{equation}
+v \frac{d^2 \Psi}{dv}(v) + \frac{d\Psi}{dv}(v) + \Psi(v) = 0
+\end{equation}
 
 which can be solved to find a previously unknown solution to \eqref{schrodinger hydrogen}:
 
 \begin{equation}
-\label{solution}
 \Psi = J_0(2\sqrt{x+r})
 \end{equation}
 
 where $x,y,z$ are Cartesian coordinates, $r=\sqrt{x^2+y^2+z^2}$, $E=0$,
 and $J_0$ is the ordinary Bessel function $J_0$.
 
-Equations \eqref{ansatz 1a} and \eqref{ansatz 1b} are differential polynomials, in the sense of differential algebra,
-the most relevant field of mathematics.
-
 The author has developed an algorithm that tests a PDE, specified as a differential polynomial,
 against a system of differential polynomials (which I term an ``ansatz''),
 parameterized by a finite number of constants,
 similar to \eqref{ansatz 1a} and \eqref{ansatz 1b},
-and finds solutions like \eqref{ansatz 1sol}.  This is done using the techniques of differential
-algebra and algebraic geometry.
+and finds solutions like \eqref{ansatz 1sol} and \eqref{J0 sol}.  This is done using the techniques of differential
+algebra and algebraic geometry.  The restriction to differential
+polynomials is not severe; most elementary and special functions
+can be easily modeled, as will be shown below.
 
 In short, to solve the PDE, we restrict our attention to a subset of the function
-space, parameterized by a finite number of constants.
+space, parameterized by a finite number of constants
+and described using differential polynomials.
 A quick glance at Section \ref{A Collection of Ansatze} should indicate the great variety of such ``ans\"atze''.
 If we can, by luck or by theory, pick a good ansatz, then we have
 a computable algorithm to find the solutions therein.
@@ -190,7 +210,7 @@ a computable algorithm to find the solutions therein.
 \subsection*{Organization of the Paper}
 
 Section \ref{sec:Solution Algorithm} presents the algorithm, which fits a given
-PDE to a given {\bf ansatz} defined using differential polynomials.
+PDE to a given ansatz defined using differential polynomials.
 Section \ref{A Collection of Ansatze} illustrates a half dozen ans\"atze that can be used.
 Section \ref{sec:Example} illustrates the algorithm by computing a previously unknown solution to the hydrogen Schr\"odinger equation.
 Section \ref{sec:Generalization of the Algorithm} discusses how the algorithm can be generalized
@@ -491,7 +511,7 @@ of interrelated PDEs, and multiple parameterized differential polynomials, at th
 each equated to a new indeterminate and used
 as the dependent variables in a system of PDEs.  (see Figure \ref{nonlinear ansatz figure})
 
-The primary requirement for an {\bf ansatz} is that it be expressed using differential polynomials,
+The primary requirement for an ansatz is that it be expressed using differential polynomials,
 as this makes it ammenable to the techniques of differential algebra.  This excludes any
 kind of boundary conditions (which would require evaluating functions at some boundary)
 or Sobolov space restrictions (which would require evaluating integrals of the function),
@@ -502,18 +522,9 @@ of parameters, to make the computation tractable.
 
 Several example ans\"atze will be presented in Section \ref{A Collection of Ansatze}.
 
-\subsection{The PDE}
-
-The PDE must be specified as a differential polynomial.  This only presents a challenge
-if the PDE involves operations other than the basic polynomial operations of addition,
-subtraction, multiplication and division.  Roots can be constructed using algebraic
-extensions.  If the PDE is expressed using other functions, however, they must be replaced
-with differential polynomial analogues.  The difficulty of doing this depends on the
-exact nature of the functions.
-
 \subsection{Differential Reduction}
 
-Having defined an ansatz, we now use it to reduce our original PDE.  For this purpose,
+Having defined an ansatz, we now use it to reduce the PDE.  For this purpose,
 we use Ritt's full reduction algorithm; see \cite{Ritt} Chapter I, \S 6 or \cite{Kolchin}, Chapter I, \S 9.
 A compact description of the relevant concepts can be found in Section 3 of \cite{blop}.
 %% A comparison of various techniques used to solve systems of polynomial and differential polynomial equations can be found in \cite{aistleitner}.
