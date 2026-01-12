@@ -457,38 +457,6 @@ differential polynomials.
 
 \subsection{The Ansatz}
 
-Combining the concepts of differential algebra and algebraic geometry together,
-we obtain {\it differential algebraic geometry},
-where we have systems of differential polynomials and seek find solutions when the
-indeterminates are mapped to functions.
-
-Mapping the indeterminates to constants, for example the complex numbers, isn't a fruitful
-course of action since the derivatives of constants are always zero, so likewise will
-our derivations map constants to zero.  Instead, we map the indeterminates to functions
-in some function space.  Exactly which function space we use
-depends on the specific problem.
-Popular choices include complex analytic functions $C^\omega(\mathbb{C})$,
-or a Sobolov space like $H^2(\mathbb{R}^n)$.
-%Much as in the case of algebraic geometry, it is often most convenient
-%to map indeterminates into the coefficient field, we can let the coefficient field
-%be the function space.  This is by far the most common approach in differential algebraic geometry.
-
-%If, for example, we expect
-%our solution to be in $C^2(\mathbf{R})$, then we parameterize a subset of
-%$C^2(\mathbb{R})$ using some number of complex variables, say twenty, so that our resulting
-%equations are polynomials in $\mathbb{C}[c_0,..,c_{19}]$ and their common
-%solutions describe an algebraic variety in $\mathbb{C}^{20}$.
-%Unfortunately, degree bounds seem necessary on almost everything in order
-%to achieve this, and no matter how big and complicated our equations become,
-%we're only searching part of the function space.
-
-However, I find it useful to consider the function space as something quite
-small, parameterized by a finite number of constants, that we pick for our purpose of solving some particular
-equation or system of equations.  The great advantage of this approach is that by using
-a finite number of parameters to describe our function space, we can
-use the tools of algebraic geometry to characterize the
-solutions as algebraic varieties.
-
 We do this by introducing
 additional differential polynomials into our system.
 This doesn't let us restrict our functions to
@@ -531,14 +499,10 @@ My primary goal is to ``solve'' a PDE by finding solutions described using ODEs.
 
 Therefore, all of my current ans\"atze attempt to express solutions to the PDE using
 a finite number of ODEs.  They do not necessarily have to be linear or homogenous,
-but for the moment let's consider a homogenous linear example.
-
-% For the present work, I restrict to homogeneous linear ODEs,
-% because the PDEs I am primarily interested in solving (various forms of Schr\"odinger's equation)
-% are homogeneous and linear, so I'm hopeful that homogeneous linear ODEs will suffice to solve them.
-% This is not a fundamental limitation of the algorithm.
-
-ODEs.
+but for the present work, I restrict to homogeneous linear ODEs,
+because the PDEs I am primarily interested in solving (various forms of Schr\"odinger's equation)
+are homogeneous and linear, so I'm hopeful that homogeneous linear ODEs will suffice to solve them.
+This is not a fundamental limitation of the algorithm.
 
 Algebraic extensions can be constructed in a similar manner, with a key restriction.
 They must be parameterized by a finite number of constants, so they can not express
@@ -546,9 +510,9 @@ an arbitrary algebraic extension of indefinite degree.
 
 To form an ansatz, we construct a tower of these ODE and/or algebraic extensions that build from the base differential ring
 (used to write our original PDE) and culminates in a parameterized differential polynomial
-that is equated to the PDE's independent variable.  It is also possible to consider a system
+that is used as the PDE's dependent variable.  It is also possible to consider a system
 of interrelated PDEs, and multiple parameterized differential polynomials, at the top of the tower,
-one for each dependent variable in the PDE.
+one for each dependent variable in the system of PDEs.
 
 If the parameterized differential polynomial takes the form of a single indeterminate, we will often use that indeterminate
 to construct the PDE directly.
@@ -566,8 +530,6 @@ subtraction, multiplication and division.  Roots can be constructed using algebr
 extensions.  If the PDE is expressed using other functions, however, they must be replaced
 with differential polynomial analogues.  The difficulty of doing this depends on the
 exact nature of the functions.
-
-Non-polynomial functions.
 
 \subsection{Differential Reduction}
 
