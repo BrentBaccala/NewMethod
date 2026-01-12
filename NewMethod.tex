@@ -175,20 +175,23 @@ Equations \eqref{ansatz 1a} and \eqref{ansatz 1b} are differential polynomials, 
 the most relevant field of mathematics.
 
 The author has developed an algorithm that tests a PDE, specified as a differential polynomial,
-against a system of differential polynomials,
+against a system of differential polynomials (which I term an ``ansatz''),
 parameterized by a finite number of constants,
 similar to \eqref{ansatz 1a} and \eqref{ansatz 1b},
-and finds solutions like \eqref{ansatz 1sol}.
+and finds solutions like \eqref{ansatz 1sol}.  This is done using the techniques of differential
+algebra and algebraic geometry.
 
-% The {\bf ansatz} is equations \eqref{ansatz 1a} and \eqref{ansatz 1b}.  The goal of the algorithm is to find all solutions like \eqref{ansatz 1sol}.
-
+In short, to solve the PDE, we restrict our attention to a subset of the function
+space, parameterized by a finite number of constants.
+A quick glance at Section \ref{A Collection of Ansatze} should indicate the great variety of such ``ans\"atze''.
+If we can, by luck or by theory, pick a good ansatz, then we have
+a computable algorithm to find the solutions therein.
 
 \subsection*{Organization of the Paper}
 
-After a motivating example in the introduction,
-section \ref{sec:Solution Algorithm} presents the algorithm, which fits a given
+Section \ref{sec:Solution Algorithm} presents the algorithm, which fits a given
 PDE to a given {\bf ansatz} defined using differential polynomials.
-Section \ref{A Collection of Ansatze} shows various ans\"atze.
+Section \ref{A Collection of Ansatze} illustrates a half dozen ans\"atze that can be used.
 Section \ref{sec:Example} illustrates the algorithm by computing a previously unknown solution to the hydrogen Schr\"odinger equation.
 Section \ref{sec:Generalization of the Algorithm} discusses how the algorithm can be generalized
 and section \ref{sec:Selection of an Ansatz} discuss the theoretical issues surrounding selection of an ansatz.
@@ -457,65 +460,42 @@ differential polynomials.
 
 \subsection{The Ansatz}
 
-We do this by introducing
-additional differential polynomials into our system.
-This doesn't let us restrict our functions to
+The primary intent of the algorithm is find solutions to a PDE in the form
+of nested extensions, either ODE or algebraic.
+
+We do this by introducing additional differential polynomials into our system,
+forming what we term the ``ansatz''.
+
+Using differential polynomials means that we can't restrict our functions to
 something like $L^2(\mathbb{R})$, because that requires imposing a global integral condition,
 and there's no way to specify that using only differential polynomials.
+Nor can we specify any kind of boundary condition.
+
 We can, however, restrict the function space by requiring the solutions
 to satisfy additional differential equations.
 
-An algorithm begins to suggest itself.  To solve a given differential equation,
-we pick a small function space
-parameterized by a finite number of constants, describe it using a
-system of differential polynomial equations, then use
-some kind of a reduction algorithm on the original equation to extract a system of polynomial equations involving
-only the constants.
+My primary goal is to ``solve'' a PDE by finding solutions described using ODEs.
+Therefore, all of my current ans\"atze attempt to express solutions to the PDE using
+a finite combination of ODEs.  They do not have to be linear, seperable or homogenous.
+They do require degree bounds on all of their constituent polynomials,
+in order to obtain a finite number of constant parameters.
 
-What kinds of small function spaces are useful?
-Starting with a PDE, I have obtained good results by restricting it to be solved using
-ODEs of certain limited forms.  Parameterizing those forms with a finite number
-of constants yields a function space parameterized by constants, and therefore
-describing a solution variety in something like $\mathbb{C}^n$.  Such a
-solution space is then ammenable to the techniques of algebraic geometry,
-such as primary decomposition.
-Each associated prime ideal in the resulting primary decomposition can be interpreted as a family
-of solutions of the differential equation in the function space.
+Algebraic extensions can also be included, but since
+they must be parameterized by a finite number of constants, they can not express
+an arbitrary algebraic extension of indefinite degree.
 
-In short, rather than attempt to derive differential equations that apply to all solutions
-of the PDE, we restrict our attention to an {\bf ansatz}, a subset of the function
-space in which we seek solutions, parameterized as a finite dimensional vector space over the constants.
-If we can, by luck or by theory, pick a good ansatz, then we have
-a computable algorithm to find the solutions therein.
-Section \ref{A Collection of Ansatze} illustrates a half dozen ans\"atze that can be used.
+To form an ansatz, we construct a tower of ODE and/or algebraic extensions that build from the base differential ring
+(used to write our original PDE) and culminates in a newly introduced indeterminate
+that is used as the PDE's dependent variable.  It is also possible to consider a system
+of interrelated PDEs, and multiple parameterized differential polynomials, at the top of the tower,
+each equated to a new indeterminate and used
+as the dependent variables in a system of PDEs.  (see Figure \ref{nonlinear ansatz figure})
 
 The primary requirement for an {\bf ansatz} is that it be expressed using differential polynomials,
 as this makes it ammenable to the techniques of differential algebra.  This excludes any
 kind of boundary conditions (which would require evaluating functions at some boundary)
 or Sobolov space restrictions (which would require evaluating integrals of the function),
 but admits almost almost any differential equation imaginable.
-
-My primary goal is to ``solve'' a PDE by finding solutions described using ODEs.
-
-Therefore, all of my current ans\"atze attempt to express solutions to the PDE using
-a finite number of ODEs.  They do not necessarily have to be linear or homogenous,
-but for the present work, I restrict to homogeneous linear ODEs,
-because the PDEs I am primarily interested in solving (various forms of Schr\"odinger's equation)
-are homogeneous and linear, so I'm hopeful that homogeneous linear ODEs will suffice to solve them.
-This is not a fundamental limitation of the algorithm.
-
-Algebraic extensions can be constructed in a similar manner, with a key restriction.
-They must be parameterized by a finite number of constants, so they can not express
-an arbitrary algebraic extension of indefinite degree.
-
-To form an ansatz, we construct a tower of these ODE and/or algebraic extensions that build from the base differential ring
-(used to write our original PDE) and culminates in a parameterized differential polynomial
-that is used as the PDE's dependent variable.  It is also possible to consider a system
-of interrelated PDEs, and multiple parameterized differential polynomials, at the top of the tower,
-one for each dependent variable in the system of PDEs.
-
-If the parameterized differential polynomial takes the form of a single indeterminate, we will often use that indeterminate
-to construct the PDE directly.
 
 A good ansatz will be flexible enough to match the solution sought, but require only a small number
 of parameters, to make the computation tractable.
@@ -686,7 +666,7 @@ the union of which form the solution space of the PDE in the differential functi
 \section{A Collection of Ans\"atze}
 \label{A Collection of Ansatze}
 
-There is no one correct ansatz, and no theory to guide their selection.
+There is no one correct ansatz, and currently no theory to guide their selection.
 At the moment, ansatz selection is guided by educated guesses about what
 function spaces might hold interesting solutions to various PDEs.
 Section \ref{sec:Selection of an Ansatz} will discuss some of the difficulties
