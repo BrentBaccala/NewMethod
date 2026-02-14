@@ -409,7 +409,7 @@ extension specified by the dependent indeterminate $\Psi$, its derivative $\Psi'
 $\Psi' = \Psi$.  This differential polynomial
 maps to the analytic equation $\frac{d\Psi}{dv}=\Psi$ and is solved
 by the analytic functions $Ae^v$ ($A$ is an arbitrary constant).  If $v=x^2+y$, then
-the functions $Ae^{x^2+y}$ are solutions to this ODE.  The differential polynomials required are:
+the functions $Ae^{x^2+y}$ are solutions to this ODE; the differential polynomials required to model $Ae^{x^2+y}$ are:
 
 \begin{equation}
 \Psi_x = 2 \Psi' x \qquad
@@ -848,6 +848,11 @@ r^2 = x^2 + y^2 + z^2
 \end{gather}
 \end{subequations}
 
+Again, we'll write the PDE (not shown) using the expected solution $\Psi$;
+that's the convention for the next several examples.
+We don't write the PDE explicitly because the ans\"atze can be applied to many PDEs.
+\eqref{ansatz 18} will shown a different way to construct PDEs.
+
 \vfill\eject
 
 \begin{figure}[H]
@@ -1154,7 +1159,7 @@ p = p_1 x + p_2 y + p_3 z + p_4 t + p_5 \Psi \\
 We seek to demonstrate the operation of the algorithm on the following Schr\"o\-dinger equation for hydrogen:
 
 \begin{equation}
-%\label{schrodinger hydrogen}
+\label{schrodinger hydrogen 2}
 -\frac{1}{2}\nabla^2 \Psi - \frac{1}{r}\Psi = E \Psi
 \end{equation}
 
@@ -1300,7 +1305,7 @@ indeterminates associated with derivations below everything else, so we use this
 
 \subsection{Differential Reduction Step}
 
-Applying Ritt's full reduction algorithm to \eqref{schrodinger hydrogen} modulo \eqref{ansatz 5 plus} with ranking \eqref{ranking}, we obtain
+Applying Ritt's full reduction algorithm to \eqref{schrodinger hydrogen 2} modulo \eqref{ansatz 5 plus} with ranking \eqref{ranking}, we obtain
 the remainder:
 
 \begin{equation}
@@ -1350,7 +1355,7 @@ $p$ includes $r$, to the first degree, but can't include $r$ to a higher power b
 
 \subsection{Projection Step}
 
-Having reduced PDE \eqref{schrodinger hydrogen} modulo \eqref{ansatz 5 plus},
+Having reduced PDE \eqref{schrodinger hydrogen 2} modulo \eqref{ansatz 5 plus},
 we now wish to project our solution into the vector space of the constants.  We're looking for
 constants that will solve equation \eqref{schrodinger modulo ansatz 5} for all values of $x$, $y$, $z$, $r$,
 $\Psi$, and $\Psi'$, so
@@ -1366,7 +1371,7 @@ r \Psi' x^{3} (v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} +
 The expressions in parenthesis (only one is shown) gives us a system of equations
 involving only constants
 that, if satisfied,
-will yield a solution to \eqref{schrodinger hydrogen} in the form \eqref{ansatz 5 plus}.
+will yield a solution to \eqref{schrodinger hydrogen 2} in the form \eqref{ansatz 5 plus}.
 Note that $E$, although
 not a parameter in the ansatz, is included with them because it is a constant.  The
 correct operation of the algorithm is predicated on nothing more than separating
@@ -1647,7 +1652,7 @@ v_4 = 1
 \end{equation}
 
 Substituting these values back into our ansatz, we conclude that $\Psi(v)$
-is a solution of \eqref{schrodinger hydrogen} under these conditions:
+is a solution of \eqref{schrodinger hydrogen 2} under these conditions:
 
 \begin{equation}
 \label{related solution}
@@ -1683,7 +1688,7 @@ Out[1]= {{y[x] -> BesselJ[0, 2 Sqrt[x]] C[1] + 2 BesselY[0, 2 Sqrt[x]] C[2]}}
 \end{verbatim}
 \end{scriptsize}
 
-leading to the following exact solution to \eqref{schrodinger hydrogen}, with $E=0$:
+leading to the following exact solution to \eqref{schrodinger hydrogen 2}, with $E=0$:
 
 \begin{equation}
 \label{solution}
@@ -1791,7 +1796,7 @@ a_1^2+a_2^2+a_3^2=1
 
 and $F$ is any linear combination of the Bessel functions $J_0$ and $Y_0$.
 
-Any finite linear combination of functions of the form \eqref{generalized solution} also solves \eqref{schrodinger hydrogen}.
+Any finite linear combination of functions of the form \eqref{generalized solution} also solves \eqref{schrodinger hydrogen 2}.
 
 Futhermore, since wavefunctions are complex-valued, restricting the $v_i$ coefficients
 to be real is unnecessary.
@@ -1876,10 +1881,7 @@ of such solutions.  I'm somewhat skeptical of their utility.
 
 The most obvious question remains: how to select an ansatz?
 
-Our goal is to build a finite tower of ODE and/or algebraic extensions that can be used
-to express solutions of a PDE.
-
-First, can we build such a finite tower to express all of the solutions of the PDE?
+First, can we build any such ansatz to express all of the solutions of the PDE?
 This seems unlikely, as the solutions of a PDE would include solutions for all possible
 boundary conditions.
 
@@ -1893,6 +1895,11 @@ No single exponential extension can be constructed to express all of these solut
 In fact, a different extension is required for each real value of $x_0$, yielding a
 uncountable infinite basis.
 
+Furthermore, these are just the solutions described in a series expansion;
+we expect there to be many others.  The essence of the problem of ansatz selection
+is that we expect there to be solutions all over the place.  Many ans\"atze
+will yield solutions.
+
 So, while the PDE problem is superficially similar to the problem of symbolic integration,
 which asks if a finite tower of extensions can be used to express an integral,
 the nature of the problem is quite different because in the integration case we can express all of its solutions
@@ -1902,7 +1909,9 @@ In the symbolic integration case, we expect to find a single field extension tha
 while in the PDE case we expect this to be impossible.
 
 What about differential Galois theory?
-Picard-Vessiot theory has been of great utility in analyzing ordinary differential equations.  An $n^{\rm th}$ order linear ODE,
+
+Picard-Vessiot / differential Galois theory has been of great utility in analyzing ordinary differential equations.
+An $n^{\rm th}$ order linear ODE,
 % restricted to analytic solutions (complex? what function space?),
 will have at most an $n$-dimensional
 solution space.  After selecting an arbitrary basis, any
@@ -1922,7 +1931,7 @@ so the theory of algebraic groups is therefore unlikely to be much help.
 Kovacic developed an algorithm \cite{Kovacic} to handle
 second order ODEs not by developing an algorithm to determine the
 differential Galois group of a given equation, but rather by
-using first a change of variables to restrict to $SL_2$, then
+using first a change of variables to restrict the Galois group to $SL_2$, then
 categorizing all possible algebraic subgroups of $SL_2$
 and developing an algorithm to handle each case.
 Taking a similar approach for PDEs would require categorizing
