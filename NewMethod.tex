@@ -221,39 +221,39 @@ Section \ref{sec:Future Work} discusses future work and section \ref{sec:Conclus
 \begin{figure}
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[node distance=50pt, every text node part/.style={align=center}]
-\node (commutative algebra) [draw, text width=200pt] {Commutative Algebra
+\node (commutative algebra) [draw, text width=200pt] {{\bf Commutative Algebra}
       \begin{itemize}
         \item rings, ideals, fields, algebraic extensions
         \item indeterminates are simply objects that obey the commutative, associative, distributive axioms
         \item Ex: $x^2+y^2+z^2=1$
       \end{itemize}
 };
-\node (algebraic geometry) [draw, node distance=125pt, below of=commutative algebra, text width=200pt] {Algebraic Geometry
+\node (algebraic geometry) [draw, node distance=125pt, below of=commutative algebra, text width=200pt] {{\bf Algebraic Geometry}
       \begin{itemize}
         \item indeterminates now take values in a field like $\mathbb{C}, \mathbb{R}, \mathbb{Q}, \overline{\mathbb{Q}}, \mathbb{F}_p$
         \item Ex: surface of unit sphere in $\mathbb{R}^3$
       \end{itemize}
 };
-\node (differential algebra) [draw, node distance=225pt, right of=commutative algebra, text width=200pt] {Differential Algebra
+\node (differential algebra) [draw, node distance=225pt, right of=commutative algebra, text width=200pt] {{\bf Differential Algebra}
       \begin{itemize}
         \item a third primitive operator (derivation) is added to addition and multiplication
         \item differential rings, differential ideals, differential transcendental extensions
         \item Ex: $\Psi_{xx}=\Psi_{t}$
       \end{itemize}
 };
-\node (differential algebraic geometry) [draw, node distance=125pt, below of=differential algebra, text width=200pt] {Differential Algebraic Geometry
+\node (differential algebraic geometry) [draw, node distance=125pt, below of=differential algebra, text width=200pt] {{\bf Differential Algebraic Geometry}
       \begin{itemize}
         \item indeterminates now take values in function spaces like $C^2(U)$, $H^2(\mathbb{R}^3)$
         \item Ex: $\Psi = e^{-x^2/4t}/\sqrt{t}$
       \end{itemize}
 };
 
-\draw [very thick, ->] (commutative algebra.south) -- (algebraic geometry.north) node[right,pos=0.5] {map indeterminates\\to constants};
-\draw [very thick, ->] (differential algebra.south) -- (differential algebraic geometry.north) node[right,pos=0.5] {map indeterminates\\to functions};
+\draw [very thick, ->] (commutative algebra.south) -- (algebraic geometry.north) node[right,pos=0.5] {\it map indeterminates\\\it to constants};
+\draw [very thick, ->] (differential algebra.south) -- (differential algebraic geometry.north) node[right,pos=0.5] {\it map indeterminates\\\it to functions};
 
 \draw [very thick, ->] (differential algebraic geometry.south) to[out=-135, in=-45] coordinate[midway] (mid) (algebraic geometry.south) ;
 
-\node [below of=mid, node distance=20pt] {\bf We can do this if we use\\\bf function spaces parameterized with constants};
+\node [below of=mid, node distance=20pt] {\it We can do this if we use\\\it function spaces parameterized with constants};
 
 \end{tikzpicture}%
 }
@@ -332,7 +332,8 @@ field, then listing the associated indeterminates of derivations enclosed in cur
 braces.  Each listed indeterminate corresponds to both a derivation (prefixed by $d$)
 and its associated indeterminate, i.e, $\mathbb{Q}\{x,y,z\}$ is a differential
 ring with coefficients in $\mathbb{Q}$, three indeterminants $x,y,z$ and three
-matching derivations $dx, dy, dz$.  The derivations we often write as subscripts.
+matching derivations $dx, dy, dz$.  The derivations we often write as subscripts:
+$\Psi_x$ is the derivation $dx$ applied to $\Psi$.
 
 % The Risch algorithm
 
@@ -345,7 +346,7 @@ matching derivations $dx, dy, dz$.  The derivations we often write as subscripts
 Ultimately, we are operating in a partial differential ring, but we are
 seeking to solve the PDE using ODEs.  How, then, do we describe ODEs using differential polynomials?
 Initially, we consider homogenous linear ODEs, but this is not a fundamental limitation;
-see, for example, Figure \ref{nonlinear ansatz figure} and equations \eqref{ansatz 18}.
+see below, for example, Figure \ref{nonlinear ansatz figure} and equations \eqref{ansatz 18}.
 
 An $n^{\rm th}$-order homogeneous linear ODE takes the form:
 
@@ -2012,12 +2013,10 @@ but the software lacks the ability to
 fall back effectively on mass storage when RAM is exhausted, nor
 can it use memory spread out over a cluster.
 
-I've developed working software that can parallize the computation
-of the minimal associated prime ideals through factorization and monotone dualization,
-but it's inefficient, so
-%which is a major drawback for me, as my compute resources
-%are somewhat limited.
-I've been devoting more of my recent efforts towards more efficient algorithms.
+%I've developed working software that can parallize the computation
+%of the minimal associated prime ideals through factorization and monotone dualization,
+%but it's inefficient, so
+%I've been devoting more of my recent efforts towards more efficient algorithms.
 
 \section{Conclusion}
 \label{sec:Conclusion}
@@ -2032,7 +2031,7 @@ a single variable, with no restrictions to differential polynomials.
 
 The name of the software repository ({\tt helium}) informs a primary goal
 of my research: to find a closed form expression for helium's ground state.
-In that repository, you will find several years of fumbling attempts in
+In that repository, you will find several years of attempts in
 that direction, of which {\tt joca.sage} is the most refined.
 % \footnote{{\tt helium.sage} is also notable for containing a very aggressive, though inefficient,
 % factorizing implementation of the GTZ algorithm, but that's the subject of another paper.}
