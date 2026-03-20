@@ -19,6 +19,15 @@
 
 \usepackage{longtable}
 
+\usepackage{listingsutf8} % for the appendix
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\ttfamily\bfseries,
+  commentstyle=\ttfamily,
+  stringstyle=\ttfamily,
+  breaklines=true
+}
+
 % For drawing ansatz diagrams
 
 \usepackage{tikz}
@@ -2143,5 +2152,10 @@ Kovacic, J. J. (1986). "An algorithm for solving second order linear homogeneous
 Fran\c{c}ois Boulier, \emph{DifferentialAlgebra} (Version 5.3), 2025.\\
 {\tt https://codeberg.org/francois.boulier/DifferentialAlgebra}
 \end{thebibliography}
+
+\vfill\eject
+\appendix
+\section{Source Code}
+\lstinputlisting[language=Python, basicstyle=\ttfamily\small, breaklines=true, inputencoding=utf8/latin1]{/home/baccala/src/helium/joca.sage}
 
 \end{document}
