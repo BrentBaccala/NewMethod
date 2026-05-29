@@ -663,7 +663,461 @@ the union of which form the solution space of the PDE in the differential functi
 \end{enumerate}
 
 \vfill\eject
-\input{/home/claude/project/proof.tex}
+\subsection{Completeness of the Projection}
+\label{sec:completeness}
+
+A natural question arises: if some particular selection of constants
+causes the ansatz to solve the PDE, will the algorithm always find
+those constants in its solution space?  Theorem~1 answers it.  It covers the
+regime in which the algorithm of this paper actually operates: every element
+nonlinear in its leader has a regular initial and a regular separant.
+Ans\"atze all of whose leaders are linear --- among them the ODE-extension
+ans\"atze used here --- are always covered, the hypothesis being then
+vacuous.
+
+\medskip
+We first recall the notions from differential algebra on which the
+hypotheses below rest; our terminology and numbering follow
+\cite{blop}, \S\S\,3--4.  Recall that the {\it leader} of a differential
+polynomial $p \in R \setminus K$ is its highest-ranked indeterminate or
+derivative, and that a polynomial is {\it partially reduced} (respectively
+{\it fully reduced}) with respect to $p$ when no proper derivative of the
+leader of $p$ appears in it (respectively, and it involves that leader to
+strictly lower degree than $p$ does).  The {\it initial} of $p$ is its
+leading coefficient regarded as a univariate polynomial in its leader
+$u_p$, and the {\it separant} of $p$ is $s_p = \partial p / \partial u_p$.
+For a set $A \subseteq R \setminus K$ we write $I_A$, $S_A$, and
+$H_A = I_A \cup S_A$ for the sets of initials, separants, and both.
+
+\smallskip
+A set $A \subseteq R \setminus K$ is {\it triangular} if the leaders of its
+elements are pairwise distinct, and {\it differentially triangular}
+(\cite{blop}, Definition~13) if in addition its elements are pairwise
+partially reduced.
+
+\smallskip
+Two differential polynomials form a {\it critical pair} (\cite{blop},
+Definition~17) if their leaders have a common derivative.  For a critical
+pair $\{p_1, p_2\}$, write $\theta_1 u$ and $\theta_2 u$ for the two
+leaders, $\theta_{12} u$ for their least common derivative, and $s_1, s_2$
+for the separants; the associated {\it $\Delta$-polynomial} (\cite{blop},
+Definition~18) is
+%
+\[
+\Delta(p_1, p_2) \;=\; s_1\,\frac{\theta_{12}}{\theta_2}\,p_2
+                    \;-\; s_2\,\frac{\theta_{12}}{\theta_1}\,p_1,
+\]
+%
+where $\theta_{12}/\theta_i$ denotes the derivation operator carrying
+$\theta_i u$ to $\theta_{12} u$; its leader is strictly below
+$\theta_{12} u$.  The critical pair is {\it solved} by a system
+$A = 0$, $S \ne 0$ (\cite{blop}, Definition~19) if
+$\Delta(p_1, p_2) \in (A_v) : (S \cap R_v)^\infty$ for some derivative
+$v < \theta_{12} u$, where $A_v$ and $R_v$ collect the derivatives of
+elements of $A$, respectively all differential polynomials, whose leaders
+are at most $v$.  A system is {\it coherent} when every critical pair
+of $A$ is solved.
+
+\smallskip
+Finally, a differential system $A = 0$, $S \ne 0$ is a {\it regular
+differential system} (\cite{blop}, Definition~22) if
+
+\begin{enumerate}
+\item[\rm(C1)] $A$ is differentially triangular;
+\item[\rm(C2)] $S$ contains the separants of the elements of $A$ and is
+  partially reduced with respect to $A$; and
+\item[\rm(C3)] every critical pair of $A$ is solved by $A = 0$, $S \ne 0$
+  (the coherence property).
+\end{enumerate}
+
+\noindent
+The differential ideal $[A] : S^\infty$ is the {\it regular differential
+ideal} defined by the system.
+
+\smallskip
+Two notions from the theory of (algebraic) triangular sets enter the
+hypotheses below.  Write $\operatorname{sat}(A) = (A) : I_A^\infty$ for the
+saturation of the algebraic ideal $(A)$ by the initials of~$A$.  A
+triangular set $A$, with leaders $u_1 < \cdots < u_k$, is a {\it regular
+chain} (\cite{hubert}, Definition~5.7) if the initial of each $a_i$ is a
+non-zero-divisor modulo $\operatorname{sat}(a_1, \ldots, a_{i-1})$, and a
+{\it squarefree regular chain} (\cite{hubert}, Definition~7.2) if, in
+addition, no separant of $A$ is a zero-divisor modulo
+$\operatorname{sat}(A)$.  A regular chain is a characteristic set of
+$\operatorname{sat}(A)$ --- reduction by $A$ is a normal form modulo
+$\operatorname{sat}(A)$, so a polynomial fully reduced with respect to~$A$
+and lying in $\operatorname{sat}(A)$ is zero --- and a regular chain is
+squarefree if and only if $\operatorname{sat}(A)$ is radical
+(\cite{hubert}, Corollary~7.3).
+
+\medskip
+\noindent{\bf Theorem 1.}
+{\it
+Let $P$ be a differential polynomial (the PDE), let
+$A = \{a_1, \ldots, a_k\}$ be the ansatz --- a differentially
+triangular set of differential polynomials whose coefficients involve
+constant parameters $c = (c_1, \ldots, c_n) \in \mathbb{C}^n$ ---
+and let $H_A = I_A \cup S_A$ denote the set of initials and separants
+of~$A$.
+
+Apply Ritt's full reduction to $P$ modulo $A$, obtaining a remainder $r$
+and a power product $h$ of elements of $H_A$ such that
+%
+\begin{equation}
+\label{ritt reduction 1}
+h \cdot P - r \in [A]
+\end{equation}
+%
+with $r$ fully reduced with respect to $A$.
+Write $r = \sum_\alpha m_\alpha \cdot p_\alpha(c)$, where the $m_\alpha$
+are distinct power products in the non-constant indeterminates and the
+$p_\alpha$ are polynomials in the constants.  Let
+$\mathcal{V} = V(p_1, \ldots, p_N) \subseteq \mathbb{C}^n$ be the variety
+defined by setting all constant coefficients to zero.
+
+Suppose $c^* \in \mathbb{C}^n$ satisfies:
+
+\begin{enumerate}
+\item $P \in [A(c^*)]$, i.e., the ansatz evaluated at $c^*$ solves the PDE,
+\item $h(c^*) \ne 0$, i.e., the initials and separants of $A$ do not
+  vanish at~$c^*$,
+\item $A(c^*)$ forms a regular differential system, and
+\item $A(c^*)$ is a squarefree regular chain.
+\end{enumerate}
+
+Then $c^* \in \mathcal{V}$.
+}
+
+Hypothesis~(1) states that the ansatz at $c^*$ ``solves the PDE'' in the
+strong sense that $P$ lies in the differential ideal $[A(c^*)]$: every
+function satisfying the ansatz also satisfies the PDE.
+
+Hypothesis~(2) is the ``denominator condition'' already noted in
+\S\ref{sec:Solution Algorithm}: the initials and separants arising from the
+Ritt reduction must not vanish.  At parameter values where they do vanish,
+the reduction degenerates and the algorithm may miss solutions.
+
+Hypothesis~(3) --- regularity --- requires the ansatz to be differentially
+triangular, with nonzero partially reduced separants, and with all critical
+pairs solved (the coherence condition; \cite{blop}, Definition~22,
+condition~C3).  The ODE-extension ans\"atze considered in this paper satisfy
+this condition naturally: the chain rule relations and ODE defining
+polynomial form a differentially triangular system, and the coherence
+condition is ensured because all cross-derivatives commute consistently
+through a single independent variable~$v$.
+
+Hypothesis~(4) is the ingredient that closes the proof.  An element
+{\it linear} in its leader satisfies it automatically: its initial and
+separant coincide, and that quantity is a non-zero-divisor modulo
+$\operatorname{sat}(A(c^*))$ even when --- as can happen --- it is a
+zero-divisor modulo $(A(c^*))$ itself.  So~(4) bears only on the elements
+nonlinear in their leaders, of which it asks that {\it both} the initial and
+the separant be regular; neither may be dropped, as the two counterexamples
+following the proof show.
+
+The theorem establishes only the completeness of the algorithm: every valid
+choice of constants will be found.  It says nothing about sufficiency ---
+there may exist points in $\mathcal{V}$ that do not actually solve the PDE,
+for example because the denominator vanishes there.
+
+{\it Proof.}
+Ritt's full reduction (\cite{Ritt}, Chapter~I, \S\,6;
+\cite{Kolchin}, Chapter~I, \S\,9; \cite{blop}, \S\,3.1)
+produces $h$ and $r$ satisfying \eqref{ritt reduction 1}, with
+$r$ fully reduced with respect to~$A$.
+Evaluating the constants at $c = c^*$ gives
+$h(c^*) \cdot P - r(c^*) \in [A(c^*)]$.
+By hypotheses~(1) and~(2), $h(c^*) \cdot P \in [A(c^*)]$, hence
+$r(c^*) \in [A(c^*)]$.
+
+Because $r(c^*)$ is fully reduced with respect to $A(c^*)$ it is in
+particular partially reduced.  By hypothesis~(3) and Rosenfeld's
+Lemma (\cite{blop}, Theorem~23), every partially reduced element of
+$[A(c^*)] : S_{A(c^*)}^\infty$ lies in the algebraic saturation, so
+$r(c^*) \in (A(c^*)) : S_{A(c^*)}^\infty$.
+
+By hypothesis~(4), $A(c^*)$ is a squarefree regular chain, so its separants
+are non-zero-divisors modulo $\operatorname{sat}(A(c^*))$; as
+$(A(c^*)) \subseteq \operatorname{sat}(A(c^*))$ and the latter is therefore
+unchanged by saturating further at the separants,
+%
+\[
+r(c^*) \;\in\; (A(c^*)) : S_{A(c^*)}^\infty
+        \;\subseteq\; \operatorname{sat}(A(c^*)) .
+\]
+%
+But $A(c^*)$ is a characteristic set of $\operatorname{sat}(A(c^*))$, so a
+polynomial fully reduced with respect to $A(c^*)$ and lying in
+$\operatorname{sat}(A(c^*))$ must vanish (\cite{hubert}).  Hence
+$r(c^*) = 0$.
+
+Since the power products $m_\alpha$ are distinct monomials in a
+polynomial ring (hence linearly independent over~$\mathbb{C}$),
+each coefficient $p_\alpha(c^*) = 0$, whence
+$c^* \in \mathcal{V}$. \hfill $\square$
+
+\vfill\eject
+
+\medskip
+\noindent{\bf Regularity of the separants.}
+Hypothesis~(4) asks that $A(c^*)$ be {\it squarefree}, not merely a regular
+chain.  Squarefreeness is what forces the remainder --- which Rosenfeld's
+Lemma places in $(A(c^*)) : S_{A(c^*)}^\infty$ --- to lie in
+$\operatorname{sat}(A(c^*))$, where reduction by $A(c^*)$ recognizes it.
+Drop it, and the separant saturation can be strictly larger than
+$\operatorname{sat}(A(c^*))$ and harbour a nonzero fully reduced element.
+
+{\it Counterexample.}
+Take $A = \{u^3 - u^2\}$ in $K[u]$, a single polynomial with leader~$u$ of
+degree~$3$ and separant $s = 3u^2 - 2u = u(3u - 2)$.  Then
+%
+\[
+s^2 (u - 1) \;=\; u^2(3u-2)^2(u-1) \;=\; (u^3 - u^2)(3u-2)^2 \;\in\; (A),
+\]
+%
+so $u - 1 \in (A) : S_A^\infty$.  The polynomial $u - 1$ is fully reduced
+(its degree in~$u$ is $1 < 3$) and nonzero, yet it lies in the saturation:
+indeed $(A) : S_A^\infty = (u - 1)$, strictly larger than
+$(A) = (u^2(u-1))$.  Inverting the separant peels off the factor~$u^2$.
+
+{\it What goes wrong.}
+The separant $s = u(3u - 2)$ shares the factor~$u$ with $A$ --- equivalently,
+it is a zero-divisor modulo $(A)$, vanishing on the component $u = 0$, an
+embedded prime of $(A) = (u^2(u-1))$.  Saturating by~$s$ deletes that
+component and lowers the degree of~$u$ from~$3$ to~$1$, leaving the fully
+reduced $u - 1$.
+
+{\it The remedy.}
+A separant that is a non-zero-divisor cannot do this: it shares no factor
+with its element, which is then squarefree in its leader, so the leader
+keeps its full degree under saturation.  This is what hypothesis~(4) asks
+of every nonlinear element.
+
+\vfill\eject
+
+\medskip
+\noindent{\bf Regularity of the initials.}
+The other half of hypothesis~(4) --- that $A(c^*)$ be a {\it regular chain}
+at all, i.e.\ that its initials be regular --- cannot be dropped either.  A
+triangular set all of whose separants are regular need not be a regular
+chain; and when it is not, it fails to be a characteristic set of its
+saturated ideal, so a fully reduced nonzero element can sit in
+$\operatorname{sat}(A(c^*))$ --- indeed in $(A(c^*))$ itself.
+
+{\it Counterexample.}
+In $K[t, w]$ with the ranking $w > t$, take
+%
+\[
+A \;=\; \{\, t^2 - t, \;\; t\,w^2 - w \,\},
+\]
+%
+a triangular set whose leaders are $t$ and $w$, each of degree~$2$.  Both
+separants are non-zero-divisors modulo $(A)$:
+$\operatorname{sep}(t^2 - t) = 2t - 1$ and
+$\operatorname{sep}(t w^2 - w) = 2tw - 1$ vanish on none of the components
+listed below.  A hypothesis demanding only that the separants be regular
+would thus be satisfied.  Yet
+%
+\[
+w(t - 1) \;=\; w^2 (t^2 - t) \;-\; (t-1)(t w^2 - w) \;\in\; (A)
+\]
+%
+is fully reduced (of degree $1 < 2$ in each leader) and nonzero.  A fully
+reduced nonzero element therefore sits in $(A)$ --- hence in
+$\operatorname{sat}(A) = (A) : I_A^\infty$ --- so $A$ is not a characteristic
+set of $\operatorname{sat}(A)$ and reduction no longer detects membership.
+
+{\it What goes wrong.}
+The initial of $t w^2 - w$ --- the coefficient $t$ of $w^2$ --- is a
+zero-divisor modulo $(A)$, since $t(t - 1) \in (t^2 - t)$.  Multiplying
+$t w^2 - w$ by $t - 1$ annihilates its leading term, $t(t-1)w^2$ being a
+multiple of the lower generator $t^2 - t$, and the $w$-degree collapses.
+The primary decomposition exhibits the loss directly,
+%
+\[
+(A) \;=\; (t, w) \,\cap\, (t-1, w) \,\cap\, (t-1, w-1),
+\]
+%
+three points rather than the $d_t \cdot d_w = 4$ that the reduced monomials
+would count were $A$ a regular chain: the leaders fail to attain their
+nominal degrees because the leading coefficient of one element vanishes on a
+component cut out by another.
+
+{\it The remedy.}
+This is why hypothesis~(4) requires $A(c^*)$ to be a {\it regular chain},
+its initials regular and not only its separants.  For the ans\"atze of this
+paper the requirement holds: the only nonlinear element is the radius
+relation $r^2 - x^2 - y^2 - z^2$ (initial~$1$, separant~$2r$ a
+non-zero-divisor), and an element linear in its leader meets both conditions
+automatically --- its initial equals its separant, a non-zero-divisor
+modulo $\operatorname{sat}(A(c^*))$ even when (as for the ODE separant
+$a_0 + a_1 v$) it is a zero-divisor modulo $(A(c^*))$.
+
+\vfill\eject
+
+
+\subsection{Example: the second-order ODE ansatz}
+\label{sec:ansatz5-example}
+
+We verify hypothesis~(4) for the ansatz of
+Figure~\ref{ansatz 5 figure}, given by the differential
+polynomials~\eqref{ansatz 5b}, \eqref{ansatz 5c} and~\eqref{ansatz 5a}.
+Its elements are a second-order linear homogeneous ODE element
+%
+\[
+(a_0 + a_1 v)\,\Psi'' + (b_0 + b_1 v)\,\Psi' + (c_0 + c_1 v)\,\Psi,
+\]
+%
+whose coefficients are first-degree in the ODE variable
+$v = v_1 x + v_2 y + v_3 z + v_4 r$; the chain-rule
+relations~\eqref{ansatz 5c} expressing $\Psi_x, \dots, \Psi'_z$; the
+variable relation $v = v_1 x + v_2 y + v_3 z + v_4 r$; and the base-ring
+relation $r^2 - x^2 - y^2 - z^2$ that defines the radius $r$ over
+$\mathbb{Q}\{x,y,z\}$.
+
+\medskip
+\noindent{\it The separants.}
+The chain-rule relations~\eqref{ansatz 5c} and the variable
+relation~\eqref{ansatz 5a} are monic and linear in their leaders, so their
+initials and separants are all~$1$.  Two separants are nontrivial.  The
+base-ring relation has leader $r$ of degree~$2$, hence separant $2r$.  The
+ODE element has leader $\Psi''$ --- ranked above $\Psi'$ and $\Psi$ --- of
+degree~$1$, so its separant equals its initial,
+%
+\[
+s \;=\; a_0 + a_1 v,
+\]
+%
+{\it provided} that this initial does not vanish, i.e.\ provided $a_0 \ne 0$
+or $a_1 \ne 0$.  (If $a_0 = a_1 = 0$ the term in $\Psi''$ disappears, the
+leader drops to $\Psi'$, and the separant becomes $b_0 + b_1 v$.)  Note that
+a leader occurring to degree~$1$ does {\it not} force its separant to be a
+constant: here the separant equals the non-constant initial $a_0 + a_1 v$,
+which is constant only in the case $a_1 = 0$.
+
+\medskip
+\noindent{\it The separant $2r$ is always regular.}
+The base ring $\mathbb{Q}[x,y,z,r]/(r^2 - x^2 - y^2 - z^2)$ is an integral
+domain, the quadric $r^2 - x^2 - y^2 - z^2$ being irreducible; so $r$, and
+hence $2r$, is a non-zero-divisor.  This separant never violates
+hypothesis~(4).
+
+\medskip
+\noindent{\it Hypothesis~(4) holds.}
+The ansatz is a squarefree regular chain.  Its only element nonlinear in its
+leader is the radius relation $r^2 - x^2 - y^2 - z^2$, whose initial is~$1$
+and whose separant~$2r$ is the non-zero-divisor noted above.  Every other
+element --- the chain-rule relations and the second-order ODE element --- is
+linear in its leader and so meets the regular-chain and squarefree
+conditions automatically: its initial equals its separant, a
+non-zero-divisor modulo $\operatorname{sat}(A(c^*))$ even when, as for the
+ODE separant $a_0 + a_1 v$, it is a zero-divisor modulo $(A(c^*))$ itself.
+Hypothesis~(4) is therefore satisfied, and Theorem~1 applies: the projection
+is complete for this ansatz.
+
+\vfill\eject
+
+\subsection[Investigating the conjecture]{Investigating whether $[A] \cap R_0 = (A)$}
+\label{sec:option3}
+
+If the following conjecture holds for regular differential systems,
+the completeness theorem follows without Rosenfeld or Lazard:
+
+{\it Conjecture.}
+Let $A = 0$, $S \ne 0$ be a regular differential system
+(Definition~22 of \cite{blop}) and let $R_0$ denote the ring of
+differential polynomials that are partially reduced with
+respect to~$A$.  Then $[A] \cap R_0 = (A)$.
+
+The interest is that the degree argument of the proof (``reduced +
+in~$(A)$'' implies zero) works for the algebraic ideal $(A)$ but not
+for its saturation $(A) : S^\infty$.  If $[A] \cap R_0 = (A)$, then
+any fully reduced element of~$[A]$ lies in $(A)$, and the degree
+argument closes the proof directly.
+
+We were unable to find a counterexample.  The
+examples below show that every attempt to construct one is blocked
+by the coherence condition~{\bf C3} of Definition~22.
+
+\medskip
+{\bf Example 1: ODE system, non-regular.}
+Take $A = \{u^3 - u^2\}$ in $K\{u\}$ with $\delta = d/dx$.
+The separant is $s = 3u^2 - 2u$ and $\delta a = (3u^2 - 2u)\,u'$.
+Since $a$ has no explicit $x$-dependence, every derivative
+$\delta^m a$ ($m \ge 1$) is divisible by~$u'$ as a polynomial, so
+setting all derivatives of~$u$ to zero kills every derivative term.
+A direct coefficient argument shows $[A] \cap K[u] = (A)$:
+if $f = c_0\,a + c_1\,\delta a + \cdots$ with
+$f \in K[u]$, the coefficient of~$u'$ in
+$c_1 (3u^2 - 2u) u'$ forces $c_1 = 0$, and similarly
+$c_m = 0$ for all $m \ge 1$, leaving $f = c_0\,a \in (A)$.
+
+\medskip
+{\bf Example 2: ODE system with explicit $x$-dependence.}
+Take $A = \{u^3 - u^2 - x\}$ with $\delta = d/dx$.
+Now $\delta a = (3u^2 - 2u)\,u' - 1$, so setting derivatives to zero
+gives $\phi(\delta a) = -1$ (nonzero).  For $f \in [A] \cap K[x,u]$
+with $\deg_u(f) < 3$:
+\[
+f \;=\; \phi(c_0)\,a \;-\; \phi(c_1) \;+\; 0 \;+\; \cdots
+\]
+(since $\phi(\delta^m a) = 0$ for $m \ge 2$).
+The constraint $\deg_u(f) < 3$ forces $\phi(c_0) = 0$, giving
+$f = -\phi(c_1)$.  Examining the $u'$-coefficient in the full
+expression forces $(3u^2 - 2u) \mid \phi(c_1)$ in $K[x, u]$,
+and tracing through yields $\phi(c_1) \in (a)$, hence $f \in (A)$.
+
+\medskip
+{\bf Example 3: PDE system --- the critical case.}
+Take $A = \{a_1, a_2\}$ with $a_1 = u_x - f(x,y,u)$ and
+$a_2 = u_y - g(x,y,u)$ in $K\{u\}$ with $\delta_x = \partial/\partial x$,
+$\delta_y = \partial/\partial y$.  Leaders $u_x < u_y$, both
+of degree~1, separants both equal to~1.  The system is differentially
+triangular and pairwise partially reduced.
+
+The cross-derivative produces an element of~$[A]$:
+\[
+\delta_y a_1 - \delta_x a_2
+\;=\; (f_y - g_x) + f_u\,u_y - g_u\,u_x.
+\]
+Full-reducing modulo~$A$ (replacing $u_x \to f$, $u_y \to g$) gives
+\[
+\Phi \;=\; f_y - g_x + f_u\,g - g_u\,f \;\in\; K[x, y, u].
+\]
+This is the classical integrability residual.  Since the
+full reduction introduces no denominators (both initials are~1),
+we have $\delta_y a_1 - \delta_x a_2 \equiv -\Phi \pmod{(A)}$,
+so $\Phi \in [A]$.
+
+Meanwhile, $(A) \cap K[x, y, u] = \{0\}$ (both generators are
+monic-linear in their leaders), so if $\Phi \ne 0$ we would have
+$\Phi \in [A] \cap R_0 \setminus (A)$.
+
+{\it Concrete instance}: $f = yu$, $g = 0$ gives $\Phi = -u$.
+Then $u \in [A]$ but $u \notin (A)$.  However, the system has
+$u = 0$ as its only solution (consistent, since $u_x = 0$,
+$u_y = 0$, $u = 0$ satisfies the system).
+
+{\it The coherence condition blocks this.}
+The $\Delta$-polynomial for the critical pair $\{a_1, a_2\}$
+full-reduces to~$-\Phi$.  The coherence condition~{\bf C3} requires
+$\Delta(a_1, a_2) \in (A_v) : (S \cap R_v)^\infty$.  Since both
+separants equal~1, this simplifies to $\Phi \in (A)$.  But
+$(A) \cap K[x,y,u] = \{0\}$, so {\bf C3} holds if and only if
+$\Phi = 0$.
+
+For $f = yu$, $g = 0$: $\Phi = -u \ne 0$, so {\bf C3} fails.
+The system is {\it not} a regular differential system, and
+hypothesis~(3) of the theorem is violated.
+
+\medskip
+{\it Summary.}
+In every example we examined, the conjecture $[A] \cap R_0 = (A)$
+holds for regular differential systems.  The coherence condition
+is precisely what prevents cross-derivatives from introducing new
+algebraic consequences beyond~$(A)$.  A proof of the conjecture
+would yield a clean proof of the completeness theorem that bypasses
+both Rosenfeld's Lemma and Lazard's Lemma entirely.
 
 \vfill\eject
 
