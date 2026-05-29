@@ -765,7 +765,8 @@ Suppose $c^* \in \mathbb{C}^n$ satisfies:
 \item $P \in [A(c^*)]$, i.e., the ansatz evaluated at $c^*$ solves the PDE,
 \item $h(c^*) \ne 0$, i.e., the initials and separants of $A$ do not
   vanish at~$c^*$,
-\item $A(c^*)$ forms a regular differential system, and
+\item $A$, with its constants regarded as parameters, forms a regular
+  differential system, and
 \item $A(c^*)$ is a squarefree regular chain.
 \end{enumerate}
 
@@ -781,14 +782,19 @@ Hypothesis~(2) is the ``denominator condition'' already noted in
 Ritt reduction must not vanish.  At parameter values where they do vanish,
 the reduction degenerates and the algorithm may miss solutions.
 
-Hypothesis~(3) --- regularity --- requires the ansatz to be differentially
-triangular, with nonzero partially reduced separants, and with all critical
-pairs solved (the coherence condition; \cite{blop}, Definition~22,
-condition~C3).  The ODE-extension ans\"atze considered in this paper satisfy
-this condition naturally: the chain rule relations and ODE defining
-polynomial form a differentially triangular system, and the coherence
-condition is ensured because all cross-derivatives commute consistently
-through a single independent variable~$v$.
+Hypothesis~(3) --- regularity --- requires the ansatz, with its constants
+regarded as parameters, to be differentially triangular, with nonzero
+partially reduced separants, and with all critical pairs solved (the
+coherence condition; \cite{blop}, Definition~22, condition~C3).  We impose
+it on the parametric ansatz rather than at the single point~$c^*$: by
+hypothesis~(2) no initial or separant vanishes at~$c^*$, and under that
+condition the triangular structure and the coherence reductions specialize
+intact, so $A(c^*)$ inherits the property (see the proof).  The
+ODE-extension ans\"atze considered in this paper satisfy~(3) naturally: the
+chain rule relations and ODE defining polynomial form a differentially
+triangular system, and the coherence condition is ensured because all
+cross-derivatives commute consistently through a single independent
+variable~$v$.
 
 Hypothesis~(4) is the ingredient that closes the proof.  An element
 {\it linear} in its leader satisfies it automatically: its initial and
@@ -815,8 +821,13 @@ By hypotheses~(1) and~(2), $h(c^*) \cdot P \in [A(c^*)]$, hence
 $r(c^*) \in [A(c^*)]$.
 
 Because $r(c^*)$ is fully reduced with respect to $A(c^*)$ it is in
-particular partially reduced.  By hypothesis~(3) and Rosenfeld's
-Lemma (\cite{blop}, Theorem~23), every partially reduced element of
+particular partially reduced.  By hypothesis~(2) no initial or separant
+of~$A$ vanishes at~$c^*$, so the leaders of $A(c^*)$ are those of~$A$ and the
+coherence $\Delta$-reductions of~$A$ --- polynomial identities in the
+constants whose only multipliers are initials and separants --- specialize
+intact; thus hypothesis~(3) descends from~$A$ to $A(c^*)$, which is again a
+regular differential system.  By Rosenfeld's Lemma (\cite{blop},
+Theorem~23), every partially reduced element of
 $[A(c^*)] : S_{A(c^*)}^\infty$ lies in the algebraic saturation, so
 $r(c^*) \in (A(c^*)) : S_{A(c^*)}^\infty$.
 
