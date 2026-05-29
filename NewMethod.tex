@@ -1021,7 +1021,8 @@ is complete for this ansatz.
 \label{sec:option3}
 
 If the following conjecture holds for regular differential systems,
-the completeness theorem follows without Rosenfeld or Lazard:
+the separant-control machinery of the proof above --- Rosenfeld's Lemma
+and the {\it squarefree} half of hypothesis~(4) --- becomes unnecessary:
 
 {\it Conjecture.}
 Let $A = 0$, $S \ne 0$ be a regular differential system
@@ -1029,11 +1030,23 @@ Let $A = 0$, $S \ne 0$ be a regular differential system
 differential polynomials that are partially reduced with
 respect to~$A$.  Then $[A] \cap R_0 = (A)$.
 
-The interest is that the degree argument of the proof (``reduced +
-in~$(A)$'' implies zero) works for the algebraic ideal $(A)$ but not
-for its saturation $(A) : S^\infty$.  If $[A] \cap R_0 = (A)$, then
-any fully reduced element of~$[A]$ lies in $(A)$, and the degree
-argument closes the proof directly.
+The interest is in the degree argument that closes the proof of
+Theorem~1: a polynomial fully reduced with respect to~$A$ and lying in
+$(A)$ must vanish.  That argument needs $A$ to be a {\it regular
+chain}.  Without the regularity of the initials it can fail even for
+the algebraic ideal $(A)$ --- the {\it Regularity of the initials}
+counterexample above exhibits a fully reduced nonzero element of $(A)$
+itself --- but, granted the regular-chain hypothesis, it does work
+for~$(A)$.  What it does {\it not} survive is the passage to the
+separant saturation $(A) : S^\infty$, which can be strictly larger
+than $(A)$ (the {\it Regularity of the separants} counterexample); this
+is why the proof above routes through Rosenfeld's Lemma and the {\it
+squarefree} half of hypothesis~(4) to keep the remainder out of the
+saturation.  If instead $[A] \cap R_0 = (A)$, then a fully reduced
+element of~$[A]$ already lies in~$(A)$, the saturation never enters,
+and the degree argument closes the proof directly --- using only the
+regular-chain half of hypothesis~(4), and dispensing with Rosenfeld's
+Lemma and the squarefree (separant-regularity) condition.
 
 We were unable to find a counterexample.  The
 examples below show that every attempt to construct one is blocked
@@ -1116,8 +1129,9 @@ In every example we examined, the conjecture $[A] \cap R_0 = (A)$
 holds for regular differential systems.  The coherence condition
 is precisely what prevents cross-derivatives from introducing new
 algebraic consequences beyond~$(A)$.  A proof of the conjecture
-would yield a clean proof of the completeness theorem that bypasses
-both Rosenfeld's Lemma and Lazard's Lemma entirely.
+would yield a proof of the completeness theorem that bypasses
+Rosenfeld's Lemma and the squarefree (separant-regularity) hypothesis
+entirely, resting on the regular-chain condition alone.
 
 \vfill\eject
 
