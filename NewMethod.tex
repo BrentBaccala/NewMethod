@@ -954,7 +954,7 @@ $a_0 + a_1 v$) it is a zero-divisor modulo $(A(c^*))$.
 \subsection{Example: the second-order ODE ansatz}
 \label{sec:ansatz5-example}
 
-We verify hypothesis~(4) for the ansatz of
+We verify the four hypotheses of Theorem~1 for the ansatz of
 Figure~\ref{ansatz 5 figure}, given by the differential
 polynomials~\eqref{ansatz 5b}, \eqref{ansatz 5c} and~\eqref{ansatz 5a}.
 Its elements are a second-order linear homogeneous ODE element
@@ -971,44 +971,78 @@ relation $r^2 - x^2 - y^2 - z^2$ that defines the radius $r$ over
 $\mathbb{Q}\{x,y,z\}$.
 
 \medskip
-\noindent{\it The separants.}
+\noindent{\it Hypothesis~(1): the ansatz solves the PDE.}
+This is the premise of the theorem, a condition on the particular
+constants $c^*$ we seek rather than on the ansatz at large.  It is met by
+the solutions found in \S\ref{solution}: for the constants
+of~\eqref{classical eq in ideal} --- the classical radial equation, whose
+ground state is $\Psi = e^{-r}$ --- and for those of the second
+ideal~\eqref{ideal:1}, the evaluated ansatz reduces the PDE to zero, so
+$P \in [A(c^*)]$.
+
+\medskip
+\noindent{\it The initials and separants.}
 The chain-rule relations~\eqref{ansatz 5c} and the variable
 relation~\eqref{ansatz 5a} are monic and linear in their leaders, so their
-initials and separants are all~$1$.  Two separants are nontrivial.  The
-base-ring relation has leader $r$ of degree~$2$, hence separant $2r$.  The
-ODE element has leader $\Psi''$ --- ranked above $\Psi'$ and $\Psi$ --- of
+initials and separants are all~$1$.  Two are nontrivial.  The base-ring
+relation has leader $r$ of degree~$2$, hence separant $2r$.  The ODE
+element has leader $\Psi''$ --- ranked above $\Psi'$ and $\Psi$ --- of
 degree~$1$, so its separant equals its initial,
 %
 \[
 s \;=\; a_0 + a_1 v,
 \]
 %
-{\it provided} that this initial does not vanish, i.e.\ provided $a_0 \ne 0$
-or $a_1 \ne 0$.  (If $a_0 = a_1 = 0$ the term in $\Psi''$ disappears, the
-leader drops to $\Psi'$, and the separant becomes $b_0 + b_1 v$.)  Note that
-a leader occurring to degree~$1$ does {\it not} force its separant to be a
-constant: here the separant equals the non-constant initial $a_0 + a_1 v$,
-which is constant only in the case $a_1 = 0$.
+{\it provided} this initial does not vanish, i.e.\ provided $a_0 \ne 0$ or
+$a_1 \ne 0$.  (If $a_0 = a_1 = 0$ the term in $\Psi''$ disappears, the
+leader drops to $\Psi'$, and the separant becomes $b_0 + b_1 v$.)  A leader
+occurring to degree~$1$ thus does {\it not} force its separant to be
+constant: here it equals the non-constant $a_0 + a_1 v$, constant only when
+$a_1 = 0$.
 
 \medskip
-\noindent{\it The separant $2r$ is always regular.}
-The base ring $\mathbb{Q}[x,y,z,r]/(r^2 - x^2 - y^2 - z^2)$ is an integral
-domain, the quadric $r^2 - x^2 - y^2 - z^2$ being irreducible; so $r$, and
-hence $2r$, is a non-zero-divisor.  This separant never violates
-hypothesis~(4).
+\noindent{\it Hypothesis~(2): the denominator does not vanish.}
+The Ritt reduction of the PDE produced the
+denominator~\eqref{eq:ansatz5-denominator}, $64\,r^2 (a_0 + a_1 v)$ --- a
+power product of the two nontrivial separants $2r$ and $a_0 + a_1 v$.
+Hypothesis~(2) is therefore that $r \ne 0$ and $a_0 + a_1 v \ne 0$: the
+radius is nonzero and the ODE keeps its second-order term.  Both solutions
+of \S\ref{solution} have $a_0 = 0$, $a_1 = 1$, so $a_0 + a_1 v = v$ ($= r$
+in the classical case), nonzero away from the origin; (2) holds there.
 
 \medskip
-\noindent{\it Hypothesis~(4) holds.}
-The ansatz is a squarefree regular chain.  Its only element nonlinear in its
-leader is the radius relation $r^2 - x^2 - y^2 - z^2$, whose initial is~$1$
-and whose separant~$2r$ is the non-zero-divisor noted above.  Every other
-element --- the chain-rule relations and the second-order ODE element --- is
-linear in its leader and so meets the regular-chain and squarefree
-conditions automatically: its initial equals its separant, a
+\noindent{\it Hypothesis~(3): a regular differential system.}
+Regarding the constants as parameters, the ansatz is differentially
+triangular under the orderly ranking~\eqref{ranking}: its elements carry the
+distinct leaders $\Psi''$ (the ODE element), $\Psi'_x, \Psi'_y, \Psi'_z$ and
+$\Psi_x, \Psi_y, \Psi_z$ (the chain-rule relations), $v$ (the variable
+relation), and $r$ (the base-ring relation) --- together with the leaders
+$v_x, \dots, r_x, \dots$ of the relations the derivations induce on the
+lower variables, so that the derivative terms appearing in the chain-rule
+relations contain no {\it proper} derivative of any leader.  The separants
+just computed are nonzero, giving condition~(C2).  Coherence~(C3) holds
+because every chain-rule relation factors through the single independent
+variable~$v$: the only critical pairs arise from mixed derivatives, and
+these close up consistently because the second derivatives of~$v$ are
+symmetric.  Hence the parametric ansatz is a regular differential system;
+by hypothesis~(2) no initial or separant vanishes at $c^*$, so it remains
+one after specialization (proof of Theorem~1).
+
+\medskip
+\noindent{\it Hypothesis~(4): a squarefree regular chain.}
+Its only element nonlinear in its leader is the base-ring relation
+$r^2 - x^2 - y^2 - z^2$, whose initial is~$1$ and whose separant~$2r$ is a
+non-zero-divisor: the base ring
+$\mathbb{Q}[x,y,z,r]/(r^2 - x^2 - y^2 - z^2)$ is an integral domain, the
+quadric being irreducible, so $r$ --- hence $2r$ --- is regular.  Every
+other element is linear in its leader and so meets the regular-chain and
+squarefree conditions automatically: its initial equals its separant, a
 non-zero-divisor modulo $\operatorname{sat}(A(c^*))$ even when, as for the
 ODE separant $a_0 + a_1 v$, it is a zero-divisor modulo $(A(c^*))$ itself.
-Hypothesis~(4) is therefore satisfied, and Theorem~1 applies: the projection
-is complete for this ansatz.
+
+\medskip
+All four hypotheses hold, so Theorem~1 applies: the projection is complete
+for this ansatz.
 
 \vfill\eject
 
@@ -1814,6 +1848,7 @@ x \Psi' r v_{1}^{3} b_{1} + y \Psi' r v_{1}^{2} v_{2} b_{1} + x \Psi' r v_{1} v_
 The ``denominator'' produced by the Ritt algorithm reads:
 
 \begin{equation}
+\label{eq:ansatz5-denominator}
 % 2 r^3 (a_1 (v_1 x + v_2 y + v_3 z + v_4 r) + a_0)
 %64 v r^{2} a_{1} + 64 r^{2} a_{0}
 64 r^{2} (v a_{1} + a_{0})
