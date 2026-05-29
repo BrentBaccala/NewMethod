@@ -534,6 +534,7 @@ of parameters, to make the computation tractable.
 Several example ans\"atze will be presented in Section \ref{A Collection of Ansatze}.
 
 \subsection{Differential Reduction}
+\label{sec:differential-reduction}
 
 Having defined an ansatz, we now use it to reduce the PDE.  For this purpose,
 we use Ritt's full reduction algorithm; see \cite{Ritt} Chapter I, \S 6 or \cite{Kolchin}, Chapter I, \S 9.
@@ -676,18 +677,17 @@ ans\"atze used here --- are always covered, the hypothesis being then
 vacuous.
 
 \medskip
-We first recall the notions from differential algebra on which the
-hypotheses below rest; our terminology and numbering follow
-\cite{blop}, \S\S\,3--4.  Recall that the {\it leader} of a differential
-polynomial $p \in R \setminus K$ is its highest-ranked indeterminate or
-derivative, and that a polynomial is {\it partially reduced} (respectively
-{\it fully reduced}) with respect to $p$ when no proper derivative of the
-leader of $p$ appears in it (respectively, and it involves that leader to
-strictly lower degree than $p$ does).  The {\it initial} of $p$ is its
-leading coefficient regarded as a univariate polynomial in its leader
-$u_p$, and the {\it separant} of $p$ is $s_p = \partial p / \partial u_p$.
-For a set $A \subseteq R \setminus K$ we write $I_A$, $S_A$, and
-$H_A = I_A \cup S_A$ for the sets of initials, separants, and both.
+We first recall the further notions from differential algebra on which
+the hypotheses below rest; our terminology and numbering follow
+\cite{blop}, \S\S\,3--4.  The {\it leader} of a differential polynomial
+$p \in R \setminus K$ and the notions of a polynomial's being {\it
+partially} or {\it fully reduced} with respect to~$p$ were introduced in
+\S\ref{sec:differential-reduction}.  Writing $u_p$ for the leader of~$p$,
+the {\it initial} of $p$ is its leading coefficient regarded as a
+univariate polynomial in $u_p$, and the {\it separant} of $p$ is
+$s_p = \partial p / \partial u_p$.  For a set $A \subseteq R \setminus K$
+we write $I_A$, $S_A$, and $H_A = I_A \cup S_A$ for the sets of initials,
+separants, and both.
 
 \smallskip
 A set $A \subseteq R \setminus K$ is {\it triangular} if the leaders of its
