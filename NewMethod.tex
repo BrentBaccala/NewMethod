@@ -588,6 +588,15 @@ and gathering together like terms with identical non-constant factors.  Setting 
 constant coefficients of each like term to zero produces a system of polynomial equations,
 involving only the constants, that will solve the original PDE when satisfied.
 
+Write the remainder $r$ as:
+
+\begin{equation}
+r = \sum_\alpha m_\alpha \cdot p_\alpha(c)
+\end{equation}
+
+the $m_\alpha$ are distinct power products in the non-constant indeterminates and the
+$p_\alpha$ are polynomials in the constants.
+
 \begin{comment}
 Taking the radical of the ideal simplifies both the theory and the calculation,
 and can be justified because there are no nilpotent elements in our solution
@@ -597,7 +606,7 @@ as the distinction between primary and prime ideals is only significant
 for non-radical ideals.
 \end{comment}
 
-This system of equations defines an algebraic variety in $\mathbb{C}^n$, but it need not be irreducible,
+The system of equations $\{ p_\alpha(c) = 0 \}$ defines an algebraic variety in $\mathbb{C}^n$, but it need not be irreducible,
 meaning that it can be expressed as the union of simpler, irreducible varieties, and it generally
 advantageous to compute such a decomposition.
 There is a well-known correspondence between prime ideals and irreducible varieties
