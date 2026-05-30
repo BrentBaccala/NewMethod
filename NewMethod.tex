@@ -8,6 +8,9 @@
 \usepackage{amsfonts}
 
 \usepackage{mathtools}  % for /xRightarrow
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}  % shared counter: Lemma 1, Theorem 2, ...
 
 \usepackage{float}  % for the [H] (put the figure right "here") tag
 \usepackage{xcolor}
@@ -653,7 +656,7 @@ the union of which form the solution space of the PDE in the differential functi
 
 A natural question arises: if some particular selection of constants
 causes the ansatz to solve the PDE, will the algorithm always find
-those constants in its solution space?  Theorem~1 answers it.  It covers the
+those constants in its solution space?  Theorem~\ref{thm:completeness} answers it.  It covers the
 regime in which the algorithm of this paper actually operates: every element
 nonlinear in its leader has a regular initial and a regular separant.
 Ans\"atze all of whose leaders are linear --- among them the ODE-extension
@@ -735,8 +738,43 @@ squarefree if and only if $\operatorname{sat}(A)$ is radical
 (\cite{hubert}, Corollary~7.3).
 
 \medskip
-\noindent{\bf Theorem 1.}
-{\it
+\begin{lemma}
+\label{lem:specialization}
+Let $A = 0$, $S \ne 0$ be a regular differential system whose coefficients
+involve constant parameters $c$, taken over the field of rational functions
+in those parameters.  If $c^*$ is a specialization of the constants at which
+no initial and no separant of $A$ vanishes, then $A(c^*) = 0$,
+$S(c^*) \ne 0$ is again a regular differential system.
+\end{lemma}
+
+{\it Proof.}
+Specialization carries each element of $A$ to its value $A(c^*)$ by
+evaluating coefficients; it introduces no new derivative, and because no
+initial vanishes at~$c^*$ it leaves every leader in place.  Hence $A(c^*)$
+remains differentially triangular, and its separants --- the specializations
+of those of $A$, nonzero by hypothesis --- still lie in $S(c^*)$ partially
+reduced, so conditions (C1) and~(C2) persist.  For coherence~(C3), each
+$\Delta$-polynomial of $A$ Ritt-reduces to zero modulo $A$; that reduction
+is a polynomial identity in the constants whose only multipliers are
+initials and separants of $A$ (\cite{blop}, \S\,3, the separant commuting
+with the specialization by \cite{blop}, Lemma~2(e)).  Specialized at~$c^*$,
+where those multipliers do not vanish, the identity shows the
+$\Delta$-polynomials of $A(c^*)$ likewise reduce to zero.  Thus $A(c^*)$ is
+coherent, hence a regular differential system. \hfill $\square$
+
+\medskip
+\noindent
+Lemma~\ref{lem:specialization} is the differential analogue of the
+``specializes well'' property of algebraic regular chains, which holds off
+the zero set of the iterated resultants of the initials and separants
+(\cite{CTD}, Definition~11 and Proposition~4; the Gr\"obner-basis precedent
+is \cite{gianni}).  Only the differentially-triangular and coherence half is
+used here; the squarefree regular-chain conditions of hypothesis~(4) below
+need not specialize, and can fail.
+
+\medskip
+\begin{theorem}
+\label{thm:completeness}
 Let $P$ be a differential polynomial (the PDE), let
 $A = \{a_1, \ldots, a_k\}$ be the ansatz --- a differentially
 triangular set of differential polynomials whose coefficients involve
@@ -771,7 +809,7 @@ Suppose $c^* \in \mathbb{C}^n$ satisfies:
 \end{enumerate}
 
 Then $c^* \in \mathcal{V}$.
-}
+\end{theorem}
 
 Hypothesis~(1) states that the ansatz at $c^*$ ``solves the PDE'' in the
 strong sense that $P$ lies in the differential ideal $[A(c^*)]$: every
@@ -786,10 +824,9 @@ Hypothesis~(3) --- regularity --- requires the ansatz, with its constants
 regarded as parameters, to be differentially triangular, with nonzero
 partially reduced separants, and with all critical pairs solved (the
 coherence condition; \cite{blop}, Definition~22, condition~C3).  We impose
-it on the parametric ansatz rather than at the single point~$c^*$: by
-hypothesis~(2) no initial or separant vanishes at~$c^*$, and under that
-condition the triangular structure and the coherence reductions specialize
-intact, so $A(c^*)$ inherits the property (see the proof).  The
+it on the parametric ansatz rather than at the single point~$c^*$ because,
+by Lemma~\ref{lem:specialization}, hypothesis~(2) then carries it to
+$A(c^*)$.  The
 ODE-extension ans\"atze considered in this paper satisfy~(3) naturally: the
 chain rule relations and ODE defining polynomial form a differentially
 triangular system, and the coherence condition is ensured because all
@@ -822,11 +859,9 @@ $r(c^*) \in [A(c^*)]$.
 
 Because $r(c^*)$ is fully reduced with respect to $A(c^*)$ it is in
 particular partially reduced.  By hypothesis~(2) no initial or separant
-of~$A$ vanishes at~$c^*$, so the leaders of $A(c^*)$ are those of~$A$ and the
-coherence $\Delta$-reductions of~$A$ --- polynomial identities in the
-constants whose only multipliers are initials and separants --- specialize
-intact; thus hypothesis~(3) descends from~$A$ to $A(c^*)$, which is again a
-regular differential system.  By Rosenfeld's Lemma (\cite{blop},
+of~$A$ vanishes at~$c^*$, so Lemma~\ref{lem:specialization}, applied to the
+parametric system of hypothesis~(3), makes $A(c^*)$ a regular differential
+system.  By Rosenfeld's Lemma (\cite{blop},
 Theorem~23), every partially reduced element of
 $[A(c^*)] : S_{A(c^*)}^\infty$ lies in the algebraic saturation, so
 $r(c^*) \in (A(c^*)) : S_{A(c^*)}^\infty$.
@@ -964,7 +999,7 @@ differential polynomials that are partially reduced with
 respect to~$A$.  Then $[A] \cap R_0 = (A)$.
 
 The interest is in the degree argument that closes the proof of
-Theorem~1: a polynomial fully reduced with respect to~$A$ and lying in
+Theorem~\ref{thm:completeness}: a polynomial fully reduced with respect to~$A$ and lying in
 $(A)$ must vanish.  That argument needs $A$ to be a {\it regular
 chain}.  Without the regularity of the initials it can fail even for
 the algebraic ideal $(A)$ --- the {\it Regularity of the initials}
@@ -2164,7 +2199,7 @@ Out[5]= True
 \subsection{Completeness for this ansatz}
 \label{sec:ansatz5-example}
 
-Having found the solutions above, we close by verifying that Theorem~1
+Having found the solutions above, we close by verifying that Theorem~\ref{thm:completeness}
 applies to this ansatz, so that those solutions are complete --- no
 selection of constants solving the PDE was missed.  We check its four
 hypotheses for the ansatz of Figure~\ref{ansatz 5 figure}, given by the
@@ -2239,7 +2274,7 @@ variable~$v$: the only critical pairs arise from mixed derivatives, and
 these close up consistently because the second derivatives of~$v$ are
 symmetric.  Hence the parametric ansatz is a regular differential system;
 by hypothesis~(2) no initial or separant vanishes at $c^*$, so it remains
-one after specialization (proof of Theorem~1).
+one after specialization (proof of Theorem~\ref{thm:completeness}).
 
 \medskip
 \noindent{\it Hypothesis~(4): a squarefree regular chain.}
@@ -2254,7 +2289,7 @@ non-zero-divisor modulo $\operatorname{sat}(A(c^*))$ even when, as for the
 ODE separant $a_0 + a_1 v$, it is a zero-divisor modulo $(A(c^*))$ itself.
 
 \medskip
-All four hypotheses hold, so Theorem~1 applies: the projection is complete
+All four hypotheses hold, so Theorem~\ref{thm:completeness} applies: the projection is complete
 for this ansatz.
 
 \vfill\eject
@@ -2611,6 +2646,12 @@ D. Cox, J. Little, D. O'Shea, Ideals, Varieties, and Algorithms: An Introduction
 
 \bibitem{hubert}
 \'E. Hubert, Notes on triangular sets and triangulation-decomposition algorithms~I: Polynomial systems, in: F. Winkler, U. Langer (Eds.), Symbolic and Numerical Scientific Computation, Lecture Notes in Computer Science, vol.~2630, Springer, Berlin, Heidelberg, 2003, pp.~1--39. \url{https://doi.org/10.1007/3-540-45084-X_1}.
+
+\bibitem{CTD}
+C. Chen, O. Golubitsky, F. Lemaire, M. Moreno Maza, W. Pan, Comprehensive triangular decomposition, in: V.G. Ganzha, E.W. Mayr, E.V. Vorozhtsov (Eds.), Computer Algebra in Scientific Computing (CASC 2007), Lecture Notes in Computer Science, vol.~4770, Springer, Berlin, Heidelberg, 2007, pp.~73--101. \url{https://doi.org/10.1007/978-3-540-75187-8_7}.
+
+\bibitem{gianni}
+P. Gianni, Properties of Gr\"obner bases under specializations, in: J.H. Davenport (Ed.), EUROCAL '87, Lecture Notes in Computer Science, vol.~378, Springer, Berlin, Heidelberg, 1989, pp.~293--297. \url{https://doi.org/10.1007/3-540-51517-8_128}.
 
 \bibitem{DifferentialAlgebra}
 F. Boulier, DifferentialAlgebra, version 5.3 [software], Codeberg, 2025. \url{https://codeberg.org/francois.boulier/DifferentialAlgebra} (accessed 29 May 2026).
