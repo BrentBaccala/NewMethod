@@ -232,10 +232,10 @@ a computable algorithm to find the solutions therein.
 
 Section \ref{sec:Solution Algorithm} presents the core algorithm, which fits a given
 PDE to a given ansatz defined using differential polynomials, and proves its
-completeness under structural hypotheses on the ansatz.
-Section \ref{sec:general} gives the general algorithm, which discharges those
-hypotheses for an arbitrary ansatz using the Rosenfeld--Gr\"obner algorithm
-and a terminating recursion over the constant space.
+completeness under structural hypotheses on the ansatz; it then gives a
+general algorithm that discharges those hypotheses for an arbitrary ansatz
+using the Rosenfeld--Gr\"obner algorithm and a terminating recursion over the
+constant space.
 Section \ref{A Collection of Ansatze} illustrates a half dozen ans\"atze that can be used.
 Section \ref{sec:Example} illustrates the algorithm by computing a previously unknown solution to the hydrogen Schr\"odinger equation.
 Section \ref{sec:Generalization of the Algorithm} discusses how the algorithm can be generalized
@@ -668,8 +668,9 @@ Algorithm~\ref{alg:core} runs on any ansatz and always returns a variety in
 the constants; whether that variety is {\it complete} --- whether it
 contains every choice of constants for which the ansatz solves the PDE ---
 is the subject of \S\ref{sec:completeness}, guaranteed by
-Theorem~\ref{thm:completeness} under hypotheses that \S\ref{sec:general}
-shows how to discharge for an arbitrary ansatz.
+Theorem~\ref{thm:completeness} under hypotheses that
+\S\S\ref{sec:coherence}--\ref{sec:general-algorithm} show how to discharge for
+an arbitrary ansatz.
 
 \vfill\eject
 \subsection{Completeness of the Projection}
@@ -1007,8 +1008,8 @@ $a_0 + a_1 v$) it is a zero-divisor modulo $(A(c^*))$.
 \vfill\eject
 
 
-\section{The General Algorithm}
-\label{sec:general}
+\subsection{Coherence and the Rosenfeld--Gr\"obner algorithm}
+\label{sec:coherence}
 
 Theorem~\ref{thm:completeness} certifies Algorithm~\ref{alg:core} under four
 hypotheses.  The first is the premise --- the very question we ask of each
@@ -1016,15 +1017,12 @@ $c^*$ --- and the second, that the reduction denominator not vanish, is the
 unavoidable price of clearing denominators.  The remaining two are
 structural conditions on the ansatz: that it be a regular differential
 system~(3), and that it specialize to a squarefree regular chain~(4).  We
-show in this section that neither~(3) nor~(4) need be imposed on the input.
-The Rosenfeld--Gr\"obner algorithm removes~(3); a finite recursion over a
-descending chain of subvarieties of the constant space removes~(4).  The
-result is Algorithm~\ref{alg:general}, which takes an {\it arbitrary} ansatz
-and returns, off the denominator locus, exactly the constants at which it
-solves the PDE.
-
-\subsection{Coherence and the Rosenfeld--Gr\"obner algorithm}
-\label{sec:coherence}
+show in the subsections that follow that neither~(3) nor~(4) need be imposed
+on the input.  The Rosenfeld--Gr\"obner algorithm removes~(3); a finite
+recursion over a descending chain of subvarieties of the constant space
+removes~(4).  The result is Algorithm~\ref{alg:general}, which takes an {\it
+arbitrary} ansatz and returns, off the denominator locus, exactly the
+constants at which it solves the PDE.
 
 Hypothesis~(3) bundles two requirements: that the ansatz be differentially
 triangular, and that it be {\it coherent} (condition~C3 of \cite{blop},
@@ -1131,7 +1129,7 @@ parametric-Gr\"obner framework of \cite{Montes}).  We may therefore recover
 the decomposition on~$B$ by invoking either of these algorithms, rather than
 by an ad hoc recursion.
 
-\subsection{The algorithm}
+\subsection{The general algorithm}
 \label{sec:general-algorithm}
 
 \begin{algorithm}[comprehensive solution]
@@ -1191,6 +1189,56 @@ function field can be costly.  In practice one hopes the ansatz is coherent,
 so the first step does not split, and that $B = \emptyset$, so no
 recursion occurs.  The hydrogen ansatz of \S\ref{sec:Example} is exactly
 this case.
+
+\subsection{Why not Rosenfeld--Gr\"obner alone?}
+\label{sec:why-not-rg}
+
+The comprehensive decomposition of steps~1, 3 and~4 is a complete
+differential-elimination engine in its own right, which invites a question:
+why retain the projection of Algorithm~\ref{alg:core} at all?  One could
+instead adjoin the PDE to the ansatz, forming the single differential system
+$\{P\} \cup A$, and apply comprehensive parametric Rosenfeld--Gr\"obner to it
+directly, with the constants $c$ as parameters.  Would the solution
+locus~$\mathcal{V}$ not simply be read off the output?
+
+It would --- but only after recomputing, by a more expensive route, exactly
+what the projection computes directly.  Reducing $P$ modulo $A$ gives the
+remainder $r = \sum_\alpha m_\alpha\, p_\alpha(c)$ of
+\eqref{eq:remainder-expansion}; over the function field $\mathbb{C}(c)$ each
+nonzero $p_\alpha$ is a unit, so $r$ enters the chain as a genuine new
+constraint and the {\it generic} cell ($c \notin \mathcal{V}$) is the one in
+which the ansatz does {\it not} solve the PDE.  Tracking the specializations
+of the constants, the parametric algorithm reaches $\mathcal{V}$ only by
+branching on $p_\alpha(c) = 0$ in turn; the cell on which {\it every}
+coefficient vanishes --- where $r \equiv 0$, the PDE becomes redundant, and
+the chain collapses back to that of the ansatz --- is exactly $\mathcal{V}$,
+and the conditions accumulated along that branch are precisely the projection
+system~\eqref{eq:projection-system}.
+
+So the two routes agree, off the denominator locus as in
+Corollary~\ref{cor:general}; but the comprehensive one obtains the projection
+equations the hard way, and three things still stand between its output
+and~$\mathcal{V}$.  Its native output is an undistinguished forest of
+parametric cells: singling out the one on which the PDE collapsed, and
+decomposing it into irreducible solution components, is the projection and
+prime decomposition of Algorithm~\ref{alg:core} recovered as post-processing.
+That branch is moreover entangled with the bad-locus branching of the ansatz
+itself (\S\ref{sec:badlocus}), two stratifications with no relation to one
+another.  And driving every differential indeterminate down to conditions in
+the constants forces an elimination ranking, the regime in which
+Rosenfeld--Gr\"obner is most prone to splitting and blow-up --- whereas the
+projection is a single Ritt reduction followed by collection of like terms,
+and in the common case of a coherent ansatz with empty bad locus, which
+covers every ansatz of \S\ref{A Collection of Ansatze} and the hydrogen
+example of \S\ref{sec:Example}, the comprehensive machinery is never invoked
+at all.
+
+The projection, in short, computes directly the one cell that the
+comprehensive decomposition would reach only by a far more costly detour.
+The role of the Rosenfeld--Gr\"obner algorithm in this method is to
+regularize and certify the ansatz --- to supply the squarefree regular chain
+on which Theorem~\ref{thm:completeness} makes the projection's
+reduction-to-zero test faithful --- not to solve the PDE.
 
 \vfill\eject
 
@@ -2291,7 +2339,7 @@ Out[5]= True
 \label{sec:ansatz5-example}
 
 Having found the solutions above, we close by running the general algorithm
-of \S\ref{sec:general} on this ansatz and observing that it collapses to a
+of \S\ref{sec:general-algorithm} on this ansatz and observing that it collapses to a
 single application of Algorithm~\ref{alg:core}: the Rosenfeld--Gr\"obner
 step returns one component, and the bad locus is empty, so no recursion
 occurs.  The ansatz of Figure~\ref{ansatz 5 figure}, given by the
