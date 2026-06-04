@@ -11,6 +11,10 @@
 \usepackage{amsthm}
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}  % shared counter: Lemma 1, Theorem 2, ...
+\theoremstyle{definition}
+\newtheorem{algorithm}{Algorithm}   % own counter: Algorithm 1 (core), Algorithm 2 (general)
+\newtheorem{example}{Example}
+\theoremstyle{plain}
 
 \usepackage{float}  % for the [H] (put the figure right "here") tag
 \usepackage{xcolor}
@@ -54,7 +58,10 @@
 The author has developed an algorithm
 for finding exact, non-sep\-arable solutions of partial differential equations.
 The algorithm uses Ritt's full reduction algorithm \cite{Ritt} and the GTZ algorithm \cite{GTZ}
-to find ODEs that solve the PDE.  The algorithm has been implemented
+to find ODEs that solve the PDE.  We prove a completeness theorem for the
+core algorithm, and then give a general form that, using the
+Rosenfeld--Gr\"obner algorithm and a terminating recursion, is complete for
+an arbitrary ansatz.  The algorithm has been implemented
 in software and has been used to find a previously unknown solution
 to hydrogen's Schr\"odinger equation.
 \end{abstract}
@@ -222,8 +229,12 @@ a computable algorithm to find the solutions therein.
 
 \subsection*{Organization of the Paper}
 
-Section \ref{sec:Solution Algorithm} presents the algorithm, which fits a given
-PDE to a given ansatz defined using differential polynomials.
+Section \ref{sec:Solution Algorithm} presents the core algorithm, which fits a given
+PDE to a given ansatz defined using differential polynomials, and proves its
+completeness under structural hypotheses on the ansatz.
+Section \ref{sec:general} gives the general algorithm, which discharges those
+hypotheses for an arbitrary ansatz using the Rosenfeld--Gr\"obner algorithm
+and a terminating recursion over the constant space.
 Section \ref{A Collection of Ansatze} illustrates a half dozen ans\"atze that can be used.
 Section \ref{sec:Example} illustrates the algorithm by computing a previously unknown solution to the hydrogen Schr\"odinger equation.
 Section \ref{sec:Generalization of the Algorithm} discusses how the algorithm can be generalized
@@ -634,21 +645,30 @@ among others).
 
 \subsection{Solution Algorithm}
 
-To summarize, given a PDE defined by one or more differential polynomials, do the following:
+To summarize, the core of the method is the following.
 
+\begin{algorithm}[core solution]
+\label{alg:core}
+Given a PDE defined by one or more differential polynomials:
 \begin{enumerate}
-\item Select an ansatz that defines a differential function space parameterized by constants
+\item Select an ansatz that defines a differential function space parameterized by constants.
 
-\item Reduce the PDE modulo the ansatz (differential elimination step)
+\item Reduce the PDE modulo the ansatz (differential elimination step).
 
-\item Construct a system of polynomial equations in the constants by collecting like terms in the remaining variables (projection step)
+\item Construct a system of polynomial equations in the constants by collecting like terms in the remaining variables (projection step).
 
-\item Form a polynomial ideal from that system of equations, and compute its minimal associated prime ideals
+\item Form a polynomial ideal from that system of equations, and compute its minimal associated prime ideals.
 
-\item Each prime ideal corresponds to an irreducible variety in the space of constants,
-the union of which form the solution space of the PDE in the differential function space
-
+\item Each prime ideal corresponds to an irreducible variety in the space of constants; their union is the solution space of the PDE within the ansatz.
 \end{enumerate}
+\end{algorithm}
+
+Algorithm~\ref{alg:core} runs on any ansatz and always returns a variety in
+the constants; whether that variety is {\it complete} --- whether it
+contains every choice of constants for which the ansatz solves the PDE ---
+is the subject of \S\ref{sec:completeness}, guaranteed by
+Theorem~\ref{thm:completeness} under hypotheses that \S\ref{sec:general}
+shows how to discharge for an arbitrary ansatz.
 
 \vfill\eject
 \subsection{Completeness of the Projection}
@@ -985,121 +1005,209 @@ $a_0 + a_1 v$) it is a zero-divisor modulo $(A(c^*))$.
 
 \vfill\eject
 
-\subsection[Investigating the conjecture]{Investigating whether $[A] \cap R_0 = (A)$}
-\label{sec:option3}
 
-If the following conjecture holds for regular differential systems,
-the separant-control machinery of the proof above --- Rosenfeld's Lemma
-and the {\it squarefree} half of hypothesis~(4) --- becomes unnecessary:
+\section{The General Algorithm}
+\label{sec:general}
 
-{\it Conjecture.}
-Let $A = 0$, $S \ne 0$ be a regular differential system
-(Definition~22 of \cite{blop}) and let $R_0$ denote the ring of
-differential polynomials that are partially reduced with
-respect to~$A$.  Then $[A] \cap R_0 = (A)$.
+Theorem~\ref{thm:completeness} certifies Algorithm~\ref{alg:core} under four
+hypotheses.  The first is the premise --- the very question we ask of each
+$c^*$ --- and the second, that the reduction denominator not vanish, is the
+unavoidable price of clearing denominators.  The remaining two are
+structural conditions on the ansatz: that it be a regular differential
+system~(3), and that it specialize to a squarefree regular chain~(4).  We
+show in this section that neither~(3) nor~(4) need be imposed on the input.
+The Rosenfeld--Gr\"obner algorithm removes~(3); a finite recursion over a
+descending chain of subvarieties of the constant space removes~(4).  The
+result is Algorithm~\ref{alg:general}, which takes an {\it arbitrary} ansatz
+and returns, off the denominator locus, exactly the constants at which it
+solves the PDE.
 
-The interest is in the degree argument that closes the proof of
-Theorem~\ref{thm:completeness}: a polynomial fully reduced with respect to~$A$ and lying in
-$(A)$ must vanish.  That argument needs $A$ to be a {\it regular
-chain}.  Without the regularity of the initials it can fail even for
-the algebraic ideal $(A)$ --- the {\it Regularity of the initials}
-counterexample above exhibits a fully reduced nonzero element of $(A)$
-itself --- but, granted the regular-chain hypothesis, it does work
-for~$(A)$.  What it does {\it not} survive is the passage to the
-separant saturation $(A) : S^\infty$, which can be strictly larger
-than $(A)$ (the {\it Regularity of the separants} counterexample); this
-is why the proof above routes through Rosenfeld's Lemma and the {\it
-squarefree} half of hypothesis~(4) to keep the remainder out of the
-saturation.  If instead $[A] \cap R_0 = (A)$, then a fully reduced
-element of~$[A]$ already lies in~$(A)$, the saturation never enters,
-and the degree argument closes the proof directly --- using only the
-regular-chain half of hypothesis~(4), and dispensing with Rosenfeld's
-Lemma and the squarefree (separant-regularity) condition.
+\subsection{Coherence and the Rosenfeld--Gr\"obner algorithm}
+\label{sec:coherence}
 
-We were unable to find a counterexample.  The
-examples below show that every attempt to construct one is blocked
-by the coherence condition~{\bf C3} of Definition~22.
+Hypothesis~(3) bundles two requirements: that the ansatz be differentially
+triangular, and that it be {\it coherent} (condition~C3 of \cite{blop},
+Definition~22).  Coherence is the differential analogue of the requirement
+that every $S$-polynomial of a Gr\"obner basis reduce to zero: when two
+elements have leaders with a common derivative, the two ways of forming that
+derivative must agree modulo the system.  Their difference is the
+$\Delta$-polynomial, and coherence asks that it reduce to zero.
 
-\medskip
-{\bf Example 1: ODE system, non-regular.}
-Take $A = \{u^3 - u^2\}$ in $K\{u\}$ with $\delta = d/dx$.
-The separant is $s = 3u^2 - 2u$ and $\delta a = (3u^2 - 2u)\,u'$.
-Since $a$ has no explicit $x$-dependence, every derivative
-$\delta^m a$ ($m \ge 1$) is divisible by~$u'$ as a polynomial, so
-setting all derivatives of~$u$ to zero kills every derivative term.
-A direct coefficient argument shows $[A] \cap K[u] = (A)$:
-if $f = c_0\,a + c_1\,\delta a + \cdots$ with
-$f \in K[u]$, the coefficient of~$u'$ in
-$c_1 (3u^2 - 2u) u'$ forces $c_1 = 0$, and similarly
-$c_m = 0$ for all $m \ge 1$, leaving $f = c_0\,a \in (A)$.
+A failure of coherence is not a contradiction.  It means the
+cross-derivatives expose a constraint not visible in the triangular set
+itself.  The differential analogue of the integrability condition for a
+gradient field makes this concrete.
 
-\medskip
-{\bf Example 2: ODE system with explicit $x$-dependence.}
-Take $A = \{u^3 - u^2 - x\}$ with $\delta = d/dx$.
-Now $\delta a = (3u^2 - 2u)\,u' - 1$, so setting derivatives to zero
-gives $\phi(\delta a) = -1$ (nonzero).  For $f \in [A] \cap K[x,u]$
-with $\deg_u(f) < 3$:
+\begin{example}[the integrability residual]
+\label{ex:integrability}
+Take $A = \{a_1, a_2\}$ with $a_1 = u_x - f(x,y,u)$ and $a_2 = u_y -
+g(x,y,u)$ in $K\{u\}$ under the derivations $\delta_x, \delta_y$.  The
+leaders $u_x < u_y$ have degree~$1$ and separant~$1$, so the set is
+differentially triangular and pairwise partially reduced.  The
+cross-derivative lies in $[A]$, and full-reducing it modulo~$A$
+(substituting $u_x \to f$, $u_y \to g$) gives
 \[
-f \;=\; \phi(c_0)\,a \;-\; \phi(c_1) \;+\; 0 \;+\; \cdots
+\delta_y a_1 - \delta_x a_2 \;\equiv\; -\Phi \pmod{(A)}, \qquad
+\Phi \;=\; f_y - g_x + f_u\,g - g_u\,f .
 \]
-(since $\phi(\delta^m a) = 0$ for $m \ge 2$).
-The constraint $\deg_u(f) < 3$ forces $\phi(c_0) = 0$, giving
-$f = -\phi(c_1)$.  Examining the $u'$-coefficient in the full
-expression forces $(3u^2 - 2u) \mid \phi(c_1)$ in $K[x, u]$,
-and tracing through yields $\phi(c_1) \in (a)$, hence $f \in (A)$.
+Here $\Phi$ is the classical integrability residual, the compatibility
+condition $\partial_y(u_x) = \partial_x(u_y)$ written out.  Both initials
+being~$1$, the reduction clears no denominator, so $\Phi \in [A]$; and since
+$a_1, a_2$ are monic-linear in their leaders, $(A) \cap K[x,y,u] = \{0\}$.
+The coherence condition for the pair $\{a_1, a_2\}$ reduces (separants
+being~$1$) to $\Phi \in (A)$, hence to $\Phi = 0$.
 
-\medskip
-{\bf Example 3: PDE system --- the critical case.}
-Take $A = \{a_1, a_2\}$ with $a_1 = u_x - f(x,y,u)$ and
-$a_2 = u_y - g(x,y,u)$ in $K\{u\}$ with $\delta_x = \partial/\partial x$,
-$\delta_y = \partial/\partial y$.  Leaders $u_x < u_y$, both
-of degree~1, separants both equal to~1.  The system is differentially
-triangular and pairwise partially reduced.
+For $f = yu$, $g = 0$ one finds $\Phi = -u \ne 0$: the system is not
+coherent, $u \in [A] \setminus (A)$ is a hidden algebraic consequence of the
+cross-derivative, and the system --- far from contradictory --- is
+consistent, solved by $u = 0$.  When $\Phi = 0$ the system is coherent and
+no such consequence arises.
+\end{example}
 
-The cross-derivative produces an element of~$[A]$:
+A non-coherent ansatz, then, is one whose cross-derivatives imply further
+equations.  These are genuine consequences a faithful analysis must
+include, yet they are not in general reachable from the triangular set by
+reduction --- which is exactly why hypothesis~(3) was imposed.  The {\it
+Rosenfeld--Gr\"obner algorithm} \cite{blop} removes the need to impose it.
+Given an arbitrary finite set $\Sigma$ of differential polynomials, it
+returns finitely many regular differential systems $(A_1, S_1), \dots,
+(A_k, S_k)$ with
 \[
-\delta_y a_1 - \delta_x a_2
-\;=\; (f_y - g_x) + f_u\,u_y - g_u\,u_x.
+\{\Sigma\} \;=\; \bigcap_{i=1}^{k} [A_i] : S_i^\infty,
 \]
-Full-reducing modulo~$A$ (replacing $u_x \to f$, $u_y \to g$) gives
+surfacing the hidden constraints as it runs --- reducing the
+$\Delta$-polynomials, splitting when an initial or separant is a
+zero-divisor --- and discarding any inconsistent branch.  We may therefore
+drop hypothesis~(3): apply Rosenfeld--Gr\"obner to the ansatz and treat each
+resulting component as an ansatz in its own right.  For an ansatz that is
+already a coherent regular differential system the algorithm returns it
+unchanged, as a single component; the ans\"atze of \S\ref{A Collection of
+Ansatze}, built as towers of ODE and algebraic extensions through a single
+independent variable, are of this kind.
+
+\subsection{Specialization and the bad locus}
+\label{sec:badlocus}
+
+Each component is a regular differential system over the field
+$\mathbb{C}(c)$ of rational functions in the constants; by the
+characteristic-decomposition refinement (\cite{hubert2}, \S7;
+\cite{hubert}, \S\S5,7) we may take its triangular set to be a squarefree
+regular chain there.  ``There'' means {\it generically} in the constants:
+squarefreeness is a property of the specialized chain $A(c^*)$, and at
+special~$c^*$ it can lapse, as the {\it Regularity of the separants} and
+{\it Regularity of the initials} counterexamples of \S\ref{sec:completeness}
+show.  Write
 \[
-\Phi \;=\; f_y - g_x + f_u\,g - g_u\,f \;\in\; K[x, y, u].
+B \;\subseteq\; \mathbb{C}^n
 \]
-This is the classical integrability residual.  Since the
-full reduction introduces no denominators (both initials are~1),
-we have $\delta_y a_1 - \delta_x a_2 \equiv -\Phi \pmod{(A)}$,
-so $\Phi \in [A]$.
+for the {\it bad locus}: the constants at which some component fails to
+specialize to a squarefree regular chain.  It is an algebraic variety, cut
+out by the discriminants and initials of the elements nonlinear in their
+leaders, eliminated down to the constants by iterated resultants --- off the
+zero set of which a regular chain specializes well (\cite{CTD};
+\cite{gianni}).  When every nonlinear element has a constant, non-vanishing
+discriminant the locus is empty.  Off~$B$, hypothesis~(4) holds and
+Theorem~\ref{thm:completeness} applies pointwise.
 
-Meanwhile, $(A) \cap K[x, y, u] = \{0\}$ (both generators are
-monic-linear in their leaders), so if $\Phi \ne 0$ we would have
-$\Phi \in [A] \cap R_0 \setminus (A)$.
+It remains to recover the solutions on~$B$.  We restrict to~$B$ and
+recompute: over the function field of an irreducible component of~$B$, the
+characteristic decomposition again returns squarefree regular chains, valid
+at the generic point of that component.  This makes progress.
 
-{\it Concrete instance}: $f = yu$, $g = 0$ gives $\Phi = -u$.
-Then $u \in [A]$ but $u \notin (A)$.  However, the system has
-$u = 0$ as its only solution (consistent, since $u_x = 0$,
-$u_y = 0$, $u = 0$ satisfies the system).
+\begin{lemma}[strict descent]
+\label{lem:descent}
+Let $B'$ be an irreducible component of the bad locus, with function field
+$F = \mathbb{C}(B')$, and let $C$ be a chain returned by the characteristic
+decomposition of the ansatz over~$F$.  The constants $c^* \in B'$ at which
+$C(c^*)$ fails to be a squarefree regular chain form a {\it proper} closed
+subvariety of~$B'$; in particular its dimension is strictly less than
+$\dim B'$.
+\end{lemma}
 
-{\it The coherence condition blocks this.}
-The $\Delta$-polynomial for the critical pair $\{a_1, a_2\}$
-full-reduces to~$-\Phi$.  The coherence condition~{\bf C3} requires
-$\Delta(a_1, a_2) \in (A_v) : (S \cap R_v)^\infty$.  Since both
-separants equal~1, this simplifies to $\Phi \in (A)$.  But
-$(A) \cap K[x,y,u] = \{0\}$, so {\bf C3} holds if and only if
-$\Phi = 0$.
+\begin{proof}
+Over~$F$ the chain $C$ is a squarefree regular chain, that is, squarefree
+and regular at the generic point of~$B'$.  Squarefreeness and regularity at
+a specialization are the non-vanishing of certain discriminants and
+initials of~$C$, polynomials in the constants; these do not vanish
+identically on~$B'$, being nonzero at its generic point.  The failure locus
+is therefore $B' \cap V(\rho)$ for a polynomial~$\rho$ that does not vanish
+on all of~$B'$ --- the intersection of an irreducible variety with a
+hypersurface not containing it, a proper closed subvariety of strictly
+smaller dimension.
+\end{proof}
 
-For $f = yu$, $g = 0$: $\Phi = -u \ne 0$, so {\bf C3} fails.
-The system is {\it not} a regular differential system, and
-hypothesis~(3) of the theorem is violated.
+The recomputed chain was {\it constructed} to be a squarefree regular chain
+at the generic point of~$B'$, so the generic point lies outside the new
+failure locus: the bad locus cannot reproduce itself.  What can appear is a
+new degeneracy, of strictly lower dimension --- and since the dimension
+drops at each step, after finitely many steps it reaches~$0$, finitely many
+points, where no constant remains free to specialize.  This drives the
+recursion.
 
-\medskip
-{\it Summary.}
-In every example we examined, the conjecture $[A] \cap R_0 = (A)$
-holds for regular differential systems.  The coherence condition
-is precisely what prevents cross-derivatives from introducing new
-algebraic consequences beyond~$(A)$.  A proof of the conjecture
-would yield a proof of the completeness theorem that bypasses
-Rosenfeld's Lemma and the squarefree (separant-regularity) hypothesis
-entirely, resting on the regular-chain condition alone.
+\subsection{The algorithm}
+\label{sec:general-algorithm}
+
+\begin{algorithm}[comprehensive solution]
+\label{alg:general}
+Given a PDE~$P$, an ansatz~$A$, and a base field~$F$ (initially
+$\mathbb{C}(c)$):
+\begin{enumerate}
+\item Apply the Rosenfeld--Gr\"obner algorithm to~$A$ over~$F$, obtaining
+  squarefree regular differential chains $C_1, \dots, C_k$.
+\item For each $C_i$, run Algorithm~\ref{alg:core}: reduce~$P$ modulo
+  $C_i$, project onto the constants, and decompose, recording the variety of
+  constants at which $C_i$ solves~$P$ (valid where the denominator does not
+  vanish).
+\item Compute the bad locus~$B$; replace $I(B)$ by its radical and take the
+  irreducible components $B^1, \dots, B^m$ (the minimal primes).
+\item For each~$B^j$, recurse with base field $F := \mathbb{C}(B^j)$, the
+  function field of~$B^j$.
+\item Stop when $F$ has transcendence degree~$0$ over~$\mathbb{C}$, or when
+  $B = \emptyset$.
+\end{enumerate}
+Return the union, over the entire recursion, of the constant sets recorded
+in step~2.
+\end{algorithm}
+
+\begin{theorem}[comprehensive completeness]
+\label{thm:general}
+For any ansatz~$A$ and PDE~$P$, Algorithm~\ref{alg:general} terminates, and
+the set it returns agrees, off the denominator locus of
+Theorem~\ref{thm:completeness}, with the set of constants $c^*$ at which
+$A(c^*)$ solves~$P$.
+\end{theorem}
+
+\begin{proof}
+{\it Termination.}  Each node produces finitely many components
+(Noetherianity), and by Lemma~\ref{lem:descent} the bad locus handed to each
+recursive call has strictly smaller dimension than the current stratum.  The
+dimension is bounded by~$n$ and falls by at least~$1$ per level, so the
+recursion tree is finite, bottoming out at dimension~$0$.
+
+{\it Completeness and exactness.}  The strata $V(F) \setminus B$ visited
+across the recursion partition the constant space.  On each, the relevant
+chain is a squarefree regular chain, so where the denominator is nonzero
+Theorem~\ref{thm:completeness} places every solving~$c^*$ in the recorded
+set.  Conversely, on such a stratum $C_i(c^*)$ is a characteristic set of
+its saturated ideal, so the reduction-to-zero test of
+Algorithm~\ref{alg:core} is faithful in both directions, and every recorded
+$c^*$ off the denominator locus does solve the PDE.  The recorded set
+therefore agrees with the solving constants of that stratum off the
+denominator locus, and the union agrees with the solving constants off the
+denominator locus.
+\end{proof}
+
+Theorem~\ref{thm:general} makes the method's completeness unconditional ---
+no hypothesis on the ansatz survives but the denominator condition, which
+excludes only the degenerate constants where the reduction itself breaks
+down.  (That locus too could be folded into the recursion, by the same
+descent argument; we do not pursue it, as it carries no solutions of
+interest for the ans\"atze considered here.)  We claim nothing about
+efficiency: Rosenfeld--Gr\"obner can split, and a recomputation over a
+function field can be costly.  In practice one hopes the ansatz is coherent,
+so the first step does not split, and that $B = \emptyset$, so no
+recursion occurs.  The hydrogen ansatz of \S\ref{sec:Example} is exactly
+this case.
 
 \vfill\eject
 
@@ -2199,98 +2307,85 @@ Out[5]= True
 \subsection{Completeness for this ansatz}
 \label{sec:ansatz5-example}
 
-Having found the solutions above, we close by verifying that Theorem~\ref{thm:completeness}
-applies to this ansatz, so that those solutions are complete --- no
-selection of constants solving the PDE was missed.  We check its four
-hypotheses for the ansatz of Figure~\ref{ansatz 5 figure}, given by the
+Having found the solutions above, we close by running the general algorithm
+of \S\ref{sec:general} on this ansatz and observing that it collapses to a
+single application of Algorithm~\ref{alg:core}: the Rosenfeld--Gr\"obner
+step returns one component, and the bad locus is empty, so no recursion
+occurs.  The ansatz of Figure~\ref{ansatz 5 figure}, given by the
 differential polynomials~\eqref{ansatz 5b}, \eqref{ansatz 5c}
-and~\eqref{ansatz 5a}.  Its elements are a second-order linear homogeneous
+and~\eqref{ansatz 5a}, has as its elements a second-order linear homogeneous
 ODE element
 %
 \[
 (a_0 + a_1 v)\,\Psi'' + (b_0 + b_1 v)\,\Psi' + (c_0 + c_1 v)\,\Psi,
 \]
 %
-whose coefficients are first-degree in the ODE variable
-$v = v_1 x + v_2 y + v_3 z + v_4 r$; the chain-rule
-relations~\eqref{ansatz 5c} expressing $\Psi_x, \dots, \Psi'_z$; the
-variable relation $v = v_1 x + v_2 y + v_3 z + v_4 r$; and the base-ring
-relation $r^2 - x^2 - y^2 - z^2$ that defines the radius $r$ over
-$\mathbb{Q}\{x,y,z\}$.
-
-\medskip
-\noindent{\it Hypothesis~(1): the ansatz solves the PDE.}
-This is the premise of the theorem, a condition on the particular
-constants $c^*$ we seek rather than on the ansatz at large.  It is met by
-the solutions found in the prime decomposition above: for the constants
-of~\eqref{classical eq in ideal} --- the classical radial equation, whose
-ground state is $\Psi = e^{-r}$ --- and for those of the second
-ideal~\eqref{ideal:1}, the evaluated ansatz reduces the PDE to zero, so
-$P \in [A(c^*)]$.
+with coefficients first-degree in $v = v_1 x + v_2 y + v_3 z + v_4 r$; the
+chain-rule relations~\eqref{ansatz 5c} expressing $\Psi_x, \dots, \Psi'_z$;
+the variable relation $v = v_1 x + v_2 y + v_3 z + v_4 r$; and the base-ring
+relation $r^2 - x^2 - y^2 - z^2$ defining the radius $r$ over
+$\mathbb{Q}\{x,y,z\}$.  The two families found solve the PDE in the strong
+sense $P \in [A(c^*)]$: for the constants of~\eqref{classical eq in ideal}
+--- the classical radial equation, ground state $\Psi = e^{-r}$ --- and for
+those of~\eqref{ideal:1}, the evaluated ansatz reduces the PDE to zero.
 
 \medskip
 \noindent{\it The initials and separants.}
 The chain-rule relations~\eqref{ansatz 5c} and the variable
 relation~\eqref{ansatz 5a} are monic and linear in their leaders, so their
-initials and separants are all~$1$.  Two are nontrivial.  The base-ring
-relation has leader $r$ of degree~$2$, hence separant $2r$.  The ODE
+initials and separants are all~$1$.  Two are nontrivial: the base-ring
+relation has leader $r$ of degree~$2$, hence separant $2r$; and the ODE
 element has leader $\Psi''$ --- ranked above $\Psi'$ and $\Psi$ --- of
-degree~$1$, so its separant equals its initial,
-%
-\[
-s \;=\; a_0 + a_1 v,
-\]
-%
-{\it provided} this initial does not vanish, i.e.\ provided $a_0 \ne 0$ or
-$a_1 \ne 0$.  (If $a_0 = a_1 = 0$ the term in $\Psi''$ disappears, the
-leader drops to $\Psi'$, and the separant becomes $b_0 + b_1 v$.)  A leader
-occurring to degree~$1$ thus does {\it not} force its separant to be
-constant: here it equals the non-constant $a_0 + a_1 v$, constant only when
-$a_1 = 0$.
+degree~$1$, so its separant equals its initial, $s = a_0 + a_1 v$.
 
 \medskip
-\noindent{\it Hypothesis~(2): the denominator does not vanish.}
-The Ritt reduction of the PDE produced the
-denominator~\eqref{eq:ansatz5-denominator}, $64\,r^2 (a_0 + a_1 v)$ --- a
-power product of the two nontrivial separants $2r$ and $a_0 + a_1 v$.
-Hypothesis~(2) is therefore that $r \ne 0$ and $a_0 + a_1 v \ne 0$: the
-radius is nonzero and the ODE keeps its second-order term.  Both solutions
-above have $a_0 = 0$, $a_1 = 1$, so $a_0 + a_1 v = v$ ($= r$
-in the classical case), nonzero away from the origin; (2) holds there.
+\noindent{\it Rosenfeld--Gr\"obner returns a single component.}
+Under the orderly ranking~\eqref{ranking} the ansatz is differentially
+triangular: its elements carry the distinct leaders $\Psi''$, $\Psi'_x,
+\Psi'_y, \Psi'_z$, $\Psi_x, \Psi_y, \Psi_z$, $v$, and $r$ (together with the
+leaders $v_x, \dots, r_x, \dots$ the derivations induce on the lower
+variables), and the derivative terms in the chain-rule relations contain no
+proper derivative of any leader.  It is coherent: every chain-rule relation
+factors through the single independent variable~$v$, so the only critical
+pairs arise from mixed derivatives, which close up because the second
+derivatives of~$v$ are symmetric.  The ansatz is therefore already a regular
+differential system, and the Rosenfeld--Gr\"obner step of
+Algorithm~\ref{alg:general} returns it unchanged as one component, without
+splitting.
 
 \medskip
-\noindent{\it Hypothesis~(3): a regular differential system.}
-Regarding the constants as parameters, the ansatz is differentially
-triangular under the orderly ranking~\eqref{ranking}: its elements carry the
-distinct leaders $\Psi''$ (the ODE element), $\Psi'_x, \Psi'_y, \Psi'_z$ and
-$\Psi_x, \Psi_y, \Psi_z$ (the chain-rule relations), $v$ (the variable
-relation), and $r$ (the base-ring relation) --- together with the leaders
-$v_x, \dots, r_x, \dots$ of the relations the derivations induce on the
-lower variables, so that the derivative terms appearing in the chain-rule
-relations contain no {\it proper} derivative of any leader.  The separants
-just computed are nonzero, giving condition~(C2).  Coherence~(C3) holds
-because every chain-rule relation factors through the single independent
-variable~$v$: the only critical pairs arise from mixed derivatives, and
-these close up consistently because the second derivatives of~$v$ are
-symmetric.  Hence the parametric ansatz is a regular differential system;
-by hypothesis~(2) no initial or separant vanishes at $c^*$, so it remains
-one after specialization (proof of Theorem~\ref{thm:completeness}).
+\noindent{\it The bad locus is empty.}
+The only element nonlinear in its leader is the base-ring relation
+$r^2 - x^2 - y^2 - z^2$.  Its initial is~$1$, and its discriminant in~$r$,
+$\operatorname{disc}_r(r^2 - x^2 - y^2 - z^2) = 4(x^2 + y^2 + z^2)$, is free
+of the constants and a non-zero-divisor (the quadric is irreducible, so
+$\mathbb{Q}[x,y,z,r]/(r^2 - x^2 - y^2 - z^2)$ is a domain).  Every other
+element is linear in its leader and contributes no discriminant, meeting the
+regular-chain and squarefree conditions automatically: its initial equals
+its separant, a non-zero-divisor modulo $\operatorname{sat}(A(c^*))$ even
+when, as for the ODE separant $a_0 + a_1 v$, it is a zero-divisor modulo
+$(A(c^*))$ itself.  No specialization of the constants can make the chain
+fail to be a squarefree regular chain, so the bad locus is empty and
+Algorithm~\ref{alg:general} makes no recursive call.
 
 \medskip
-\noindent{\it Hypothesis~(4): a squarefree regular chain.}
-Its only element nonlinear in its leader is the base-ring relation
-$r^2 - x^2 - y^2 - z^2$, whose initial is~$1$ and whose separant~$2r$ is a
-non-zero-divisor: the base ring
-$\mathbb{Q}[x,y,z,r]/(r^2 - x^2 - y^2 - z^2)$ is an integral domain, the
-quadric being irreducible, so $r$ --- hence $2r$ --- is regular.  Every
-other element is linear in its leader and so meets the regular-chain and
-squarefree conditions automatically: its initial equals its separant, a
-non-zero-divisor modulo $\operatorname{sat}(A(c^*))$ even when, as for the
-ODE separant $a_0 + a_1 v$, it is a zero-divisor modulo $(A(c^*))$ itself.
+\noindent{\it The denominator.}
+The one residual condition is the denominator of
+Theorem~\ref{thm:completeness}, which the Ritt reduction produced
+as~\eqref{eq:ansatz5-denominator}, $64\,r^2(a_0 + a_1 v)$: the radius
+nonzero and the ODE keeping its second-order term, $a_0 + a_1 v \ne 0$.
+Both solutions have $a_0 = 0$, $a_1 = 1$, so $a_0 + a_1 v = v$ ($= r$ in the
+classical case), nonzero away from the origin; both lie off the denominator
+locus.
 
 \medskip
-All four hypotheses hold, so Theorem~\ref{thm:completeness} applies: the projection is complete
-for this ansatz.
+Algorithm~\ref{alg:general} thus reduces to a single application of
+Algorithm~\ref{alg:core} over the whole constant space, and by
+Theorem~\ref{thm:general} --- equivalently Theorem~\ref{thm:completeness},
+whose four hypotheses all hold here --- the projection is complete and exact
+off the denominator locus.  The two families found, the classical radial
+equation and the new solution~\eqref{ideal:1} at $E = 0$, are therefore all
+of them.
 
 \vfill\eject
 
@@ -2646,6 +2741,9 @@ D. Cox, J. Little, D. O'Shea, Ideals, Varieties, and Algorithms: An Introduction
 
 \bibitem{hubert}
 \'E. Hubert, Notes on triangular sets and triangulation-decomposition algorithms~I: Polynomial systems, in: F. Winkler, U. Langer (Eds.), Symbolic and Numerical Scientific Computation, Lecture Notes in Computer Science, vol.~2630, Springer, Berlin, Heidelberg, 2003, pp.~1--39. \url{https://doi.org/10.1007/3-540-45084-X_1}.
+
+\bibitem{hubert2}
+\'E. Hubert, Notes on triangular sets and triangulation-decomposition algorithms~II: Differential systems, in: F. Winkler, U. Langer (Eds.), Symbolic and Numerical Scientific Computation, Lecture Notes in Computer Science, vol.~2630, Springer, Berlin, Heidelberg, 2003, pp.~40--87. \url{https://doi.org/10.1007/3-540-45084-X_2}.
 
 \bibitem{CTD}
 C. Chen, O. Golubitsky, F. Lemaire, M. Moreno Maza, W. Pan, Comprehensive triangular decomposition, in: V.G. Ganzha, E.W. Mayr, E.V. Vorozhtsov (Eds.), Computer Algebra in Scientific Computing (CASC 2007), Lecture Notes in Computer Science, vol.~4770, Springer, Berlin, Heidelberg, 2007, pp.~73--101. \url{https://doi.org/10.1007/978-3-540-75187-8_7}.
