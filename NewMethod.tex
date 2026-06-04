@@ -9,12 +9,17 @@
 
 \usepackage{mathtools}  % for /xRightarrow
 \usepackage{amsthm}
+% Single shared counter for every theorem-like environment: theorems,
+% lemmas, corollaries, algorithms, examples, and definitions are numbered
+% in one sequence (1, 2, 3, ...) in order of appearance.  Cross-reference
+% them with \label/\ref throughout, never by a hard-coded number.
 \newtheorem{theorem}{Theorem}
-\newtheorem{lemma}[theorem]{Lemma}  % shared counter: Lemma 1, Theorem 2, ...
+\newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
 \theoremstyle{definition}
-\newtheorem{algorithm}{Algorithm}   % own counter: Algorithm 1 (core), Algorithm 2 (general)
-\newtheorem{example}{Example}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
 \theoremstyle{plain}
 
 \usepackage{float}  % for the [H] (put the figure right "here") tag
