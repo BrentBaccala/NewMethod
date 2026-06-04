@@ -11,6 +11,7 @@
 \usepackage{amsthm}
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}  % shared counter: Lemma 1, Theorem 2, ...
+\newtheorem{corollary}[theorem]{Corollary}
 \theoremstyle{definition}
 \newtheorem{algorithm}{Algorithm}   % own counter: Algorithm 1 (core), Algorithm 2 (general)
 \newtheorem{example}{Example}
@@ -1109,40 +1110,26 @@ zero set of which a regular chain specializes well (\cite{CTD};
 discriminant the locus is empty.  Off~$B$, hypothesis~(4) holds and
 Theorem~\ref{thm:completeness} applies pointwise.
 
-It remains to recover the solutions on~$B$.  We restrict to~$B$ and
-recompute: over the function field of an irreducible component of~$B$, the
-characteristic decomposition again returns squarefree regular chains, valid
-at the generic point of that component.  This makes progress.
-
-\begin{lemma}[strict descent]
-\label{lem:descent}
-Let $B'$ be an irreducible component of the bad locus, with function field
-$F = \mathbb{C}(B')$, and let $C$ be a chain returned by the characteristic
-decomposition of the ansatz over~$F$.  The constants $c^* \in B'$ at which
-$C(c^*)$ fails to be a squarefree regular chain form a {\it proper} closed
-subvariety of~$B'$; in particular its dimension is strictly less than
-$\dim B'$.
-\end{lemma}
-
-\begin{proof}
-Over~$F$ the chain $C$ is a squarefree regular chain, that is, squarefree
-and regular at the generic point of~$B'$.  Squarefreeness and regularity at
-a specialization are the non-vanishing of certain discriminants and
-initials of~$C$, polynomials in the constants; these do not vanish
-identically on~$B'$, being nonzero at its generic point.  The failure locus
-is therefore $B' \cap V(\rho)$ for a polynomial~$\rho$ that does not vanish
-on all of~$B'$ --- the intersection of an irreducible variety with a
-hypersurface not containing it, a proper closed subvariety of strictly
-smaller dimension.
-\end{proof}
-
-The recomputed chain was {\it constructed} to be a squarefree regular chain
-at the generic point of~$B'$, so the generic point lies outside the new
-failure locus: the bad locus cannot reproduce itself.  What can appear is a
-new degeneracy, of strictly lower dimension --- and since the dimension
-drops at each step, after finitely many steps it reaches~$0$, finitely many
-points, where no constant remains free to specialize.  This drives the
-recursion.
+Recovering the solutions on~$B$ is exactly the task of {\it comprehensive
+parametric differential elimination}.  Restricting the constants to an
+irreducible component of~$B$ and recomputing the characteristic
+decomposition over its function field returns squarefree regular chains
+valid at the generic point of that component; because squarefreeness is an
+open condition, the locus where the recomputed chain in turn degenerates is
+a {\it proper} subvariety, of strictly smaller dimension, so iterating
+terminates after finitely many steps.  This recursion --- branching on the
+vanishing and non-vanishing of the initials and separants, the very
+conditions that cut out~$B$, until every parametric case carries a valid
+representation --- is the {\it parametric Rosenfeld--Gr\"obner algorithm} of
+Fakouri, Rahmany and Basiri \cite{Fakouri2018}, and equivalently the
+{\it differential Thomas decomposition} of B\"achler, Gerdt, Lange-Hegermann
+and Robertz \cite{ThomasDecomp, RobertzLNM}.  Both compute, for an arbitrary
+parametric differential system, regular representations valid at {\it every}
+value of the constants; they are the differential counterpart of the
+algebraic comprehensive triangular decomposition \cite{CTD} (in the
+parametric-Gr\"obner framework of \cite{Montes}).  We may therefore recover
+the decomposition on~$B$ by invoking either of these algorithms, rather than
+by an ad hoc recursion.
 
 \subsection{The algorithm}
 \label{sec:general-algorithm}
@@ -1169,40 +1156,36 @@ Return the union, over the entire recursion, of the constant sets recorded
 in step~2.
 \end{algorithm}
 
-\begin{theorem}[comprehensive completeness]
-\label{thm:general}
+Steps~1, 3 and~4 are the comprehensive parametric differential elimination
+of \cite{Fakouri2018, ThomasDecomp}; step~2 is Algorithm~\ref{alg:core}.
+
+\begin{corollary}[completeness for an arbitrary ansatz]
+\label{cor:general}
 For any ansatz~$A$ and PDE~$P$, Algorithm~\ref{alg:general} terminates, and
 the set it returns agrees, off the denominator locus of
 Theorem~\ref{thm:completeness}, with the set of constants $c^*$ at which
 $A(c^*)$ solves~$P$.
-\end{theorem}
+\end{corollary}
 
 \begin{proof}
-{\it Termination.}  Each node produces finitely many components
-(Noetherianity), and by Lemma~\ref{lem:descent} the bad locus handed to each
-recursive call has strictly smaller dimension than the current stratum.  The
-dimension is bounded by~$n$ and falls by at least~$1$ per level, so the
-recursion tree is finite, bottoming out at dimension~$0$.
-
-{\it Completeness and exactness.}  The strata $V(F) \setminus B$ visited
-across the recursion partition the constant space.  On each, the relevant
-chain is a squarefree regular chain, so where the denominator is nonzero
-Theorem~\ref{thm:completeness} places every solving~$c^*$ in the recorded
-set.  Conversely, on such a stratum $C_i(c^*)$ is a characteristic set of
-its saturated ideal, so the reduction-to-zero test of
-Algorithm~\ref{alg:core} is faithful in both directions, and every recorded
-$c^*$ off the denominator locus does solve the PDE.  The recorded set
-therefore agrees with the solving constants of that stratum off the
-denominator locus, and the union agrees with the solving constants off the
-denominator locus.
+By \cite{Fakouri2018, ThomasDecomp} the comprehensive decomposition of
+steps~1, 3 and~4 terminates and partitions the constant space into finitely
+many cells, on each of which the chain specializes to a squarefree regular
+chain.  On a cell, where the denominator is nonzero,
+Theorem~\ref{thm:completeness} places every solving~$c^*$ in the set
+recorded in step~2; conversely, $A(c^*)$ being there a characteristic set of
+its saturated ideal makes the reduction-to-zero test of
+Algorithm~\ref{alg:core} faithful, so every recorded~$c^*$ solves~$P$.  The
+union over cells is thus exactly the solving constants, off the denominator
+locus.
 \end{proof}
 
-Theorem~\ref{thm:general} makes the method's completeness unconditional ---
+Corollary~\ref{cor:general} makes the method's completeness unconditional ---
 no hypothesis on the ansatz survives but the denominator condition, which
 excludes only the degenerate constants where the reduction itself breaks
-down.  (That locus too could be folded into the recursion, by the same
-descent argument; we do not pursue it, as it carries no solutions of
-interest for the ans\"atze considered here.)  We claim nothing about
+down.  (That locus too could be folded into the comprehensive decomposition;
+we do not pursue it, as it carries no solutions of interest for the
+ans\"atze considered here.)  We claim nothing about
 efficiency: Rosenfeld--Gr\"obner can split, and a recomputation over a
 function field can be costly.  In practice one hopes the ansatz is coherent,
 so the first step does not split, and that $B = \emptyset$, so no
@@ -2381,7 +2364,7 @@ locus.
 \medskip
 Algorithm~\ref{alg:general} thus reduces to a single application of
 Algorithm~\ref{alg:core} over the whole constant space, and by
-Theorem~\ref{thm:general} --- equivalently Theorem~\ref{thm:completeness},
+Corollary~\ref{cor:general} --- equivalently Theorem~\ref{thm:completeness},
 whose four hypotheses all hold here --- the projection is complete and exact
 off the denominator locus.  The two families found, the classical radial
 equation and the new solution~\eqref{ideal:1} at $E = 0$, are therefore all
@@ -2744,6 +2727,18 @@ D. Cox, J. Little, D. O'Shea, Ideals, Varieties, and Algorithms: An Introduction
 
 \bibitem{hubert2}
 \'E. Hubert, Notes on triangular sets and triangulation-decomposition algorithms~II: Differential systems, in: F. Winkler, U. Langer (Eds.), Symbolic and Numerical Scientific Computation, Lecture Notes in Computer Science, vol.~2630, Springer, Berlin, Heidelberg, 2003, pp.~40--87. \url{https://doi.org/10.1007/3-540-45084-X_2}.
+
+\bibitem{Fakouri2018}
+S. Fakouri, S. Rahmany, A. Basiri, A new algorithm for computing regular representations for radicals of parametric differential ideals, Cogent Math. Stat. 5~(1) (2018) 1507131. \url{https://doi.org/10.1080/25742558.2018.1507131}.
+
+\bibitem{ThomasDecomp}
+T. B\"achler, V. P. Gerdt, M. Lange-Hegermann, D. Robertz, Algorithmic Thomas decomposition of algebraic and differential systems, J. Symbolic Comput. 47~(10) (2012) 1233--1266. \url{https://doi.org/10.1016/j.jsc.2011.12.043}.
+
+\bibitem{RobertzLNM}
+D. Robertz, Formal Algorithmic Elimination for PDEs, Lecture Notes in Mathematics, vol.~2121, Springer, Cham, 2014. \url{https://doi.org/10.1007/978-3-319-11445-3}.
+
+\bibitem{Montes}
+A. Montes, A new algorithm for discussing Gr\"obner bases with parameters, J. Symbolic Comput. 33~(2) (2002) 183--208. \url{https://doi.org/10.1006/jsco.2001.0510}.
 
 \bibitem{CTD}
 C. Chen, O. Golubitsky, F. Lemaire, M. Moreno Maza, W. Pan, Comprehensive triangular decomposition, in: V.G. Ganzha, E.W. Mayr, E.V. Vorozhtsov (Eds.), Computer Algebra in Scientific Computing (CASC 2007), Lecture Notes in Computer Science, vol.~4770, Springer, Berlin, Heidelberg, 2007, pp.~73--101. \url{https://doi.org/10.1007/978-3-540-75187-8_7}.
