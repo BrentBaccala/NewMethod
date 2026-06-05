@@ -214,8 +214,11 @@ which can be solved to find a previously unknown solution to \eqref{schrodinger 
 \end{equation}
 
 where $x,y,z$ are Cartesian coordinates, $r=\sqrt{x^2+y^2+z^2}$, $E=0$,
-and $J_0$ is the ordinary Bessel function $J_0$.  Note that this solution
-is not separable in Cartesian, spherical, or cylindrical coordinate systems.
+and $J_0$ is the ordinary Bessel function $J_0$.  This solution is not of the
+familiar spherical separated form $R(r)\Theta(\theta)\Phi(\varphi)$, nor is it
+Cartesian-separable; it is, however, separable in parabolic coordinates, a
+reflection of the hydrogen atom's hidden symmetry that we take up in
+\S\ref{sec:Example}.
 
 The author has developed an algorithm that tests a PDE, specified as a differential polynomial,
 against a system of differential polynomials (which I term an ``ansatz''),
@@ -2302,8 +2305,28 @@ leading to the following exact solution to \eqref{schrodinger hydrogen 2}, with 
 where $x,y,z$ are Cartesian coordinates, $r=\sqrt{x^2+y^2+z^2}$, $E=0$,
 and $J_0$ is the ordinary Bessel function $J_0$.
 
-Note that this solution could not be obtained by the method of separation of variables, as it is non-separable
-(i.e, it can not be written in the form $R(r)\Theta(\theta)\Psi(\psi)$ or $X(x)Y(y)Z(z)$).
+This solution is not of either standard separated form --- neither the
+spherical $R(r)\,\Theta(\theta)\,\Phi(\varphi)$ nor the Cartesian
+$X(x)Y(y)Z(z)$ --- so separation of variables in those coordinates cannot
+produce it.  It is, however, separable in {\it parabolic} coordinates: with
+$\xi = r + x$ one of the parabolic coordinates, \eqref{solution} is a function
+of $\xi$ alone, the azimuthally symmetric ($m=0$) separated solution at $E=0$
+(\cite{LandauLifshitz}, \S37).  This is no accident, and it is illuminated by
+the two branches the algorithm returned.  The classical branch
+\eqref{ideal:2}, with $v = r$, is the spherical separation; the present branch
+\eqref{ideal:1}, with $v = v_1 x + v_2 y + v_3 z + v_4 r$, is the parabolic
+one.  That the hydrogen atom separates in {\it both} systems is the signature
+of its hidden symmetry: beyond the angular momentum $\mathbf{L}$, the Coulomb
+problem conserves the Laplace--Runge--Lenz vector $\mathbf{A}$, and together
+$\mathbf{L}$ and $\mathbf{A}$ generate the dynamical $\mathrm{SO}(4)$ symmetry
+responsible for the degeneracy of the bound spectrum
+(\cite{BanderItzykson}).  Spherical separation diagonalizes $\{L^2, L_z\}$;
+parabolic separation about an axis $\hat{a}$ diagonalizes instead the
+components $\mathbf{A}\cdot\hat{a}$ and $\mathbf{L}\cdot\hat{a}$.  The algorithm
+recovers {\it both} separations from a single ansatz, without committing to any
+coordinate system in advance --- and the unit vector fixing the parabolic axis
+in the generalized solution \eqref{generalized solution} is precisely the
+direction of the Runge--Lenz vector.
 
 % \vskip 12pt
 
@@ -2426,6 +2449,7 @@ of them.
 \vfill\eject
 
 \subsection{Physical Interpretation}
+\label{sec:physical}
 
 Since \eqref{solution} is a solution to a simple Schr\"odinger equation for hydrogen,
 it is reasonable to ask if it has any physical interpretation.  (It does not.)
@@ -2463,6 +2487,18 @@ is not valid a wavefunction and does not correspond to any physically realized q
 % Therefore, equation \eqref{solution} is 1 along the negative $x$-axis, which means these solutions
 % are not valid wavefunctions and do not, therefore, correspond to any physically realized quantum mechanical state.
 
+The failure to be square-integrable is structural, not accidental.  In the
+parabolic coordinates $\xi = r + x$, $\eta = r - x$ in which \eqref{solution}
+separates, our solution is a function of $\xi$ alone; this forces the $\eta$
+separation parameter to vanish, which in turn pins the energy to $E = 0$
+(\cite{LandauLifshitz}, \S37), the threshold between the discrete ($E < 0$) and
+continuous ($E > 0$) spectra.  The square-integrable bound states depend on
+{\it both} parabolic coordinates --- each contributing a decaying confluent
+hypergeometric factor --- and occur only at the discrete energies
+$E_n = -1/2n^2$.  A solution that is a function of a single combination $v$,
+and hence of a single parabolic coordinate, therefore cannot be one of them:
+it necessarily lands on the non-normalizable threshold.
+
 This situation is not unusual.  Classical solutions to hydrogen exist (as hypergeometric series) for all energy values,
 but these solutions are only in $L^2(\mathbb{R}^3)$ for specific values of $E$;
 only these wavefunctions are observed as atomic orbitals.
@@ -2489,6 +2525,18 @@ Any finite linear combination of functions of the form \eqref{generalized soluti
 
 Futhermore, since wavefunctions are complex-valued, restricting the $v_i$ coefficients
 to be real is unnecessary.
+
+A deeper generalization would enlarge the ansatz itself.  The solutions found
+here are functions of a single combination $v$, hence of a single parabolic
+coordinate, and are for that reason confined to the $E = 0$ threshold
+(\S\ref{sec:physical}).  An ansatz built from {\it two} ODE-described factors,
+$\Psi = f_1(v_1)\,f_2(v_2)$ --- one for each parabolic coordinate --- would
+instead span the product structure of the square-integrable bound states,
+whose factors are confluent hypergeometric functions of $\xi = r + x$ and
+$\eta = r - x$ (\cite{LandauLifshitz}, \S37).  Recovering the discrete spectrum
+$E_n = -1/2n^2$ in this way, with the algorithm discovering the two-coordinate
+parabolic structure rather than presupposing it, is a natural direction for
+future work.
 
 \section{Generalization of the Algorithm}
 \label{sec:Generalization of the Algorithm}
@@ -2762,6 +2810,12 @@ P. Gianni, B. Trager, G. Zacharias, Gr\"obner bases and primary decomposition of
 
 \bibitem{pauling and wilson}
 L. Pauling, E.B. Wilson, Introduction to Quantum Mechanics with Applications to Chemistry, McGraw-Hill, New York, 1935.
+
+\bibitem{LandauLifshitz}
+L.D. Landau, E.M. Lifshitz, Quantum Mechanics: Non-Relativistic Theory, third ed., Course of Theoretical Physics, vol.~3, Pergamon Press, Oxford, 1977.
+
+\bibitem{BanderItzykson}
+M. Bander, C. Itzykson, Group theory and the hydrogen atom (I), (II), Rev. Mod. Phys. 38 (1966) 330--345, 346--358. \url{https://doi.org/10.1103/RevModPhys.38.330}.
 
 \bibitem{Kolchin}
 E.R. Kolchin, Differential Algebra and Algebraic Groups, Academic Press, New York, 1973.
