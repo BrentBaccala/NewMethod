@@ -2409,8 +2409,11 @@ factors through the single independent variable~$v$, so the only critical
 pairs arise from mixed derivatives, which close up because the second
 derivatives of~$v$ are symmetric.  The ansatz is therefore already a regular
 differential system, and the Rosenfeld--Gr\"obner step of
-Algorithm~\ref{alg:general} returns it unchanged as one component, without
-splitting.
+Algorithm~\ref{alg:general} returns a single component, without splitting ---
+the regularized (autoreduced) form of the ansatz, with $v$ eliminated through
+its defining relation and the radius rationalized, rather than, literally, the
+input system.  What matters here is only that there is one component, so
+Algorithm~\ref{alg:core} is applied once.
 
 \medskip
 \noindent{\it The bad locus is empty.}
