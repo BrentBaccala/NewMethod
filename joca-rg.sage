@@ -102,22 +102,33 @@ ansatz = list(map(sympy.expand, ansatz))
 
 print("\nAnsatz:", *ansatz, sep='\n')
 
-# Regularize the ansatz with the Rosenfeld-Gröbner algorithm.  This is the step
-# of the general algorithm that discharges hypothesis (3): it turns the ansatz
-# into one or more regular differential systems (coherent + squarefree regular
-# chain).  The constants must be moved into the coefficient field Q(E,v1,...,c1)
-# for RosenfeldGroebner to terminate; left as ring variables it does not finish
-# (see rg_basefield.py and the README).  In general the ansatz may split into
-# several regular differential systems, each of which would then be carried
-# through the reduction and projection below; for this ansatz it is a no-op,
-# returning a single component equal to the ansatz.
+# Run Rosenfeld-Gröbner to DISCHARGE HYPOTHESIS (3): confirm the ansatz forms a
+# single coherent, squarefree regular differential system.  The constants must
+# be moved into the coefficient field Q(E,v1,...,c1) for RosenfeldGroebner to
+# terminate; left as ring variables it does not finish (see rg_basefield.py and
+# the README).
+#
+# RG is used here ONLY as the coherence check, NOT to rewrite the reduction set.
+# It is *not* a no-op: it squares the ODE's initial -- the regularized ODE is
+# (a0+a1*v)*(original ODE) -- and the regular chain it returns represents the
+# SATURATED ideal [C] : H_C^inf, with H_C = (a0+a1*v) its initial/separant.
+# Reducing the PDE against that chain's bare .equations() does NOT saturate, so
+# it re-admits the bad locus H_C = 0  <=>  a0 = a1 = 0 as a SPURIOUS prime
+# (a0,a1); and the two genuine strata that live inside a0=a1=0 (where the
+# 2nd-order ODE degenerates to 1st order) fall in the chain's bad locus, so
+# saturating to remove the artifact loses them too.  Net: reducing against the
+# regularized chain gives a wrong decomposition (4 primes incl. the spurious
+# (a0,a1); saturating leaves only the 3 generic strata).  We therefore project
+# against the RAW (coherent) ansatz below -- exactly joca.sage's reduction --
+# which keeps the a0=a1=0 information and is the faithful decomposition (5
+# primes).  See the README for the full diagnosis.
 
 F = DifferentialAlgebra.BaseFieldExtension(generators=constants, ring=DiffRing)
 components = DiffRing.RosenfeldGroebner(ansatz, basefield=F)
 assert len(components) == 1, f"expected a single regular component, got {len(components)}"
-ansatz = components[0].equations()
-
-print("\nRegularized ansatz:", *ansatz, sep='\n')
+print("\nHypothesis (3) discharged: the ansatz is a single coherent regular system.")
+# NB: deliberately do NOT overwrite `ansatz` with components[0].equations();
+# we reduce against the raw (coherent) ansatz -- see the note above.
 
 # Reduce the PDE modulo the (regularized) ansatz using Ritt's reduction algorithm
 

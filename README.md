@@ -26,22 +26,32 @@ new `E = 0` (parabolic) solution, and three discarded degenerate components
 Algorithm 1 — the projection — and its output matches the paper's printed
 decomposition. It never calls Rosenfeld–Gröbner.
 
-### `joca-rg.sage` — joca.sage + the RG regularization step (≈26 s)
-Adds the general algorithm's step that discharges hypothesis (3): regularize
-the ansatz with `RosenfeldGroebner` before reducing. The constants are moved
-into the coefficient field `ℚ(E,v₁,…,c₁)` via `BaseFieldExtension` — **required**
-for RG to terminate (see the cliff below). RG returns a **single** regular
-component (matching the paper's "B = ∅, one component" claim).
+### `joca-rg.sage` — joca.sage + the RG coherence check (≈26 s)
+Demonstrates the general algorithm's hypothesis-(3) step. The constants are
+moved into the coefficient field `ℚ(E,v₁,…,c₁)` via `BaseFieldExtension`
+(**required** for `RosenfeldGroebner` to terminate — see the cliff below), and
+RG returns a **single** regular component, confirming the ansatz is a coherent,
+squarefree regular differential system (the paper's "B = ∅, one component"
+claim). The script then projects against the **raw** ansatz — exactly
+joca.sage's reduction — and recovers the faithful **five** primes.
 
-**It is not a no-op.** RG rewrites the ansatz — it eliminates `v` (substituting
-`v = v₁x+…+v₄r`), rationalizes the radius (`r² = x²+y²+z²`), and squares the ODE
-initial `(a₀+a₁v) → (a₀+a₁·…)²`. The final decomposition therefore coarsens from
-five primes to **four**: the two physical solutions (classical, new) are
-preserved exactly, but the two *discarded* degenerate components collapse into
-`(a₁, a₀)`. This is the §1.12 effect — base-field RG is generic and cannot see
-the special/degenerate strata finely — made concrete. The physics is unchanged;
-the printed-decomposition match is not. Hence joca.sage (projection-only) stays
-the faithful reproduction.
+**Why project against the raw ansatz, not the regularized chain?** RG is *not* a
+no-op: it squares the ODE's initial — the regularized ODE is
+`(a₀+a₁v)·(original ODE)` — and the regular chain it returns represents the
+*saturated* ideal `[C] : H_C^∞`, where `H_C = (a₀+a₁v)` is the initial/separant.
+Reducing the PDE against that chain's bare `.equations()` does **not** saturate,
+so it re-admits the bad locus `H_C = 0 ⇔ a₀=a₁=0` as a **spurious** prime
+`(a₀,a₁)` — the PDE is *not* actually redundant there (witness: the genuine
+redundancy ideal contains `v₄·b₁`, which is nonzero on generic `a₀=a₁=0`). And
+the two genuine strata that live *inside* `a₀=a₁=0` (where the 2nd-order ODE
+degenerates to 1st order) fall in the chain's bad locus, so saturating to delete
+the artifact loses them too — leaving only the 3 *generic* strata. So reducing
+against the regularized chain gives a wrong decomposition (4 primes, one
+spurious; 3 after saturation); only the raw projection keeps the `a₀=a₁=0`
+information and yields all five. This is the §1.12 / bad-locus `B` effect made
+concrete: the regularize-then-reduce route cannot resolve strata inside the
+locus where an initial vanishes. joca.sage (projection-only) and this script now
+agree on all five primes.
 
 ### `rg_basefield.py` — minimal RG-on-ansatz demo (≈16 s)
 Standalone (no Sage): builds the ring, moves the constants into the base field,
