@@ -1,0 +1,262 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black}
+
+\newcommand{\sat}[2]{[#1]\!:\!#2^{\infty}}
+\newcommand{\Sbar}{\bar S}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\title{Rosenfeld--Gr\"obner regularization, base-field saturation,\\
+       and the bad locus: why the hydrogen ansatz\\ acquires a spurious
+       component $(a_0,a_1)$}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\noindent
+A companion note to \emph{A New Method of Solving PDEs}, documenting a subtlety
+that surfaced in the computational backing. The projection script
+\code{joca.sage} decomposes the hydrogen solution locus into \textbf{five}
+prime strata. The Rosenfeld--Gr\"obner--augmented variant \code{joca-rg.sage},
+\emph{as originally written}, returned only \textbf{four}, replacing two genuine
+strata by a single spurious component $(a_0,a_1)$. This note explains exactly
+why, reconciles it with the core theorem of the Rosenfeld--Gr\"obner algorithm,
+exhibits the saturation explicitly via \code{normal\_form}, and records which
+script does what.
+
+\section{Setup: the ansatz and the projection}
+
+We seek solutions of the zero-energy hydrogen Schr\"odinger equation
+$-\tfrac12\nabla^2\Psi-\tfrac1r\Psi=E\Psi$ (cleared of $1/r$) of the form
+$\Psi=\Psi(v)$, where $v=v_1x+v_2y+v_3z+v_4r$, $r=\sqrt{x^2+y^2+z^2}$, and $\Psi$
+satisfies a second-order linear ODE with affine coefficients. As a differential
+system this is the \emph{ansatz}
+\begin{equation}
+\label{eq:ansatz}
+\begin{aligned}
+  &\Psi_x-\Psi' v_x,\;\; \Psi_y-\Psi' v_y,\;\; \Psi_z-\Psi' v_z,\quad
+   \Psi'_x-\Psi'' v_x,\;\; \Psi'_y-\Psi'' v_y,\;\; \Psi'_z-\Psi'' v_z,\\
+  &\boxed{(a_0+a_1v)\,\Psi'' + (b_0+b_1v)\,\Psi' + (c_0+c_1v)\,\Psi},\quad
+   v-(v_1x+v_2y+v_3z+v_4r),\quad r^2-x^2-y^2-z^2,
+\end{aligned}
+\end{equation}
+with the eleven constants $E,v_1,\dots,v_4,a_0,a_1,b_0,b_1,c_0,c_1$ as
+parameters. The \textbf{projection method} (\code{joca.sage}) reduces the PDE
+modulo \eqref{eq:ansatz} (Ritt reduction), collects the coefficients of the
+remainder as polynomials in the constants, and computes the minimal associated
+primes of the resulting ideal. The redundancy locus---the set of constants on
+which the PDE is implied by the ansatz---is
+
+\begin{equation}
+\label{eq:five}
+\begin{aligned}
+P_1 &= (a_0,v_4,v_3,v_2,v_1), &
+P_2 &= (c_1,c_0,b_1,b_0,a_1,a_0), &
+P_3 &= (v_1^2{+}v_2^2{+}v_3^2,\,a_1,a_0,v_4),\\[2pt]
+P_4 &= (v_4c_0{-}b_0,\,Ec_0{-}v_4c_1,\,Eb_0{-}v_4^2c_1,\,b_1,\,a_1{-}\tfrac12 b_0,\,a_0,v_3,v_2,v_1),\\[2pt]
+P_5 &= (v_4c_0{-}b_0,\,v_1^2{+}v_2^2{+}v_3^2{-}v_4^2,\,c_1,b_1,\,a_1{-}b_0,\,a_0,\,E).
+\end{aligned}
+\end{equation}
+These five primes are verified (§1.12 cross-check) to be exactly the cells on
+which the PDE reduces to $0$ modulo the ansatz.
+
+\section{The RG-augmented variant and the spurious \texorpdfstring{$(a_0,a_1)$}{(a0,a1)}}
+
+The general algorithm's hypothesis (3) asks that the ansatz be a coherent,
+squarefree \emph{regular differential system}. \code{joca-rg.sage} discharges it
+by running \code{RosenfeldGroebner} over the coefficient field
+$\mathbb{Q}(E,v_1,\dots,c_1)$ (the constants must be moved into the base field
+for RG to terminate---see \code{rg\_basefield.py} and the cliff in
+\code{joca-rg-orderly.sage}). RG returns a single regular component. \emph{Its
+equations are not the input.} In particular the autoreduction
+\emph{squares the ODE's initial}: the regularized ODE is
+\begin{equation}
+\label{eq:squared}
+   (a_0+a_1v)\cdot\bigl[(a_0+a_1v)\Psi''+(b_0+b_1v)\Psi'+(c_0+c_1v)\Psi\bigr].
+\end{equation}
+If one then reduces the PDE against these regularized \emph{equations} and
+prime-decomposes, the decomposition collapses to four primes:
+$P_1,\;(a_1,a_0),\;P_4,\;P_5$, with the single coarse $(a_1,a_0)$ standing in for
+$P_2$ and $P_3$.
+
+\paragraph{$(a_0,a_1)$ is spurious, not a coarsening.} It is not that $P_2,P_3$
+``merge''; the cell $(a_0,a_1)$ strictly \emph{over}-claims. Indeed
+$V(a_0,a_1)\supsetneq V(P_2)\cup V(P_3)$, and the true redundancy ideal
+$I=\bigcap_i P_i$ contains the generator $v_4 b_1$, which does \emph{not} vanish
+at a generic point of $a_0=a_1=0$ (take $v_4,b_1\neq0$). So the PDE is genuinely
+\emph{not} redundant on generic $a_0=a_1=0$: the reported $(a_0,a_1)$ is an
+artifact of the reduction, not a solution stratum.
+
+\section{Diagnosis: the missing saturation}
+
+A regular differential chain $C$ does not represent the bare ideal $[C]$; it
+represents the \emph{saturated} ideal $\sat{C}{H_C}$, where
+$H_C$ is the product of the initials and separants of $C$. This is the content
+of Theorem~28 of Boulier--Lazard--Ollivier--Petitot, \emph{Computing
+representations for radicals of finitely generated differential ideals}: RG
+computes regular systems $(A_i,S_i)$ with
+\begin{equation}
+\label{eq:thm28}
+   \sqrt{\sat{P_0}{S_0}} \;=\; \sat{A_1}{S_1}\,\cap\,\cdots\,\cap\,\sat{A_n}{S_n}.
+\end{equation}
+The final autoreduction rewrites the equations \emph{and} grows the inequation
+set: at each step $\bar p = p\,\text{full-rem}\,\varphi p'$ and
+$S_{k+1}=S_k\cup\{i_{\bar p},s_{\bar p}\}$ (invariant I4: $i_p,s_p\in S$ for every
+$p$). So the injected initial $(a_0+a_1v)$ in \eqref{eq:squared} is exactly
+\emph{compensated} by $\Sbar$ containing it: the saturation $:\Sbar^\infty$
+divides it back out, and the represented ideal $\sat{\bar A}{\Sbar}$ is unchanged.
+
+\medskip
+\noindent\textbf{This pinpoints the bug.} Boulier's object is the pair
+$(\bar A,\Sbar)$ representing $\sat{\bar A}{\Sbar}$. The method
+\code{equations()} returns only $\bar A$. Reducing the PDE by $\bar A$ and
+prime-decomposing computes membership in $[\bar A]$---\emph{dropping the
+$:\Sbar^\infty$}. The spurious $(a_0,a_1)$ is nothing but the locus
+$\Sbar=0$ (i.e.\ $a_0+a_1v=0\iff a_0=a_1=0$) that the saturation was meant to
+delete. In one line:
+\[
+  \underbrace{\sat{\bar A}{\Sbar}}_{\text{radical, 5 primes}}
+  \quad\text{vs.}\quad
+  \underbrace{[\bar A]}_{\text{radical }+\ \{\Sbar=0\}=(a_0,a_1)}.
+\]
+
+\section{The saturation made explicit: \texorpdfstring{\code{normal\_form}}{normal\_form}}
+
+The chain's own \emph{saturation-aware} reduction, \code{normal\_form}, displays
+the $:\Sbar^\infty$ directly. It returns the normal form of the PDE as a
+\textbf{fraction} $\mathrm{NUM}/\mathrm{DEN}$, where the denominator is the
+chain separant
+\begin{equation}
+\label{eq:den}
+  \mathrm{DEN}\;=\;\Sbar\;=\;\bigl(a_0+a_1v_\parallel\bigr)^2-a_1^2v_4^2\,(x^2{+}y^2{+}z^2),
+  \qquad v_\parallel:=v_1x+v_2y+v_3z,
+\end{equation}
+the reduced $(a_0+a_1v)^2$ modulo $r^2=x^2+y^2+z^2$---equivalently the norm
+$(a_0+a_1v)(a_0+a_1\bar v)$ over the quadratic relation, where
+$\bar v=v_\parallel-v_4r$ reflects the radial part. The membership condition
+is $\mathrm{NUM}=0$ \emph{with} $\mathrm{DEN}\neq0$---one does not zero the
+denominator, since $\Sbar$ is declared a non-zero-divisor. Crucially,
+\begin{center}
+\fbox{$\mathrm{DEN}$ vanishes exactly on $a_0=a_1=0$,}
+\end{center}
+so $a_0=a_1=0$ is a \textbf{pole} of the saturated reduction. There the normal
+form is $0/0$: undefined. \code{normal\_form} therefore says \emph{nothing}
+about the bad locus---neither redundant nor not. The locus
+$\{\mathrm{NUM}=0,\ \mathrm{DEN}\neq0\}$ is the redundancy \emph{off}
+$a_0=a_1=0$, namely the three \emph{generic} strata $P_1,P_4,P_5$. The two
+strata $P_2,P_3$ live inside the pole and are invisible to it.
+
+\section{Why the raw projection recovers all five}
+
+The difference between the two routes is what the ODE degenerates \emph{to} on
+the bad locus $a_0=a_1=0$:
+\begin{itemize}
+  \item the \textbf{regularized} ODE \eqref{eq:squared} becomes $0=0$---useless
+        as a reduction rule, hence the genuine singularity of the chain there;
+  \item the \textbf{raw} ODE $(a_0+a_1v)\Psi''+(b_0+b_1v)\Psi'+(c_0+c_1v)\Psi$
+        drops to the \emph{first-order} rule $(b_0+b_1v)\Psi'+(c_0+c_1v)\Psi$,
+        which is still usable: the leader slides from $\Psi''$ down to $\Psi'$,
+        and reduction continues.
+\end{itemize}
+The raw ansatz thus covers the whole parameter space uniformly, and its
+plain Ritt reduction (\code{joca.sage}) detects $P_2,P_3$ along with the rest.
+This is why the corrected \code{joca-rg.sage} uses RG \emph{only} as the
+coherence check (discharging hypothesis (3)) and then projects against the
+\emph{raw} ansatz, recovering all five primes \eqref{eq:five}.
+
+\paragraph{Reconciliation with Theorem~28.} There is no contradiction. The ideal
+$\sat{\bar A}{\Sbar}$ equals the radical (so RG is a no-op \emph{on the ideal}).
+But the \emph{saturated reduction} of that ideal carries $\Sbar$ in the
+denominator, so its parametric projection is blind to $\Sbar=0$: it returns the
+three generic strata. The \emph{raw} representation of the same radical has no
+such denominator, so its projection covers $\Sbar=0$ too---all five. To recover
+the bad-locus strata through the saturated route one must recurse into the pole,
+running \code{RosenfeldGroebner} over the base field \emph{modulo} $(a_0,a_1)$
+and taking the union (the comprehensive-triangular-decomposition scheme of
+Chen--Moreno-Maza and Montes). The raw projection collapses that recursion into
+a single pass.
+
+\section{The scripts and their outputs}
+
+All scripts live in \code{\textasciitilde/Papers/NewMethod/} and run under
+SageMath~10.7 with Fran\c{c}ois Boulier's \code{DifferentialAlgebra} 5.3
+(\code{sage -python} for the \code{.py} files).
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}p{0.27\linewidth}p{0.13\linewidth}p{0.52\linewidth}@{}}
+\toprule
+\textbf{Script} & \textbf{Output} & \textbf{Role} \\
+\midrule
+\code{joca.sage} & 5 primes, $\approx$5\,s &
+  The projection method: reduce the PDE modulo the raw ansatz, collect
+  coefficients, prime-decompose. The faithful decomposition \eqref{eq:five}; the
+  one the paper prints. \\
+\code{joca-rg.sage} & 5 primes, $\approx$26\,s &
+  Adds the hypothesis-(3) coherence check: \code{RosenfeldGroebner} over the
+  base field returns one regular component, then the script projects against the
+  \emph{raw} ansatz. Agrees with \code{joca.sage}. (Its header documents why one
+  must \emph{not} reduce against the regularized chain.) \\
+\code{joca-normalform.sage} & fraction \mbox{+} 4/3 primes &
+  This note's companion. Calls the chain's \code{normal\_form}; prints
+  $\mathrm{NUM}/\mathrm{DEN}$ with $\mathrm{DEN}=\Sbar$; shows $\mathrm{DEN}=0$ on
+  $a_0=a_1=0$; decomposes $\{\mathrm{NUM}=0\}$ (4 primes, the $(a_0,a_1)$ being
+  the pole) and, after saturating by $(a_0,a_1)$, the 3 generic strata. \\
+\code{rg\_basefield.py} & 1 component, $\approx$16\,s &
+  Minimal standalone demo (no Sage): builds the ring, moves the constants into
+  the base field, runs \code{RosenfeldGroebner(ansatz, basefield=F)}, shows it
+  terminates with one regular component. \\
+\code{joca-rg-orderly.sage} & times out &
+  Cliff artifact: RG with the constants left as \emph{ring variables} under an
+  orderly ranking. Demonstrates the blow-up is ranking-independent and that the
+  base field is what makes RG terminate. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+A related experiment lives in the separate repository
+\code{\textasciitilde/parametric-rg} (a from-scratch port of Fakouri--Rahmany--
+Basiri's \emph{parametric} Rosenfeld--Gr\"obner): \code{examples/joca-prg.sage}
+runs the §1.12 cross-check (all five primes are PDE-redundancy cells) and a
+direct parametric-RG attempt on the ansatz that does not terminate---the same
+radius-driven coefficient swell, there in the differential reduction rather than
+in a saturation. See that repository's \code{README} for the localized
+diagnosis.
+
+\section*{Summary}
+
+The component $(a_0,a_1)$ was never in the radical. It is the bad locus $B$ where
+an initial vanishes, re-admitted because the script reduced by $[\bar A]$ instead
+of $\sat{\bar A}{\Sbar}$. \code{normal\_form} exhibits the missing $:\Sbar^\infty$
+as a literal denominator, with $B$ as its pole; and the genuine sub-strata of $B$
+are recoverable only by the raw projection (whose ODE degenerates to a usable
+first-order rule on $B$) or by recursing into $B$. The corrected
+\code{joca-rg.sage} therefore uses RG to certify coherence and projects raw,
+matching \code{joca.sage}'s five primes.
+
+\begin{thebibliography}{9}
+\bibitem{BLOP}
+F. Boulier, D. Lazard, F. Ollivier, M. Petitot, Computing representations for
+radicals of finitely generated differential ideals, \emph{Appl.\ Algebra Eng.\
+Commun.\ Comput.} \textbf{20} (2009) 73--121 (Theorem~28).
+\bibitem{BLS}
+F. Boulier, F. Lemaire, A. Sedoglavic, On the regularity property of
+differential polynomials modulo regular differential chains, \emph{CASC 2011},
+LNCS \textbf{6885}, 61--72 (the \code{normal\_form} algorithm).
+\bibitem{CTD}
+C. Chen \emph{et al.}, Comprehensive triangular decomposition, \emph{CASC 2007},
+LNCS \textbf{4770}, 73--101 (the recurse-into-the-bad-locus scheme).
+\end{thebibliography}
+
+\vfill
+\noindent\rule{0.4\linewidth}{0.4pt}\\
+{\small Prepared by Claude (Opus 4.8) for Brent Baccala. /Opus 4.8}
+
+\end{document}
