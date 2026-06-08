@@ -1,0 +1,208 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\eps}{\varepsilon}
+
+\title{The Clarkson--Kruskal direct method on two examples:\\
+       the heat kernel and the hydrogen $J_0$ solution}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\noindent
+A companion note to \emph{A New Method of Solving PDEs}. The
+Clarkson--Kruskal (CK) \emph{direct method}~\cite{CK1989,CM1994} finds
+similarity reductions of a PDE --- ways to collapse it onto an ODE --- by
+substituting a structured ansatz and forcing the result to be an ODE,
+with no use of group theory. We work it on two of the paper's own example
+PDEs: the linear heat equation $u_t=u_{xx}$ and the hydrogen
+Schr\"odinger equation $-\tfrac12\nabla^2\Psi-\tfrac1r\Psi=E\Psi$.
+
+\section{The recipe}
+
+For a PDE in two independent variables, seek
+\begin{equation}
+  u(x,t)=\alpha(x,t)+\beta(x,t)\,w\bigl(z(x,t)\bigr),
+  \label{eq:ansatz}
+\end{equation}
+with $w$ an unknown function of the single \emph{similarity variable} $z$,
+and $\alpha,\beta,z$ to be determined. Substituting into the PDE produces a
+sum $\sum_i\Gamma_i(x,t)\,W_i(w)$, where each $W_i$ is a derivative or power
+of $w$. For this to be an ODE in $z$, every coefficient must equal a chosen
+normalizer $\Gamma_0$ times a \emph{pure function of $z$},
+\begin{equation}
+  \Gamma_i(x,t)=\Gamma_0(x,t)\,\theta_i\bigl(z(x,t)\bigr),
+  \label{eq:closure}
+\end{equation}
+giving an overdetermined system (the \emph{determining equations}) for
+$\alpha,\beta,z$ together with the reduced ODE for $w$. The representation
+\eqref{eq:ansatz} is redundant under $z\mapsto Z(z)$, $\beta\mapsto\beta/\Omega(z)$,
+and $\alpha\mapsto\alpha+\beta\,\Omega(z)$; CK fix these three freedoms to
+make the system solvable.
+
+\section{Example 1: the heat equation $u_t=u_{xx}$}
+
+Writing $u$ for $\Psi$, chain-rule \eqref{eq:ansatz} through the equation:
+\[
+  u_t=\alpha_t+\beta_t w+\beta z_t\,w',\qquad
+  u_{xx}=\alpha_{xx}+\beta_{xx}w+\bigl(2\beta_x z_x+\beta z_{xx}\bigr)w'
+         +\beta z_x^{2}\,w''.
+\]
+So $u_t-u_{xx}=0$ groups, by the structure in $w$, into
+\begin{equation}
+  \underbrace{-\beta z_x^{2}}_{w''}\,w''
+  +\underbrace{\bigl(\beta z_t-2\beta_x z_x-\beta z_{xx}\bigr)}_{w'}\,w'
+  +\underbrace{\bigl(\beta_t-\beta_{xx}\bigr)}_{w}\,w
+  +\underbrace{\bigl(\alpha_t-\alpha_{xx}\bigr)}_{1}=0.
+  \label{eq:heat-grouped}
+\end{equation}
+Dividing by the normalizer $\Gamma_0=-\beta z_x^2$ and imposing
+\eqref{eq:closure} gives the determining equations
+\begin{align}
+  \beta z_t-2\beta_x z_x-\beta z_{xx} &= -\beta z_x^2\,\theta_1(z),
+  \label{eq:heatA}\\
+  \beta_t-\beta_{xx} &= -\beta z_x^2\,\theta_2(z),
+  \label{eq:heatB}\\
+  \alpha_t-\alpha_{xx} &= -\beta z_x^2\,\theta_3(z),
+  \label{eq:heatC}
+\end{align}
+with reduced ODE $w''+\theta_1(z)\,w'+\theta_2(z)\,w+\theta_3(z)=0$.
+
+\paragraph{Normal form.} Using the freedoms, take the constant-coefficient
+linear normal form $\alpha=0$, $z=a(t)\,x+b(t)$, $\beta=\beta(t)$. Then
+\eqref{eq:heatC} is satisfied, and \eqref{eq:heatA}--\eqref{eq:heatB} reduce to
+\[
+  a'x+b'=-a^2\,\theta_1(z),\qquad \beta'/\beta=-a^2\,\theta_2(z).
+\]
+The right-hand side of the first is affine in $x$ only if $\theta_1(z)=pz+q$,
+forcing $a'=-p\,a^3$, $b'=-a^2(pb+q)$; the second forces $\theta_2\equiv c$,
+a constant.
+
+\paragraph{Two branches.}
+The choice $p=0$ gives $a,b$ constant and $\beta=e^{-ca^2t}$: these are the
+\emph{separable} Fourier modes $u=e^{-ck^2t}e^{ikx}$, i.e.\ ordinary
+separation of variables. The choice $p\neq0$ is the genuinely
+non-separable branch. Solving $a'=-p\,a^3$ with $p=\tfrac12$, time origin
+$0$, and $q=0$ (so $b\equiv0$):
+\[
+  a^2=\frac1t,\qquad z=\frac{x}{\sqrt t},\qquad \beta=t^{-c}.
+\]
+With $\theta_1=\tfrac12 z$ and $\theta_2=c$ the reduced ODE is the
+one-parameter family
+\begin{equation}
+  w''+\tfrac12\,z\,w'+c\,w=0,
+  \label{eq:heat-ode}
+\end{equation}
+the free $c$ being the scaling weight. The distinguished member $c=\tfrac12$
+has the closed-form solution $w(z)=e^{-z^2/4}$ (indeed
+$w''=(-\tfrac12+\tfrac{z^2}{4})w$, $\tfrac z2 w'=-\tfrac{z^2}{4}w$, and these
+plus $\tfrac12 w$ cancel). Reassembling $u=\beta\,w(z)$,
+\begin{equation}
+  \boxed{\,u(x,t)=\frac{1}{\sqrt t}\,e^{-x^2/4t}\,}
+\end{equation}
+--- the heat kernel, exactly the solution quoted in the paper. The direct
+method has \emph{derived} it, and exhibited the separable Fourier modes as
+the sibling branch of the same determining system.
+
+\section{Example 2: hydrogen, and the $J_0$ solution}
+
+The paper's marquee solution is
+$\Psi=J_0\!\bigl(2\sqrt{x+r}\bigr)$ with $r=\sqrt{x^2+y^2+z^2}$, a
+function of the single \emph{parabolic} coordinate
+\begin{equation}
+  \xi=x+r.
+\end{equation}
+This is the natural similarity variable: take the pure reduction ansatz
+$\Psi=w(\xi)$ (i.e.\ $\alpha=0$, $\beta=1$, $z=\xi$ in \eqref{eq:ansatz}) and
+ask the CK question --- when does the equation close into an ODE in $\xi$?
+
+\paragraph{The reduced operator.} With $\nabla\xi=\hat e_x+\hat r$ we get the
+two field quantities
+\[
+  |\nabla\xi|^2=2+2\,\frac{x}{r}=\frac{2\xi}{r},
+  \qquad
+  \nabla^2\xi=\nabla^2 r=\frac{2}{r},
+\]
+so that $\nabla^2\Psi=|\nabla\xi|^2 w''+(\nabla^2\xi)\,w'
+=\dfrac{2}{r}\bigl(\xi w''+w'\bigr)$. The Schr\"odinger equation
+$-\tfrac12\nabla^2\Psi-\tfrac1r\Psi=E\Psi$ becomes, after multiplying by $-r$,
+\begin{equation}
+  \xi\,w''+w'+w=-E\,r\,w.
+  \label{eq:hyd}
+\end{equation}
+
+\paragraph{Closure forces $E=0$.} Read \eqref{eq:hyd} through the CK lens.
+With normalizer $\Gamma_0=-\tfrac12|\nabla\xi|^2=-\xi/r$, the $w'$ coefficient
+ratio is
+\(
+  \theta_1=\frac{-1/r}{-\xi/r}=\frac1\xi,
+\)
+a function of $\xi$ --- good. But the $w$ coefficient ratio is
+\[
+  \theta_2=\frac{-1/r-E}{-\xi/r}=\frac{1+E\,r}{\xi},
+\]
+which is a function of $\xi$ \emph{only if} $E\,r$ is. Since
+$r=\tfrac12(\xi+\eta)$ in parabolic coordinates ($\eta=r-x$), $r$ is
+independent of $\xi$, so the closure condition \eqref{eq:closure} holds
+\textbf{iff $E=0$}. The direct method's own consistency requirement selects
+the zero-energy sheet --- precisely where the paper's solution lives.
+
+\paragraph{The reduced ODE.} At $E=0$, \eqref{eq:hyd} is
+\begin{equation}
+  \xi\,w''+w'+w=0.
+  \label{eq:hyd-ode}
+\end{equation}
+The substitution $\tau=2\sqrt{\xi}$ (so $\xi=\tau^2/4$) turns
+\eqref{eq:hyd-ode} into Bessel's equation of order zero,
+\[
+  W_{\tau\tau}+\tfrac1\tau W_\tau+W=0,
+  \qquad W(\tau)=J_0(\tau),
+\]
+giving
+\begin{equation}
+  \boxed{\,\Psi=J_0\!\bigl(2\sqrt{x+r}\bigr)\,}.
+\end{equation}
+Both the reduction and the final wavefunction were checked symbolically:
+$J_0(2\sqrt\xi)$ satisfies \eqref{eq:hyd-ode} identically, and
+$J_0(2\sqrt{x+r})$ annihilates $-\tfrac12\nabla^2\Psi-\tfrac1r\Psi$ to
+machine precision at generic points.
+
+\section{Reading against the new method}
+
+On both examples the direct method \emph{forces a single similarity
+variable into existence} --- $z=x/\sqrt t$ for heat, $\xi=x+r$ for
+hydrogen --- and then reads off whatever ODE in that variable is consistent.
+It is organized around the equation's (implicit) symmetries: the heat run
+even hands back the separable Fourier modes and the non-separable heat
+kernel as two arms of one determining system, and the hydrogen run lets the
+closure condition itself pick out $E=0$.
+
+The new method is organized differently. It does not posit
+\eqref{eq:ansatz}; it fixes a \emph{differential-polynomial} ansatz, adjoins
+the PDE, reduces, and prime-decomposes, certifying via the completeness
+theorem that every solution of that ansatz form has been found. The two
+routes meet at the same wavefunctions --- the heat kernel and the hydrogen
+$J_0$ --- from opposite organizing principles: the direct method supplies
+the reduction but no completeness claim; the new method supplies the
+guarantee but must be handed the ansatz as differential polynomials.
+
+\begin{thebibliography}{9}
+\bibitem{CK1989}
+P.A. Clarkson, M.D. Kruskal, New similarity reductions of the Boussinesq
+equation, \emph{J. Math. Phys.} \textbf{30}~(10) (1989) 2201--2213.
+\bibitem{CM1994}
+P.A. Clarkson, E.L. Mansfield, Symmetry reductions and exact solutions of a
+class of nonlinear heat equations, \emph{Phys. D} \textbf{70}~(3--4) (1994)
+250--288.
+\end{thebibliography}
+
+\vfill
+\noindent\rule{0.4\linewidth}{0.4pt}\\
+{\small Prepared by Claude (Opus 4.8) for Brent Baccala. /Opus 4.8}
+
+\end{document}
