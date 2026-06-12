@@ -908,7 +908,8 @@ r(c^*) \;\in\; (A(c^*)) : S_{A(c^*)}^\infty
 %
 But $A(c^*)$ is a characteristic set of $\operatorname{sat}(A(c^*))$, so a
 polynomial fully reduced with respect to $A(c^*)$ and lying in
-$\operatorname{sat}(A(c^*))$ must vanish (\cite{hubert}).  Hence
+$\operatorname{sat}(A(c^*))$ must vanish (\cite{hubert}, Theorem~5.13; the
+vanishing is then immediate from Definition~5.5).  Hence
 $r(c^*) = 0$.
 
 Since the power products $m_\alpha$ are distinct monomials in a
@@ -1109,11 +1110,16 @@ B \;\subseteq\; \mathbb{C}^n
 \]
 for the {\it bad locus}: the constants at which some component fails to
 specialize to a squarefree regular chain.  It is an algebraic variety, cut
-out by the discriminants and initials of the elements nonlinear in their
-leaders, eliminated down to the constants by iterated resultants --- off the
-zero set of which a regular chain specializes well (\cite{CTD};
-\cite{gianni}).  When every nonlinear element has a constant, non-vanishing
-discriminant the locus is empty.  Off~$B$, hypothesis~(4) holds and
+out by the discriminants of the elements nonlinear in their leaders together
+with the initials and separants of the \emph{non-monic} elements, eliminated
+down to the constants by iterated resultants --- off the zero set of which a
+regular chain specializes well (\cite{CTD}; \cite{gianni}).  An element that
+is linear in its leader but not monic still contributes here: the locus
+where its initial vanishes belongs to~$B$ even though it carries no
+discriminant (the ODE element of \S\ref{sec:ansatz5-example} is such a case,
+giving $B = \{a_0 = a_1 = 0\}$ there).  When every nonlinear element has a
+constant, non-vanishing discriminant and every non-monic initial and
+separant is a non-zero-divisor, the locus is empty.  Off~$B$, hypothesis~(4) holds and
 Theorem~\ref{thm:completeness} applies pointwise.
 
 Recovering the solutions on~$B$ is exactly the task of {\it comprehensive
@@ -2369,8 +2375,9 @@ Out[5]= True
 Having found the solutions above, we close by running the general algorithm
 of \S\ref{sec:general-algorithm} on this ansatz and observing that it collapses to a
 single application of Algorithm~\ref{alg:core}: the Rosenfeld--Gr\"obner
-step returns one component, and the bad locus is empty, so no recursion
-occurs.  The ansatz of Figure~\ref{ansatz 5 figure}, given by the
+step returns one component, and although the bad locus is a nonempty
+codimension-2 subspace, the raw projection covers it directly, so no
+recursion is needed.  The ansatz of Figure~\ref{ansatz 5 figure}, given by the
 differential polynomials~\eqref{ansatz 5b}, \eqref{ansatz 5c}
 and~\eqref{ansatz 5a}, has as its elements a second-order linear homogeneous
 ODE element
@@ -2416,19 +2423,32 @@ input system.  What matters here is only that there is one component, so
 Algorithm~\ref{alg:core} is applied once.
 
 \medskip
-\noindent{\it The bad locus is empty.}
+\noindent{\it The bad locus.}
 The only element nonlinear in its leader is the base-ring relation
 $r^2 - x^2 - y^2 - z^2$.  Its initial is~$1$, and its discriminant in~$r$,
 $\operatorname{disc}_r(r^2 - x^2 - y^2 - z^2) = 4(x^2 + y^2 + z^2)$, is free
 of the constants and a non-zero-divisor (the quadric is irreducible, so
-$\mathbb{Q}[x,y,z,r]/(r^2 - x^2 - y^2 - z^2)$ is a domain).  Every other
-element is linear in its leader and contributes no discriminant, meeting the
-regular-chain and squarefree conditions automatically: its initial equals
-its separant, a non-zero-divisor modulo $\operatorname{sat}(A(c^*))$ even
-when, as for the ODE separant $a_0 + a_1 v$, it is a zero-divisor modulo
-$(A(c^*))$ itself.  No specialization of the constants can make the chain
-fail to be a squarefree regular chain, so the bad locus is empty and
-Algorithm~\ref{alg:general} makes no recursive call.
+$\mathbb{Q}[x,y,z,r]/(r^2 - x^2 - y^2 - z^2)$ is a domain), so it
+contributes nothing to~$B$.  The chain-rule and variable relations are
+\emph{monic}-linear in their leaders (initial~$1$), and likewise contribute
+nothing.  The ODE element, however, is linear in its leader but \emph{not}
+monic: its initial equals its separant $a_0 + a_1 v$, a non-zero-divisor
+modulo $\operatorname{sat}(A(c^*))$ at generic~$c^*$ --- even where it is a
+zero-divisor modulo $(A(c^*))$ itself --- but one that vanishes
+\emph{identically} when $a_0 = a_1 = 0$, dropping the leader $\Psi''$.  The
+bad locus is therefore the codimension-2 subspace
+\[
+  B \;=\; \{\,a_0 = a_1 = 0\,\} \;\subseteq\; \mathbb{C}^{11},
+\]
+on which the chain fails to be a squarefree regular chain.  Two strata of
+the decomposition~\eqref{ideal} lie in~$B$: \eqref{ideal:4} (all ODE
+coefficients zero) and \eqref{ideal:3} (the $\Psi''$ coefficient zero, the
+ODE dropping to first order).  They are recovered not through hypothesis~(4)
+but because the raw ODE degenerates on~$B$ to the \emph{usable} first-order
+rule $(b_0 + b_1 v)\Psi' + (c_0 + c_1 v)\Psi$, which the plain Ritt
+projection of Algorithm~\ref{alg:core} follows directly --- so the single
+raw pass already returns the strata on~$B$ along with those off it, and no
+recursive call into~$B$ is required.
 
 \medskip
 \noindent{\it The denominator.}
@@ -2441,13 +2461,16 @@ classical case), nonzero away from the origin; both lie off the denominator
 locus.
 
 \medskip
-Algorithm~\ref{alg:general} thus reduces to a single application of
-Algorithm~\ref{alg:core} over the whole constant space, and by
-Corollary~\ref{cor:general} --- equivalently Theorem~\ref{thm:completeness},
-whose four hypotheses all hold here --- the projection is complete and exact
-off the denominator locus.  The two families found, the classical radial
-equation and the new solution~\eqref{ideal:1} at $E = 0$, are therefore all
-of them.
+Off~$B$, all four hypotheses of Theorem~\ref{thm:completeness} hold and
+Algorithm~\ref{alg:general} reduces to a single application of
+Algorithm~\ref{alg:core}; by Corollary~\ref{cor:general} the projection is
+there complete and exact off the denominator locus.  On~$B$ the chain is no
+longer a squarefree regular chain, but the same single pass still recovers
+the degenerate strata \eqref{ideal:3} and \eqref{ideal:4}, the raw ODE
+dropping to a usable first-order rule.  The decomposition~\eqref{ideal} is
+thus complete over the whole constant space, and the two families carrying a
+genuine second-order ODE --- the classical radial equation and the new
+solution~\eqref{ideal:1} at $E = 0$ --- are all of them.
 
 \vfill\eject
 
