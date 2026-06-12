@@ -248,6 +248,49 @@ Schrödinger PDE becomes redundant modulo the ansatz coincide **exactly**
 with the five minimal associated primes computed by `joca.sage` — the two
 routes agree where both can reach.
 
+**A worked split: `Δ(Ψ_x, Ψ_y)` and the `v[y] ≠ 0` chart.** The clearest
+view of *where* those 3–4 vertices come from — and why NewMethod has none —
+is a single Δ-pair from the hydrogen trace (`~/parametric-rg/examples/joca-prg.sage`
+with `PRG_TRACE=1`, vertex `v#3`). RG forms the integrability condition of
+the two first-order chain-rule relations `Ψ_x = Ψ′ v_x`, `Ψ_y = Ψ′ v_y`; the
+symmetric `Ψ′ v_xy` term cancels, leaving the 2-term polynomial
+
+```
+Δ = Ψ′_y · v_x  −  Ψ′_x · v_y
+```
+
+with leader `Ψ′_x` (`DPsi[x]`) and **initial `v_y`** (`v[y]`). To install it
+RG must divide by `v_y`, so `MakeTree` branches: system #4 takes `v_y ≠ 0`
+(records `Sineq: v[y]`, and solves `Ψ′_x = Ψ′_y v_x / v_y = Ψ″ v_x`), system
+#5 is the complementary chart `v_y = 0`. Two trace facts pin down its nature:
+the condition is filed under **`Sineq`**, and **`N`/`W` stay empty the whole
+run** — so this is a *differential* regularity (non-zero-divisor) split on a
+chain separant together with its complementary chart, **not** a branch on the
+constants. This one pair is most of the "cheap, clean" parameter branching:
+an atlas of a `v_y ≠ 0` chart plus a `v_y = 0` chart.
+
+**Why NewMethod produces nothing here.** The relation RG re-derives,
+`Ψ′_x = Ψ″ v_x`, is already a *primitive, monic* element of NewMethod's
+ansatz (eq. (5c), initial 1). NewMethod reads it off and divides by nothing,
+so `v_y` never becomes a denominator — confirmed by its absence from the Ritt
+denominator `64 r² (a_0 + a_1 v)`, which carries only the separants the
+*single* reduction actually uses (`r` and `a_0 + a_1 v`). RG, deriving the
+same relation from integrability instead, divides by `v_y` and manufactures
+the split. More structurally, the Δ-pair machinery *is* the RG completion,
+which NewMethod never runs: it requires the ansatz coherent up front
+(hypothesis 3), and for these ansätze coherence is automatic — everything
+factors through the single independent variable `v`, mixed partials commute —
+so the genuine Δ-polynomials vanish identically and there is nothing to split
+on. And the complementary chart is deferred, not lost: `v_y = v_2 + v_4 y/r`
+vanishes *identically* iff `v_2 = v_4 = 0`, so system #5 is the degenerate
+constant stratum `{v_2 = v_4 = 0}` — a piece of NewMethod's single bad locus
+`B`, recovered at the end (here automatically by the raw projection, the same
+mechanism that recovers `a_0 = a_1 = 0`), never a branch threaded through the
+computation. Atlas (both charts materialized) versus image-plus-one-exceptional-set
+(§4.2): the same `v_y` condition lives in NewMethod as a factor of the
+saturation `H_A` / the denominator `h`, carried multiplicatively rather than
+as an explicit inequation.
+
 ### 3.2 Differential Thomas decomposition (Bächler–Gerdt–Lange-Hegermann–Robertz 2012)
 
 J. Symbolic Comput. 47(10):1233–1266 (archived). The algebraic Thomas
