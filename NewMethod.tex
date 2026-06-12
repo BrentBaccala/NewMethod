@@ -864,13 +864,20 @@ cross-derivatives commute consistently through a single independent
 variable~$v$.
 
 Hypothesis~(4) is the ingredient that closes the proof.  An element
-{\it linear} in its leader satisfies it automatically: its initial and
-separant coincide, and that quantity is a non-zero-divisor modulo
-$\operatorname{sat}(A(c^*))$ even when --- as can happen --- it is a
-zero-divisor modulo $(A(c^*))$ itself.  So~(4) bears only on the elements
-nonlinear in their leaders, of which it asks that {\it both} the initial and
-the separant be regular; neither may be dropped, as the two counterexamples
-following the proof show.
+{\it monic}-linear in its leader satisfies it automatically: its initial and
+separant coincide in the constant~$1$, a non-zero-divisor modulo
+$\operatorname{sat}(A(c^*))$ at every~$c^*$.  A {\it non-monic} element
+linear in its leader is more delicate: its initial and separant still
+coincide --- a non-zero-divisor modulo $\operatorname{sat}(A(c^*))$
+generically, even where it is a zero-divisor modulo $(A(c^*))$ itself ---
+but that initial may {\it vanish} on a proper subvariety of the constants,
+and there~(4) fails.  This is exactly what the ODE element of
+\S\ref{sec:ansatz5-example} does: its initial $a_0 + a_1 v$ vanishes on
+$\{a_0 = a_1 = 0\}$, contributing that subvariety to the bad locus~$B$.  So
+(4) bears on the elements nonlinear in their leaders --- of which it asks
+that {\it both} the initial and the separant be regular, neither droppable,
+as the two counterexamples following the proof show --- and on the
+non-monic elements, through the vanishing of their initials.
 
 The theorem establishes only the completeness of the algorithm: every valid
 choice of constants will be found.  It says nothing about sufficiency ---
