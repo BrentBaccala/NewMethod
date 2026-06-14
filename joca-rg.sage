@@ -21,7 +21,16 @@
 # Sage is used to compute a primary decomposition of the resulting system of equations.
 # Some fiddling is required to juggle back and forth between the two.
 
+import sys
+
 import sympy
+
+# Command-line options.  Run e.g. `sage joca-rg.sage --print-rg-system` to also
+# print the regular differential chain that RosenfeldGroebner returns (the
+# *regularized* ansatz).  By default we only use RG as the coherence check and
+# project against the raw ansatz -- see the note at the RG call below -- so the
+# regularized system is not normally shown.
+print_rg_system = '--print-rg-system' in sys.argv
 
 try:
     import DifferentialAlgebra
@@ -127,6 +136,55 @@ F = DifferentialAlgebra.BaseFieldExtension(generators=constants, ring=DiffRing)
 components = DiffRing.RosenfeldGroebner(ansatz, basefield=F)
 assert len(components) == 1, f"expected a single regular component, got {len(components)}"
 print("\nHypothesis (3) discharged: the ansatz is a single coherent regular system.")
+
+# Optionally print the regularized system RG returns -- the regular differential
+# chain's equations.  This is NOT what we reduce against (see the note above and
+# the next line): the chain represents the saturated ideal [C] : H_C^inf, with
+# the ODE's initial squared, so reducing against it would drop the a0=a1=0
+# strata.  We print it only to show what the general algorithm's hypothesis-(3)
+# step produces.
+if print_rg_system:
+    rchain = components[0]
+    rg_eqns = rchain.equations()
+    print("\nRegularized system from Rosenfeld-Groebner (the regular chain):",
+          *rg_eqns, sep='\n')
+
+    # Try to factor each equation of the regularized system.  sympy.factor()
+    # leaves the irreducible ones expanded; where the chain carries a repeated
+    # initial (e.g. the squared ODE initial a0+a1*v) the factored form makes it
+    # visible.
+    print("\nFactored regularized system:",
+          *[sympy.factor(eq) for eq in rg_eqns], sep='\n')
+
+    # The component's inequalities.  The sympy binding does not wrap BLAD's
+    # `Inequations` accessor, but that accessor is *defined* as the initials and
+    # separants of the regular chain (Boulier): the chain represents the
+    # saturated ideal [C] : H_C^inf, with H_C the multiplicative family they
+    # generate -- a regular differential chain has no inequalities beyond these.
+    # We reproduce `Inequations` faithfully: reduce each initial/separant modulo
+    # the chain (normal_form -- a no-op here, since the ranking already keeps
+    # x^2+y^2+z^2 rather than r^2), make it primitive, drop the numeric ones,
+    # and dedupe.
+    rg_inequalities = []
+    seen = set()
+    for h in list(rchain.initial()) + list(rchain.separant()):
+        h = sympy.expand(rchain.normal_form(h))
+        if h.is_number:
+            continue
+        h = h.as_content_primitive()[1]          # strip the numerical content
+        if h in seen:
+            continue
+        seen.add(h)
+        rg_inequalities.append(h)
+    print("\nInequalities (initials and separants of the chain = BLAD 'Inequations'), must be nonzero:",
+          *[f"{h} != 0" for h in rg_inequalities], sep='\n')
+
+    # ... and factored, which exposes the bad-locus structure (e.g. the product
+    # (x^2+y^2+z^2) * (ODE initial) and the ODE initial itself, whose vanishing
+    # is the a0=a1=0 locus discussed above).
+    print("\nInequalities, factored:",
+          *[f"{sympy.factor(h)} != 0" for h in rg_inequalities], sep='\n')
+
 # NB: deliberately do NOT overwrite `ansatz` with components[0].equations();
 # we reduce against the raw (coherent) ansatz -- see the note above.
 
