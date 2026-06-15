@@ -40,6 +40,16 @@ print_rg_system = '--print-rg-system' in sys.argv
 # a Python-level `verbose` argument.
 rg_verbose = '--rg-verbose' in sys.argv
 
+# `--rg-dot` dumps the Rosenfeld-Groebner splitting tree in graphviz/dot syntax
+# (a `digraph`) to standard output, by passing dot=True to RosenfeldGroebner.
+# Pipe the output to `dot -Tpng -o tree.png` to render the splitting tree (the
+# branch structure: factor/initial/separant splits, critical-pair edges,
+# reductions to zero, reg_characteristic terminals).  Like --rg-verbose this
+# requires the patched DifferentialAlgebra build that wires BLAD's splitting
+# tree through to a Python-level `dot` argument; the two are independent and
+# may be combined.
+rg_dot = '--rg-dot' in sys.argv
+
 try:
     import DifferentialAlgebra
 except ModuleNotFoundError as ex:
@@ -141,7 +151,7 @@ print("\nAnsatz:", *ansatz, sep='\n')
 # primes).  See the README for the full diagnosis.
 
 F = DifferentialAlgebra.BaseFieldExtension(generators=constants, ring=DiffRing)
-components = DiffRing.RosenfeldGroebner(ansatz, basefield=F, verbose=rg_verbose)
+components = DiffRing.RosenfeldGroebner(ansatz, basefield=F, verbose=rg_verbose, dot=rg_dot)
 assert len(components) == 1, f"expected a single regular component, got {len(components)}"
 print("\nHypothesis (3) discharged: the ansatz is a single coherent regular system.")
 
