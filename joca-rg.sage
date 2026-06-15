@@ -32,6 +32,14 @@ import sympy
 # regularized system is not normally shown.
 print_rg_system = '--print-rg-system' in sys.argv
 
+# `--rg-verbose` traces the Rosenfeld-Groebner computation itself: it passes
+# verbose=True to RosenfeldGroebner, which prints its step-by-step operation
+# (rounds, quadruples handled, reg_characteristic calls, new equations,
+# reductions to zero, splits) to standard output.  This requires the patched
+# DifferentialAlgebra build that wires BLAD's verbose splitting tree through to
+# a Python-level `verbose` argument.
+rg_verbose = '--rg-verbose' in sys.argv
+
 try:
     import DifferentialAlgebra
 except ModuleNotFoundError as ex:
@@ -133,7 +141,7 @@ print("\nAnsatz:", *ansatz, sep='\n')
 # primes).  See the README for the full diagnosis.
 
 F = DifferentialAlgebra.BaseFieldExtension(generators=constants, ring=DiffRing)
-components = DiffRing.RosenfeldGroebner(ansatz, basefield=F)
+components = DiffRing.RosenfeldGroebner(ansatz, basefield=F, verbose=rg_verbose)
 assert len(components) == 1, f"expected a single regular component, got {len(components)}"
 print("\nHypothesis (3) discharged: the ansatz is a single coherent regular system.")
 
