@@ -1,0 +1,218 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black}
+
+\newcommand{\Psib}{\Psi}
+\newcommand{\Var}{\mathcal{V}}
+\newcommand{\code}[1]{\texttt{#1}}
+\DeclareMathOperator{\Sol}{Sol}
+\DeclareMathOperator{\ld}{ld}
+
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+
+\title{Membership versus variety, and the partial-solution strata:\\
+       what changes if the PDE is added to the system\\ before
+       decomposition}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\noindent
+A companion note to \emph{A New Method of Solving PDEs}. The core algorithm
+\emph{reduces} the PDE $P$ modulo the ansatz $A$ and projects the remainder
+onto the constants, returning the locus $\Var$ of constants for which the
+ansatz family solves the PDE. A natural-looking alternative is to adjoin $P$
+to the ansatz and run a differential decomposition (Rosenfeld--Gr\"obner or,
+better, differential Thomas) on the \emph{combined} system $A \cup \{P\}$.
+This note records why that answers a \emph{different} question, names the
+discrepancy --- the \emph{partial-solution strata} --- and exhibits it on a
+two-line example.
+
+\section{Two different loci}
+
+Let $A(c) = \{a_1, \dots, a_k\}$ be the ansatz, a differentially triangular
+set whose coefficients involve constant parameters $c \in \mathbb{C}^n$, and
+let $P$ be the PDE. The core method computes the \textbf{membership locus}
+%
+\begin{equation}
+\label{eq:membership}
+\Var \;=\; \{\, c \in \mathbb{C}^n : P \in [A(c)] \,\},
+\end{equation}
+%
+a \emph{universal} condition: \emph{every} function in the ansatz family at
+$c$ solves the PDE. Operationally, Ritt's full reduction of $P$ modulo $A$
+yields a remainder $r = \sum_\alpha m_\alpha\, p_\alpha(c)$ with the $m_\alpha$
+distinct power products in the non-constant indeterminates; $r$ vanishes
+\emph{identically} iff every coefficient $p_\alpha(c)$ vanishes, so
+$\Var = V(p_1, \dots, p_N)$.
+
+Decomposing the combined system computes instead the \textbf{joint solution
+variety}
+%
+\begin{equation}
+\label{eq:variety}
+\Sol(A) \cap \Sol(P),
+\end{equation}
+%
+an \emph{existential} condition: there \emph{exists} a function satisfying both
+$A$ and $P$. Projecting \eqref{eq:variety} onto the constants gives
+%
+\begin{equation}
+\label{eq:overcount}
+\pi_c\big(\Sol(A) \cap \Sol(P)\big)
+   \;=\; \Var \;\cup\; \{\text{partial-solution strata}\}
+   \;\supseteq\; \Var .
+\end{equation}
+
+\begin{definition}[partial-solution stratum]
+\label{def:partial}
+A \emph{partial-solution stratum} is a set of constant values $c$ at which a
+\emph{proper, nontrivial} sub-family of the ansatz solutions satisfies $P$,
+while the family as a whole does not. Equivalently: $c \notin \Var$, yet
+$\Sol(A(c)) \cap \Sol(P)$ contains more than the zero solution.
+\end{definition}
+
+A prerequisite is immediate from Definition~\ref{def:partial}: the ansatz
+solution space at $c$ must be at least two-dimensional. A one-dimensional
+family either solves $P$ in its entirety or only through its zero member;
+there is no proper nontrivial sub-family to peel off.
+
+\section{A two-dimensional ansatz where the strata appear}
+
+\begin{example}
+\label{ex:partial}
+Take a two-dimensional ansatz and a first-order PDE,
+%
+\begin{equation}
+\label{eq:ex2}
+A(c): \quad \Psib'' - c\,\Psib = 0,
+\qquad\qquad
+P: \quad \Psib' - \Psib = 0 .
+\end{equation}
+%
+For $c = \omega^2$ the ansatz solution space is two-dimensional,
+$\Psib = K_1 e^{\omega x} + K_2 e^{-\omega x}$.
+\end{example}
+
+\paragraph{Membership (core method): reduce $P$ modulo $A$.}
+The leader of $P$ is $\Psib'$, which is ranked \emph{below} the leader $\Psib''$
+of $A$, so $P$ is already fully reduced with respect to $A$; the remainder is
+$P$ itself,
+%
+\[
+r \;=\; \Psib' - \Psib \;=\; (+1)\cdot\Psib' + (-1)\cdot\Psib .
+\]
+%
+The projection coefficients are the constants $+1$ and $-1$: never zero, with
+no $c$-dependence. Hence
+%
+\[
+\Var \;=\; V(1, -1) \;=\; \varnothing .
+\]
+%
+This is correct: no value of $c$ makes the entire two-parameter family
+$\{K_1 e^{\omega x} + K_2 e^{-\omega x}\}$ obey the first-order condition
+$\Psib' = \Psib$.
+
+\paragraph{Combined decomposition: adjoin $P$, rank the constant lowest.}
+The decomposition selects the lower-leader equation $\Psib' - \Psib$ into the
+triangular set first, then reduces $\Psib'' - c\,\Psib$ against it. Using
+$\Psib' = \Psib \Rightarrow \Psib'' = \Psib$,
+%
+\[
+\Psib'' - c\,\Psib \;\longrightarrow\; \Psib - c\,\Psib \;=\; (1-c)\,\Psib \;=\; 0 .
+\]
+%
+This equation has leader $\Psib$ and initial $(1-c)$, so the algorithm splits
+on the vanishing of $(1-c)$:
+%
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+cell & reduced system & solutions \\
+\midrule
+$c \ne 1$ & $(1-c)\Psib = 0,\ \ \Psib' = \Psib$ & $\Psib \equiv 0$ (trivial only)\\
+$c = 1$   & $0 = 0,\ \ \Psib' = \Psib$           & $\Psib = K e^{x}$ (one-parameter)\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+The cell $c = 1$ is the partial-solution stratum. At $c = 1$ the ansatz has
+the two modes $e^{x}$ and $e^{-x}$; the PDE $\Psib' = \Psib$ retains the
+$e^{x}$ mode and discards $e^{-x}$. Exactly half the family solves the PDE ---
+``some, but not all'' --- so $c = 1 \notin \Var$ even though it is a genuine,
+nonempty solution stratum of the joint system.
+
+\section{The correct selection criterion}
+
+Equation~\eqref{eq:overcount} warns that projecting the \emph{whole} combined
+variety over-counts $\Var$. One might hope to recover $\Var$ by keeping the
+cell in which the adjoined PDE-equation collapsed to $0 = 0$; Example
+\ref{ex:partial} shows this is wrong, as that cell is $c = 1$ whereas
+$\Var = \varnothing$. The collapse cell is the \emph{existential} locus, not
+the membership locus.
+
+The correct criterion is \textbf{dimension preservation}: $c \in \Var$ iff the
+combined solution space at $c$ still equals the \emph{full} ansatz solution
+space, i.e. the PDE removed nothing. In Example~\ref{ex:partial} no cell
+retains the full two-dimensional space (the $c=1$ cell keeps only a
+one-dimensional slice), so $\Var = \varnothing$, consistent with the direct
+reduction.
+
+\section{Contrast: a one-dimensional ansatz has no partial strata}
+
+Shrink the ansatz to one dimension and test a second-order PDE:
+%
+\[
+A(c): \quad \Psib' - c\,\Psib = 0 \quad(\Psib = K e^{cx}),
+\qquad\qquad
+P: \quad \Psib'' - \Psib = 0 .
+\]
+%
+Now $P$'s leader $\Psib''$ dominates $A$'s leader $\Psib'$. Reducing $P$ modulo
+$A$ gives $\Psib'' \to c^2 \Psib$, hence $r = (c^2 - 1)\,\Psib$ and
+%
+\[
+\Var \;=\; V(c^2 - 1) \;=\; \{\,+1,\,-1\,\} .
+\]
+%
+The combined decomposition produces the cells
+%
+\[
+\{\, c^2 \ne 1 : \Psib \equiv 0 \,\}, \qquad
+\{\, c = 1   : \Psib = K e^{x} \,\}, \qquad
+\{\, c = -1  : \Psib = K e^{-x} \,\},
+\]
+%
+and the nontrivial cells $c = \pm 1$ now retain the \emph{entire}
+(one-dimensional) family. Here the collapse cells coincide with $\Var$ and
+there are no partial strata: a one-dimensional family admits no proper
+nontrivial sub-family.
+
+\section{Reading}
+
+The membership formulation~\eqref{eq:membership} asks: \emph{for which
+ODE-coefficients $c$ is the PDE an automatic consequence of the ansatz?} ---
+so that the ansatz family is, as a whole, a PDE-solution family. The partial
+strata answer a different question: \emph{for which $c$ does the ansatz family
+happen to contain a PDE solution it was not designed to?} --- coincidental
+solutions living on a proper sub-family at special parameter values. They are
+real solutions, but invisible to the membership formulation by construction.
+
+For the hydrogen computation this means: adjoining the Schr\"odinger equation
+to the ansatz and decomposing surfaces parameter values where a degenerate,
+lower-dimensional slice of the ansatz solves the PDE while the generic member
+does not. If the goal is the membership locus $\Var$, either reduce $P$ modulo
+$A$ directly, or --- having decomposed the combined system --- keep only the
+dimension-preserving cells. Projecting the full joint variety answers the
+existential question and returns $\Var$ together with the partial strata.
+
+\end{document}
