@@ -178,6 +178,28 @@ strata_cache = {}
 union_primes = {}            # prime_key -> (ideal, contributing cells)  -- nontrivial
 trivial_primes = {}          # prime_key -> (ideal, contributing cells)  -- Psi==0 strata
 
+# The Maple base name of the order-0 wavefunction jet (Ps -> Psi).
+_PSI_MAPLE_BASE = next(k for k, v in tc.JET_NAMES.items() if v == 'Psi')
+
+def cell_forces_psi_zero(cell):
+    """True iff the cell's defining equations include  <Psi>(x,y,z) = 0 -- i.e.
+    DifferentialThomas ITSELF forced the wavefunction's order-0 jet to vanish (a
+    Psi==0 stratum).  This is authoritative and immune to the Ritt-multiplier
+    artifact that fools the reduction-based test below: on a stratum where v==0
+    the PDE's multiplier h = 64*(a0+a1*v)*r^2 vanishes, so differential_prem
+    returns a false remainder==0 AND the Psi-vs-ansatz reduction keeps Psi a live
+    indeterminate -- yet the PDE forces Psi=0 (it reads -(1+E*r)*Psi there).
+    Cell 14 (the spurious prime TH_E) is exactly this case; Thomas records it as
+    `Ps(x,y,z) = 0`, which we honor here."""
+    target = f"{_PSI_MAPLE_BASE}(x,y,z)"
+    for eq in tc._maple_list(cell['eqs_str']):
+        if '=' not in eq:
+            continue
+        lhs, rhs = (s.replace(' ', '') for s in eq.split('=', 1))
+        if rhs == '0' and lhs == target:
+            return True
+    return False
+
 for cell in cells:
     num = cell['num']
     if WANT_CELLS is not None and num not in WANT_CELLS:
@@ -195,7 +217,16 @@ for cell in cells:
         # the trivial Psi == 0 -- a degenerate stratum the paper's generic
         # reduction never reports (it keeps Psi a live indeterminate).
         _, psi_rem = DiffRing.differential_prem(Psi, spec)
-        trivial = (psi_rem == 0)
+        # v ≡ 0 stratum: if all of v1..v4 vanish, the ansatz forces Psi spatially
+        # constant (Psi_x = DPsi*v_x = 0, ...), and the PDE on a constant Psi reads
+        # -(1+E*r)*Psi, which has NO nonzero solution -> Psi ≡ 0.  This is the
+        # degenerate locus where the Ritt multiplier h = 64*(a0+a1*v)*r^2 vanishes
+        # through v=0, so differential_prem returns a false remainder==0 with Psi
+        # kept live; the reduction-based test below cannot see it.  (Cells 14/15/16
+        # are this case -> the spurious primes TH_E and its sub-strata.)
+        Zideal = ideal([PolyRing(p) for p in Z]) if Z else ideal(PolyRing.zero())
+        v_zero = all(PolyRing(vv) in Zideal for vv in (v1, v2, v3, v4))
+        trivial = (psi_rem == 0) or v_zero
         if rem == 0:
             eqns = ()
         else:
@@ -208,6 +239,11 @@ for cell in cells:
                                   primes=primes, trivial=trivial)
 
     sc = strata_cache[Zkey]
+    # Per-cell triviality: the cached reduction-based test (per parameter stratum)
+    # OR the cell's own Ps(x,y,z)=0 equation.  The latter catches the v==0 strata
+    # where the multiplier artifact makes the reduction test wrongly report the
+    # stratum as a nontrivial solution (e.g. cell 14 -> the spurious TH_E).
+    cell_trivial = sc['trivial'] or cell_forces_psi_zero(cell)
 
     # cell inequations: a prime is excluded when an inequation polynomial lies
     # in it (then the inequation vanishes identically on that component -- the
@@ -222,20 +258,20 @@ for cell in cells:
             continue
         survivors.append(P)
 
-    tag = "TRIVIAL (Psi==0 forced)" if sc['trivial'] else "nontrivial"
+    tag = "TRIVIAL (Psi==0 forced)" if cell_trivial else "nontrivial"
     print(f"\n--- cell {num}: zero {{{', '.join(Zkey) or '(none, generic)'}}}; "
           f"ansatz {sc['spec_len']} eqs; "
           f"{len(cp['param_ineqs'])} param-ineqs, {len(cp['jet_ineqs'])} jet-ineqs; {tag} ---")
     if VERBOSE_REM:
         print("  remainder:", sc['rem'])
-    if sc['rem'] == 0 and not sc['trivial']:
+    if sc['rem'] == 0 and not cell_trivial:
         print("  PDE reduces to 0: the whole stratum solves the PDE (nontrivially)")
     print("  system of equations:", *sc['eqns'], sep="\n    " if sc['eqns'] else " (none)")
     if not survivors:
         print("  surviving solution varieties: NONE (all pruned by inequations / empty)")
-    bucket = trivial_primes if sc['trivial'] else union_primes
+    bucket = trivial_primes if cell_trivial else union_primes
     for P in survivors:
-        print("   V:", P, "" if not sc['trivial'] else "   [trivial Psi==0]")
+        print("   V:", P, "" if not cell_trivial else "   [trivial Psi==0]")
         key = prime_key(P)
         bucket.setdefault(key, (P, []))[1].append(num)
 
