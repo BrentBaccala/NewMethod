@@ -138,6 +138,39 @@ def prime_key(P):
     return tuple(sorted(str(g) for g in P.gens()))
 
 
+def _ideal_subset(J, I):
+    """True iff ideal J ⊆ ideal I (every generator of J lies in I)."""
+    return all(g in I for g in J.gens())
+
+
+def keep_minimal(d):
+    """Keep only the ⊆-minimal ideals in a {key: (ideal, cells)} dict.
+
+    We report the largest varieties, i.e. the smallest ideals: if I_a ⊊ I_b then
+    V(I_a) ⊋ V(I_b), so V(I_b) is already contained in V(I_a) and is redundant in
+    the union.  Drop every ideal that strictly contains another in the list (the
+    superset ideals); the survivors are each presented in their simplest form.
+    Returns (kept_dict, dropped) with dropped = [(key, P, cells, absorber_key)].
+    """
+    items = list(d.items())
+    kept, dropped = {}, []
+    for i, (ki, (Pi, ci)) in enumerate(items):
+        absorber = None
+        for j, (kj, (Pj, cj)) in enumerate(items):
+            if i == j:
+                continue
+            sub_ji = _ideal_subset(Pj, Pi)
+            if sub_ji and not _ideal_subset(Pi, Pj):          # Pj ⊊ Pi  -> drop Pi
+                absorber = kj; break
+            if sub_ji and _ideal_subset(Pi, Pj) and j < i:    # exact dup -> keep earlier
+                absorber = kj; break
+        if absorber is None:
+            kept[ki] = (Pi, ci)
+        else:
+            dropped.append((ki, Pi, ci, absorber))
+    return kept, dropped
+
+
 # Cache reduction+decomposition by parameter stratum (cells that zero the same
 # constants share an identical specialized ansatz, hence identical reduction and
 # primes; only their inequations -- and thus the pruning -- differ).
@@ -208,10 +241,21 @@ for cell in cells:
 
 # --- union over all cells --------------------------------------------------
 def dump_union(title, d):
-    print(f"\n{title} ({len(d)} distinct primes):\n")
-    for key, (P, cells_for) in sorted(d.items(), key=lambda kv: str(kv[0])):
+    # Refine to the largest varieties: drop ideals that strictly contain another
+    # in the list (their variety is already covered -> redundant in the union).
+    kept, dropped = keep_minimal(d)
+    note = f"; {len(dropped)} redundant superset ideal(s) dropped" if dropped else ""
+    print(f"\n{title} ({len(kept)} maximal varieties{note}):\n")
+    for key, (P, cells_for) in sorted(kept.items(), key=lambda kv: str(kv[0])):
         print("  V:", P)
         print("       (from cells:", ", ".join(map(str, sorted(set(cells_for)))) + ")")
+    if dropped:
+        print("\n  dropped (superset of a kept ideal => smaller, redundant variety):")
+        kbygens = {k: P for k, (P, _) in d.items()}
+        for key, P, cells_for, absorber in sorted(dropped, key=lambda t: str(t[0])):
+            print("    V:", P, "  (from cells:",
+                  ", ".join(map(str, sorted(set(cells_for)))) + ")")
+            print("        ⊇", kbygens[absorber])
 
 print("\n" + "=" * 72)
 scope = 'selected' if WANT_CELLS else 'all'
