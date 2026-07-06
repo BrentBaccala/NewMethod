@@ -106,9 +106,14 @@ Thomas, or plain Gröbner elimination) becomes a free downstream choice.
 > Thm 4.1 + Bächler et al. 2012 §3; elementary 2nd-order-ODE existence for this
 > ansatz.)
 >
-> **(b) Projection to the constants.** With `J_c = J ∩ K[c]` (eliminate the
-> jets), `V(J_c)` is the Zariski closure of `{ c : A(c) solves P }`, and the
-> solving constants are recovered as the projection `π(V(J))`.
+> **(b) Projection to the constants.** Quotient out the trivial solution, then
+> eliminate the jets: `J_c = (J : Ψ^∞) ∩ K[c]` (equivalently, adjoin `tΨ − 1`
+> for a fresh `t` and eliminate `t` with the jets; `Ψ` = the top dependent
+> variable used to write `P`). Then `V(J_c)` is the Zariski closure of
+> `{ c : A(c) has a nonzero solution solving P }`, and the solving constants
+> are recovered as the projection `π(V(J) ∩ {Ψ ≠ 0})`. The `: Ψ^∞` is
+> **mandatory** — the naive `J ∩ K[c]` is identically `(0)`; see "Two
+> saturations" below.
 >
 > **(c) No stratum lost.** Because `J` is **not saturated** by the initials /
 > separants `H_A`, the strata on the bad locus `H_A = 0` survive: there the
@@ -124,6 +129,34 @@ Thomas, or plain Gröbner elimination) becomes a free downstream choice.
 > membership and elimination. The differential content is fully discharged by the
 > prolongation to order `N`; the decomposition algorithm is downstream and free.
 
+**Two saturations — only one is harmful.** For the linear-homogeneous class
+considered here (and whenever `Ψ ≡ 0` solves `A ∪ {P}`), every generator of `J`
+is homogeneous of degree ≥ 1 in the `Ψ`-jets — the ODE, the chain rules, `P`
+and all their derivatives — and the `v`/`r` relations involve no `Ψ`-jet at
+all. So for *every* `c ∈ ℂⁿ` the fiber of `V(J)` contains the zero section:
+set all `Ψ`-jets to `0`, pick any base point, choose `r, v` consistently. The
+trivial solution solves the ansatz and the PDE at every parameter value, hence
+any `p(c) ∈ J ∩ K[c]` vanishes at every `c` and the naive elimination ideal is
+`(0)` — vacuous. (The differential Thomas machinery meets the same phenomenon
+and fences it off with inequations: the run in `joca-thomas-openmaple.out`
+labels the affected cells `TRIVIAL (Psi==0 forced)`.) The cure is to saturate
+by the **dependent variable**, `J : Ψ^∞`, which deletes exactly the zero
+section. No solving constant is lost: the parametric data of a cell is freely
+assignable (Lemma 3(ii)), so over any `c*` admitting a nonzero solution the
+fiber contains a jet with `Ψ = 1` at the expansion point (and for this
+analytic ansatz class one can also just move the expansion point off the
+solution's zero set). This quotient must not be confused with the saturation
+the note is built to avoid: dividing by the **initials/separants** `H_A` is
+what deletes the bad-locus strata (Theorem 1's hypothesis (2)) and is never
+performed here; dividing by `Ψ` deletes only the identically-zero solution,
+which lives over all of constant space and carries no information. Different
+divisor, different meaning — "saturation-free" in this note refers to `H_A`
+only. The ∀/∃ asymmetry explains why Theorem 1's route never met this issue:
+its projection tests the *membership* condition `r(c*) ≡ 0`, a universal
+statement over freely-ranging jets, which the trivial solution satisfies
+without imposing anything; the elimination in (b) tests *existence* of a fiber
+point, and there the trivial solution is fatal unless excluded.
+
 **Why this is the right framing.** The single load-bearing differential fact is
 (a) — that prolonging to the involutive order `N` makes the *algebraic* variety
 `V(J)` coincide with the truncated solution set. Everything after is commutative
@@ -133,12 +166,16 @@ equally valid and answer the same question.
 
 **No a-priori bound needed (prolong-until-stable).** One need not compute `N₀` in
 advance. Prolong incrementally, `N = 0, 1, 2, …`, and watch the elimination ideal
-`J_c^{(N)} = (A∪{P})^[N] ∩ K[c]`. The chain `J_c^{(0)} ⊆ J_c^{(1)} ⊆ …` ascends in
-the Noetherian ring `K[c]` and **stabilizes** (Lange-Hegermann 2014, §5.3, the
-ascending-chain argument); stop when `J_c^{(N+1)} = J_c^{(N)}`. For finite type
-this halts, and the stable ideal is the constant-space answer — computed with
-nothing but Gröbner elimination, no involutivity analysis, no Thomas. (`N₀ = 2`
-of §4 then just says where it stabilizes for hydrogen.)
+`J_c^{(N)} = ( ((A∪{P})^[N]) : Ψ^∞ ) ∩ K[c]` — the nontriviality quotient of (b)
+is as mandatory here as there; without it every `J_c^{(N)}` is `(0)` and the
+stabilization test is vacuously passed at `N = 0`. The chain
+`J_c^{(0)} ⊆ J_c^{(1)} ⊆ …` ascends (saturation and contraction both preserve
+inclusions) in the Noetherian ring `K[c]` and **stabilizes** (Lange-Hegermann
+2014, §5.3, the ascending-chain argument); stop when `J_c^{(N+1)} = J_c^{(N)}`.
+For finite type this halts, and the stable ideal is the constant-space answer —
+computed with nothing but Gröbner elimination plus one ideal quotient, no
+involutivity analysis, no Thomas. (`N₀ = 2` of §4 then just says where it
+stabilizes for hydrogen.)
 
 **Honest caveat — granularity, not correctness.** The listed algorithms present
 `V(J)` at *different granularities*. A minimal-prime decomposition (GTZ) gives the
@@ -173,8 +210,8 @@ again — every remaining step is a call to a standard commutative-algebra routi
 >    it discharges all differential content (Lemmas 2–3).
 >    *If `N₀` is not known a priori,* use **prolong-until-stable** (§2bis): raise
 >    `N = 0, 1, 2, …` and stop when the elimination ideal
->    `J_c^{(N)} = (A∪{P})^[N] ∩ K[c]` stops growing. No involutivity analysis
->    is needed to run this — it is Noetherian termination, not a bound.
+>    `J_c^{(N)} = ( ((A∪{P})^[N]) : Ψ^∞ ) ∩ K[c]` stops growing. No involutivity
+>    analysis is needed to run this — it is Noetherian termination, not a bound.
 >
 > 2. **Algebraize.** Treat each jet `θuⱼ` of order `≤ N` as an independent
 >    indeterminate. The result is a finite polynomial system in
@@ -196,11 +233,14 @@ again — every remaining step is a call to a standard commutative-algebra routi
 >    - **GTZ / primary decomposition** → minimal primes = irreducible solution
 >      components (absorbs limit-strata into closures);
 >    - **regular chains / triangular decomposition** → quasi-components;
->    - **Gröbner elimination** `J ∩ K[c]` → the solving constants directly;
+>    - **Gröbner elimination** `(J : Ψ^∞) ∩ K[c]` → the solving constants
+>      directly (the nontriviality quotient of §2bis(b) is mandatory here);
 >    - **algebraic Thomas** → disjoint constructible cells (keeps every stratum).
 >    For a GTZ leaf, saturate that *individual* leaf by its own inequations `NE`
 >    (an ideal quotient) — this is local to the cell and is **not** the global
->    saturation of Theorem 1 that would delete the bad locus.
+>    saturation of Theorem 1 that would delete the bad locus. On the
+>    single-ideal route (no step 3) the one mandatory quotient is the
+>    nontriviality `: Ψ^∞` of §2bis(b), which deletes only the zero solution.
 >
 > **Proof obligation (the one hypothesis that makes step 1's "stop" legitimate).**
 > `N₀` must be the involutive order **uniformly over every branch of step 3**,
@@ -259,6 +299,8 @@ Either mode, the differential engine is now finished and never touched again.
 indeterminate: the system becomes a polynomial ideal `J` in `K[ jets_{≤N₀}, c ]`,
 no derivations. **Do not saturate by the initials/separants `H_A`** — that
 saturation is exactly what deletes the bad locus (Theorem 1's hypothesis (2)).
+(The nontriviality quotient `: Ψ^∞` of Step 4 is a different operation — it
+deletes only `Ψ ≡ 0` — and is mandatory; see "Two saturations", §2bis.)
 
 **Step 3 — (optional) constructible split.** Case-split on initials / separants /
 discriminants (`= 0` vs `≠ 0`) into disjoint cells `(E=0, NE≠0)`. What it buys:
@@ -270,13 +312,18 @@ discriminants (`= 0` vs `≠ 0`) into disjoint cells `(E=0, NE≠0)`. What it bu
   labeled cells — the concrete evidence that this method keeps what Theorem 1
   drops (the cells carrying `E = −1/2`, `E = −1/8`).
 
-**Step 4 — project onto the constants (existence).** Eliminate all jets:
-`J_c = J ∩ K[c]` (per cell if you split in Step 3, else on the whole ideal). Then
-`V(J_c)` is the (closure of the) set of constants admitting a solution, and its
-**minimal associated primes are the irreducible components** of that set — the
-hand-off to `minprimes.sage`. Because Step 2 did not saturate, the bad locus is
-included. By Lemma 3 (`N ≥ N₀`), a nonempty fibre over `c` *is* a genuine
-truncated solution, so `π(V(J))` is exactly "a solution exists for `c`."
+**Step 4 — project onto the constants (existence).** Quotient out the trivial
+solution, then eliminate all jets: `J_c = (J : Ψ^∞) ∩ K[c]` — per cell if you
+split in Step 3 (a nontrivial cell's jet-inequations already carry the
+nontriviality; cells with `Ψ ≡ 0` forced are discarded), else on the whole
+ideal, where the `: Ψ^∞` is mandatory (the un-quotiented `J ∩ K[c]` is `(0)`,
+§2bis "Two saturations"). Then `V(J_c)` is the (closure of the) set of
+constants admitting a nonzero solution, and its **minimal associated primes
+are the irreducible components** of that set — the hand-off to
+`minprimes.sage`. Because Step 2 did not saturate by `H_A`, the bad locus is
+included (`: Ψ^∞` deletes only `Ψ ≡ 0`). By Lemma 3 (`N ≥ N₀`), a nonempty
+fibre over `c` *is* a genuine truncated solution, so `π(V(J) ∩ {Ψ ≠ 0})` is
+exactly "a nonzero solution exists for `c`."
 
 **Decision cheat-sheet.**
 - *Just need the region of solving constants* → Steps 1(a), 2, 4; skip 3; accept
@@ -287,18 +334,21 @@ truncated solution, so `π(V(J))` is exactly "a solution exists for `c`."
   loop on that branch alone and confirm it stabilizes at order `≤ 2` (§5 gap 1).
 
 **Remark (skipping the split is a superset, never a subset).** Omitting Step 3
-costs nothing in completeness. Working saturation-free at `N ≥ N₀`, the
-elimination ideal `J_c = J ∩ K[c]` is the **Zariski closure** of the true
-solving-constant set `π(V(J))`, hence a **superset**: `π(V(J)) ⊆ V(J_c)`. No
-solving constant is ever omitted — the discrepancy `V(J_c) \ π(V(J))` is a set of
-*spurious* constants (the elimination ideal vanishes but the fibre is empty, so no
-solution exists there), never a missing one. Moreover `π(V(J))` is dense in
-`V(J_c)`, so it meets every irreducible component in a dense subset: **every
-minimal associated prime of `J_c` is a genuine solution-component** (solving on a
-dense open subset), and the spurious constants are confined to a
+costs nothing in completeness. Working `H_A`-saturation-free at `N ≥ N₀`, write
+`V° = V(J) ∩ {Ψ ≠ 0}` for the nontrivial fibre points; the elimination ideal
+`J_c = (J : Ψ^∞) ∩ K[c]` is the **Zariski closure** of the true
+solving-constant set `π(V°)`, hence a **superset**: `π(V°) ⊆ V(J_c)`. No
+solving constant is ever omitted — the discrepancy `V(J_c) \ π(V°)` is a set of
+*spurious* constants (the elimination ideal vanishes but the nontrivial fibre is
+empty, so no nonzero solution exists there), never a missing one. Moreover `π(V°)`
+is dense in `V(J_c)`, so it meets every irreducible component in a dense subset:
+**every minimal associated prime of `J_c` is a genuine solution-component**
+(solving on a dense open subset), and the spurious constants are confined to a
 lower-dimensional sub-locus *within* those components — precisely what Step 3
-carves off. Both hypotheses are load-bearing: *no saturation* is what preserves
-the bad locus, and `N ≥ N₀` is what makes every point of `V(J)` a real truncated
+carves off. Three hypotheses are load-bearing: *no `H_A`-saturation* is what
+preserves the bad locus; the `: Ψ^∞` quotient is what makes the elimination
+non-vacuous (without it `J_c = (0)` and this remark holds vacuously, §2bis);
+and `N ≥ N₀` is what makes every point of `V(J)` a real truncated
 solution (Lemma 3). Under-prolonging (`N < N₀`) and GTZ-absorption of a
 limit-stratum both err the *same* safe way — a superset that may carry spurious
 constants but never hides a true solution.
@@ -582,6 +632,20 @@ Singular, not a swell baked into the reduction.
    and hence `ATD` are unchanged; this is harmless but should be noted so the
    bound is not mistaken for a sharp invariant.
 
+5′. **Nontriviality saturation — RESOLVED (correction, July 2026).** As first
+   written, §2bis(b) and the prolong-until-stable test eliminated the
+   un-quotiented ideal, `J ∩ K[c]`. That elimination is identically `(0)`:
+   every generator of `J` is homogeneous of degree ≥ 1 in the `Ψ`-jets, so the
+   zero section (`Ψ ≡ 0`, the trivial solution) lies in `V(J)` over *every*
+   `c`, and prolong-until-stable would have "stabilized" at `N = 0`,
+   vacuously. Corrected throughout to `(J : Ψ^∞) ∩ K[c]` (equivalently:
+   per-cell elimination with the cell's inequations, or the Rabinowitsch
+   adjunction `tΨ − 1`). This quotient is distinct from the `H_A` saturation
+   the note avoids — see "Two saturations" in §2bis. The §2 Thomas-vs-Thomas
+   statement was never affected: Thomas cells carry inequations natively and
+   the trivial cells are labeled as such (`joca-thomas-openmaple.out`,
+   `TRIVIAL (Psi==0 forced)`).
+
 6. **Verification.** The cleanest external check: run an **algebraic** Thomas /
    comprehensive-triangular decomposition of `(A∪{P})^[2]` (Singular, or
    RegularChains as reference) and confirm it reproduces the 29 cells and their
@@ -755,7 +819,7 @@ ring is not Noetherian as a differential ring). GKO name it explicitly on p. 7
 ("by the Ritt–Raudenbush theorem, a strictly increasing chain of radical
 differential ideals terminates"); the (4⇒1) proof on p. 5 shorthands it as "the
 basis theorem." Our own **prolong-until-stable** (§2bis) needs only the *weaker*
-ordinary ACC: it watches the elimination ideal `J_c ∩ K[c]` inside the fixed,
+ordinary ACC: it watches the elimination ideal `(J : Ψ^∞) ∩ K[c]` inside the fixed,
 finitely-generated commutative ring `K[c]`, whose chain stabilizes by Hilbert's
 basis theorem alone — no Ritt–Raudenbush required. Either way, what no one can do
 in general is compute that `i` *a priori* without a primality/zero-divisor oracle
