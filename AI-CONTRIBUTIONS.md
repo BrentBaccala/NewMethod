@@ -26,6 +26,18 @@ January 2026).
   Follow-on: promoted the specialization result to a lemma and renumbered
   (`57ce904`), stated hypothesis (3) generically (`67aeb0f`), verified the four
   hypotheses in the worked example (`cc6ee77`, `7c18e49`).
+- Drafted the **companion note `gcrd-closure-partial-strata.tex`**
+  (`3bd3828`, 7 July 2026; model Claude Fable 5): given a linear-ODE-tower
+  ansatz, a construction — GCRD of Ore polynomials plus the
+  Chardin–Li subresultant stratification — of a finite set of lower-order
+  ans\"atze whose membership loci capture every partial-solution stratum, so
+  the membership (∀) algorithm run on the collection matches the completeness
+  of the existential formulation. The note grew out of an interactive
+  discussion with the author (Riquier–Thomas existence ⇒ ∃-reading of
+  "solves"; the ∀/∃ cost gap; the observation that partial strata require
+  solution-space dimension ≥ 2). Single-linear-element case proved;
+  tower-level uniform degree bound and higher-order nonlinear elements
+  flagged as open. Unreviewed draft pending the author's check.
 - **Restructured** the logical organization: core + general algorithm
   (`e2a7449`), then folded into one section with the "Why not
   Rosenfeld--Gröbner alone?" discussion (`c05c04a`); unified the
