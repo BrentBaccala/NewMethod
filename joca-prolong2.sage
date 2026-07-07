@@ -244,7 +244,7 @@ stage(f"substituted: {len(gens)} generators in {len(used_vars)} variables")
 # its prolongations have jet-degree 0), so scaling a Psi != 0 fiber point by
 # 1/Psi normalizes Psi = 1: dehomogenize instead of saturating.
 
-jetblock = set(jet.values())
+jetblock = {jet[(w, m)] for w in ['Psi', 'DPsi', 'DDPsi'] for m in midx}
 for q in gens:
     degs = {sum(mo.degree(u) for u in mo.variables() if u in jetblock)
             for mo in q.monomials()}
