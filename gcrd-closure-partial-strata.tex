@@ -1,0 +1,499 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black}
+
+\newcommand{\Var}{\mathcal{V}}
+\newcommand{\code}[1]{\texttt{#1}}
+\DeclareMathOperator{\Sol}{Sol}
+\DeclareMathOperator{\GCRD}{GCRD}
+\DeclareMathOperator{\ord}{ord}
+\DeclareMathOperator{\lclm}{LCLM}
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{example}{Example}
+\newtheorem{remark}{Remark}
+
+\title{Recovering the partial-solution strata by membership alone:\\
+       a GCRD closure construction}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\noindent
+A companion note to \emph{A New Method of Solving PDEs}, and a sequel to the
+note \emph{Membership versus variety, and the partial-solution strata}. That
+note established that the core (membership) algorithm computes the locus
+$\Var = \{c : P \in [A(c)]\}$ --- a \emph{universal} condition --- and is
+therefore blind, by construction, to the \emph{partial-solution strata}:
+parameter values $c$ at which a proper nontrivial subfamily of the ansatz
+solutions satisfies the PDE while the family as a whole does not. Capturing
+those strata seemed to require adjoining $P$ to the ansatz and running a full
+differential decomposition --- the expensive existential computation.
+
+This note shows that, for ans\"atze whose top element is a \emph{linear} ODE,
+the existential computation is unnecessary. Given such an ansatz $A$, we
+construct --- by pure polynomial linear algebra, with no differential
+elimination beyond the Ritt reduction the core algorithm already performs ---
+a finite set of auxiliary ans\"atze $A_1, \dots, A_{n-1}$ of the same class
+and lower order, such that every partial-solution stratum of $A$ is an
+ordinary \emph{membership} stratum of some $A_k$. Running the core algorithm
+on the collection then achieves the completeness of the existential
+formulation at membership-formulation cost. The engine is the greatest common
+right divisor (GCRD) of Ore polynomials, made parametric through the
+subresultant theory of Chardin and Li \cite{chardin,li}; as a by-product, the
+partial strata themselves acquire explicit polynomial defining equations in
+the \emph{original} constant space.
+
+\section{The covering specification}
+
+Throughout, $A(c)$ is an ansatz with constant parameters
+$c \in \mathbb{C}^{n_c}$, $P$ is the PDE, and
+$\Var(A) = \{c : P \in [A(c)]\}$ is the membership locus computed by the core
+algorithm (Ritt reduction of $P$ modulo $A$, projection of the remainder onto
+the constants).
+
+\begin{definition}[$\forall$-cover]
+\label{def:cover}
+A finite collection of ans\"atze $\{A_1, \dots, A_m\}$ (each with its own
+constants) \emph{$\forall$-covers} $A$ with respect to $P$ if, for every
+$c^*$ and every nonzero
+$\Psi_0 \in \Sol(A(c^*)) \cap \Sol(P)$, there exist an index $i$ and
+constants $c'$ with
+\[
+\Psi_0 \in \Sol\big(A_i(c')\big)
+\qquad\text{and}\qquad
+c' \in \Var(A_i).
+\]
+\end{definition}
+
+If a collection $\forall$-covers $A$, then running the core algorithm on each
+member delivers every solution function that the existential computation on
+$A$ would deliver --- each one packaged inside a family that solves $P$
+wholesale, which is the form of answer the method is designed to produce. Two
+requirements make the notion useful rather than vacuous:
+
+\begin{enumerate}
+\item The collection must be constructed from $A$ and the \emph{syntactic
+      shape} of $P$ (its order and degree bounds) alone. If the construction
+      required decomposing $A \cup \{P\}$, it would cost what it saves.
+\item The collection must be finite, with all degree bounds computable.
+\end{enumerate}
+
+\section{Setting: a single linear ODE element}
+\label{sec:setting}
+
+We treat the shape of the paper's Figure ``ansatz 5'': a base differential
+ring $B$ (e.g.\ $\mathbb{Q}\{x,y,z\}[r]/(r^2 - x^2 - y^2 - z^2)$), a linear
+form $v = v_1 x + v_2 y + v_3 z + v_4 r$ with constant coefficients, the
+chain-rule relations $\Psi_x = \Psi' v_x$, etc., and a top element
+\begin{equation}
+\label{eq:L}
+L \;=\; \sum_{i=0}^{n} a_i(v)\,\partial^i,
+\qquad a_i \in K[v],\ \deg_v a_i \le d,\ a_n \neq 0,
+\end{equation}
+regarded as an Ore (differential) operator acting on $\Psi$ as a function of
+$v$; here $K = \mathbb{Q}(c)$ and $\partial = d/dv$. The natural home for the
+operator computations is the right-Euclidean ring $K(v)[\partial]$, in which
+every left ideal is principal and greatest common right divisors exist. Two
+standard facts \cite{ore,vdps} are used repeatedly:
+
+\begin{enumerate}
+\item ($G$ exists and is rational.) For operators $L, R_1, \dots, R_s \in
+      K(v)[\partial]$, the left ideal $K(v)[\partial]L + \sum_\beta
+      K(v)[\partial]R_\beta$ is principal; its monic generator
+      $G = \GCRD(L, R_1, \dots, R_s)$ right-divides each argument and is
+      computable by the right Euclidean algorithm, with coefficients in
+      $K(v)$.
+\item (Kernels intersect.) On a domain where the coefficients are analytic
+      and $a_n \neq 0$, the local solution space of an order-$m$ operator is
+      $m$-dimensional, and
+      \[
+      \ker G \;=\; \ker L \,\cap\, \bigcap_\beta \ker R_\beta .
+      \]
+\end{enumerate}
+
+\paragraph{The remainder as a system of operators.}
+Let $P$ be a differential polynomial \emph{linear} in $\Psi$ and its
+derivatives. Ritt's full reduction of $P$ modulo $A$ yields
+$h P - r \in [A]$ with $r$ fully reduced; since both $P$ and the elements of
+$A$ are linear in the $\Psi$-jets, so is $r$, and full reducedness confines
+it to $\Psi, \Psi', \dots, \Psi^{(n-1)}$. Its coefficients lie in the base
+ring extended by $v$. Expanding along a set of power products
+$m_\beta$ in the base indeterminates that remain linearly independent over
+$K(v)$ on the solution locus (Remark~\ref{rem:splitting}), we write
+\begin{equation}
+\label{eq:split}
+r \;=\; \sum_\beta m_\beta \cdot R_\beta(\Psi),
+\qquad R_\beta \in K(v)[\partial],\quad \ord R_\beta \le n - 1 .
+\end{equation}
+In the univariate case (base ring $\mathbb{Q}\{x\}$, $v = x$) there is a
+single $\beta$ and $R_1 = r$ itself.
+
+\begin{remark}[base-splitting hypothesis]
+\label{rem:splitting}
+Because $v$ is itself a linear form in the base variables, monomials in
+$x, y, z, r$ are \emph{not} automatically independent over $K(v)$: the
+relation $v_1 x + v_2 y + v_3 z + v_4 r - v = 0$ is a dependence. A valid
+splitting eliminates one base coordinate in favor of $v$ (possible whenever
+the form $v$ is nondegenerate, a genericity condition on the $v_i$ of the
+same character as the paper's hypothesis~(2)) and expands $r$ in the standard
+monomials of the remaining coordinates. We assume such a splitting has been
+fixed; all statements below are relative to it.
+\end{remark}
+
+\begin{lemma}[solution criterion]
+\label{lem:criterion}
+Let $c^*$ satisfy $h(c^*) \neq 0$. For every solution $\Psi_0$ of $A(c^*)$:
+\[
+P(\Psi_0) = 0
+\quad\Longleftrightarrow\quad
+R_\beta(c^*)\,\Psi_0 = 0 \ \text{ for all } \beta .
+\]
+\end{lemma}
+
+\begin{proof}
+($\Leftarrow$) All $R_\beta(c^*)\Psi_0 = 0$ gives $r(c^*)(\Psi_0) = 0$
+by \eqref{eq:split}; the reduction identity gives
+$h(c^*)\,P(\Psi_0) = r(c^*)(\Psi_0) = 0$, and $h(c^*) \neq 0$.
+($\Rightarrow$) $P(\Psi_0) = 0$ forces $r(c^*)(\Psi_0) \equiv 0$ on the
+domain; by the independence of the $m_\beta$ over functions of $v$
+(Remark~\ref{rem:splitting}), each coefficient function
+$R_\beta(c^*)\Psi_0$ vanishes.
+\end{proof}
+
+\section{The GCRD structure theorem}
+
+Fix $c^*$ with $h(c^*) \neq 0$ and set
+\[
+G(c^*) \;=\; \GCRD\big(L(c^*),\, R_1(c^*), \dots, R_s(c^*)\big)
+\;\in\; \mathbb{C}(v)[\partial],
+\qquad k \;=\; \ord G(c^*) .
+\]
+Since $G$ right-divides $L$, we have $0 \le k \le n$. Write
+$\widetilde{G}$ for $G$ with denominators cleared (polynomial coefficients,
+content removed), and let $A_G(c^*)$ denote the ansatz $A(c^*)$ with the top
+element $L(c^*)$ replaced by $\widetilde{G}(c^*)$ --- the same tower, one
+order lower.
+
+\begin{theorem}[trichotomy and refinement]
+\label{thm:structure}
+With the hypotheses of Lemma~\ref{lem:criterion}:
+\begin{enumerate}
+\item $k = n$ iff every $R_\beta(c^*) = 0$, iff $c^* \in \Var(A)$
+      (membership: the whole family solves $P$).
+\item $k = 0$ iff $\Sol(A(c^*)) \cap \Sol(P) = \{0\}$ (no stratum).
+\item $0 < k < n$ iff $c^*$ lies on a partial-solution stratum, and then
+      \[
+      \Sol(A(c^*)) \cap \Sol(P) \;=\; \Sol\big(A_G(c^*)\big),
+      \]
+      a $k$-dimensional family: exactly the solutions of the order-$k$
+      operator $G(c^*)$, transported through the unchanged lower tower.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:criterion} and fact (2) of \S\ref{sec:setting},
+$\Sol(A(c^*)) \cap \Sol(P)$ consists of the solutions of the tower whose top
+function lies in $\ker L \cap \bigcap_\beta \ker R_\beta = \ker G$. If every
+$R_\beta(c^*) = 0$ the left ideal is generated by $L$ alone, $G \sim L$ and
+$k = n$; the projection coefficients of $r$ vanish at $c^*$, which is the
+definition of $\Var(A)$. If $k = 0$ then $G$ is a unit and the common kernel
+is trivial. Otherwise $\ker G$ is $k$-dimensional with $0 < k < n$: a proper
+nontrivial subfamily, i.e.\ a partial stratum in the sense of the previous
+note's Definition~1; and since $G$ right-divides $L(c^*)$, every solution of
+$A_G(c^*)$ solves $A(c^*)$, giving the displayed equality.
+\end{proof}
+
+The next statement is the reason the construction pays: the refined system is
+not merely consistent with $P$ --- it \emph{members} $P$, so the core
+algorithm, run on a generic family containing $A_G$, finds it.
+
+\begin{theorem}[membership transfers to the refinement]
+\label{thm:membership}
+Let $0 < k < n$ as in Theorem~\ref{thm:structure}(3), and let $A_k$ be the
+\emph{generic} ansatz obtained from $A$ by replacing the top element with an
+undetermined linear ODE of order $k$,
+\[
+L_k \;=\; \sum_{j=0}^{k} b_j(v)\,\partial^j,
+\qquad \deg_v b_j \le B_k,
+\]
+whose coefficients' $v$-coefficients form the new constant vector $c'$
+(the bound $B_k$ is fixed in Proposition~\ref{prop:bound}). Let
+$c'(c^*)$ be the coefficient vector of $\widetilde{G}(c^*)$. Then
+\[
+c'(c^*) \;\in\; \Var(A_k),
+\]
+i.e.\ the Ritt remainder of $P$ modulo $A_k$, projected onto the constants,
+vanishes at $c'(c^*)$.
+\end{theorem}
+
+\begin{proof}
+Reduce $P$ modulo $A_k$ over $K(c')$: $h_k P - r_k \in [A_k]$ with $r_k$
+linear in $\Psi, \dots, \Psi^{(k-1)}$, and split
+$r_k = \sum_\beta m_\beta R_{k,\beta}$ as in \eqref{eq:split}, so each
+$R_{k,\beta} \in K(c')(v)[\partial]$ has order $\le k - 1$. Specialize
+$c' = c'(c^*)$; note $h_k(c'(c^*)) \neq 0$, since the initial and separant of
+the monic-in-$\Psi^{(k)}$ element $\widetilde{G}$ reduce to its leading
+$v$-coefficient, a nonzero polynomial. Every
+$\Psi_0 \in \Sol(A_k(c'(c^*))) = \Sol(A_G(c^*))$ solves $P$ by
+Theorem~\ref{thm:structure}(3), so Lemma~\ref{lem:criterion}, applied to
+$A_k$, gives $R_{k,\beta}(c'(c^*))\,\Psi_0 = 0$ for all $\beta$ and all
+$\Psi_0$ in a $k$-dimensional space. An operator of order $\le k - 1$
+annihilating $k$ linearly independent functions (nonzero Wronskian) is the
+zero operator. Hence every $R_{k,\beta}(c'(c^*)) = 0$; equivalently, every
+projection coefficient of $r_k$ vanishes at $c'(c^*)$, which is
+$c'(c^*) \in \Var(A_k)$.
+\end{proof}
+
+Note the Wronskian argument replaces the characteristic-set machinery of the
+paper's Theorem~3 entirely --- linearity is doing all the work.
+
+\section{Parametric stratification and the degree bound}
+\label{sec:subresultants}
+
+Theorems~\ref{thm:structure} and~\ref{thm:membership} are pointwise in
+$c^*$. The subresultant theory for Ore polynomials \cite{chardin,li} makes
+them parametric. For a pair $L, R$ of orders $n > n'$, the $k$-th
+subresultant $S_k(L, R)$, $0 \le k \le n'$, is an operator of order $k$
+whose coefficients are determinants of Sylvester-type matrices of size
+$n + n' - 2k$ built from the coefficients of
+$\partial^j R$ ($0 \le j < n - k$) and $\partial^j L$ ($0 \le j < n' - k$);
+as in the commutative theory,
+\[
+\ord \GCRD(L, R) \;=\; \min\{\,k : S_k \not\equiv 0\,\},
+\qquad
+\GCRD(L, R) \;\sim\; S_{k_{\min}} .
+\]
+Since Ritt's full reduction is fraction-free, the coefficients of $L$ and of
+every $R_\beta$ are polynomials in $c$ and $v$; hence so is every entry of
+every subresultant matrix, and we obtain:
+
+\begin{proposition}[strata equations]
+\label{prop:strata}
+For each $k$, the locus $\{c : \ord G(c) \ge k\}$ is closed, cut out by the
+vanishing of the $v$-coefficients of the subresultants
+$S_0, \dots, S_{k-1}$ --- explicitly computable polynomials in $c$. In
+particular the union of the partial-solution strata is the constructible set
+$\{\ord G \ge 1\} \setminus \Var(A)$, now presented by polynomial equations
+and inequations in the \emph{original} constants, refining the inclusion
+$\pi_c(\Sol(A) \cap \Sol(P)) \supseteq \Var$ of the previous note into a
+computable stratification. Moreover, on the stratum $\{\ord G = k\}$ the
+coefficients of $\widetilde{G}$ --- hence the transfer map
+$c \mapsto c'(c)$ of Theorem~\ref{thm:membership} --- are polynomial in $c$.
+\end{proposition}
+
+\begin{proposition}[degree bound]
+\label{prop:bound}
+Let $D$ bound the $v$-degrees of the coefficients of $L$ and of all
+$R_\beta$, and $n' = \max_\beta \ord R_\beta \le n-1$. Then the
+$v$-degrees of the coefficients of $S_k$ --- and hence of
+$\widetilde{G}$ on any stratum where $\ord G = k$ --- are at most
+\[
+B_k \;=\; (n + n' - 2k)\, D .
+\]
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+Left-multiplying by $\partial$ maps an operator with polynomial coefficients
+of $v$-degree $\le D$ to one with coefficient degrees $\le D$
+(differentiation does not raise polynomial degree). Every entry of the
+$k$-th matrix is a coefficient of some $\partial^j L$ or $\partial^j R_\beta$
+and so has degree $\le D$; the determinant of a square matrix of size
+$n + n' - 2k$ then has degree $\le (n + n' - 2k) D$.
+\end{proof}
+
+The bound is coarse but uniform in $c$, which is what the construction
+needs. (For $s > 1$ operators $R_\beta$, compute the GCRD by pairwise
+iteration, $\GCRD(L, R_1, R_2) = \GCRD(\GCRD(L, R_1), R_2)$, re-clearing
+denominators at each step; the bounds compose and remain computable, at the
+cost of an explicit closed formula.)
+
+\section{The algorithm}
+\label{sec:algorithm}
+
+\noindent\textbf{Input:} an ansatz $A$ of the shape of \S\ref{sec:setting}
+(top element linear of order $n$, coefficient degrees $\le d$); the order and
+degree shape of the PDE $P$.\\
+\textbf{Output:} ans\"atze $A_1, \dots, A_{n-1}$ such that
+$\{A, A_1, \dots, A_{n-1}\}$ $\forall$-covers $A$ off the bad locus;
+optionally, the partial strata as subvarieties of the original $c$-space.
+
+\begin{enumerate}
+\item \textbf{Reduce.} Ritt-reduce $P$ modulo $A$ over $\mathbb{Q}(c)$
+      (this is the core algorithm's own first step), obtaining $h$ and $r$;
+      split $r$ over base power products as in \eqref{eq:split} to get the
+      operators $R_\beta$.
+\item \textbf{Stratify.} For $k = 1, \dots, n-1$ compute the subresultant
+      data of $L$ against $\{R_\beta\}$: the strata polynomials of
+      Proposition~\ref{prop:strata} and the degree bounds $B_k$ of
+      Proposition~\ref{prop:bound}.
+\item \textbf{Emit.} For each $k$, output $A_k$: the tower of $A$ with the
+      top element replaced by a generic linear ODE of order $k$ with
+      polynomial coefficients of $v$-degree $\le B_k$, its coefficient list
+      forming the new constants $c'$. Record the transfer maps
+      $c \mapsto c'(c)$ (coefficients of $\widetilde{G}$ on each stratum).
+\item \textbf{Run.} Apply the core algorithm --- projection plus the
+      bad-locus recursion of the paper's general algorithm --- to $A$ and to
+      each $A_k$; return the union of the membership loci (and, if the
+      original-space geometry is wanted, the strata of step 2).
+\end{enumerate}
+
+\begin{theorem}[covering]
+\label{thm:covering}
+Let $A$ be as in \S\ref{sec:setting} and $P$ linear of the given shape. For
+every $c^*$ with $h(c^*) \neq 0$ (and satisfying the base-splitting
+genericity of Remark~\ref{rem:splitting}) and every nonzero
+$\Psi_0 \in \Sol(A(c^*)) \cap \Sol(P)$: either $c^* \in \Var(A)$, or,
+with $k = \ord G(c^*) \in \{1, \dots, n-1\}$,
+\[
+\Psi_0 \in \Sol\big(A_k(c'(c^*))\big)
+\qquad\text{and}\qquad
+c'(c^*) \in \Var(A_k).
+\]
+Hence $\{A, A_1, \dots, A_{n-1}\}$ $\forall$-covers $A$ away from the bad
+locus $\{h = 0\}$; parameter values on the bad locus are handled, exactly as
+in the paper, by the general algorithm's recursion, with the present
+construction applied to each ansatz that recursion produces (both recursions
+strictly decrease their measures --- order here, the bad-locus dimension
+there --- so the composition terminates).
+\end{theorem}
+
+\begin{proof}
+Immediate from Theorems~\ref{thm:structure} and~\ref{thm:membership},
+Proposition~\ref{prop:bound} guaranteeing that $\widetilde{G}$'s coefficients
+fit within $A_k$'s degree budget.
+\end{proof}
+
+\section{The two-line example, closed}
+
+The previous note's Example~1 exhibited the gap; the construction now closes
+it mechanically. Take
+\[
+A(c):\ \ \Psi'' - c\,\Psi = 0
+\qquad\qquad
+P:\ \ \Psi' - \Psi = 0 ,
+\]
+univariate base, so $L = \partial^2 - c$ and the remainder is the single
+operator $R = \partial - 1$ ($n = 2$, $n' = 1$, $D = 0$).
+
+\emph{Step 1--2.} One right division,
+\[
+\partial^2 - c \;=\; (\partial + 1)(\partial - 1) \;+\; (1 - c),
+\]
+shows the $0$-th subresultant (the differential resultant) is $1 - c$ up to a
+unit. Strata: for $c \neq 1$, $G = 1$ --- no common solutions; on
+$\{c = 1\}$, $G = \partial - 1$, order $k = 1$. The partial stratum of the
+previous note is recovered as the vanishing locus of one polynomial in $c$,
+with no decomposition performed.
+
+\emph{Step 3.} $B_1 = (n + n' - 2k)D = 0$: emit
+$A_1(c'):\ \Psi' - c'\Psi = 0$, constant coefficient. Transfer map:
+$c'(c) = 1$ on the stratum.
+
+\emph{Step 4.} The core algorithm on $A_1$ reduces $P$ to
+$r_1 = (c' - 1)\Psi$, so $\Var(A_1) = \{c' = 1\}$ --- the family
+$\Psi = K e^{x}$, containing the witness that was invisible to $\Var(A) =
+\varnothing$. The previous note's \S4 family, introduced there by hand, is
+here \emph{derived}, together with the stratum equation $c = 1$ and the point
+$c' = 1$ it maps to.
+
+\section{Beyond a single linear element}
+\label{sec:beyond}
+
+\paragraph{Towers (nested ODE elements).}
+For ans\"atze like the paper's Figure ``ansatz 12'', a witness may instead
+constrain the integration constants of a \emph{lower} level (a special
+$\Theta$). The construction recurses: the subresultant coefficients from
+step~2, which now live in the lower tower's differential field rather than in
+$K(v)$, become the constraint one level down; treat that level as top and
+repeat. GCRD theory is valid over any differential field, so
+Theorems~\ref{thm:structure} and~\ref{thm:membership} survive level by
+level; what must be re-proved per level is the \emph{uniform degree bound}
+(the analogue of Proposition~\ref{prop:bound} over the lower tower's fraction
+field). That lemma is of the same character as the bounded-prolongation
+note's $N_0$ bound and is left open here. Orders strictly decrease and the
+tower is finite, so the recursion terminates in a finite collection
+regardless.
+
+\paragraph{Nonlinear first-order elements.}
+The vector-space machinery is linear to its bones, but the first-order
+nonlinear case has its own closure. Full reduction against a first-order
+element leaves a remainder containing \emph{no} $\Psi'$ at all, so a
+partial-stratum witness satisfies the \emph{algebraic} relation
+$r(v, \Psi) = 0$; the refined system replaces the ODE element by an
+irreducible factor $q$ of $r$ as an \emph{algebraic extension element} (a
+``green box''), of degree $\le \deg_\Psi r$ --- a bound available from the
+reduction. Compatibility of $q$ with the derivation becomes polynomial
+conditions on the constants, playing the role of the transfer map. So the
+closure of a Riccati-type element consists of algebraic-extension ans\"atze
+of bounded degree, again entirely within the paper's formalism.
+
+\paragraph{Higher-order nonlinear elements.}
+Open. Witnesses may sit on singular components (separant loci), where
+neither the GCRD argument nor the algebraic-factor argument applies; Ritt's
+theory of singular solutions is the natural starting point, and no
+bounded-shape theorem is claimed.
+
+\section{Reading}
+
+The membership algorithm's blindness to the partial-solution strata is not a
+price of its cheapness --- for linear ODE ans\"atze it is a bookkeeping gap,
+closed by enlarging the ansatz \emph{collection} rather than the
+\emph{algorithm}. Everything added is linear algebra over $K(v)$ with entries
+polynomial in the constants: no differential elimination is performed beyond
+the single Ritt reduction the core algorithm already does. The existential
+formulation's extra content --- which subvarieties of constant space carry
+partial solutions, and what those solutions are --- reappears as the
+subresultant stratification (Proposition~\ref{prop:strata}) and the
+lower-order membership families (Theorem~\ref{thm:covering}).
+
+The case $k = 1$ connects to classical territory: a one-dimensional common
+kernel is an exponential solution, i.e.\ a first-order right factor, the
+object computed by the Beke and van~Hoeij factorization algorithms
+\cite{beke,vanhoeij}. Their local (Newton-polygon) degree bounds are sharper
+than Proposition~\ref{prop:bound}'s determinant bound, but are pointwise in
+$c$; the subresultant bound is cruder and uniform, which is what a
+parametric family construction requires. Where the sharper bounds matter in
+practice, they can be substituted stratum by stratum.
+
+\begin{thebibliography}{9}
+
+\bibitem{ore} O.~Ore,
+\emph{Theory of non-commutative polynomials},
+Ann.\ of Math.\ \textbf{34} (1933), 480--508.
+
+\bibitem{chardin} M.~Chardin,
+\emph{Differential resultants and subresultants},
+Proc.\ Fundamentals of Computation Theory (FCT'91),
+Lecture Notes in Comput.\ Sci.\ \textbf{529}, Springer, 1991, 180--189.
+
+\bibitem{li} Z.~Li,
+\emph{A subresultant theory for Ore polynomials with applications},
+Proc.\ ISSAC~'98, ACM, 1998, 132--139.
+
+\bibitem{vdps} M.~van der Put and M.~F.~Singer,
+\emph{Galois Theory of Linear Differential Equations},
+Grundlehren der mathematischen Wissenschaften \textbf{328},
+Springer, 2003.
+
+\bibitem{beke} E.~Beke,
+\emph{Die Irreducibilit\"at der homogenen linearen Differentialgleichungen},
+Math.\ Ann.\ \textbf{45} (1894), 278--294.
+
+\bibitem{vanhoeij} M.~van Hoeij,
+\emph{Factorization of differential operators with rational functions
+coefficients},
+J.\ Symbolic Comput.\ \textbf{24} (1997), 537--561.
+
+\end{thebibliography}
+
+\end{document}
