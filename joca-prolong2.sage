@@ -92,7 +92,7 @@ print(f"bounded-prolongation existence computation: order N = {N}, field = {K}")
 # jets are genuine unknowns -- their only constraints come from prolonging
 # the ODE, which is where the bad-locus branching lives).
 
-deps = ['Psi', 'DPsi', 'DDPsi', 'v', 'r']
+deps = ['Psi', 'DPsi', 'DDPsi', 'v']
 const_names = ['E', 'v1', 'v2', 'v3', 'v4', 'a0', 'a1', 'b0', 'b1', 'c0', 'c1']
 
 def multi_indices(n):
@@ -109,10 +109,15 @@ def jetname(w, m):
     return w if not s else w + '_' + s
 
 jet_list = [(w, m) for w in deps for m in midx]
+# r gets no jet variables: its derivatives are rational, r_x = x/r etc., and
+# are written through an explicit inverse rinv with r*rinv = 1.  This imposes
+# r != 0 -- always required anyway (the PDE carries 1/r; the paper's
+# denominator names r explicitly) and NOT an H_A condition, so the bad locus
+# is untouched.  It removes all r-jet variables from the ring.
 names = ([jetname(w, m) for (w, m) in jet_list]
-         + ['x', 'y', 'z']
+         + ['r', 'rinv', 'x', 'y', 'z']
          + const_names)
-n_nonconst = len(jet_list) + 3
+n_nonconst = len(jet_list) + 5
 R = PolynomialRing(K, names,
                    order=TermOrder('degrevlex', n_nonconst)
                        + TermOrder('degrevlex', len(const_names)))
@@ -123,7 +128,8 @@ X, Y, Z = g['x'], g['y'], g['z']
 E = g['E']
 v1, v2, v3, v4 = g['v1'], g['v2'], g['v3'], g['v4']
 a0, a1, b0, b1, c0, c1 = (g[s] for s in ['a0', 'a1', 'b0', 'b1', 'c0', 'c1'])
-Psi, DPsi, DDPsi, v, r = (g[s] for s in deps)
+Psi, DPsi, DDPsi, v = (g[s] for s in deps)
+r, rinv = g['r'], g['rinv']
 
 # Total-derivative tables: succ[w][d] = D_d(w) for every ring generator.
 
@@ -135,6 +141,8 @@ for (w, m) in jet_list:
 succ[X] = [R.one(), R.zero(), R.zero()]
 succ[Y] = [R.zero(), R.one(), R.zero()]
 succ[Z] = [R.zero(), R.zero(), R.one()]
+succ[r] = [X*rinv, Y*rinv, Z*rinv]                       # r_d = x_d / r
+succ[rinv] = [-X*rinv**3, -Y*rinv**3, -Z*rinv**3]        # (1/r)_d = -x_d/r^3
 for s in const_names:
     succ[g[s]] = [R.zero()] * 3
 
@@ -182,9 +190,10 @@ solved = [
 # unit -- same ideal): -1/2 (Psi_xx+Psi_yy+Psi_zz) r - Psi - E r Psi = 0.
 ODE = (a0 + a1*v)*DDPsi + (b0 + b1*v)*DPsi + (c0 + c1*v)*Psi
 r_rel = r**2 - X**2 - Y**2 - Z**2
+r_inv = r*rinv - 1
 PDE = (e('Psi', 2, 0, 0) + e('Psi', 0, 2, 0) + e('Psi', 0, 0, 2))*r \
       + 2*Psi + 2*E*r*Psi
-kept = [(ODE, 0), (r_rel, 0), (PDE, 2)]
+kept = [(ODE, 0), (r_rel, 0), (r_inv, 0), (PDE, 2)]
 
 # --------------------------------- step 1+2: prolong, collect rules + gens
 
@@ -253,9 +262,17 @@ for q in gens:
 gens = [q.subs({Psi: R.one()}) for q in gens]
 
 J = R.ideal(gens)
-elim = [R.gen(i) for i in range(n_nonconst)]
-stage(f"eliminating {n_nonconst} non-constant variables ...")
-Jc = J.elimination_ideal(elim)
+
+# Two-stage elimination: first the jet unknowns (the system is linear in
+# them, a small GB), then the base point (x, y, z, r, rinv).
+jet_vars = [u for u in R.gens()[:len(jet_list)]]
+stage(f"stage 1: eliminating {len(jet_vars)} jet variables ...")
+J1 = J.elimination_ideal(jet_vars)
+stage(f"stage 1 done: {len(J1.gens())} generators over the base")
+
+base_vars = [r, rinv, X, Y, Z]
+stage(f"stage 2: eliminating the base point {[str(u) for u in base_vars]} ...")
+Jc = J1.elimination_ideal(base_vars)
 stage(f"elimination ideal J_c: {len(Jc.gens())} generators")
 
 Rc = PolynomialRing(K, const_names, order='degrevlex')
