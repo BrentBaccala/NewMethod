@@ -26,10 +26,14 @@
 #      difference is kept as a generator: these are exactly the
 #      integrability (Delta-polynomial) conditions, surfaced mechanically.
 #      NO saturation by the initials/separants H_A is performed.
-#   3. NONTRIVIALITY.  Adjoin t*Psi - 1 (Rabinowitsch), which effects the
-#      quotient J : Psi^oo.  This deletes only the zero section Psi == 0 --
-#      without it the elimination below is vacuous (J n K[c] = (0), see
-#      "Two saturations" in the note).  It is NOT the H_A saturation.
+#   3. NONTRIVIALITY.  Every generator is linear homogeneous in the jet
+#      block (Psi, DPsi, DDPsi and their jets), so a fiber point with
+#      Psi != 0 can be rescaled to Psi = 1: dehomogenizing by Psi = 1
+#      effects the quotient J : Psi^oo exactly, without the GB-hostile
+#      Rabinowitsch generator t*Psi - 1.  This deletes only the zero
+#      section Psi == 0 -- without it the elimination below is vacuous
+#      (J n K[c] = (0), see "Two saturations" in the note).  It is NOT
+#      the H_A saturation.
 #   4. ELIMINATE + DECOMPOSE.  J_c = (J : Psi^oo) n K[c] by block-order
 #      elimination of all non-constant variables; the minimal associated
 #      primes of J_c are the irreducible components of (the Zariski closure
@@ -44,12 +48,17 @@
 # 2s state (1 - r/2) e^{-r/2}) -- compare cells 26/27 of the differential
 # Thomas run, joca-thomas-openmaple.out.
 #
-# PROLONG-UNTIL-STABLE.  N = 2 is the involutive order of the ansatz alone;
-# for the COMBINED system, degenerate strata can require more (an order-2
-# point need not extend once the PDE's own prolongations are imposed).
-# Under-prolonging errs safe -- a superset: spurious constants possible,
-# solutions never lost.  Rerun with --order 3 (then 4) and compare J_c;
-# stabilization pins N0(A u {P}) empirically.
+# PROLONG-UNTIL-STABLE.  N = 2 is the involutive order of the ANSATZ alone
+# (mixed partials of v commute); it is NOT the involutive order of the
+# combined system A u {P}.  The PDE and the ODE share the leader Psi'' and
+# form a critical pair whose resolution is the Ritt remainder rho; the
+# conditions that cut the constants are rho and its total derivatives
+# D^k rho, and D^k rho enters the prolonged ideal only through D^k P,
+# i.e. at N = 2 + k.  At N = 2 only rho itself (one pointwise condition)
+# is present and the existence locus is far too big.  Under-prolonging
+# errs safe -- a superset: spurious constants possible, solutions never
+# lost.  Run increasing --order and watch J_c grow; stabilization pins
+# N0(A u {P}) empirically (Noetherian termination, see the note SS2bis).
 #
 # Options:
 #   --order N    prolongation order (default 2; must be >= 2 = ord P)
@@ -101,16 +110,16 @@ def jetname(w, m):
 
 jet_list = [(w, m) for w in deps for m in midx]
 names = ([jetname(w, m) for (w, m) in jet_list]
-         + ['x', 'y', 'z', 't']            # t = Rabinowitsch variable
+         + ['x', 'y', 'z']
          + const_names)
-n_nonconst = len(jet_list) + 4
+n_nonconst = len(jet_list) + 3
 R = PolynomialRing(K, names,
                    order=TermOrder('degrevlex', n_nonconst)
                        + TermOrder('degrevlex', len(const_names)))
 g = dict(zip(names, R.gens()))
 jet = {(w, m): g[jetname(w, m)] for (w, m) in jet_list}
 
-X, Y, Z, T = g['x'], g['y'], g['z'], g['t']
+X, Y, Z = g['x'], g['y'], g['z']
 E = g['E']
 v1, v2, v3, v4 = g['v1'], g['v2'], g['v3'], g['v4']
 a0, a1, b0, b1, c0, c1 = (g[s] for s in ['a0', 'a1', 'b0', 'b1', 'c0', 'c1'])
@@ -126,7 +135,6 @@ for (w, m) in jet_list:
 succ[X] = [R.one(), R.zero(), R.zero()]
 succ[Y] = [R.zero(), R.one(), R.zero()]
 succ[Z] = [R.zero(), R.zero(), R.one()]
-succ[T] = [R.zero()] * 3
 for s in const_names:
     succ[g[s]] = [R.zero()] * 3
 
@@ -231,8 +239,18 @@ used_vars = sorted({str(u) for q in gens for u in q.variables()})
 stage(f"substituted: {len(gens)} generators in {len(used_vars)} variables")
 
 # ------------------------- step 3+4: nontriviality, eliminate, decompose
+#
+# Each generator is linear homogeneous in the jet block (the r-relation and
+# its prolongations have jet-degree 0), so scaling a Psi != 0 fiber point by
+# 1/Psi normalizes Psi = 1: dehomogenize instead of saturating.
 
-gens.append(T * Psi - 1)                    # J : Psi^oo, Rabinowitsch form
+jetblock = set(jet.values())
+for q in gens:
+    degs = {sum(mo.degree(u) for u in mo.variables() if u in jetblock)
+            for mo in q.monomials()}
+    assert len(degs) == 1, f"not jet-homogeneous: {q}"
+
+gens = [q.subs({Psi: R.one()}) for q in gens]
 
 J = R.ideal(gens)
 elim = [R.gen(i) for i in range(n_nonconst)]
