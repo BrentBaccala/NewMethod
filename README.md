@@ -26,32 +26,37 @@ new `E = 0` (parabolic) solution, and three discarded degenerate components
 Algorithm 1 — the projection — and its output matches the paper's printed
 decomposition. It never calls Rosenfeld–Gröbner.
 
-### `joca-rg.sage` — joca.sage + the RG coherence check (≈26 s)
-Demonstrates the general algorithm's hypothesis-(3) step. The constants are
-moved into the coefficient field `ℚ(E,v₁,…,c₁)` via `BaseFieldExtension`
-(**required** for `RosenfeldGroebner` to terminate — see the cliff below), and
-RG returns a **single** regular component, confirming the ansatz is a coherent,
-squarefree regular differential system (the paper's "B = ∅, one component"
-claim). The script then projects against the **raw** ansatz — exactly
-joca.sage's reduction — and recovers the faithful **five** primes.
+### `joca-rg.sage` — the general algorithm's regularize-then-reduce route (≈17 s)
+Runs the general algorithm literally, *using* the Rosenfeld–Gröbner result for
+the calculation. The constants are moved into the coefficient field
+`ℚ(E,v₁,…,c₁)` via `BaseFieldExtension` (**required** for `RosenfeldGroebner`
+to terminate — see the cliff below); RG returns a **single** regular component,
+discharging hypothesis (3) (the paper's "B = ∅, one component" claim); and the
+PDE is then Ritt-reduced **against the regular chain RG returned** (its
+`.equations()` are the reduction set), projected, and prime-decomposed. The
+change of reduction set is the entire difference from joca.sage. Output
+(`joca-rg.out`): the chain, the Ritt denominator, and **four** minimal primes.
 
-**Why project against the raw ansatz, not the regularized chain?** RG is *not* a
-no-op: it squares the ODE's initial — the regularized ODE is
-`(a₀+a₁v)·(original ODE)` — and the regular chain it returns represents the
-*saturated* ideal `[C] : H_C^∞`, where `H_C = (a₀+a₁v)` is the initial/separant.
-Reducing the PDE against that chain's bare `.equations()` does **not** saturate,
-so it re-admits the bad locus `H_C = 0 ⇔ a₀=a₁=0` as a **spurious** prime
-`(a₀,a₁)` — the PDE is *not* actually redundant there (witness: the genuine
-redundancy ideal contains `v₄·b₁`, which is nonzero on generic `a₀=a₁=0`). And
-the two genuine strata that live *inside* `a₀=a₁=0` (where the 2nd-order ODE
-degenerates to 1st order) fall in the chain's bad locus, so saturating to delete
-the artifact loses them too — leaving only the 3 *generic* strata. So reducing
-against the regularized chain gives a wrong decomposition (4 primes, one
-spurious; 3 after saturation); only the raw projection keeps the `a₀=a₁=0`
-information and yields all five. This is the §1.12 / bad-locus `B` effect made
-concrete: the regularize-then-reduce route cannot resolve strata inside the
-locus where an initial vanishes. joca.sage (projection-only) and this script now
-agree on all five primes.
+**What the output shows — regularize-then-reduce is not faithful.** RG is *not*
+a no-op: it squares the ODE's initial — the chain's ODE element is
+`(a₀+a₁v)·(original ODE)`, rationalized — and the chain represents the
+*saturated* ideal `[C] : H_C^∞`, where `H_C = (a₀+a₁v)` is the
+initial/separant. Reducing the PDE against the chain's bare `.equations()` does
+**not** itself saturate, so the projection re-admits the bad locus
+`H_C = 0 ⇔ a₀=a₁=0` as a **spurious** prime `(a₀,a₁)` — the PDE is *not*
+actually redundant there (witness: the genuine redundancy ideal contains
+`v₄·b₁`, nonzero on generic `a₀=a₁=0`) — while the two genuine strata *inside*
+`a₀=a₁=0` (the paper's \eqref{ideal:3}, \eqref{ideal:4}, where the 2nd-order
+ODE degenerates to 1st order) are absorbed into that plane and lost. The four
+primes are: the classical branch, the `E = 0` parabolic branch, the `v ≡ 0`
+component, and the spurious `(a₀,a₁)`; saturating away the artifact would also
+delete the two genuine strata, leaving 3. The mechanism is visible in the
+printed Ritt denominator, `8(x²+y²+z²)³·N` with `N` the rationalized norm of
+the squared initial `(a₀+a₁v)²`: it vanishes identically on `a₀=a₁=0`, so this
+route cannot resolve strata inside the locus where an initial vanishes — the
+paper's bad-locus `B` discussion made concrete. Only the raw projection
+(joca.sage) keeps the `a₀=a₁=0` information and yields the faithful **five**
+primes.
 
 ### `rg_basefield.py` — minimal RG-on-ansatz demo (≈16 s)
 Standalone (no Sage): builds the ring, moves the constants into the base field,

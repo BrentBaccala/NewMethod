@@ -2,10 +2,19 @@
 #
 # Sage script to do the computations for my paper in the Journal of Computational Algebra.
 #
-# This is the variant of joca.sage that adds the general algorithm's
-# Rosenfeld-Gröbner regularization of the ansatz (see the block below and the
-# README).  joca.sage itself is the projection-only version whose output
-# matches the paper's printed decomposition.
+# This is the variant of joca.sage that runs the general algorithm's
+# Rosenfeld-Gröbner regularization of the ansatz AND uses its result: the PDE
+# is reduced against the regular differential chain RG returns (the
+# regularize-then-reduce route), not against the raw ansatz.  joca.sage is the
+# projection-only version whose output matches the paper's printed
+# decomposition (five primes).
+#
+# Expected output here differs from joca.sage, and instructively so: the chain
+# represents the SATURATED ideal [C] : H_C^inf (the ODE's initial (a0+a1*v)
+# is inverted), so reducing against its bare equations re-admits the bad locus
+# a0 = a1 = 0 as a SPURIOUS prime (a0, a1), while the two genuine strata that
+# live inside a0 = a1 = 0 (ODE degenerating to first order) are lost.  See the
+# note at the reduction step below and the README for the full diagnosis.
 #
 # Author: Brent Baccala
 # Date: December 12, 2025
@@ -25,11 +34,10 @@ import sys
 
 import sympy
 
-# Command-line options.  Run e.g. `sage joca-rg.sage --print-rg-system` to also
-# print the regular differential chain that RosenfeldGroebner returns (the
-# *regularized* ansatz).  By default we only use RG as the coherence check and
-# project against the raw ansatz -- see the note at the RG call below -- so the
-# regularized system is not normally shown.
+# Command-line options.  The regular differential chain that RosenfeldGroebner
+# returns is now the reduction set, so its equations are always printed.  Run
+# e.g. `sage joca-rg.sage --print-rg-system` to additionally print the factored
+# form of the chain and its inequations (initials and separants).
 print_rg_system = '--print-rg-system' in sys.argv
 
 # `--rg-verbose` traces the Rosenfeld-Groebner computation itself: it passes
@@ -129,44 +137,47 @@ ansatz = list(map(sympy.expand, ansatz))
 
 print("\nAnsatz:", *ansatz, sep='\n')
 
-# Run Rosenfeld-Gröbner to DISCHARGE HYPOTHESIS (3): confirm the ansatz forms a
-# single coherent, squarefree regular differential system.  The constants must
-# be moved into the coefficient field Q(E,v1,...,c1) for RosenfeldGroebner to
-# terminate; left as ring variables it does not finish (see rg_basefield.py and
-# the README).
+# Run Rosenfeld-Gröbner on the ansatz.  This does two jobs:
 #
-# RG is used here ONLY as the coherence check, NOT to rewrite the reduction set.
-# It is *not* a no-op: it squares the ODE's initial -- the regularized ODE is
-# (a0+a1*v)*(original ODE) -- and the regular chain it returns represents the
-# SATURATED ideal [C] : H_C^inf, with H_C = (a0+a1*v) its initial/separant.
-# Reducing the PDE against that chain's bare .equations() does NOT saturate, so
-# it re-admits the bad locus H_C = 0  <=>  a0 = a1 = 0 as a SPURIOUS prime
-# (a0,a1); and the two genuine strata that live inside a0=a1=0 (where the
-# 2nd-order ODE degenerates to 1st order) fall in the chain's bad locus, so
-# saturating to remove the artifact loses them too.  Net: reducing against the
-# regularized chain gives a wrong decomposition (4 primes incl. the spurious
-# (a0,a1); saturating leaves only the 3 generic strata).  We therefore project
-# against the RAW (coherent) ansatz below -- exactly joca.sage's reduction --
-# which keeps the a0=a1=0 information and is the faithful decomposition (5
-# primes).  See the README for the full diagnosis.
+#   (1) it DISCHARGES HYPOTHESIS (3): RG returns a single regular component,
+#       confirming the ansatz is a coherent, squarefree regular differential
+#       system.  The constants must be moved into the coefficient field
+#       Q(E,v1,...,c1) for RosenfeldGroebner to terminate; left as ring
+#       variables it does not finish (see rg_basefield.py and the README);
+#
+#   (2) its output -- the regular differential chain -- is used below as the
+#       REDUCTION SET.  This is the general algorithm's regularize-then-reduce
+#       route taken literally: reduce the PDE modulo the chain RG returns,
+#       project, decompose.
+#
+# Caveat, demonstrated by this script's output: RG is *not* a no-op.  It
+# rewrites the ansatz -- in particular the chain's ODE element carries the
+# initial (a0+a1*v) squared -- and the chain represents the SATURATED ideal
+# [C] : H_C^inf, with H_C = (a0+a1*v) its initial/separant.  Reducing the PDE
+# against the chain's bare .equations() does NOT itself saturate, so the
+# projection re-admits the bad locus H_C = 0  <=>  a0 = a1 = 0 as a SPURIOUS
+# prime (a0,a1) -- the PDE is not actually redundant on generic a0=a1=0
+# (witness: the genuine redundancy ideal there contains v4*b1) -- while the two
+# genuine strata living inside a0=a1=0 (where the 2nd-order ODE degenerates to
+# 1st order) fall in the chain's bad locus and are lost.  Net: this route
+# yields 4 primes, one spurious, versus joca.sage's faithful 5.  That contrast
+# is the point of this variant: the regularize-then-reduce route cannot
+# resolve strata inside the locus where an initial vanishes (the paper's
+# bad-locus B discussion made concrete).
 
 F = DifferentialAlgebra.BaseFieldExtension(generators=constants, ring=DiffRing)
 components = DiffRing.RosenfeldGroebner(ansatz, basefield=F, verbose=rg_verbose, dot=rg_dot)
 assert len(components) == 1, f"expected a single regular component, got {len(components)}"
 print("\nHypothesis (3) discharged: the ansatz is a single coherent regular system.")
 
-# Optionally print the regularized system RG returns -- the regular differential
-# chain's equations.  This is NOT what we reduce against (see the note above and
-# the next line): the chain represents the saturated ideal [C] : H_C^inf, with
-# the ODE's initial squared, so reducing against it would drop the a0=a1=0
-# strata.  We print it only to show what the general algorithm's hypothesis-(3)
-# step produces.
-if print_rg_system:
-    rchain = components[0]
-    rg_eqns = rchain.equations()
-    print("\nRegularized system from Rosenfeld-Groebner (the regular chain):",
-          *rg_eqns, sep='\n')
+# The regular differential chain RG returned: the reduction set for this
+# variant.
+rchain = components[0]
+rg_eqns = rchain.equations()
+print("\nRegularized system from Rosenfeld-Groebner (the regular chain, used as the reduction set):",
+      *rg_eqns, sep='\n')
 
+if print_rg_system:
     # Try to factor each equation of the regularized system.  sympy.factor()
     # leaves the irreducible ones expanded; where the chain carries a repeated
     # initial (e.g. the squared ODE initial a0+a1*v) the factored form makes it
@@ -203,13 +214,14 @@ if print_rg_system:
     print("\nInequalities, factored:",
           *[f"{sympy.factor(h)} != 0" for h in rg_inequalities], sep='\n')
 
-# NB: deliberately do NOT overwrite `ansatz` with components[0].equations();
-# we reduce against the raw (coherent) ansatz -- see the note above.
+# Reduce the PDE modulo the regular chain that Rosenfeld-Groebner returned,
+# using Ritt's reduction algorithm.  (joca.sage reduces against the raw ansatz
+# at this step; the change of reduction set is the entire difference between
+# the two scripts.)
 
-# Reduce the PDE modulo the (regularized) ansatz using Ritt's reduction algorithm
+h,r = DiffRing.differential_prem(PDE, rg_eqns)
 
-h,r = DiffRing.differential_prem(PDE, ansatz)
-
+print("\nDenominator:", sympy.factor(h))
 print("\nRemainder:", r)
 
 # Convert the remainder to Sage
@@ -248,3 +260,6 @@ prime_decomposition = I.minimal_associated_primes()
 
 prime_decomposition.sort(key=lambda x:str(x))
 print("\nMinimal associated prime ideals:", *prime_decomposition, sep='\n')
+
+print("\n(Compare joca.sage, which reduces against the raw ansatz and finds the",
+      "faithful five primes; see the README for why the two decompositions differ.)")
