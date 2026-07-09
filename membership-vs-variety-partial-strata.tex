@@ -197,6 +197,84 @@ and the nontrivial cells $c = \pm 1$ now retain the \emph{entire}
 there are no partial strata: a one-dimensional family admits no proper
 nontrivial sub-family.
 
+\section{Autoreducedness does not preclude the strata: a PDE example}
+
+One might conjecture a combinatorial precondition for the partial strata:
+that they arise only when the reduced PDE and the ansatz still \emph{interact}
+under Ritt reduction. In Example~\ref{ex:partial} the remainder
+$r = \Psib' - \Psib$ can reduce the ansatz equation $\Psib'' - c\,\Psib$ (its
+leader $\Psib'$ has $\Psib''$ as a proper derivative), and it was exactly that
+rewriting which produced the split on $1 - c$. What if reduction terminates
+completely --- $r$ can reduce nothing in $A$ and $A$ nothing in $r$, so that
+$A \cup \{r\}$ is autoreduced? Does that preclude a partial-solution stratum?
+
+In the ordinary-differential setting (one derivation, one unknown) the
+conjecture holds, but only vacuously. There $A$ is a single equation with
+leader $\Psib^{(k)}$, and the reduced remainder involves only
+$\Psib, \dots, \Psib^{(k-1)}$; if $r$ involves the unknown at all, its leader
+$\Psib^{(j)}$ has $\Psib^{(k)}$ as a proper derivative, so $r$ \emph{can}
+always reduce $A$. The hypothesis therefore forces $r = p(c)$, a pure
+constants condition --- and then both computations return $V(p)$ carrying the
+full ansatz family: dimension-preserving, no strata.
+
+With several derivations, leaders can be incomparable and the conjecture
+fails.
+
+\begin{example}
+\label{ex:pde}
+Two derivations $\partial_x, \partial_y$:
+%
+\[
+A(c): \quad \Psib_{yy} - c\,\Psib = 0,
+\qquad\qquad
+P: \quad \Psib_x - \Psib = 0 .
+\]
+\end{example}
+
+\noindent
+$P$ is already reduced with respect to $A$ ($\Psib_x$ is not a derivative of
+$\Psib_{yy}$), so $r = P$; and $r$ can reduce nothing in $A$, whose equation
+contains only $\Psib_{yy}$ and $\Psib$, neither a derivative of $\Psib_x$.
+Thus $A \cup \{r\}$ is autoreduced --- and even \emph{coherent}: the leaders'
+least common derivative is $\Psib_{xyy}$, and the $\Delta$-polynomial
+%
+\[
+\partial_y^2\, r - \partial_x\, A
+\;=\; (\Psib_{xyy} - \Psib_{yy}) - (\Psib_{xyy} - c\,\Psib_x)
+\;=\; c\,\Psib_x - \Psib_{yy}
+\;\longrightarrow\; c\,\Psib - c\,\Psib \;=\; 0 .
+\]
+%
+The combined decomposition therefore emits $A \cup \{r\}$ unchanged, as a
+single cell, with no splitting at all.
+
+Membership: the projection coefficients of $r$ are $+1$ and $-1$, so
+$\Var = \varnothing$ --- correct, since the general ansatz solution
+$\Psib = F(x)\,e^{\omega y} + G(x)\,e^{-\omega y}$ ($\omega^2 = c$; $F$, $G$
+arbitrary functions) does not satisfy $\Psib_x = \Psib$.
+
+Joint variety: $\Psib_x = \Psib$ forces $\Psib = e^{x} h(y)$, and then
+$h'' = c\,h$, so
+%
+\[
+\Psib \;=\; e^{x}\big(K_1 e^{\omega y} + K_2 e^{-\omega y}\big)
+\]
+%
+--- nontrivial at \emph{every} $c$, and a proper subfamily of the ansatz
+family (the arbitrary functions $F$, $G$ collapse to constant multiples of
+$e^{x}$). Every $c$ is a partial-solution stratum; here the stratum is the
+whole parameter space.
+
+The structural reading: ``$A \cup \{r\}$ is autoreduced and coherent'' means
+the decomposition has no more algebra to do --- it is precisely a finished
+cell --- \emph{not} that $r$ imposes no constraint. The cell's solution set
+is the joint variety, and whenever that sits strictly between $0$ and
+$\Sol(A(c))$ at some $c \notin \Var$, a partial stratum is present. What
+precludes the strata is $r$ having no non-constant part, $r = p(c)$ ---
+which, in the single-derivation case, is the only way the autoreducedness
+hypothesis can be met at all. The strata are a fact of the solution
+geometry, not of the rewriting combinatorics.
+
 \section{Reading}
 
 The membership formulation~\eqref{eq:membership} asks: \emph{for which
