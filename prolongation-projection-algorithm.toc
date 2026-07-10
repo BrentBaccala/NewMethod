@@ -1,0 +1,30 @@
+\contentsline {section}{\numberline {1}Problem statement: two loci, not one}{2}{section.1}%
+\contentsline {section}{\numberline {2}Survey: the algorithm families}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Reduce-then-project (the paper's Algorithm 1)}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Differential Thomas decomposition}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Parametric Rosenfeld--Gr\"obner}{4}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Bounded prolongation to the involutive order, then pure commutative algebra}{4}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Summary table}{5}{subsection.2.5}%
+\contentsline {section}{\numberline {3}The proposed algorithm}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Phase I: prolong, reduce, track}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Phase II: recurse on the tracked inequations}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Phase III as proposed --- and why it cannot stand as stated}{6}{subsection.3.3}%
+\contentsline {section}{\numberline {4}The quantifier principle, made precise}{7}{section.4}%
+\contentsline {subsection}{\numberline {4.1}The four classes of symbols}{7}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}The two implementations of $\forall $, and the one of $\exists $}{7}{subsection.4.2}%
+\contentsline {paragraph}{Collection ($\forall $).}{7}{section*.2}%
+\contentsline {paragraph}{Elimination ($\exists $).}{8}{section*.3}%
+\contentsline {paragraph}{Substitution (determined).}{8}{section*.4}%
+\contentsline {subsection}{\numberline {4.3}The two sound pipelines}{8}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Resolution of the $v = v_1x+v_2y+v_3z$ puzzle}{9}{section.5}%
+\contentsline {subsection}{\numberline {5.1}The distinguishing criterion}{9}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}What distinguishes the defining equation from the reduced remainder}{10}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}The criterion tested on the partial-strata examples}{10}{subsection.5.3}%
+\contentsline {paragraph}{Example A ($A: \Psi ''-c\Psi $, $P: \Psi '-\Psi $; one derivation).}{10}{section*.5}%
+\contentsline {paragraph}{Example B ($A: \Psi _{yy}-c\Psi $, $P: \Psi _x-\Psi $; two derivations).}{11}{section*.6}%
+\contentsline {paragraph}{The puzzle equation itself.}{11}{section*.7}%
+\contentsline {section}{\numberline {6}The corrected algorithm, and which locus it computes}{11}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Statement}{11}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Which locus --- and the selector}{12}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Relation to the existing methods}{12}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Open problems and next steps}{12}{section.7}%
