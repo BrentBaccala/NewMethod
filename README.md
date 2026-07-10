@@ -58,6 +58,45 @@ paper's bad-locus `B` discussion made concrete. Only the raw projection
 (joca.sage) keeps the `a₀=a₁=0` information and yields the faithful **five**
 primes.
 
+### `joca-rg-combined.sage` — stock RG on the **combined** system `A ∪ {P}`
+Every other script here decomposes the *ansatz alone*. This one adjoins the
+Schrödinger PDE and hands the whole system to `RosenfeldGroebner`, which answers
+the *existential* question (the joint variety) rather than the *universal* one
+(the membership locus `V`) — see
+`membership-vs-variety-partial-strata.tex`. It prints `V` first (from the
+projection route, ≈1 s, reproducing joca.sage's five primes), then decomposes
+`A ∪ {P}` and classifies every component as **trivial** (`Ψ = 0`), **membership**
+(its constant-relations imply every projection equation, so the whole ansatz
+family solves the PDE) or a **partial-solution stratum** (nontrivial, but only a
+proper sub-family solves the PDE). The classification is exact: a component's
+stratum `V(J)` lies in `V` iff every projection polynomial lies in `√J`.
+
+`--basefield` moves the eleven constants into `ℚ(E,v1,…,c1)`; the default leaves
+them as ring variables in the lowest block. The choice decides *whether the
+strata are visible at all*: over the base field every nonzero constant
+polynomial is a unit, so RG can never split on a parameter locus.
+`--toy` runs the note's own example (`A: Ψ'' − cΨ`, `P: Ψ' − Ψ`) and exhibits the
+contrast in a tenth of a second — ring constants give two cells, one of them the
+`c = 1` partial stratum; the base field gives one cell, `Ψ = 0`, the stratum
+gone.
+
+Measured on samsung (2026-07-09): `--toy` 0.1 s / 2 components; `--toy
+--basefield` 0.1 s / 1 component; `--ansatz-only --basefield` 27 s / 1 component
+(regression against `rg_basefield.py`). **On the hydrogen combined system RG did
+not terminate** — neither with ring constants (the documented cliff) nor with
+`--basefield` (>420 s). So the base field rescues the *ansatz* but not the
+*combined* system. Use `--timeout` / `--memout`; a timeout is reported as a
+clean abort (exit 1) and never costs you `V`, which is printed beforehand.
+
+Incidental finding, worth knowing before reusing joca.sage's projection code:
+that code builds its polynomial ring from `DiffRing.indets(selection='all')`,
+which omits jet variables. It is sound in joca.sage only because reduction
+against the hydrogen ansatz eliminates every derivative. When the PDE's leader
+ranks *below* the ansatz's (the `--toy` case) the remainder keeps a jet variable
+and Sage's conversion **silently drops it** (`Psi[x] - Psi` → `-Psi`). This
+script renames jets (`Psi[x,x]` → `Psi_x_x`) and builds the ring from the atoms
+actually present.
+
 ### `rg_basefield.py` — minimal RG-on-ansatz demo (≈16 s)
 Standalone (no Sage): builds the ring, moves the constants into the base field,
 and runs `RosenfeldGroebner(ansatz, basefield=F)`, showing it terminates and
