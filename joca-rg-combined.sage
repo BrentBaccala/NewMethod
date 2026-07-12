@@ -78,6 +78,47 @@
 #     --ansatz-only       decompose A alone, not A u {P} (regression vs joca-rg)
 #     --timeout SECS      RosenfeldGroebner wall limit (0 = none; default 0)
 #     --memout MB         RosenfeldGroebner memory limit (0 = none; default 0)
+#     --ranking NAME      which ranking to build the differential ring with
+#         (hydrogen only; the toy has a single dependent).  NAME is one of:
+#
+#           orderly   (default, and what every run to date has used)
+#                     blocks = [[DDPsi, DPsi, Psi, v, r], constants]
+#                     One orderly block.  r and v are listed last, but see the
+#                     note below: in an orderly block that buys almost nothing.
+#           rv-top    blocks = [[r, v], [DDPsi, DPsi, Psi], constants]
+#                     Promote the change-of-variables auxiliaries ABOVE the Psi
+#                     tower, so they lead their own equations instead of being
+#                     pushed into everyone else's initials.
+#           rv-bottom blocks = [[DDPsi, DPsi, Psi], [v, r], constants]
+#                     The explicit two-block version of the current layout:
+#                     same intent as `orderly`, but now enforced by a block
+#                     elimination rather than left to a tie-break that never
+#                     fires.  Useful as the control for rv-top.
+#           elim      blocks = [[DDPsi], [DPsi], [Psi], [v], [r], constants]
+#                     Full block elimination, one dependent per block.  Included
+#                     for completeness; elimination rankings are the classic way
+#                     to make a Groebner-style computation as slow as possible,
+#                     so expect this to be the worst of the four.
+#
+#         WHY THE BLOCK STRUCTURE, NOT THE LIST ORDER, IS THE KNOB.  Per the
+#         binding's own RANKINGS documentation (DifferentialRing.pyx): blocks are
+#         separated by >>, a BLOCK ELIMINATION -- every derivative of a dependent
+#         in a higher block outranks every derivative in a lower block.  But
+#         WITHIN a block the ranking is ORDERLY: derivative order dominates, and
+#         the list order only breaks ties between derivatives OF THE SAME ORDER.
+#         So reordering the single block to [r, v, DDPsi, DPsi, Psi] does NOT
+#         promote r: DDPsi[x] has order 1 and r has order 0, so DDPsi[x] > r
+#         regardless.  Promoting r/v REQUIRES giving them their own block -- which
+#         means every one of these knobs is some amount of elimination.  That is
+#         the honest cost of the experiment; rv-top is a coarse 2-block split, not
+#         a full lex, which is why it is the one worth running.
+#
+#         MOTIVATION (see ~/project/reports/joca-rg-delta-polynomial-cliff.md):
+#         the combined run's cliff is the fraction-free pseudo-remainder cofactor.
+#         Eliminating DDPsi needs the ODE whose initial is (a0 + a1*v), which drags
+#         v -- hence r, and hence x, y, z via r^2 = x^2+y^2+z^2 -- into the initial
+#         of essentially every equation.  A ranking that keeps r and v out of the
+#         Psi-tower initials is the only config-only lever we have on that.
 #     --no-membership     skip the joca.sage reference computation
 #     --print-inequations print each component's initials and separants
 #     --rg-verbose        trace RG's splitting (patched DifferentialAlgebra)
@@ -150,6 +191,11 @@ rg_redzero        = _flag('--redzero')
 nontrivial        = _flag('--nontrivial')
 rg_timeout        = _val('--timeout', 0)
 rg_memout         = _val('--memout', 0)
+ranking           = _val('--ranking', 'orderly')
+
+RANKINGS = ('orderly', 'rv-top', 'rv-bottom', 'elim')
+if ranking not in RANKINGS:
+    sys.exit("--ranking must be one of: %s (got %r)" % (', '.join(RANKINGS), ranking))
 
 T0 = time.time()
 
@@ -174,7 +220,7 @@ if toy:
     constants = [c]
 
     Psi = DifferentialAlgebra.indexedbase('Psi')
-    dependents = [Psi]
+    dep_blocks = [[Psi]]                              # --ranking is a no-op here
 
     def build_system():
         A = [Psi[x, x] - c * Psi]                     # ansatz: two-dimensional
@@ -195,7 +241,15 @@ else:
     Psi, DPsi, DDPsi = DifferentialAlgebra.indexedbase('Psi,DPsi,DDPsi')
     v = DifferentialAlgebra.indexedbase('v')
     r = DifferentialAlgebra.indexedbase('r')
-    dependents = [DDPsi, DPsi, Psi, v, r]
+    # Blocks are separated by >> (block elimination); within a block the ranking
+    # is orderly and the list order only breaks same-order ties.  So the block
+    # STRUCTURE below is the knob, not the order of names inside a block.
+    dep_blocks = {
+        'orderly':   [[DDPsi, DPsi, Psi, v, r]],
+        'rv-top':    [[r, v], [DDPsi, DPsi, Psi]],
+        'rv-bottom': [[DDPsi, DPsi, Psi], [v, r]],
+        'elim':      [[DDPsi], [DPsi], [Psi], [v], [r]],
+    }[ranking]
 
     def build_system():
         A = [Psi[x] - DPsi * v[x],
@@ -214,8 +268,10 @@ else:
     system_name = "hydrogen (JOCA ansatz + Schrödinger PDE, 11 constants)"
 
 
+blocks = dep_blocks + [constants]
+
 DiffRing = DifferentialAlgebra.DifferentialRing(derivations=derivations,
-                                                blocks=[dependents, constants],
+                                                blocks=blocks,
                                                 parameters=constants,
                                                 notation='jet')
 
@@ -228,6 +284,9 @@ print("System:   ", system_name)
 print("Constants:", "base field Q(%s)" % ", ".join(map(str, constants))
       if use_basefield else "ring variables, lowest block")
 print("Decompose:", "ansatz alone" if ansatz_only else "ansatz u {PDE}  (COMBINED)")
+print("Ranking:  ", ranking, " ",
+      " >> ".join("[%s]" % ", ".join(map(str, b)) for b in dep_blocks),
+      ">> [constants]")
 print("=" * 78)
 print("\nPDE:", PDE)
 print("\nAnsatz:", *ansatz, sep='\n')
