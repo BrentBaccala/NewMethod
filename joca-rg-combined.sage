@@ -79,46 +79,62 @@
 #     --timeout SECS      RosenfeldGroebner wall limit (0 = none; default 0)
 #     --memout MB         RosenfeldGroebner memory limit (0 = none; default 0)
 #     --ranking NAME      which ranking to build the differential ring with
-#         (hydrogen only; the toy has a single dependent).  NAME is one of:
+#         (hydrogen only; the toy has a single dependent).
 #
-#           orderly   (default, and what every run to date has used)
+#         NAMING.  Every ranking here is ORDERLY WITHIN A BLOCK -- the ring prints
+#         `grlexA[...]` for each block in all five cases.  What distinguishes them
+#         is whether there is a block elimination (>>) BETWEEN blocks.  The names
+#         say so: `orderly-*` is a single block, no elimination anywhere; `elim-*`
+#         buys a block elimination.
+#
+#           orderly-psi-first   (default; what every run to date has used)
 #                     blocks = [[DDPsi, DPsi, Psi, v, r], constants]
-#                     One orderly block.  r and v are listed last, but see the
-#                     note below: in an orderly block that buys almost nothing.
-#           rv-top    blocks = [[r, v], [DDPsi, DPsi, Psi], constants]
-#                     Promote the change-of-variables auxiliaries ABOVE the Psi
-#                     tower, so they lead their own equations instead of being
-#                     pushed into everyone else's initials.
-#           rv-bottom blocks = [[DDPsi, DPsi, Psi], [v, r], constants]
-#                     The explicit two-block version of the current layout:
-#                     same intent as `orderly`, but now enforced by a block
-#                     elimination rather than left to a tie-break that never
-#                     fires.  Useful as the control for rv-top.
-#           elim      blocks = [[DDPsi], [DPsi], [Psi], [v], [r], constants]
-#                     Full block elimination, one dependent per block.  Included
-#                     for completeness; elimination rankings are the classic way
-#                     to make a Groebner-style computation as slow as possible,
-#                     so expect this to be the worst of the four.
+#           orderly-rv-first
+#                     blocks = [[r, v, DDPsi, DPsi, Psi], constants]
+#                     Same single orderly block, r and v moved to the FRONT.
+#           elim-rv-top
+#                     blocks = [[r, v], [DDPsi, DPsi, Psi], constants]
+#           elim-rv-bottom
+#                     blocks = [[DDPsi, DPsi, Psi], [v, r], constants]
+#                     The explicit two-block version of the default layout: same
+#                     intent, but enforced by a block elimination.  The control
+#                     that prices the elimination itself.
+#           elim-full
+#                     blocks = [[DDPsi], [DPsi], [Psi], [v], [r], constants]
+#                     One dependent per block.
 #
-#         WHY THE BLOCK STRUCTURE, NOT THE LIST ORDER, IS THE KNOB.  Per the
-#         binding's own RANKINGS documentation (DifferentialRing.pyx): blocks are
-#         separated by >>, a BLOCK ELIMINATION -- every derivative of a dependent
-#         in a higher block outranks every derivative in a lower block.  But
-#         WITHIN a block the ranking is ORDERLY: derivative order dominates, and
-#         the list order only breaks ties between derivatives OF THE SAME ORDER.
-#         So reordering the single block to [r, v, DDPsi, DPsi, Psi] does NOT
-#         promote r: DDPsi[x] has order 1 and r has order 0, so DDPsi[x] > r
-#         regardless.  Promoting r/v REQUIRES giving them their own block -- which
-#         means every one of these knobs is some amount of elimination.  That is
-#         the honest cost of the experiment; rv-top is a coarse 2-block split, not
-#         a full lex, which is why it is the one worth running.
+#         WHAT THE LIST ORDER DOES, EXACTLY.  Per the binding's RANKINGS docs
+#         (DifferentialRing.pyx): within a block the ranking is orderly, so
+#         DERIVATIVE ORDER DOMINATES and the list order only breaks ties BETWEEN
+#         DERIVATIVES OF THE SAME ORDER.  It is tempting to conclude from this
+#         that reordering a single block is nearly a no-op.  That is WRONG, and
+#         the equations show why: the ones that matter here are decided precisely
+#         by same-order ties.  The ODE is order 0 in everything, so its leader is
+#         the tie-break; `Psi[x] - v[x]*DPsi` pits Psi[x] against v[x], both of
+#         order 1, likewise a tie-break.  Moving r, v to the front therefore DOES
+#         reseat the leaders -- without buying an elimination.
+#
+#         MEASURED leaders/initials of the ansatz (verified, not reasoned):
+#
+#           equation                     orderly-psi-first    orderly-rv-first
+#           Psi[x] - v[x]*DPsi           Psi[x]  / 1          v[x] / -DPsi
+#           DPsi[x] - v[x]*DDPsi         DPsi[x] / 1          v[x] / -DDPsi
+#           (a0+a1 v)DDPsi + ... (ODE)   DDPsi   / a0 + a1*v  v    / a1*DDPsi
+#                                                                    + b1*DPsi
+#                                                                    + c1*Psi
+#           v - (v1 x + ... + v4 r)      v       / 1          r    / -v4
+#           r^2 - x^2 - y^2 - z^2        r       / 1          r    / 1
 #
 #         MOTIVATION (see ~/project/reports/joca-rg-delta-polynomial-cliff.md):
 #         the combined run's cliff is the fraction-free pseudo-remainder cofactor.
 #         Eliminating DDPsi needs the ODE whose initial is (a0 + a1*v), which drags
 #         v -- hence r, and hence x, y, z via r^2 = x^2+y^2+z^2 -- into the initial
-#         of essentially every equation.  A ranking that keeps r and v out of the
-#         Psi-tower initials is the only config-only lever we have on that.
+#         of essentially every equation.  Under orderly-rv-first NO initial contains
+#         r, v, x, y or z: each is either a unit (-v4, 1) or a polynomial in the Psi
+#         tower alone.  That removes the cliff's mechanism at the source, and does
+#         it inside an orderly ranking.  Cost: -DPsi, -DDPsi and a1*DDPsi + b1*DPsi
+#         + c1*Psi are NOT units, so RG now splits on their vanishing where it did
+#         not before -- expect more (but degenerate, and one hopes cheap) branches.
 #     --no-membership     skip the joca.sage reference computation
 #     --print-inequations print each component's initials and separants
 #     --rg-verbose        trace RG's splitting (patched DifferentialAlgebra)
@@ -191,9 +207,10 @@ rg_redzero        = _flag('--redzero')
 nontrivial        = _flag('--nontrivial')
 rg_timeout        = _val('--timeout', 0)
 rg_memout         = _val('--memout', 0)
-ranking           = _val('--ranking', 'orderly')
+ranking           = _val('--ranking', 'orderly-psi-first')
 
-RANKINGS = ('orderly', 'rv-top', 'rv-bottom', 'elim')
+RANKINGS = ('orderly-psi-first', 'orderly-rv-first',
+            'elim-rv-top', 'elim-rv-bottom', 'elim-full')
 if ranking not in RANKINGS:
     sys.exit("--ranking must be one of: %s (got %r)" % (', '.join(RANKINGS), ranking))
 
@@ -245,10 +262,11 @@ else:
     # is orderly and the list order only breaks same-order ties.  So the block
     # STRUCTURE below is the knob, not the order of names inside a block.
     dep_blocks = {
-        'orderly':   [[DDPsi, DPsi, Psi, v, r]],
-        'rv-top':    [[r, v], [DDPsi, DPsi, Psi]],
-        'rv-bottom': [[DDPsi, DPsi, Psi], [v, r]],
-        'elim':      [[DDPsi], [DPsi], [Psi], [v], [r]],
+        'orderly-psi-first': [[DDPsi, DPsi, Psi, v, r]],
+        'orderly-rv-first':  [[r, v, DDPsi, DPsi, Psi]],
+        'elim-rv-top':       [[r, v], [DDPsi, DPsi, Psi]],
+        'elim-rv-bottom':    [[DDPsi, DPsi, Psi], [v, r]],
+        'elim-full':         [[DDPsi], [DPsi], [Psi], [v], [r]],
     }[ranking]
 
     def build_system():
