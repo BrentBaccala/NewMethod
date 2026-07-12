@@ -82,6 +82,15 @@
 #     --print-inequations print each component's initials and separants
 #     --rg-verbose        trace RG's splitting (patched DifferentialAlgebra)
 #     --rg-dot            dump RG's splitting tree as graphviz dot
+#     --redzero           trust BLAD's probabilistic zero-test and SKIP the
+#         reduction of any new equation it calls zero.  Default (0) runs the
+#         probabilistic pre-test but then CONFIRMS a "probably zero" answer with
+#         a full deterministic reduction -- so zero remainders still pay the full
+#         swelling pseudo-division.  Strategy 2 trusts the test and skips.  The
+#         result is explicitly NOT GUARANTEED (bad_reduction.h:69): a false zero
+#         discards a genuinely nonzero equation and yields a wrong (too-large)
+#         component.  TREAT ANY DECOMPOSITION OBTAINED THIS WAY AS A CANDIDATE
+#         and verify each returned chain before believing it.
 #
 # Recommended first runs:
 #
@@ -127,6 +136,7 @@ skip_membership   = _flag('--no-membership')
 print_inequations = _flag('--print-inequations')
 rg_verbose        = _flag('--rg-verbose')
 rg_dot            = _flag('--rg-dot')
+rg_redzero        = _flag('--redzero')
 rg_timeout        = _val('--timeout', 0)
 rg_memout         = _val('--memout', 0)
 
@@ -352,8 +362,30 @@ else:
           "\n      README reports does not terminate on the hydrogen ansatz."
           "\n      Consider --timeout / --memout.")
 
+if rg_redzero:
+    # bad_set_settings_reduction(reduction_strategy, redzero_strategy, seed);
+    # argument 0 means "leave at default", so this touches only the redzero
+    # strategy.  2 = bad_probabilistic_redzero_strategy.  In that mode the RG
+    # main loop runs the modular zero-test BEFORE reducing each new equation and
+    # skips the reduction outright when the test says zero.  ctypes.CDLL() on an
+    # already-imported extension returns the loaded copy, so this reaches the
+    # same globals BLAD is using -- no rebuild.  Upstream left this exact call
+    # commented out at its own RG call site (bmi_Rosenfeld_Groebner.c:188-190).
+    # NB: Sage's preparser rewrites integer literals to Sage Integers, which
+    # ctypes cannot marshal -- pin argtypes and pass genuine Python ints.
+    import ctypes
+    _blad = ctypes.CDLL(DifferentialAlgebra.__file__)
+    _blad.bad_set_settings_reduction.argtypes = [ctypes.c_int] * 3
+    _blad.bad_set_settings_reduction.restype = None
+    _blad.bad_set_settings_reduction(int(0), int(2), int(0))
+    print("\nWARNING: --redzero trusts BLAD's probabilistic zero-test.  Any"
+          "\n         decomposition printed below is a CANDIDATE: a false zero"
+          "\n         silently discards a nonzero equation and yields a wrong,"
+          "\n         too-large component.  Verify every chain before use.")
+
 stamp(f"RosenfeldGroebner({'ansatz' if ansatz_only else 'ansatz + [PDE]'}"
-      f"{', basefield=F' if use_basefield else ''}) START")
+      f"{', basefield=F' if use_basefield else ''}"
+      f"{', redzero=probabilistic' if rg_redzero else ''}) START")
 
 try:
     components = DiffRing.RosenfeldGroebner(system, basefield=F,
