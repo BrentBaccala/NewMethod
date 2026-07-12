@@ -82,6 +82,16 @@
 #     --print-inequations print each component's initials and separants
 #     --rg-verbose        trace RG's splitting (patched DifferentialAlgebra)
 #     --rg-dot            dump RG's splitting tree as graphviz dot
+#     --nontrivial        add the inequation Psi != 0, pruning the zero-solution
+#         branch.  Psi = DPsi = DDPsi = 0 solves the ansatz and the PDE for EVERY
+#         value of the constants, so RG always returns it as a component -- and it
+#         is vacuous for the strata question, which asks for which constants a
+#         NONTRIVIAL wavefunction of the ansatz form solves the PDE.  It is not
+#         merely noise in the output: the 2026-07-11 run was observed grinding in
+#         reg_characteristic on exactly this branch (quadruple 107: chain
+#         [r^2-x^2-y^2-z^2, v-..., Psi, DPsi, DDPsi]) against a 1.87 MB
+#         accumulated inequation.  RG accepts inequations directly in the
+#         equations list as sympy Ne(p, 0).
 #     --redzero           trust BLAD's probabilistic zero-test and SKIP the
 #         reduction of any new equation it calls zero.  Default (0) runs the
 #         probabilistic pre-test but then CONFIRMS a "probably zero" answer with
@@ -137,6 +147,7 @@ print_inequations = _flag('--print-inequations')
 rg_verbose        = _flag('--rg-verbose')
 rg_dot            = _flag('--rg-dot')
 rg_redzero        = _flag('--redzero')
+nontrivial        = _flag('--nontrivial')
 rg_timeout        = _val('--timeout', 0)
 rg_memout         = _val('--memout', 0)
 
@@ -352,6 +363,18 @@ if not skip_membership and not ansatz_only:
 
 system = ansatz if ansatz_only else ansatz + [PDE]
 
+if nontrivial:
+    # Prune the zero-solution branch.  RG takes inequations inline in the
+    # equations list; sympy's Ne is the spelling (verified against the
+    # docstring's own y'^2 - 4y example, whose trivial chain [y(x)] disappears
+    # when Ne(y(x), 0) is added).  Psi != 0 kills the chain Psi = DPsi = DDPsi = 0.
+    system = system + [sympy.Ne(Psi, sympy.S.Zero)]
+    print("\nNOTE: --nontrivial adds the inequation Psi != 0.  The zero solution"
+          "\n      satisfies the ansatz and the PDE for every value of the"
+          "\n      constants; it is a real component of the radical ideal but it"
+          "\n      is vacuous for the strata question, and RG was observed"
+          "\n      spending the cliff on it.")
+
 if use_basefield:
     F = DifferentialAlgebra.BaseFieldExtension(generators=constants, ring=DiffRing)
     stamp("base field extension built over the constants")
@@ -385,6 +408,7 @@ if rg_redzero:
 
 stamp(f"RosenfeldGroebner({'ansatz' if ansatz_only else 'ansatz + [PDE]'}"
       f"{', basefield=F' if use_basefield else ''}"
+      f"{', Psi != 0' if nontrivial else ''}"
       f"{', redzero=probabilistic' if rg_redzero else ''}) START")
 
 try:
