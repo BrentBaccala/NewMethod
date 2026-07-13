@@ -1,5 +1,5 @@
 \documentclass[11pt]{article}
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath,amssymb,amsthm}
 \usepackage[margin=1in]{geometry}
 \usepackage{booktabs}
 \usepackage{hyperref}
@@ -61,6 +61,14 @@ per-cell \emph{existence} locus --- the joint-variety projection
 $\Var \cup \{\text{partial strata}\}$ --- with the \emph{membership} locus
 $\Var$ selectable per cell by flipping the quantifier on the parametric
 derivatives, equivalently by the dimension-preservation criterion.
+A final section takes up the route that actually runs on hydrogen: decompose
+the \emph{ansatz alone}, then bring in the PDE cell by cell. We locate its
+blind spot exactly (it loses a stratum iff the reduced remainder carries a
+parametric jet), record why re-completing $T_j\cup\{P\}$ per cell exhausts
+memory on five of the 29 cells, and propose the \emph{fixed-chain
+prolongation}: leave the passive cell untouched, prolong the remainder
+against it, and test stabilization by $D$-closure of a commutative ideal ---
+no $\Delta$-polynomials, no splitting, and a variable set that cannot grow.
 \end{abstract}
 
 \tableofcontents
@@ -197,9 +205,14 @@ conditions and the decomposition is automatically comprehensive over the
 constants. \emph{Splits:} wherever the \emph{description} degenerates ---
 every initial, separant, or discriminant of every equation processed during
 completion, whether or not its vanishing changes anything about existence.
-\emph{Status here:} the open-maple run of the hydrogen combined system
-completes with 29 cells; the bad-locus cells 26/27 carry the $E=-1/2$ and
-$E=-1/8$ strata \cite{existence-route-report}.
+\emph{Status here:} the decomposition of the \emph{ansatz alone} completes
+with 29 cells; the decomposition of the \emph{combined} system $A\cup\{P\}$
+does not complete, and neither does its per-cell staged form on five of the
+29 cells (\S\ref{sec:staged}). The $E=-1/2$ and $E=-1/8$ strata surface on
+ansatz cells 26/27 (\code{zero \{a0,a1\}}, \code{zero \{a0,a1,b1\}}) not as
+splits of the decomposition --- $E$ occurs in $P$ and nowhere in $A$, so no
+decomposition of $A$ can split on it --- but as output of the projection
+run on those cells \cite{existence-route-report,joca-thomas-report}.
 
 \subsection{Parametric Rosenfeld--Gr\"obner}
 
@@ -288,6 +301,12 @@ parametric RG & per-cell regular chains of the \emph{saturated} ideal &
 bounded prolongation & $\overline{\Ex}$ (closure), strata optional &
   optional constructible split & no a-priori $N_0(A\cup\{P\})$;
   parametric elimination cliff \\
+staged: Thomas on $A$, then $P$ per cell (\S\ref{sec:staged}) &
+  $\Mem$ per cell, \emph{on every cell} --- bad locus included &
+  degeneracies of $A$'s description only; $P$ never enters the
+  differential engine & blind to parametric-leader strata
+  (Prop.~\ref{prop:staged-loss}); re-completing $T_j\cup\{P\}$ blows up on
+  5 of the 29 cells \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -840,6 +859,501 @@ Definition~\ref{def:classes}, the two-pipelines theorem-in-outline of
 Brent's Phase~III sketch was missing.
 
 %=====================================================================
+\section{The staged route: ansatz first, PDE per cell}
+\label{sec:staged}
+
+The algorithm of \S\ref{sec:corrected} runs the completion loop on
+$A\cup\{P\}$. In practice that is exactly what does not terminate. This
+section develops the alternative that \emph{does} run --- decompose the
+ansatz alone, then bring in the PDE cell by cell --- says precisely what it
+loses, and shows that the lost half can be recovered by a \emph{fixed-chain
+prolongation} that never re-enters the differential engine.
+
+\subsection{The staged route, and what it keeps}
+
+\begin{quote}
+\textbf{Staged route.} Run a differential Thomas decomposition of the
+\emph{ansatz alone}: $\Sol(A) = \bigsqcup_j \Sol(T_j,NE_j)$, each cell
+passive. Then, per cell: fully reduce $P$ modulo $T_j$, obtaining
+$h_j P \equiv \rho_j \pmod{[T_j]}$, and project $\rho_j$ onto the constants.
+\end{quote}
+
+This is not hypothetical: it is \code{joca-thomas.sage}, whose output
+\code{joca-thomas-openmaple.out} records all 29 hydrogen cells with their
+projections and minimal primes \cite{joca-thomas-report}. For the universal
+reading it loses nothing, and it gains the bad locus:
+
+\begin{itemize}
+\item \emph{Completeness of the partition.} Thomas's cells are disjoint and
+  exhaustive, so $\Sol(A)\cap\Sol(P) = \bigsqcup_j
+  \bigl(\Sol(T_j)\cap\Sol(P)\bigr)$ exactly. Decomposing $A$ first discards
+  nothing about $A$.
+\item \emph{The remainder is the whole story (for $\forall$).} Each $T_j$ is
+  \emph{passive}, which is precisely the hypothesis Rosenfeld's lemma needs:
+  Ritt reduction to zero decides membership in $[T_j]:H_{T_j}^\infty$. No
+  prolongation of $P$ is required for the membership question.
+\item \emph{Criterion~\ref{crit:main} is satisfied for free.} $\rho_j$ is
+  fully reduced modulo $T_j$, hence contains no principal jet of the cell,
+  hence qualifies for collection; the cell's defining equations enter only as
+  rewrite rules, never as constraint rows. The $v$-puzzle cannot arise.
+\item \emph{The $h\ne 0$ hypothesis holds cell-by-cell.} The Ritt denominator
+  $h_j$ is a product of initials and separants of $T_j$'s equations --- and in
+  a Thomas \emph{simple system} those are exactly the cell's inequations
+  $NE_j$. So $h_j \ne 0$ on the cell by construction. Theorem~1's completeness
+  hypothesis, which Algorithm~1 can assert only on the generic branch, is
+  satisfied on \emph{every} cell, and Algorithm~2's bad-locus recursion is
+  subsumed by the ansatz decomposition. This is why cell~26
+  (\code{zero \{a0,a1\}}) exists at all, and why it hands back the $2s$
+  stratum at $E=-1/8$ that \code{joca.sage}'s five primes miss.
+\end{itemize}
+
+One terminating Thomas run on $A$ ($\sim$18 min) thus buys the completeness
+that the non-terminating combined run was supposed to buy.
+
+\subsection{What it loses: exactly the parametric-leader strata}
+
+\begin{proposition}[the staged route's blind spot, exactly located]
+\label{prop:staged-loss}
+Let $(T_j,NE_j)$ be a cell of the Thomas decomposition of $A$, and $\rho_j$
+the full Ritt remainder of $P$ modulo $T_j$. Exactly one of three cases holds,
+and only the third can hide a stratum:
+\begin{enumerate}
+\item $\rho_j = 0$: the cell is a membership cell throughout;
+  $\Ex_j = \Mem_j$. Nothing is lost.
+\item $\rho_j \ne 0$ but contains \emph{no parametric jet} of $T_j$ (only
+  constants and $x,y,z,r$): collection over the independents lands directly
+  on constant equations, and there is no witness freedom for $\exists$ to
+  exploit; $\Ex_j = \Mem_j$. Nothing is lost.
+\item $\rho_j \ne 0$ and contains \emph{at least one parametric jet} of
+  $T_j$: this is where --- and only where --- $\Ex_j \setminus \Mem_j$ can be
+  nonempty, and where projecting the bare remainder universally discards
+  information.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[Justification]
+$\rho_j$ is fully reduced modulo $T_j$, so by the definition of full reduction
+it contains no principal jet of the cell: every jet occurring in it is
+parametric for $T_j$. Hence if $\rho_j \ne 0$ and carries a jet at all, then
+in the combined system $T_j\cup\{P\}$ the equation $\rho_j = 0$ has as its
+leader a \emph{formerly parametric} jet, promoting it to principal. That
+promotion \emph{is} the stratum: cutting a proper nontrivial subfamily out of
+a cell means imposing an algebraic condition on the cell's free Taylor data,
+and a new equation with a parametric leader is the only mechanism by which
+that can happen. Conversely, in cases 1 and 2 no jet is promoted, the free
+data is untouched, and every solution of the cell either solves $P$ or the
+cell's constants are constrained outright.
+\end{proof}
+
+The consequence deserves stating flatly, because it is easy to be misled by
+hydrogen's good luck:
+
+\begin{principle}[which strata the staged route sees for free]
+\label{prin:two-kinds}
+Decomposing $A$ splits on \emph{degeneracies of $A$'s own description}. The
+combined decomposition would additionally split on \emph{degeneracies
+produced by $P$'s interaction with $A$}. The staged route sees the first kind
+as cells and can never see the second kind at all.
+\end{principle}
+
+The $E=-1/8$ stratum is of the \emph{first} kind: it lives on
+\code{zero \{a0,a1\}}, a degeneracy of the ansatz's own leading coefficient,
+which $A$'s decomposition carves out unaided --- and on that cell the
+universal projection legitimately returns it. There is no reason to expect
+this in general, and no reason to think it exhausts hydrogen's strata. A
+stratum whose split arises only \emph{after} $P$ is adjoined --- an initial
+like $(c-1)$ in Example~\ref{ex:frozen}, which exists nowhere in $A$ --- has
+no cell to live in, and the universal projection on the cell containing it
+returns nothing.
+
+\subsection{Why re-completing $T_j \cup \{P\}$ per cell hits a wall}
+\label{sec:staging-wall}
+
+The obvious repair is to adjoin $P$ to each cell and re-run the differential
+Thomas decomposition there. This has been implemented and measured
+(\code{DifferentialThomas-sage}), and it does not work on
+5 of the 29 hydrogen cells --- namely cells 1, 2, 25, 26, 28
+\cite{staging-swell}. The diagnosis is worth recording, because it is what
+motivates \S\ref{sec:fixed-chain}:
+
+\begin{itemize}
+\item \emph{Not coefficient swell.} Over 232 sampled pseudo-division steps in
+  cell~1 the maximum coefficient bit-length was \textbf{16 bits}; no step
+  exceeded 64 bits. Ruled out by measurement.
+\item \emph{Not (any longer) retained garbage.} BLAD's stack allocator never
+  rolled back, so every intermediate of every pseudo-division stayed
+  allocated for the run's lifetime. An in-epoch arena GC fixed this
+  \cite{arena-gc}: hydrogen peak RSS fell from 6910\,MB to $\sim$1.75\,GB.
+\item \emph{The residual wall is intra-step live-set swell inside a single
+  \code{pseudo\_remainder} call.} After the GC fix the failures changed
+  character rather than disappearing: cells 1/2/26/28 now \emph{time out at
+  6\,h while compute-bound} with flat RSS, and cell~25 dies with a clean
+  \code{MemoryError} on a genuine live set at 38.7\,GB. Branch tracing records
+  \textbf{zero} staging steps across those six hours --- the engine never gets
+  out of one reduction. The peak remainder in cell~1 carried
+  \textbf{218{,}488} monomials.
+\end{itemize}
+
+The decisive observation is that \emph{those same five cells are cells on
+which the staged projection completes without difficulty}: cell~1 (generic),
+cell~2 (\code{zero \{v4\}}), cell~25, cell~26, cell~28 all appear in
+\code{joca-thomas-openmaple.out} with their remainders reduced and their
+primes computed. So computing $\rho_j = P \bmod T_j$ is \emph{cheap}. What
+explodes is not the reduction of $P$ by $T_j$; it is the \emph{re-completion}
+of $T_j \cup \{P\}$.
+
+The reason is structural, and Proposition~\ref{prop:staged-loss} already named
+it. Adjoining $\rho_j$ promotes a parametric jet to a leader. The chain is
+therefore no longer passive; the engine must recompute all $\Delta$-polynomials
+against the new leader, split on the initials, separants and discriminants of
+every derived equation, branch, and re-reduce inside every branch --- all in a
+jet space that \emph{grows} with each prolongation. Every one of those is a
+cost the staged route was supposed to have already paid.
+
+\subsection{The fixed-chain prolongation}
+\label{sec:fixed-chain}
+
+The repair is to stop treating $\rho_j$ as an equation to be added to a chain,
+and treat it as an \emph{element to be prolonged against a chain that never
+changes}. The cell is left exactly as Thomas produced it --- passive,
+triangular, untouched --- and used purely as a rewriting system.
+
+\begin{lemma}[a cell is a finitely generated differential algebra]
+\label{lem:cell-derivations}
+Let $(T_j,NE_j)$ be a passive cell with parametric jets $U_j$ (finite, for a
+finite-type system), and set
+\[
+  R_j \;=\; K[c][x,y,z,r]\bigl/(r^2-x^2-y^2-z^2)\;[U_j].
+\]
+Then $\partial_x,\partial_y,\partial_z$ extend to commuting derivations of the
+localization $R_j[NE_j^{-1}]$, computable by Ritt reduction against $T_j$.
+\end{lemma}
+
+\begin{proof}[Justification]
+For $u \in U_j$, the jet $\partial_x u$ is either principal for $T_j$ --- in
+which case the chain rewrites it, in solved form, as an element of $R_j$,
+legally, because the initial it divides by lies in $NE_j$ --- or parametric,
+in which case it lies in $U_j$ already. Passivity is what makes the rewriting
+confluent, hence the extension well defined; the inequations are what make
+the divisions legal.
+\end{proof}
+
+For the generic hydrogen cell $U_j = \{\Psib,\Psib'\}$, so $R_j$ has just
+\emph{six} non-constant generators ($v$ is principal, substituted away by
+$v = v_1x+v_2y+v_3z+v_4r$), and the derivations are explicit:
+\begin{gather}
+\partial_x x = 1, \qquad \partial_x r = x/r, \qquad
+\partial_x v = v_x = v_1 + v_4\,x/r, \qquad
+\partial_x \Psib = \Psib'\,v_x, \notag\\
+\partial_x \Psib' \;=\; \Psib''\,v_x
+  \;=\; -\,\frac{(b_0+b_1v)\,\Psib' + (c_0+c_1v)\,\Psib}{a_0+a_1v}\; v_x .
+\label{eq:cell-derivation}
+\end{gather}
+Every denominator that appears --- $(a_0+a_1v)$, the ODE's initial, and $r$,
+the separant of $r^2-(x^2+y^2+z^2)$ --- is an inequation of the cell. That is
+what passivity buys, and it is the whole content of
+Lemma~\ref{lem:cell-derivations}.
+
+Now build the ascending chain of \emph{commutative} ideals in $R_j$:
+\begin{equation}
+\label{eq:fixed-chain-ideals}
+I^{(0)} = (\rho_j), \qquad
+I^{(k+1)} \;=\; \Bigl(I^{(k)} + \partial_x I^{(k)} + \partial_y I^{(k)}
+                 + \partial_z I^{(k)}\Bigr) : \bigl(\Psib \textstyle\prod_{h\in NE_j} h\bigr)^{\!\infty},
+\end{equation}
+and on stabilization return $I^{(\infty)} \cap K[c]$: the cell's contribution
+to $\overline{\Ex}$. Termination is the Hilbert basis theorem --- the chain
+ascends in a Noetherian ring.
+
+The saturation must be taken \emph{before} the closure test, not after: what
+must be closed under the derivations is the saturated ideal. This is sound ---
+Kolchin's lemma says a radical differential ideal saturated by any
+multiplicative set is again a radical differential ideal --- but it dictates
+the implementation: saturate by ideal quotient, \textbf{not} by a Rabinowitsch
+variable $t\Psib-1$. A Rabinowitsch $t$ is not a jet, the derivations of
+Lemma~\ref{lem:cell-derivations} do not extend to it, and the very structure
+that makes the method work would be destroyed.
+
+\subsection{Stabilization without $\Delta$-polynomials}
+\label{sec:stabilization}
+
+\begin{criterion}[$D$-closure]
+\label{crit:dclosure}
+Let $G$ be a Gr\"obner basis of $I^{(k)}$ in $R_j$. Stop iterating
+\eqref{eq:fixed-chain-ideals} when
+\[
+  \partial_x g,\ \partial_y g,\ \partial_z g
+  \;\xrightarrow{\ G\ }\; 0
+  \qquad\text{for every } g \in G .
+\]
+Then every higher derivative $D^k\rho_j$ already lies in $I^{(k)}$, so the
+elimination ideal $I^{(k)} \cap K[c]$ is final.
+\end{criterion}
+
+This is a \emph{certificate}, not a heuristic, and the distinction matters.
+Watching the elimination ideal $I^{(k)}\cap K[c]$ ascend and appear to stop
+moving is a useful cheap progress monitor, but it proves nothing: the
+elimination ideal can sit still for one prolongation and then jump.
+$D$-closure of the full ideal proves closure. Use the first to decide whether
+to keep going, the second to decide that you are done.
+
+Criterion~\ref{crit:dclosure} carries the same mathematical content as a
+$\Delta$-polynomial test --- it must; integrability is integrability --- but it
+is a different \emph{computation}, and the three differences are precisely the
+three things that blow up in \S\ref{sec:staging-wall}:
+
+\begin{enumerate}
+\item \textbf{The cell is never tested against itself.} $T_j$ is
+  \emph{already passive}: Thomas established that when it decomposed the
+  ansatz, and all $\Delta$-polynomials among the ansatz equations already
+  reduce to zero. They are never recomputed, because $T_j$ is never modified.
+  Handing $T_j\cup\{P\}$ back to Thomas, by contrast, changes the leader
+  structure and forces \emph{every} pair to be reprocessed.
+\item \textbf{There are no pairs.} A $\Delta$-polynomial
+  $S_q\,\theta_p\,p - S_p\,\theta_q\,q$ is a pairwise, leader-matched
+  combination, and it exists precisely to avoid dividing by leading
+  coefficients that might vanish. On a passive cell the leading coefficients
+  \emph{are units} --- they are the inequations --- so the division is legal
+  and the entire leader-matching apparatus collapses to plain differentiation:
+  apply $\partial$ to a generator, reduce, done. One generator in, one
+  polynomial out. No pair queue, no leader analysis.
+\item \textbf{Nothing acquires a leader, so nothing can split.} Thomas splits
+  whenever the initial or separant of a \emph{derived} equation may vanish.
+  Here the $D^k\rho_j$ are never made into chain equations; they are ideal
+  generators, they have no initials, and there is nothing to split on. The
+  vanishing conditions Thomas would have branched on reappear instead as
+  \emph{components of} $V(I^{(\infty)}\cap K[c])$ --- which is where they were
+  wanted all along: as answers, not as branches.
+\end{enumerate}
+
+And the variable set is fixed. In the differential engine the jet space grows
+with every prolongation; here $\partial g$ lands back in the same
+six-generator ring, always, by Lemma~\ref{lem:cell-derivations}. The
+generators may grow in \emph{degree} --- each pseudo-division multiplies by
+$(a_0+a_1v)$ and by $r$, so degrees grow roughly linearly in the prolongation
+order --- but never in \emph{variable count}. That is a structural reason to
+expect the 218{,}488-monomial swell not to recur, and it is the reason to
+expect the fixed-chain route to reach the five cells that defeat re-completion.
+
+\subsection{The linear-homogeneous structure: existence is a rank condition}
+\label{sec:rank}
+
+For the hydrogen class --- and for the whole linear-homogeneous class the paper
+treats --- there is a further structural fact that collapses the $\exists$
+computation, and it was found by running the algorithm rather than by thinking
+about it. The ansatz and the PDE are \emph{linear homogeneous} in $\Psib$.
+Reduction and the derivations of Lemma~\ref{lem:cell-derivations} are linear
+operations, so:
+
+\begin{proposition}[the generators are linear forms in the parametric jets]
+\label{prop:linear}
+Let $u_1,\dots,u_m$ be the parametric jets of the cell. Then $\rho_j$ and every
+$\partial^k\rho_j$ is a linear form
+\[
+  \rho^{(i)} \;=\; \sum_{l=1}^{m} M_{il}(c,x,y,z,r)\; u_l ,
+\]
+with the coefficients $M_{il}$ free of every jet. Consequently, writing $M$ for
+the coefficient matrix,
+\begin{align}
+\Mem_j &\;=\; \{c :\; M \equiv 0 \ \text{identically}\}
+   && \text{(every entry vanishes --- the paper's coefficient collection),}\\
+\Ex_j  &\;=\; \{c :\; \operatorname{rank} M(c,p) \le m-1 \ \text{for \emph{some}
+   base point } p\}
+   && \text{(a nontrivial kernel $(u_1,\dots,u_m)\neq 0$ exists).}
+\end{align}
+\end{proposition}
+
+Three things follow at once. First, $\Mem_j \subseteq \Ex_j$ is now trivial:
+$M\equiv 0$ makes every minor vanish everywhere. Second, the $m\times m$ minors
+of $M$ \emph{contain no jets at all}, so the jet variables leave the elimination
+for free and only the base point $x,y,z,r$ remains to be eliminated. Third --- and
+this is the part that matters operationally --- the two loci are distinguished
+by \emph{how} the minors vanish: identically (membership) versus on an isolated
+base-point locus (a partial stratum). The quantifier selector of
+\S\ref{sec:corrected} is, for this class, a rank test.
+
+\begin{remark}[what the parametric set actually is, per cell]
+The parametric jets are read off the cell, not assumed. On the generic cell they
+are $\{\Psib,\Psib'\}$, as the paper's collection set implies. On cells 26/27
+($a_0=a_1=0$) the ODE loses its $\Psib''$ term altogether, so $\Psib'$ becomes
+the leader and $\Psib''$ goes \emph{free}: the parametric set is
+$\{\Psib,\Psib''\}$. Still $m=2$, still $2\times2$ minors --- but an
+implementation that hard-coded $\{\Psib,\Psib'\}$ from the generic cell would
+silently collect over a determined symbol and over-constrain, which is
+Criterion~\ref{crit:main} violated at one remove.
+\end{remark}
+
+\subsection{Passivity is a commutator condition --- and must be checked}
+\label{sec:passivity}
+
+Everything in \S\S\ref{sec:fixed-chain}--\ref{sec:rank} rests on
+Lemma~\ref{lem:cell-derivations}, and the lemma rests on \emph{passivity}. It is
+worth knowing that this hypothesis is cheaply \emph{testable} inside the same
+machinery, because in practice it is the thing that goes wrong.
+
+\begin{criterion}[the derivations must close on the ring]
+\label{crit:passive}
+Build the derivation table: for every parametric jet $u \in U_j$ and every
+derivation $\partial_d$, reduce $\partial_d u$ modulo the chain. Lemma~%
+\ref{lem:cell-derivations} says that on a \emph{passive} cell the result is
+always an element of $R_j$ --- the derivative of a parametric jet is either
+principal (rewritten by the chain) or parametric (already in $U_j$). \textbf{If
+the reduction instead throws up a jet that is not a generator of $R_j$, the
+construction is invalid}: the chain is not passive, the parametric set is really
+infinite, and the fixed-chain route must refuse. The check costs one reduction of
+a single symbol per $(u,d)$ pair --- milliseconds --- and it is the guard the
+implementation must carry.
+\end{criterion}
+
+If it is skipped, the route does not fail loudly; it \emph{lies}. The
+``parametric'' jets are not free, the coefficient matrix $M$ of
+Proposition~\ref{prop:linear} is built over the wrong column set, and the rank
+test returns a confident wrong answer.
+
+\begin{remark}[a live defect in \code{joca-thomas.sage}, and how it was caught]
+\label{rem:spec-not-passive}
+The script builds each cell's chain by substituting the cell's vanishing
+constants into the \emph{raw} ansatz. That is the completed Thomas chain only on
+cells where the ansatz was \emph{already} passive --- the generic cell. On the
+degenerate strata the real Thomas cells carry extra integrability equations, and
+the re-specialized ansatz does not. Concretely on cells 26/27 ($a_0=a_1=0$) the
+ODE loses its $\Psib''$ term \emph{altogether}, so $\Psib''$ is unconstrained ---
+and so are $\Psib''_x, \Psib''_{xx}, \dots$. The parametric set is infinite, the
+cell is not of finite type with respect to this chain, and
+Criterion~\ref{crit:passive} catches it precisely:
+\[
+  \operatorname{reduce}\bigl(\partial_x \Psib''\bigr)
+  \;\longrightarrow\; \cdots \Psib''_x \cdots \qquad
+  \text{--- a jet that is not a generator of } R_j .
+\]
+Two false trails are worth recording, because both \emph{looked} like results.
+First, run without the guard, the route cheerfully reports the parametric set of
+cells 26/27 as $\{\Psib, \Psib''\}$ and returns an elimination ideal of $(0)$.
+Second, the tempting ``passivity $=$ commuting derivations'' test
+($[\partial_i,\partial_j](u) = 0$, the $\Delta$-polynomial condition transplanted)
+is \emph{vacuous} here: it reports these cells PASSIVE, because the out-of-ring
+jet is silently mangled before the commutator is ever formed. Only the
+ring-closure check of Criterion~\ref{crit:passive} is decisive.
+
+All of this is harmless for the \emph{universal} route --- Ritt reduction still
+reduces the PDE fully, which is why the recorded 29-cell projection and its
+$E=-1/8$ prime stand --- and fatal for the \emph{existential} one. It is the
+general rule in the sharpest possible form: \textbf{$\forall$ needs only
+reduction; $\exists$ needs closure.}
+\end{remark}
+
+\begin{remark}[rank $\le m-1$ is not membership]
+\label{rem:rank-not-membership}
+A related trap, met the same way. ``All $m\times m$ minors of $M$ vanish
+identically'' means $\operatorname{rank} M \le m-1$ \emph{everywhere}, hence a
+$1$-dimensional kernel at every $c$: a \emph{proper subfamily} solves for every
+$c$ --- a partial stratum over all of $\mathbb{C}$, which is the \emph{opposite}
+of membership. Membership is $M \equiv 0$, i.e.\ rank $0$. The two must be
+reported separately (Proposition~\ref{prop:linear}), and conflating them turns
+the strongest possible existence statement into a false membership claim.
+\end{remark}
+
+\subsection{Measurements}
+\label{sec:fc-measurements}
+
+The route of \S\S\ref{sec:fixed-chain}--\ref{sec:rank} is implemented as the
+\code{--prolong} option of \code{joca-thomas.sage}. What it shows:
+
+\begin{itemize}
+\item \emph{Lemma~\ref{lem:cell-derivations} holds on the nose.} Reducing $P$
+  modulo the generic cell lands in exactly
+  $\mathbb{Q}[c][x,y,z,r,\Psib,\Psib']$ --- 228 terms, degree 9, 0.1\,s. No
+  $v$, no $\Psib''$, no jets: six non-constant generators, as predicted.
+\item \emph{The differential engine is not needed.} The explicit derivation
+  \eqref{eq:cell-derivation} agrees with BLAD's \code{differential\_prem} on
+  every cross-check, and is about \textbf{2000$\times$} faster in the
+  prolongation loop (0.1\,s versus 200\,s for one order). Building the derivation
+  table costs a handful of single-jet reductions (milliseconds); after that the
+  engine is never called again.
+\item \emph{On the generic cell the whole differential side is sub-second.}
+  Prolonging to $k=2$ costs \textbf{0.3--0.7\,s} at a few hundred MB, against a
+  6-hour timeout for the Thomas re-completion of the same cell. The claim of
+  \S\ref{sec:staging-wall} is discharged \emph{there}: the wall was the
+  re-completion, not the reduction.
+
+\item \emph{But the degenerate cells are not yet reachable --- for a reason that
+  is about the \emph{input}, not the method.} Cells 26/27, which carry the
+  $E=-1/2$ and $E=-1/8$ strata, are refused by Criterion~\ref{crit:passive}: the
+  chain \code{joca-thomas.sage} hands them is the re-specialized raw ansatz, not
+  the completed Thomas cell, and $\Psib''$ escapes the ring
+  (Remark~\ref{rem:spec-not-passive}). The fix is to feed the cells' own
+  equations from the Thomas log (\code{parse\_diff=True}), which are already
+  recorded there; until that is wired, \textbf{no existential claim about the
+  strata-carrying cells is supported}, and the two earlier ``results'' this note
+  might have reported for them were artifacts.
+\item \emph{Coefficients stay small}, $\le 19$ bits at $k=3$ --- the same verdict
+  the staging diagnosis reached by measurement \cite{staging-swell}, now in the
+  fixed-chain setting too.
+\item \emph{The polynomials do grow, and the wall moves to the commutative
+  side.} Unpruned, the generators go $228 \to \sim\!10^3 \to \sim\!10^4 \to
+  \sim\!5\cdot10^4$ terms with degree $+5$ per order (the degree step is the
+  cleared denominator $m = r(a_0+a_1v)$ accumulating; stripping the exact unit
+  factors recovers roughly a third of it). On the generic cell the $2\times2$
+  minors of the $k\le2$ matrix reach $3.5\cdot10^5$ terms at degree 32, and the
+  symbolic elimination over the eleven constants does not complete --- the same
+  parametric-elimination cliff as \cite{existence-route-report}, now met on a
+  much smaller problem.
+\item \emph{The pointwise probe decides membership of $\Ex$ in 0.4\,s.} Fixing
+  $c^*$ and asking whether the specialized minors have a common zero on the
+  quadric is a Gr\"obner computation in \emph{four} variables. It reports the
+  recorded $E=-1/2$ membership point as lying in $\Ex$ --- with the minors
+  vanishing \emph{identically}, i.e.\ correctly diagnosed as a \emph{membership}
+  point --- and reports $0/5$ random constant points in $\Ex$, so the locus is a
+  proper subvariety and the test discriminates. This is the
+  Nullstellensatz probe of \cite[Open problem 1]{existence-route-report},
+  designed there and never executed; the rank formulation makes it a few lines.
+\end{itemize}
+
+The honest summary. \textbf{On a genuinely passive cell the fixed-chain route
+removes the differential wall entirely}, and moves the problem onto the
+commutative side, where the pointwise probe is cheap (0.4\,s) and the symbolic
+elimination is still the open cliff. Two things are therefore true at once, and
+neither should be overstated:
+\begin{itemize}
+\item the differential obstruction that made per-cell staging fail --- the
+  re-completion --- is \emph{gone}, replaced by table-lookup differentiation in a
+  fixed ring; and
+\item the route has not yet been \emph{run} on the cells that matter, because
+  \code{joca-thomas.sage} does not currently feed them a passive chain
+  (Remark~\ref{rem:spec-not-passive}). That is a wiring defect with a known fix,
+  not a new wall --- but it is unfixed, and the strata claims stay open until it
+  is.
+\end{itemize}
+
+\subsection{What it costs}
+
+Three honest debits, none fatal, all worth stating.
+
+\begin{itemize}
+\item \emph{It uses the same reduction engine.} If $\partial^2\rho_j$ modulo
+  cell~1 happens to blow up to $10^5$ terms anyway, the split-avoidance bought
+  nothing. The structural argument above says it should not; only measurement
+  settles it. Fortunately the measurement is cheap --- $\rho_j$ is already
+  computed for all 29 cells; prolonging it two or three times and counting
+  terms is an afternoon, not a task.
+\item \emph{The final elimination is the known cliff, at a much smaller
+  scale.} The global bounded-prolongation attempt did not complete even over
+  $\mathrm{GF}(32003)$ at $N=2$ --- but that ideal carried every jet of
+  $\Psib, v, r$ up to order $N$ as an indeterminate, plus the whole ansatz's
+  prolongation generators. Here the ansatz has been \emph{solved away by the
+  reduction} and six non-constant variables remain; on degenerate cells the
+  constants are partly specialized already (cell~26 has $a_0=a_1=0$, so nine
+  constants, not eleven). A different-sized problem, not the same cliff ---
+  but not a guarantee either.
+\item \emph{It returns $\overline{\Ex_j}$, not disjoint strata.} That is the
+  price of not splitting, and it is exactly the trade
+  \S\ref{sec:bounded-prolongation} names: the single-ideal route returns the
+  Zariski closure, a superset that never loses a component. For the question
+  actually on the table --- \emph{does this cell carry a partial stratum, and
+  at which constants} --- closure is enough.
+\end{itemize}
+
+%=====================================================================
 \section{Open problems and next steps}
 \label{sec:open}
 
@@ -862,6 +1376,18 @@ Brent's Phase~III sketch was missing.
   \cite{existence-route-report}. Until one of these lands, the corrected
   algorithm's Phase III$_\exists$ is validated only on toy examples
   (\S\ref{sec:tests}).
+
+  \emph{Update} (\S\ref{sec:staged}): per-cell staging in its obvious form
+  --- re-run differential Thomas on $T_j\cup\{P\}$ --- itself fails on five
+  of the 29 cells \cite{staging-swell}, and the failure is not coefficient
+  swell but intra-step live-set swell inside the re-completion. The
+  fixed-chain prolongation of \S\ref{sec:fixed-chain} is the proposed way
+  past it: it deletes the re-completion, keeps the reduction (which is
+  measurably cheap on all 29 cells), and reduces the whole per-cell
+  $\exists$ question to a commutative $D$-closure computation in six
+  non-constant variables. \textbf{Unmeasured}: whether $\partial^k\rho_j$
+  stays small under \eqref{eq:cell-derivation}. That is the next
+  experiment, and it is cheap.
 \item \textbf{The ``used inequations'' completeness argument.} Phase II
   splits only on tracked divisors. The argument that this suffices ---
   untracked initials/separants do not affect the reduction identities, and
@@ -919,6 +1445,25 @@ literature search}, project report
 2s Identification, Note Corrections, Implementation Findings}, project report
 \code{\char`~/project/reports/bounded-prolongation-existence-route.md},
 2026-07-07.
+
+\bibitem{joca-thomas-report} \emph{Per-cell decomposition: the paper's
+algorithm run on each differential Thomas cell of the ansatz}, project report
+\code{\char`~/project/reports/joca-thomas-per-cell-decomposition.md}. The
+script is \code{joca-thomas.sage}; its recorded output for the 29 hydrogen
+cells is \code{joca-thomas-openmaple.out} (this directory).
+
+\bibitem{staging-swell} \emph{DifferentialThomas staging swell: diagnosis},
+project report
+\code{\char`~/project/reports/differentialthomas-staging-swell-diagnosis.md}.
+Coefficient-swell ruled out by measurement (max 16 bits over 232
+pseudo-division steps); retained-arena-garbage root cause; residual
+intra-step live-set swell on cells 1, 2, 25, 26, 28.
+
+\bibitem{arena-gc} \emph{DifferentialThomas-sage: in-epoch arena GC},
+project report
+\code{\char`~/project/reports/differentialthomas-sage-arena-gc.md}. Peak RSS
+6910\,MB $\to$ $\sim$1.75\,GB; the five staging cells survive the fix as
+compute-bound timeouts and a live-set \code{MemoryError}.
 
 \bibitem{README} \code{README.md} (this directory): the \code{joca*.sage}
 scripts, the RG performance findings, and the regularize-then-reduce
