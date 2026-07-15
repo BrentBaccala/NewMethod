@@ -291,9 +291,31 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=vp + dp + mp + np_ + ap + bp + cp,
                     v_params=vp)
 
+    # ----- RATIONAL-ARGUMENT template: Psi = Zeta(w), w = B/C -----------------
+    # The inner argument is a rational function of the coordinates.  Rather than
+    # carry a denominator, introduce w as a jet defined by the cleared relation
+    # C*w - B = 0 (leader w, separant C -- so C != 0 is a Thomas inequation);
+    # everything else is the Zeta(V) family with w in place of v.  B/C is
+    # invariant under (B,C)->(lambda B, lambda C), an extra scaling dimension we
+    # let Thomas carry (helium.sage suppressed it with homogenization).
+    if ansatz in (6, 7):
+        d_bc = 1 if ansatz == 6 else 2          # degree of B, C and of the ODE coeffs
+        bp, B = trial('b', gens, d_bc, roots=rset)      # numerator   (with constant)
+        cp, C = trial('c', gens, d_bc, roots=rset)      # denominator (with constant)
+        dp, D = trial('d', ['w'], d_bc)                 # ODE coeffs in w = B/C
+        mp, M = trial('m', ['w'], d_bc)
+        np_, N = trial('n', ['w'], d_bc)
+        eqs = (['Psi[%s] - DPsi*w[%s]' % (c, c) for c in coords]
+               + ['DPsi[%s] - DDPsi*w[%s]' % (c, c) for c in coords]
+               + ['(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)]
+               + ['(%s)*w - (%s)' % (C, B)])            # C*w - B = 0  (w = B/C)
+        return dict(kind='rational',
+                    jets_dep=['DDPsi', 'DPsi', 'Psi', 'w'],
+                    equations=eqs, params=bp + cp + dp + mp + np_,
+                    v_params=bp)                         # B==0 -> w=0 -> degenerate
+
     raise NotImplementedError(
         "ansatz %s not yet in the differential-algebra library.\n"
-        "  rational argument (6,7: F(B/C))  -> add inner w with C*w-B=0;\n"
         "  algebraic extension (11: gamma)  -> same template as 13." % ansatz)
 
 
