@@ -90,6 +90,22 @@ def _chain_rules(order, coords, inner='v'):
     return eqs, tower
 
 
+def _log_relations(coords):
+    """Cleared defining relations for the transcendental jet
+    L = log(hyperradius^2); leaders L[c], initial = the radicand.  L has NO
+    order-0 relation (log is transcendental; the free order-0 jet is exactly the
+    additive integration constant of the log).  See the log-hyperradius ansaetze
+    (17/17.1/18/19) and ~/project/reports/helium-new-ansatze.md.  NOTE: for
+    helium L = log(R1^2+R2^2) = 2 log s (the triple-coalescence hyperradius); the
+    hydrogen analogue L = log(x^2+y^2+z^2) = 2 log r is included so the ansaetze
+    that are otherwise coordinate-agnostic can be smoke-tested on hydrogen."""
+    if coords == ['R1', 'R2', 'R12']:
+        rad, grad = 'R1^2 + R2^2', {'R1': '2*R1', 'R2': '2*R2', 'R12': '0'}
+    else:                                          # hydrogen
+        rad, grad = 'x^2 + y^2 + z^2', {'x': '2*x', 'y': '2*y', 'z': '2*z'}
+    return ['(%s)*L[%s] - (%s)' % (rad, c, grad[c]) for c in coords]
+
+
 # ==========================================================================
 # coordinate systems (one per PDE)
 # ==========================================================================
@@ -314,6 +330,154 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=bp + cp + dp + mp + np_,
                     v_params=bp)                         # B==0 -> w=0 -> degenerate
 
+    # ----- COEFFICIENT-RING EXTENSION templates (NewSol.tex ansatz collection) -
+    # Psi = Zeta(v) with a 2nd-order ODE  D*DDPsi - M*DPsi - N*Psi = 0  whose
+    # coefficients D,M,N live in an EXTENSION of the coefficient ring.  Ansatz 13
+    # (already above) is the ALGEBRAIC case (g root of a quadratic).  14/15/16
+    # below add the remaining cases from NewSol.tex's ansatz collection (the
+    # section removed in Papers commit fc28cfca, Oct 2024).  These are my
+    # interpretation of the schematic paper diagrams -- base cases only (degree 1
+    # where possible), implemented faithfully; get-them-to-parse is the goal.
+
+    if int(ansatz) == 14:
+        # NewSol.tex: EXPONENTIAL element in the coefficient ring.  An exponential
+        # t = exp(e0*v) sits in the ODE coefficient ring (t multiplies the
+        # coefficients D,M,N, NOT Psi), with defining relation t[c] - e0*t*v[c]
+        # per coordinate -- the same shape as ansatz 1's Phi[c]-Phi*B[c].  ONE
+        # rate parameter e0; D,M,N are degree-1 polys in v and t.
+        vp, V = trial('v', gens, 1, constant=False, roots=rset)
+        dp, D = trial('d', ['v', 't'], 1)
+        mp, M = trial('m', ['v', 't'], 1)
+        np_, N = trial('n', ['v', 't'], 1)
+        eqs = (['Psi[%s] - DPsi*v[%s]' % (c, c) for c in coords]
+               + ['DPsi[%s] - DDPsi*v[%s]' % (c, c) for c in coords]
+               + ['t[%s] - e0*t*v[%s]' % (c, c) for c in coords]
+               + ['(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)]
+               + ['v - (%s)' % V])
+        return dict(kind='expext',
+                    jets_dep=['DDPsi', 'DPsi', 'Psi', 't', 'v'],
+                    equations=eqs, params=vp + ['e0'] + dp + mp + np_,
+                    v_params=vp, amp_params=[])
+
+    if int(ansatz) == 15:
+        # NewSol.tex: 2nd-order HOLONOMIC element in the coefficient ring.  A
+        # holonomic element t (jets t,Dt,DDt) solves its OWN 2nd-order ODE in v,
+        # and Psi's ODE coefficients D,M,N are degree-1 polys in v, t and Dt.
+        # Heavy (7 dependent jets) -- inherent to a holonomic coefficient ring.
+        vp, V = trial('v', gens, 1, constant=False, roots=rset)
+        pp, P = trial('p', ['v'], 1)                    # t's ODE coeffs (in v)
+        qp, Q = trial('q', ['v'], 1)
+        sp, S = trial('s', ['v'], 1)
+        dp, D = trial('d', ['v', 't', 'Dt'], 1)         # Psi's ODE coeffs
+        mp, M = trial('m', ['v', 't', 'Dt'], 1)
+        np_, N = trial('n', ['v', 't', 'Dt'], 1)
+        eqs = (['Psi[%s] - DPsi*v[%s]' % (c, c) for c in coords]
+               + ['DPsi[%s] - DDPsi*v[%s]' % (c, c) for c in coords]
+               + ['t[%s] - Dt*v[%s]' % (c, c) for c in coords]
+               + ['Dt[%s] - DDt*v[%s]' % (c, c) for c in coords]
+               + ['(%s)*DDt - (%s)*Dt - (%s)*t' % (P, Q, S)]
+               + ['(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)]
+               + ['v - (%s)' % V])
+        return dict(kind='holoext',
+                    jets_dep=['DDPsi', 'DPsi', 'Psi', 'DDt', 'Dt', 't', 'v'],
+                    equations=eqs, params=vp + pp + qp + sp + dp + mp + np_,
+                    v_params=vp, amp_params=[])
+
+    if int(ansatz) == 16:
+        # NewSol.tex / helium.sage coded ansatz 16: an algebraic root nested
+        # BELOW the extension.  Psi = Zeta(v) with a SIMPLE 2nd-order ODE, linear
+        # coeffs in v (as in ansatz 5); the novelty is in the BASE -- an algebraic
+        # element g = sqrt(radicand) with g^2 - radicand = 0, the radicand a
+        # linear trial polynomial in the coordinates, and the inner variable v
+        # ranging over the coordinates AND g.  This is the DA-library analogue of
+        # helium.sage's coded ansatz 16 (gamma = root of a linear poly, V over
+        # coords + gamma, linear-coefficient ODE), previously excluded here.
+        vp, V = trial('v', gens + ['g'], 1, constant=False, roots=rset)
+        kp, RAD = trial('k', gens, 1, roots=rset)       # radicand: g = sqrt(RAD)
+        ap, A = trial('a', ['v'], 1)
+        bp, B = trial('b', ['v'], 1)
+        cp, C = trial('c', ['v'], 1)
+        ODE = '(%s)*DDPsi + (%s)*DPsi + (%s)*Psi' % (A, B, C)
+        eqs = (['Psi[%s] - DPsi*v[%s]' % (c, c) for c in coords]
+               + ['DPsi[%s] - DDPsi*v[%s]' % (c, c) for c in coords]
+               + [ODE]
+               + ['v - (%s)' % V]
+               + ['g^2 - (%s)' % RAD])                  # gamma: g^2 = radicand
+        return dict(kind='algbase',
+                    jets_dep=['DDPsi', 'DPsi', 'Psi', 'v', 'g'],
+                    equations=eqs, params=vp + kp + ap + bp + cp,
+                    v_params=vp, amp_params=[])
+
+    # ----- LOG-HYPERRADIUS templates (Bartlett-Fock log; report ansaetze) ------
+    # Psi carrying the log-non-analyticity L = log(R1^2+R2^2) = 2 log s admitted
+    # via a transcendental jet with rational (cleared) derivatives; see
+    # ~/project/reports/helium-new-ansatze.md for the full derivation.  17/17.1
+    # (loglin) and 18 (product+log) hard-code the helium hyperradius gradient in
+    # _log_relations, so they are HELIUM-SPECIFIC (17.1 additionally hard-codes
+    # (R1^2+R2^2) in the trial form); a hydrogen build-check is not expected to be
+    # meaningful for these.  19 rides the Zeta family via the extra_jets hook.
+
+    if int(ansatz) == 17:
+        if ansatz == 17:
+            # Fock-linear: Psi = A + B*L, A,B degree 1 -- the minimal form with a
+            # genuine log s.  (report ansatz 14)
+            ap, A = trial('a', gens, 1, roots=rset)
+            bp, B = trial('b', gens, 1, roots=rset)
+            eqs = (['Psi - ((%s) + (%s)*L)' % (A, B)]   # leader Psi
+                   + _log_relations(coords))            # leaders L[c]
+            return dict(kind='loglin', jets_dep=['Psi', 'L'],
+                        equations=eqs, params=ap + bp,
+                        v_params=bp,            # B == 0  -> log gone -> DEGENERATE
+                        amp_params=ap + bp)     # A==B==0 -> Psi == 0 -> TRIVIAL
+        else:                                           # ansatz 17.1
+            # Fock-exact slot: Psi = A(deg 2) + b0*(R1^2+R2^2)*L -- the log pinned
+            # to the exact O(s^2 log s) Fock slot.  (report ansatz 14.1)
+            ap, A = trial('a', gens, 2, roots=rset)
+            eqs = (['Psi - ((%s) + b0*(R1^2 + R2^2)*L)' % A]
+                   + _log_relations(coords))
+            return dict(kind='loglin', jets_dep=['Psi', 'L'],
+                        equations=eqs, params=ap + ['b0'],
+                        v_params=['b0'], amp_params=ap + ['b0'])
+
+    if ansatz == 18:
+        # Kato x Fock: Psi = exp(B)*(A0 + A1*L) -- cusp exponents times the first
+        # Fock log.  Product template extended by the log jet.  (report ansatz 15)
+        bp,  Bx = trial('b', gens, 1, constant=False, roots=rset)
+        a0p, A0 = trial('a', gens, 1, roots=rset)
+        a1p, A1 = trial('h', gens, 1, roots=rset)
+        eqs = (['Psi - Phi*((%s) + (%s)*L)' % (A0, A1)]
+               + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
+               + ['B - (%s)' % Bx]
+               + _log_relations(coords))
+        return dict(kind='product', jets_dep=['Psi', 'Phi', 'B', 'L'],
+                    equations=eqs, params=bp + a0p + a1p,
+                    v_params=a1p,             # A1 == 0 -> log gone (ansatz-1 land)
+                    amp_params=a0p + a1p)     # A0==A1==0 -> Psi == 0
+
+    if ansatz == 19:
+        # Zeta family with a log-extended inner variable: v ranges over the coords
+        # AND L = log(R1^2+R2^2), so Psi = Zeta(v1*R1+v2*R2+v3*R12+v4*L).  Uses the
+        # extra_jets hook in build_problem's Zeta branch and passes the log
+        # relations through the family's `extra` slot.  (report ansatz 16)
+        vp, V = trial('v', gens + ['L'], 1, constant=False, roots=rset)
+        ap, A = trial('a', ['v'], 1)
+        bp, B = trial('b', ['v'], 1)
+        cp, C = trial('c', ['v'], 1)
+        ODE = '(%s)*DDPsi + (%s)*DPsi + (%s)*Psi' % (A, B, C)
+        return dict(order=2, V=V, ODE=ODE, params=vp + ap + bp + cp,
+                    extra=_log_relations(coords), extra_jets=['L'])
+
+    if ansatz == 1.1:
+        # Hylleraas-type cusp with quadratic amplitude: Psi = A(deg 2)*exp(B).
+        # No new template -- ansatz 1 with a quadratic A.  (report ansatz 1.1)
+        ap, A = trial('a', gens, 2, roots=rset)
+        bp, B = trial('b', gens, 1, constant=False, roots=rset)
+        eqs = (['Psi - (%s)*Phi' % A]
+               + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
+               + ['B - (%s)' % B])
+        return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
+                    equations=eqs, params=ap + bp, v_params=bp, amp_params=ap)
+
     raise NotImplementedError(
         "ansatz %s not yet in the differential-algebra library.\n"
         "  algebraic extension (11: gamma)  -> same template as 13." % ansatz)
@@ -419,7 +583,10 @@ def build_problem(pde_name, ansatz):
                           + ['v - (%s)' % spec['V']]
                           + list(spec['extra']))
         ansatz_eqs_str += root_eqs
-        jets_dep = list(reversed(tower)) + ['v']
+        # extra_jets hook: a Zeta-family ansatz may extend the inner variable with
+        # an extra differential jet (e.g. ansatz 19's log jet L) whose defining
+        # relations arrive via the `extra` slot; rank it just below v.
+        jets_dep = list(reversed(tower)) + ['v'] + list(spec.get('extra_jets', []))
         # inner-variable coefficients: params appearing in V.
         v_toks = set(re.findall(r'[A-Za-z]\w*', spec['V']))
         v_params = [p for p in params if p in v_toks]
