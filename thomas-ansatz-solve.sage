@@ -77,7 +77,7 @@ R = prob['R']
 COORDS = prob['coords']
 ROOT_NAMES = [rn for rn, _ in prob['roots']]
 PARAMS = prob['params']
-JET_TOWER = prob['tower']                    # [Psi, DPsi(, DDPsi)]
+JETS = prob['jets']                          # all differential indeterminates
 ansatz0 = prob['ansatz_eqs']
 pconst = prob['pconst']
 PDE = prob['pde']
@@ -95,7 +95,7 @@ print("params:", PARAMS)
 constants = [sympy.Symbol('E')] + [sympy.Symbol(p) for p in PARAMS]
 strata_constants = [sympy.Symbol(p) for p in PARAMS]
 
-_IB = {nm: sympy.IndexedBase(nm) for nm in (JET_TOWER + ['v'] + ROOT_NAMES)}
+_IB = {nm: sympy.IndexedBase(nm) for nm in JETS}
 _DERIV = {c: sympy.Symbol(c) for c in COORDS}
 _PARAM = {p: sympy.Symbol(p) for p in (['E'] + PARAMS)}
 _JET_HEADS = set(_IB)

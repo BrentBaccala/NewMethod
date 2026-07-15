@@ -175,16 +175,64 @@ def ansatz_spec(ansatz, coords, roots):
         ODE = 'DPsi - (%s)*Psi' % N
         return dict(order=1, V=V, ODE=ODE, params=vp + np_, extra=[])
 
+    # ----- PRODUCT / EXPONENTIAL template: Psi = A(coords) * F(inner) ---------
+    # The solution is a coordinate polynomial A times an ODE function F of an
+    # inner variable.  Psi is defined by  Psi - A*F = 0  (leader Psi); F has its
+    # own chain rule / ODE.  Unlike the Zeta(V) family the chain rule carries the
+    # A-factor: differentiating Psi - A*F gives Psi[c] = A_c*F + A*F[c] (the
+    # engine forms A_c since A is built from the independent coordinates).  The
+    # inner-variable jet is named B (exp/Chi) or C (log); its coefficients are
+    # v_params, so B==0 (exponential/log collapses to a constant) reads as the
+    # degenerate case.  Homogenization is dropped (Thomas splits those loci).
+
+    if ansatz == 1:
+        # Psi = A * Phi,  Phi = exp(B):  Phi' = Phi, so the chain rule is
+        # Phi[c] - Phi*B[c]  (no separate derivative jet).
+        ap, A = trial('a', gens, 1, roots=rset)                    # A(coords)
+        bp, B = trial('b', gens, 1, constant=False, roots=rset)    # inner B
+        eqs = (['Psi - (%s)*Phi' % A]
+               + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
+               + ['B - (%s)' % B])
+        return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
+                    equations=eqs, params=ap + bp, v_params=bp)
+
+    if ansatz == 2:
+        # Psi = A * Xi,  Xi = log(C):  Xi' = 1/C, so the chain rule cleared of
+        # the denominator is  C*Xi[c] - C[c].
+        ap, A = trial('a', gens, 1, roots=rset)                    # A(coords)
+        cp, C = trial('c', gens, 1, constant=False, roots=rset)    # inner C
+        eqs = (['Psi - (%s)*Xi' % A]
+               + ['C*Xi[%s] - C[%s]' % (c, c) for c in coords]
+               + ['C - (%s)' % C])
+        return dict(kind='product', jets_dep=['Psi', 'Xi', 'C'],
+                    equations=eqs, params=ap + cp, v_params=cp)
+
+    if ansatz == 3:
+        # Psi = A * Chi,  Chi a 2nd-order ODE function of B with COORDINATE-
+        # polynomial coefficients (helium.sage's "weird second-order mess"):
+        #   pC*Chi'' - pD*Chi' - pF*Chi - pG = 0.
+        ap, A = trial('a', gens, 1, roots=rset)
+        bp, B = trial('b', gens, 1, constant=False, roots=rset)    # inner B
+        cp, pC = trial('c', gens, 1, roots=rset)                   # ODE coeffs
+        dp, pD = trial('d', gens, 1, roots=rset)                   # (coord polys)
+        fp, pF = trial('f', gens, 1, roots=rset)
+        gp, pG = trial('g', gens, 1, roots=rset)
+        eqs = (['Psi - (%s)*Chi' % A]
+               + ['Chi[%s] - DChi*B[%s]' % (c, c) for c in coords]
+               + ['DChi[%s] - DDChi*B[%s]' % (c, c) for c in coords]
+               + ['(%s)*DDChi - (%s)*DChi - (%s)*Chi - (%s)' % (pC, pD, pF, pG)]
+               + ['B - (%s)' % B])
+        return dict(kind='product', jets_dep=['Psi', 'DDChi', 'DChi', 'Chi', 'B'],
+                    equations=eqs, params=ap + bp + cp + dp + fp + gp,
+                    v_params=bp)
+
     raise NotImplementedError(
         "ansatz %s not yet in the differential-algebra library.\n"
-        "  product ansaetze (1,2,3: Psi=A(coords)*F(V))     -> add F as a jet, "
-        "Psi-A*F as a defining eq;\n"
-        "  rational argument (6,7: F(B/C))                  -> add inner w with "
-        "C*w-B=0;\n"
-        "  algebraic extension (11: gamma)                  -> add g with its "
-        "minimal polynomial as an `extra` eq;\n"
-        "  nested ODEs (12,13)                              -> two ODE functions, "
-        "two inner variables." % ansatz)
+        "  rational argument (6,7: F(B/C))     -> add inner w with C*w-B=0;\n"
+        "  algebraic extension (11: gamma)     -> add g with its minimal "
+        "polynomial as an `extra` eq;\n"
+        "  nested ODEs (12,13)                 -> two ODE functions, two inner "
+        "variables." % ansatz)
 
 
 # ==========================================================================
@@ -267,20 +315,31 @@ def build_pde_string(pde_name, coords):
 def build_problem(pde_name, ansatz):
     coords, roots = coordinate_system(pde_name)
     spec = ansatz_spec(ansatz, coords, roots)
-    order = spec['order']
     params = spec['params']
-
-    chain, tower = _chain_rules(order, coords)
     root_eqs = ['%s^2 - (%s)' % (rn, rad) for rn, rad in roots]
 
-    ansatz_eqs_str = (chain
-                      + [spec['ODE']]
-                      + ['v - (%s)' % spec['V']]
-                      + root_eqs
-                      + list(spec['extra']))
+    if spec.get('kind') == 'product':
+        # product / exponential family: equations already assembled by the spec.
+        jets_dep = spec['jets_dep']
+        ansatz_eqs_str = list(spec['equations']) + root_eqs
+        v_params = spec['v_params']
+        tower = None
+    else:
+        # Zeta(V) single-ODE-function family.
+        order = spec['order']
+        chain, tower = _chain_rules(order, coords)
+        ansatz_eqs_str = (chain
+                          + [spec['ODE']]
+                          + ['v - (%s)' % spec['V']]
+                          + list(spec['extra']))
+        ansatz_eqs_str += root_eqs
+        jets_dep = list(reversed(tower)) + ['v']
+        # inner-variable coefficients: params appearing in V.
+        v_toks = set(re.findall(r'[A-Za-z]\w*', spec['V']))
+        v_params = [p for p in params if p in v_toks]
 
-    # jets high->low: Psi-tower (DDPsi,DPsi,Psi), then v, then roots.
-    jets = list(reversed(tower)) + ['v'] + [rn for rn, _ in roots]
+    # jets high->low: dependent jets, then roots.
+    jets = list(jets_dep) + [rn for rn, _ in roots]
     IVAR = coords
     DVAR = jets + ['E'] + params
     rk = dt.compute_ranking(IVAR, DVAR)
@@ -290,13 +349,7 @@ def build_problem(pde_name, ansatz):
     pconst = [R('%s[%s]' % (p, c)) for p in params for c in coords]
     pde = R(build_pde_string(pde_name, coords))
 
-    # inner-variable coefficients: the params appearing in V.  If a solution
-    # variety forces ALL of these to zero then v == 0 identically and the ansatz
-    # has collapsed to a constant -- a degenerate (non-)solution.
-    v_toks = set(re.findall(r'[A-Za-z]\w*', spec['V']))
-    v_params = [p for p in params if p in v_toks]
-
     return dict(R=R, rk=rk, coords=coords, roots=roots, jets=jets,
-                tower=tower, order=order, params=params, v_params=v_params,
-                ansatz_eqs=ansatz_eqs, pconst=pconst, pde=pde,
-                ansatz_eqs_str=ansatz_eqs_str)
+                tower=tower, order=spec.get('order'), params=params,
+                v_params=v_params, ansatz_eqs=ansatz_eqs, pconst=pconst,
+                pde=pde, ansatz_eqs_str=ansatz_eqs_str)
