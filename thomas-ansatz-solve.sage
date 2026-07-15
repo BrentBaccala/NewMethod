@@ -243,6 +243,26 @@ def reductors_for(spec):
     return list(spec) + list(pconst)
 
 
+def full_prem(p, reductors, max_passes=64):
+    """Reduce to a FIXPOINT.  R.differential_prem makes a single pass over the
+    reductor list; reducing a high derivative by one reductor can re-expose a
+    lower derivative reducible by an EARLIER reductor (e.g. Psi[R1,R1] -> ... ->
+    DPsi[R1] -> n0*Psi[R1], and Psi[R1] is the leader of an earlier chain rule
+    already passed).  A single pass therefore leaves first-order jets un-reduced
+    whenever the PDE has first-derivative terms -- invisible for hydrogen's pure
+    Laplacian, wrong for helium's 2/Ri d/dRi terms.  Looping to a fixpoint gives
+    the true normal form (and is a no-op once the remainder is fully reduced)."""
+    r = p if isinstance(p, type(R.one())) else R(p)
+    h = R.one()
+    for _ in range(max_passes):
+        r2, h2 = R.differential_prem(r, reductors)
+        h = h * h2
+        if r2 == r:
+            return r2, h
+        r = r2
+    return r, h
+
+
 def prime_key(P):
     return tuple(sorted(str(g) for g in P.gens()))
 
@@ -261,8 +281,8 @@ for num, ds in enumerate(_cells, 1):
     if Zkey not in strata_cache:
         sub, spec = specialize(cp['param_eqs'])
         reductors = reductors_for(spec)
-        rem_elt, h = R.differential_prem(PDE, reductors)
-        psi_rem_elt, _ = R.differential_prem(R('Psi'), reductors)
+        rem_elt, h = full_prem(PDE, reductors)
+        psi_rem_elt, _ = full_prem(R('Psi'), reductors)
         trivial = psi_rem_elt.is_zero()
         rem = _elt_to_sympy(rem_elt)
         if rem == 0:
