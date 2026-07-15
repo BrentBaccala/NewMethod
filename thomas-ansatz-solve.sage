@@ -148,6 +148,14 @@ def is_param_constancy(p):
 
 PolyRing = PolynomialRing(QQ, names=(COORDS + prob['jets'] + ['E'] + PARAMS))
 PolyRing_constants = list(map(PolyRing, [str(c) for c in constants]))
+V_PARAM_GENS = [PolyRing(p) for p in prob['v_params']]
+
+
+def forces_v_zero(P):
+    """True iff the prime forces the inner variable v == 0 identically (every
+    inner-variable coefficient lies in P) -- i.e. the ansatz has collapsed to a
+    constant and the 'solution' is degenerate."""
+    return all(g in P for g in V_PARAM_GENS)
 
 
 def build_system_of_equations(eqn, constants):
@@ -268,8 +276,9 @@ def prime_key(P):
 
 
 strata_cache = {}
-union_primes = {}
-trivial_primes = {}
+union_primes = {}          # GENUINE nontrivial (v != 0) solution varieties
+degenerate_primes = {}     # nontrivial but v == 0 (ansatz collapsed to a constant)
+trivial_primes = {}        # Psi == 0 forced
 
 _cells = cells_ds if MAX_CELLS <= 0 else cells_ds[:MAX_CELLS]
 
@@ -315,9 +324,12 @@ for num, ds in enumerate(_cells, 1):
         print("  PDE reduces to 0: the whole stratum solves the PDE (nontrivially)")
     if not survivors:
         print("  surviving solution varieties: NONE (all pruned / empty)")
-    bucket = trivial_primes if sc['trivial'] else union_primes
     for P in survivors:
-        print("   V:", P)
+        deg = forces_v_zero(P)
+        print("   V:", P, "  [DEGENERATE: v=0]" if deg
+              else "  [GENUINE: v!=0]")
+        bucket = (trivial_primes if sc['trivial']
+                  else degenerate_primes if deg else union_primes)
         bucket.setdefault(prime_key(P), (P, []))[1].append(num)
 
 
@@ -329,6 +341,19 @@ def dump_union(title, d):
 
 
 print("\n" + "=" * 72)
-dump_union("NONTRIVIAL solution varieties over all cells (the union)", union_primes)
+dump_union("GENUINE solution varieties over all cells (v != 0 -- the real union)",
+          union_primes)
+print("\n" + "-" * 72)
+dump_union("DEGENERATE strata (nontrivial but v == 0, ansatz collapsed)",
+          degenerate_primes)
 print("\n" + "-" * 72)
 dump_union("TRIVIAL (Psi==0) strata over all cells", trivial_primes)
+
+print("\n" + "=" * 72)
+if union_primes:
+    print("VERDICT: %d GENUINE solution variety(ies) found for %s / ansatz %s."
+          % (len(union_primes), PDE_NAME, ANSATZ))
+else:
+    print("VERDICT: NO genuine solution for %s / ansatz %s "
+          "(every stratum is degenerate v=0 or trivial Psi=0)."
+          % (PDE_NAME, ANSATZ))

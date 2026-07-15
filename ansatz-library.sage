@@ -290,7 +290,13 @@ def build_problem(pde_name, ansatz):
     pconst = [R('%s[%s]' % (p, c)) for p in params for c in coords]
     pde = R(build_pde_string(pde_name, coords))
 
+    # inner-variable coefficients: the params appearing in V.  If a solution
+    # variety forces ALL of these to zero then v == 0 identically and the ansatz
+    # has collapsed to a constant -- a degenerate (non-)solution.
+    v_toks = set(re.findall(r'[A-Za-z]\w*', spec['V']))
+    v_params = [p for p in params if p in v_toks]
+
     return dict(R=R, rk=rk, coords=coords, roots=roots, jets=jets,
-                tower=tower, order=order, params=params,
+                tower=tower, order=order, params=params, v_params=v_params,
                 ansatz_eqs=ansatz_eqs, pconst=pconst, pde=pde,
                 ansatz_eqs_str=ansatz_eqs_str)
