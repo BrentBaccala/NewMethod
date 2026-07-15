@@ -385,18 +385,26 @@ def ansatz_spec(ansatz, coords, roots):
 
     if int(ansatz) == 16:
         # NewSol.tex / helium.sage coded ansatz 16: an algebraic root nested
-        # BELOW the extension.  Psi = Zeta(v) with a SIMPLE 2nd-order ODE, linear
-        # coeffs in v (as in ansatz 5); the novelty is in the BASE -- an algebraic
-        # element g = sqrt(radicand) with g^2 - radicand = 0, the radicand a
-        # linear trial polynomial in the coordinates, and the inner variable v
-        # ranging over the coordinates AND g.  This is the DA-library analogue of
-        # helium.sage's coded ansatz 16 (gamma = root of a linear poly, V over
-        # coords + gamma, linear-coefficient ODE), previously excluded here.
-        vp, V = trial('v', gens + ['g'], 1, constant=False, roots=rset)
-        kp, RAD = trial('k', gens, 1, roots=rset)       # radicand: g = sqrt(RAD)
-        ap, A = trial('a', ['v'], 1)
-        bp, B = trial('b', ['v'], 1)
-        cp, C = trial('c', ['v'], 1)
+        # BELOW the extension.  Psi = Zeta(v) with a 2nd-order ODE; the novelty is
+        # in the BASE -- an algebraic element g = sqrt(radicand) with
+        # g^2 - radicand = 0, and the inner variable v ranging over the
+        # coordinates AND g.  The DECIMAL encodes three degree bounds
+        # (radicand / v / ODE-coeffs), matching the NewSol.tex Ansatz 16 table.
+        # In particular 16.3 = (2,1,1) and 16.6 = (2,2,2) use a QUADRATIC radicand
+        # -- g is the square root of a degree-2 polynomial, i.e. a genuinely new
+        # coordinate of the same shape as hydrogen's r = sqrt(x^2+y^2+z^2), the
+        # ingredient that let ansatz 5 find the J0 Bessel solution.  (helium.sage's
+        # homogenized 16.31/16.61 collapse onto 16.3/16.6 here -- homogenization
+        # is dropped; Thomas splits those loci itself.)
+        deg16 = {16: (1, 1, 1), 16.1: (1, 2, 1), 16.2: (1, 1, 2),
+                 16.3: (2, 1, 1), 16.4: (1, 2, 2), 16.5: (2, 1, 2),
+                 16.6: (2, 2, 2)}
+        rad_deg, v_deg, ode_deg = deg16[ansatz]
+        vp, V = trial('v', gens + ['g'], v_deg, constant=False, roots=rset)
+        kp, RAD = trial('k', gens, rad_deg, roots=rset)   # radicand: g = sqrt(RAD)
+        ap, A = trial('a', ['v'], ode_deg)
+        bp, B = trial('b', ['v'], ode_deg)
+        cp, C = trial('c', ['v'], ode_deg)
         ODE = '(%s)*DDPsi + (%s)*DPsi + (%s)*Psi' % (A, B, C)
         eqs = (['Psi[%s] - DPsi*v[%s]' % (c, c) for c in coords]
                + ['DPsi[%s] - DDPsi*v[%s]' % (c, c) for c in coords]
