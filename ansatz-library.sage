@@ -194,7 +194,7 @@ def ansatz_spec(ansatz, coords, roots):
                + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
                + ['B - (%s)' % B])
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
-                    equations=eqs, params=ap + bp, v_params=bp)
+                    equations=eqs, params=ap + bp, v_params=bp, amp_params=ap)
 
     if ansatz == 2:
         # Psi = A * Xi,  Xi = log(C):  Xi' = 1/C, so the chain rule cleared of
@@ -205,7 +205,7 @@ def ansatz_spec(ansatz, coords, roots):
                + ['C*Xi[%s] - C[%s]' % (c, c) for c in coords]
                + ['C - (%s)' % C])
         return dict(kind='product', jets_dep=['Psi', 'Xi', 'C'],
-                    equations=eqs, params=ap + cp, v_params=cp)
+                    equations=eqs, params=ap + cp, v_params=cp, amp_params=ap)
 
     if ansatz == 3:
         # Psi = A * Chi,  Chi a 2nd-order ODE function of B with COORDINATE-
@@ -224,7 +224,7 @@ def ansatz_spec(ansatz, coords, roots):
                + ['B - (%s)' % B])
         return dict(kind='product', jets_dep=['Psi', 'DDChi', 'DChi', 'Chi', 'B'],
                     equations=eqs, params=ap + bp + cp + dp + fp + gp,
-                    v_params=bp)
+                    v_params=bp, amp_params=ap)
 
     raise NotImplementedError(
         "ansatz %s not yet in the differential-algebra library.\n"
@@ -323,6 +323,7 @@ def build_problem(pde_name, ansatz):
         jets_dep = spec['jets_dep']
         ansatz_eqs_str = list(spec['equations']) + root_eqs
         v_params = spec['v_params']
+        amp_params = spec.get('amp_params', [])
         tower = None
     else:
         # Zeta(V) single-ODE-function family.
@@ -337,6 +338,7 @@ def build_problem(pde_name, ansatz):
         # inner-variable coefficients: params appearing in V.
         v_toks = set(re.findall(r'[A-Za-z]\w*', spec['V']))
         v_params = [p for p in params if p in v_toks]
+        amp_params = []          # Zeta family: Psi is the free jet (no amplitude)
 
     # jets high->low: dependent jets, then roots.
     jets = list(jets_dep) + [rn for rn, _ in roots]
@@ -351,5 +353,5 @@ def build_problem(pde_name, ansatz):
 
     return dict(R=R, rk=rk, coords=coords, roots=roots, jets=jets,
                 tower=tower, order=spec.get('order'), params=params,
-                v_params=v_params, ansatz_eqs=ansatz_eqs, pconst=pconst,
-                pde=pde, ansatz_eqs_str=ansatz_eqs_str)
+                v_params=v_params, amp_params=amp_params, ansatz_eqs=ansatz_eqs,
+                pconst=pconst, pde=pde, ansatz_eqs_str=ansatz_eqs_str)

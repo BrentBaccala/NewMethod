@@ -149,6 +149,7 @@ def is_param_constancy(p):
 PolyRing = PolynomialRing(QQ, names=(COORDS + prob['jets'] + ['E'] + PARAMS))
 PolyRing_constants = list(map(PolyRing, [str(c) for c in constants]))
 V_PARAM_GENS = [PolyRing(p) for p in prob['v_params']]
+AMP_PARAM_GENS = [PolyRing(p) for p in prob.get('amp_params', [])]
 
 
 def forces_v_zero(P):
@@ -156,6 +157,14 @@ def forces_v_zero(P):
     inner-variable coefficient lies in P) -- i.e. the ansatz has collapsed to a
     constant and the 'solution' is degenerate."""
     return all(g in P for g in V_PARAM_GENS)
+
+
+def forces_psi_zero(P):
+    """True iff the prime forces Psi == 0 via the amplitude collapsing (product
+    ansatz Psi = A*F with every A-coefficient in P).  This is a trivial solution
+    the per-cell Psi-reduction check misses, because A==0 is imposed by the
+    variety, not by the cell."""
+    return bool(AMP_PARAM_GENS) and all(g in P for g in AMP_PARAM_GENS)
 
 
 def build_system_of_equations(eqn, constants):
@@ -325,10 +334,12 @@ for num, ds in enumerate(_cells, 1):
     if not survivors:
         print("  surviving solution varieties: NONE (all pruned / empty)")
     for P in survivors:
+        triv = sc['trivial'] or forces_psi_zero(P)
         deg = forces_v_zero(P)
-        print("   V:", P, "  [DEGENERATE: v=0]" if deg
-              else "  [GENUINE: v!=0]")
-        bucket = (trivial_primes if sc['trivial']
+        label = ("  [TRIVIAL: Psi=0]" if triv else
+                 "  [DEGENERATE: v=0]" if deg else "  [GENUINE: v!=0]")
+        print("   V:", P, label)
+        bucket = (trivial_primes if triv
                   else degenerate_primes if deg else union_primes)
         bucket.setdefault(prime_key(P), (P, []))[1].append(num)
 
