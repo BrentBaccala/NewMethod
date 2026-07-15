@@ -226,13 +226,75 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=ap + bp + cp + dp + fp + gp,
                     v_params=bp, amp_params=ap)
 
+    # ----- NESTED-ODE template: Psi = Zeta(V), V depends on Theta = Theta(U) --
+    # Two coupled ODE functions.  The inner function Theta solves an ODE in the
+    # inner-inner variable U; the OUTER inner variable V is a polynomial in the
+    # coordinates AND Theta, so the outer solution Psi = Zeta(V) is a function of
+    # a function.  Psi/DPsi/DDPsi are the outer ODE function (= Zeta); Theta/
+    # DTheta/DDTheta the inner one.  Reduction of the PDE cascades down both
+    # towers: Psi[c] -> DPsi*V[c], V[c] -> (coords) + v_theta*Theta[c],
+    # Theta[c] -> DTheta*U[c].
+    if int(ansatz) == 12:
+        deg = {12: (1, 1, 1, 1), 12.1: (2, 1, 1, 1), 12.2: (1, 2, 1, 1),
+               12.3: (1, 1, 2, 1), 12.4: (1, 1, 1, 2)}[ansatz]
+        maxdeg_v, maxdeg_u, ode_v, ode_u = deg
+
+        up, U = trial('u', gens, maxdeg_u, constant=False, roots=rset)
+        ap, A = trial('a', ['U'], ode_u)                # inner ODE coeffs in U
+        bp, B = trial('b', ['U'], ode_u)
+        cp, C = trial('c', ['U'], ode_u)
+        # outer inner-variable V ranges over coords/roots AND the inner soln Theta
+        vp, V = trial('v', gens + ['Theta'], maxdeg_v, constant=False, roots=rset)
+        dp, D = trial('d', ['V'], ode_v)                # outer ODE coeffs in V
+        mp, M = trial('m', ['V'], ode_v)
+        np_, N = trial('n', ['V'], ode_v)
+        eqs = (['Psi[%s] - DPsi*V[%s]' % (c, c) for c in coords]
+               + ['DPsi[%s] - DDPsi*V[%s]' % (c, c) for c in coords]
+               + ['(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)]
+               + ['V - (%s)' % V]
+               + ['Theta[%s] - DTheta*U[%s]' % (c, c) for c in coords]
+               + ['DTheta[%s] - DDTheta*U[%s]' % (c, c) for c in coords]
+               + ['(%s)*DDTheta - (%s)*DTheta - (%s)*Theta' % (A, B, C)]
+               + ['U - (%s)' % U])
+        return dict(kind='nested',
+                    jets_dep=['DDPsi', 'DPsi', 'Psi', 'V',
+                              'DDTheta', 'DTheta', 'Theta', 'U'],
+                    equations=eqs, params=up + ap + bp + cp + vp + dp + mp + np_,
+                    v_params=vp)
+
+    # ----- ALGEBRAIC-EXTENSION template (helium.sage calls it 13) -------------
+    # Psi = Zeta(V) with a 2nd-order ODE whose coefficients live in a quadratic
+    # algebraic extension: g satisfies A*g^2 + B*g + C = 0 (A,B,C polys in V), and
+    # the ODE coeffs D,M,N are polynomials in V and g.  g is a differential
+    # indeterminate with an algebraic (order-0) defining relation; its derivatives
+    # follow from prolonging that relation (separant 2*A*g+B).  This is the same
+    # template ansatz 11 needs.
+    if int(ansatz) == 13:
+        deg = {13: (1, 1, 1), 13.1: (2, 1, 1), 13.2: (1, 2, 1), 13.3: (1, 1, 2),
+               13.4: (2, 2, 1), 13.5: (2, 1, 2), 13.6: (2, 2, 2)}[ansatz]
+        maxdeg_v, ode_deg, alg_deg = deg
+
+        vp, V = trial('v', gens, maxdeg_v, constant=False, roots=rset)
+        ap, A = trial('a', ['V'], alg_deg)              # min-poly coeffs in V
+        bp, B = trial('b', ['V'], alg_deg)
+        cp, C = trial('c', ['V'], alg_deg)
+        dp, D = trial('d', ['V', 'g'], ode_deg)         # ODE coeffs in V and g
+        mp, M = trial('m', ['V', 'g'], ode_deg)
+        np_, N = trial('n', ['V', 'g'], ode_deg)
+        eqs = (['Psi[%s] - DPsi*V[%s]' % (c, c) for c in coords]
+               + ['DPsi[%s] - DDPsi*V[%s]' % (c, c) for c in coords]
+               + ['(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)]
+               + ['V - (%s)' % V]
+               + ['(%s)*g^2 + (%s)*g + (%s)' % (A, B, C)])   # gamma minimal poly
+        return dict(kind='algext',
+                    jets_dep=['DDPsi', 'DPsi', 'Psi', 'g', 'V'],
+                    equations=eqs, params=vp + dp + mp + np_ + ap + bp + cp,
+                    v_params=vp)
+
     raise NotImplementedError(
         "ansatz %s not yet in the differential-algebra library.\n"
-        "  rational argument (6,7: F(B/C))     -> add inner w with C*w-B=0;\n"
-        "  algebraic extension (11: gamma)     -> add g with its minimal "
-        "polynomial as an `extra` eq;\n"
-        "  nested ODEs (12,13)                 -> two ODE functions, two inner "
-        "variables." % ansatz)
+        "  rational argument (6,7: F(B/C))  -> add inner w with C*w-B=0;\n"
+        "  algebraic extension (11: gamma)  -> same template as 13." % ansatz)
 
 
 # ==========================================================================
@@ -318,8 +380,9 @@ def build_problem(pde_name, ansatz):
     params = spec['params']
     root_eqs = ['%s^2 - (%s)' % (rn, rad) for rn, rad in roots]
 
-    if spec.get('kind') == 'product':
-        # product / exponential family: equations already assembled by the spec.
+    if 'equations' in spec:
+        # explicit-equation families (product, nested, algext): the spec has
+        # already assembled the differential-polynomial equations and jet list.
         jets_dep = spec['jets_dep']
         ansatz_eqs_str = list(spec['equations']) + root_eqs
         v_params = spec['v_params']
