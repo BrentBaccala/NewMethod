@@ -518,6 +518,27 @@ def ansatz_spec(ansatz, coords, roots):
                     v_params=cp,        # C == 0 -> log gone -> Kato-only (DEGENERATE)
                     amp_params=[])      # exp is never 0: no Psi==0 (TRIVIAL) mode
 
+    if ansatz == 20.1:
+        # EXPONENTIATED FOCK + polynomial amplitude: Psi = A * exp(B + C*L),
+        # A degree 1 in the coordinates.  Ansatz 20 with a Hylleraas-style
+        # prefactor (cf. 1 -> 1.1): the amplitude lets Psi carry a polynomial
+        # node/bulk factor on top of the exp-Fock singular structure, the way
+        # hydrogen 2s = (1 - Zr/2) e^{-Zr/2} carries its node.  With an amplitude
+        # the Psi==0 (TRIVIAL) mode is back (A == 0).  Refs as ansatz 20.
+        ap, Ax = trial('a', gens, 1, roots=rset)                   # polynomial amplitude
+        bp, Bx = trial('b', gens, 2, constant=False, roots=rset)   # log-free exponent
+        cp, Cx = trial('c', gens, 2, roots=rset)                   # Fock-log coefficient
+        eqs = (['Psi - (%s)*Phi' % Ax]                             # Psi = A * exp(B+C*L)
+               + ['Phi[%s] - Phi*(B[%s] + C[%s]*L + C*L[%s])' % (c, c, c, c)
+                  for c in coords]
+               + ['B - (%s)' % Bx]
+               + ['C - (%s)' % Cx]
+               + _log_relations(coords))
+        return dict(kind='product', jets_dep=['Psi', 'Phi', 'B', 'C', 'L'],
+                    equations=eqs, params=ap + bp + cp,
+                    v_params=cp,        # C == 0 -> log gone -> DEGENERATE
+                    amp_params=ap)      # A == 0 -> Psi == 0 -> TRIVIAL
+
     raise NotImplementedError(
         "ansatz %s not yet in the differential-algebra library.\n"
         "  algebraic extension (11: gamma)  -> same template as 13." % ansatz)
