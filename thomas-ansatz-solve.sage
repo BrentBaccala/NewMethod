@@ -151,6 +151,57 @@ PolyRing_constants = list(map(PolyRing, [str(c) for c in constants]))
 V_PARAM_GENS = [PolyRing(p) for p in prob['v_params']]
 AMP_PARAM_GENS = [PolyRing(p) for p in prob.get('amp_params', [])]
 
+# sympy images of PolyRing's generators, in generator order.  _elt_to_sympy maps
+# coords -> Symbol, bare jets -> IndexedBase, E/params -> Symbol, so this list is
+# the exact mirror of PolyRing.gens().
+_SYMPY_GENS = ([_DERIV[c] for c in COORDS]
+               + [_IB[j] for j in prob['jets']]
+               + [_PARAM['E']]
+               + [_PARAM[p] for p in PARAMS])
+assert len(_SYMPY_GENS) == PolyRing.ngens()
+
+
+def _sympy_to_polyring(expr):
+    """Convert a sympy expression to PolyRing WITHOUT a string round-trip.
+
+    Sage has no sympy -> libsingular conversion, so `PolyRing(expr)` falls
+    through to `self(str(expr))` and hands the result to `eval`.  CPython parses
+    a sum as a left-nested tree of binary ops and its *compiler* recurses once
+    per term, so that path dies with
+
+        RecursionError: maximum recursion depth exceeded during compilation
+
+    at ~2995 additive terms (python 3.11, recursionlimit 1000) -- regardless of
+    how simple the polynomial is.  helium/ansatz 20.1 crossed that ceiling.
+    Building from an exponent->coefficient dict never invokes the parser, so it
+    has no such limit (measured: 4000 monomials in 0.04s).
+    """
+    expr = sympy.expand(expr)
+    if expr == 0:
+        return PolyRing.zero()
+
+    # A derivative jet (Psi[R1,R1]) has no PolyRing generator -- the reduction is
+    # meant to eliminate every one of them.  The old string path masked a leftover
+    # behind the RecursionError above (compile fails before name resolution), so
+    # check explicitly and name the offenders.
+    # A bare jet's image is IndexedBase('Psi'), whose .label is Symbol('Psi'), and
+    # that label shows up in .atoms(Symbol).  Admit the labels too, or every bare
+    # jet reads as unknown; a derivative jet is an Indexed and is still caught.
+    allowed = set(_SYMPY_GENS)
+    allowed |= {g.label for g in _SYMPY_GENS if isinstance(g, sympy.IndexedBase)}
+    unknown = {a for a in expr.atoms(sympy.Symbol, sympy.Indexed, sympy.IndexedBase)
+               if a not in allowed}
+    if unknown:
+        raise TypeError("no PolyRing generator for: %s"
+                        % ", ".join(sorted(map(str, unknown))))
+
+    p = sympy.Poly(expr, *_SYMPY_GENS)
+    d = {}
+    for mon, c in zip(p.monoms(), p.coeffs()):
+        r = sympy.Rational(c)
+        d[tuple(int(e) for e in mon)] = QQ(int(r.p)) / QQ(int(r.q))
+    return PolyRing(d)
+
 
 def forces_v_zero(P):
     """True iff the prime forces the inner variable v == 0 identically (every
@@ -306,15 +357,16 @@ for num, ds in enumerate(_cells, 1):
         if rem == 0:
             eqns = ()
         else:
-            eqns = build_system_of_equations(PolyRing(rem), PolyRing_constants)
-        gens = list(eqns) + [PolyRing(p) for p in Z]
+            eqns = build_system_of_equations(_sympy_to_polyring(rem),
+                                             PolyRing_constants)
+        gens = list(eqns) + [_sympy_to_polyring(p) for p in Z]
         I = ideal(gens) if gens else ideal(PolyRing.zero())
         primes = I.minimal_associated_primes()
         strata_cache[Zkey] = dict(spec_len=len(spec), rem=rem, eqns=eqns,
                                   primes=primes, trivial=trivial)
 
     sc = strata_cache[Zkey]
-    ineq_polys = [PolyRing(f) for f in cp['param_ineqs']]
+    ineq_polys = [_sympy_to_polyring(f) for f in cp['param_ineqs']]
     survivors = []
     for P in sc['primes']:
         if P.is_one():
