@@ -122,21 +122,83 @@ def coordinate_system(pde_name):
 # ==========================================================================
 # the ansatz listing
 # ==========================================================================
-# Each entry returns dict(order, V, ODE, params, extra) where
-#   V     : inner-variable polynomial string (defines jet `v`)
-#   ODE   : the ODE as a differential polynomial in Psi/DPsi/DDPsi and v
-#   params: ALL constant parameters introduced (v-coeffs then ODE-coeffs)
-#   extra : any additional algebraic relations (e.g. algebraic extensions)
-#
-# NOTE.  These are the single-ODE-function, polynomial-inner-variable ansaetze
-# (helium.sage's 4,5,5.1,5.2,5.3,8,9,10) -- the family that includes the
-# validated hydrogen ansatz 5.  The product / rational-argument / algebraic-
-# extension / nested-ODE ansaetze (1,2,3,6,7,11,12,13) each need their own
-# differential-algebra template and are added next; see the stubs below.
+# Entries are in NUMERICAL order by ansatz number.  Two return shapes:
+#   Zeta / single-ODE-function family (5,5.1,5.2,5.3,8,9,10,19 and the
+#     coeff-ring variants 14/15/16) -- dict(order, V, ODE, params, extra) where
+#       V     : inner-variable polynomial string (defines jet `v`)
+#       ODE   : the ODE as a differential polynomial in Psi/DPsi/DDPsi and v
+#       params: ALL constant parameters introduced (v-coeffs then ODE-coeffs)
+#       extra : any additional algebraic relations (e.g. algebraic extensions)
+#   every other family (product 1/1.1/2/3, rational 6/7, nested 12, algext 13,
+#     log 17/18, exp-Fock 20/20.1) -- dict(kind, jets_dep, equations, params,
+#     v_params, amp_params); its differential-polynomial equations are inline.
+# Each family's template is documented in a header comment at its first entry.
 
 def ansatz_spec(ansatz, coords, roots):
     gens = coords + [rn for rn, _ in roots]
     rset = tuple(rn for rn, _ in roots)
+
+    # ----- PRODUCT / EXPONENTIAL template: Psi = A(coords) * F(inner) ---------
+    # The solution is a coordinate polynomial A times an ODE function F of an
+    # inner variable.  Psi is defined by  Psi - A*F = 0  (leader Psi); F has its
+    # own chain rule / ODE.  Unlike the Zeta(V) family the chain rule carries the
+    # A-factor: differentiating Psi - A*F gives Psi[c] = A_c*F + A*F[c] (the
+    # engine forms A_c since A is built from the independent coordinates).  The
+    # inner-variable jet is named B (exp/Chi) or C (log); its coefficients are
+    # v_params, so B==0 (exponential/log collapses to a constant) reads as the
+    # degenerate case.  Homogenization is dropped (Thomas splits those loci).
+
+    if ansatz == 1:
+        # Psi = A * Phi,  Phi = exp(B):  Phi' = Phi, so the chain rule is
+        # Phi[c] - Phi*B[c]  (no separate derivative jet).
+        ap, A = trial('a', gens, 1, roots=rset)                    # A(coords)
+        bp, B = trial('b', gens, 1, constant=False, roots=rset)    # inner B
+        eqs = (['Psi - (%s)*Phi' % A]
+               + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
+               + ['B - (%s)' % B])
+        return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
+                    equations=eqs, params=ap + bp, v_params=bp, amp_params=ap)
+
+    if ansatz == 1.1:
+        # Hylleraas-type cusp with quadratic amplitude: Psi = A(deg 2)*exp(B).
+        # No new template -- ansatz 1 with a quadratic A.  (report ansatz 1.1)
+        ap, A = trial('a', gens, 2, roots=rset)
+        bp, B = trial('b', gens, 1, constant=False, roots=rset)
+        eqs = (['Psi - (%s)*Phi' % A]
+               + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
+               + ['B - (%s)' % B])
+        return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
+                    equations=eqs, params=ap + bp, v_params=bp, amp_params=ap)
+
+    if ansatz == 2:
+        # Psi = A * Xi,  Xi = log(C):  Xi' = 1/C, so the chain rule cleared of
+        # the denominator is  C*Xi[c] - C[c].
+        ap, A = trial('a', gens, 1, roots=rset)                    # A(coords)
+        cp, C = trial('c', gens, 1, constant=False, roots=rset)    # inner C
+        eqs = (['Psi - (%s)*Xi' % A]
+               + ['C*Xi[%s] - C[%s]' % (c, c) for c in coords]
+               + ['C - (%s)' % C])
+        return dict(kind='product', jets_dep=['Psi', 'Xi', 'C'],
+                    equations=eqs, params=ap + cp, v_params=cp, amp_params=ap)
+
+    if ansatz == 3:
+        # Psi = A * Chi,  Chi a 2nd-order ODE function of B with COORDINATE-
+        # polynomial coefficients (helium.sage's "weird second-order mess"):
+        #   pC*Chi'' - pD*Chi' - pF*Chi - pG = 0.
+        ap, A = trial('a', gens, 1, roots=rset)
+        bp, B = trial('b', gens, 1, constant=False, roots=rset)    # inner B
+        cp, pC = trial('c', gens, 1, roots=rset)                   # ODE coeffs
+        dp, pD = trial('d', gens, 1, roots=rset)                   # (coord polys)
+        fp, pF = trial('f', gens, 1, roots=rset)
+        gp, pG = trial('g', gens, 1, roots=rset)
+        eqs = (['Psi - (%s)*Chi' % A]
+               + ['Chi[%s] - DChi*B[%s]' % (c, c) for c in coords]
+               + ['DChi[%s] - DDChi*B[%s]' % (c, c) for c in coords]
+               + ['(%s)*DDChi - (%s)*DChi - (%s)*Chi - (%s)' % (pC, pD, pF, pG)]
+               + ['B - (%s)' % B])
+        return dict(kind='product', jets_dep=['Psi', 'DDChi', 'DChi', 'Chi', 'B'],
+                    equations=eqs, params=ap + bp + cp + dp + fp + gp,
+                    v_params=bp, amp_params=ap)
 
     if ansatz == 5:
         # 2nd-order ODE, linear coeffs, linear inner variable.
@@ -176,6 +238,29 @@ def ansatz_spec(ansatz, coords, roots):
         ODE = '(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)
         return dict(order=2, V=V, ODE=ODE, params=vp + dp + mp + np_, extra=[])
 
+    # ----- RATIONAL-ARGUMENT template: Psi = Zeta(w), w = B/C -----------------
+    # The inner argument is a rational function of the coordinates.  Rather than
+    # carry a denominator, introduce w as a jet defined by the cleared relation
+    # C*w - B = 0 (leader w, separant C -- so C != 0 is a Thomas inequation);
+    # everything else is the Zeta(V) family with w in place of v.  B/C is
+    # invariant under (B,C)->(lambda B, lambda C), an extra scaling dimension we
+    # let Thomas carry (helium.sage suppressed it with homogenization).
+    if ansatz in (6, 7):
+        d_bc = 1 if ansatz == 6 else 2          # degree of B, C and of the ODE coeffs
+        bp, B = trial('b', gens, d_bc, roots=rset)      # numerator   (with constant)
+        cp, C = trial('c', gens, d_bc, roots=rset)      # denominator (with constant)
+        dp, D = trial('d', ['w'], d_bc)                 # ODE coeffs in w = B/C
+        mp, M = trial('m', ['w'], d_bc)
+        np_, N = trial('n', ['w'], d_bc)
+        eqs = (['Psi[%s] - DPsi*w[%s]' % (c, c) for c in coords]
+               + ['DPsi[%s] - DDPsi*w[%s]' % (c, c) for c in coords]
+               + ['(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)]
+               + ['(%s)*w - (%s)' % (C, B)])            # C*w - B = 0  (w = B/C)
+        return dict(kind='rational',
+                    jets_dep=['DDPsi', 'DPsi', 'Psi', 'w'],
+                    equations=eqs, params=bp + cp + dp + mp + np_,
+                    v_params=bp)                         # B==0 -> w=0 -> degenerate
+
     if ansatz == 8:
         # 1st-order ODE, linear coeffs, linear inner variable: M*DPsi - N*Psi = 0.
         vp, V = trial('v', gens, 1, constant=False, roots=rset)
@@ -190,57 +275,6 @@ def ansatz_spec(ansatz, coords, roots):
         np_, N = trial('n', ['v'], 0)          # N = n0
         ODE = 'DPsi - (%s)*Psi' % N
         return dict(order=1, V=V, ODE=ODE, params=vp + np_, extra=[])
-
-    # ----- PRODUCT / EXPONENTIAL template: Psi = A(coords) * F(inner) ---------
-    # The solution is a coordinate polynomial A times an ODE function F of an
-    # inner variable.  Psi is defined by  Psi - A*F = 0  (leader Psi); F has its
-    # own chain rule / ODE.  Unlike the Zeta(V) family the chain rule carries the
-    # A-factor: differentiating Psi - A*F gives Psi[c] = A_c*F + A*F[c] (the
-    # engine forms A_c since A is built from the independent coordinates).  The
-    # inner-variable jet is named B (exp/Chi) or C (log); its coefficients are
-    # v_params, so B==0 (exponential/log collapses to a constant) reads as the
-    # degenerate case.  Homogenization is dropped (Thomas splits those loci).
-
-    if ansatz == 1:
-        # Psi = A * Phi,  Phi = exp(B):  Phi' = Phi, so the chain rule is
-        # Phi[c] - Phi*B[c]  (no separate derivative jet).
-        ap, A = trial('a', gens, 1, roots=rset)                    # A(coords)
-        bp, B = trial('b', gens, 1, constant=False, roots=rset)    # inner B
-        eqs = (['Psi - (%s)*Phi' % A]
-               + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
-               + ['B - (%s)' % B])
-        return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
-                    equations=eqs, params=ap + bp, v_params=bp, amp_params=ap)
-
-    if ansatz == 2:
-        # Psi = A * Xi,  Xi = log(C):  Xi' = 1/C, so the chain rule cleared of
-        # the denominator is  C*Xi[c] - C[c].
-        ap, A = trial('a', gens, 1, roots=rset)                    # A(coords)
-        cp, C = trial('c', gens, 1, constant=False, roots=rset)    # inner C
-        eqs = (['Psi - (%s)*Xi' % A]
-               + ['C*Xi[%s] - C[%s]' % (c, c) for c in coords]
-               + ['C - (%s)' % C])
-        return dict(kind='product', jets_dep=['Psi', 'Xi', 'C'],
-                    equations=eqs, params=ap + cp, v_params=cp, amp_params=ap)
-
-    if ansatz == 3:
-        # Psi = A * Chi,  Chi a 2nd-order ODE function of B with COORDINATE-
-        # polynomial coefficients (helium.sage's "weird second-order mess"):
-        #   pC*Chi'' - pD*Chi' - pF*Chi - pG = 0.
-        ap, A = trial('a', gens, 1, roots=rset)
-        bp, B = trial('b', gens, 1, constant=False, roots=rset)    # inner B
-        cp, pC = trial('c', gens, 1, roots=rset)                   # ODE coeffs
-        dp, pD = trial('d', gens, 1, roots=rset)                   # (coord polys)
-        fp, pF = trial('f', gens, 1, roots=rset)
-        gp, pG = trial('g', gens, 1, roots=rset)
-        eqs = (['Psi - (%s)*Chi' % A]
-               + ['Chi[%s] - DChi*B[%s]' % (c, c) for c in coords]
-               + ['DChi[%s] - DDChi*B[%s]' % (c, c) for c in coords]
-               + ['(%s)*DDChi - (%s)*DChi - (%s)*Chi - (%s)' % (pC, pD, pF, pG)]
-               + ['B - (%s)' % B])
-        return dict(kind='product', jets_dep=['Psi', 'DDChi', 'DChi', 'Chi', 'B'],
-                    equations=eqs, params=ap + bp + cp + dp + fp + gp,
-                    v_params=bp, amp_params=ap)
 
     # ----- NESTED-ODE template: Psi = Zeta(V), V depends on Theta = Theta(U) --
     # Two coupled ODE functions.  The inner function Theta solves an ODE in the
@@ -306,29 +340,6 @@ def ansatz_spec(ansatz, coords, roots):
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 'g', 'V'],
                     equations=eqs, params=vp + dp + mp + np_ + ap + bp + cp,
                     v_params=vp)
-
-    # ----- RATIONAL-ARGUMENT template: Psi = Zeta(w), w = B/C -----------------
-    # The inner argument is a rational function of the coordinates.  Rather than
-    # carry a denominator, introduce w as a jet defined by the cleared relation
-    # C*w - B = 0 (leader w, separant C -- so C != 0 is a Thomas inequation);
-    # everything else is the Zeta(V) family with w in place of v.  B/C is
-    # invariant under (B,C)->(lambda B, lambda C), an extra scaling dimension we
-    # let Thomas carry (helium.sage suppressed it with homogenization).
-    if ansatz in (6, 7):
-        d_bc = 1 if ansatz == 6 else 2          # degree of B, C and of the ODE coeffs
-        bp, B = trial('b', gens, d_bc, roots=rset)      # numerator   (with constant)
-        cp, C = trial('c', gens, d_bc, roots=rset)      # denominator (with constant)
-        dp, D = trial('d', ['w'], d_bc)                 # ODE coeffs in w = B/C
-        mp, M = trial('m', ['w'], d_bc)
-        np_, N = trial('n', ['w'], d_bc)
-        eqs = (['Psi[%s] - DPsi*w[%s]' % (c, c) for c in coords]
-               + ['DPsi[%s] - DDPsi*w[%s]' % (c, c) for c in coords]
-               + ['(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)]
-               + ['(%s)*w - (%s)' % (C, B)])            # C*w - B = 0  (w = B/C)
-        return dict(kind='rational',
-                    jets_dep=['DDPsi', 'DPsi', 'Psi', 'w'],
-                    equations=eqs, params=bp + cp + dp + mp + np_,
-                    v_params=bp)                         # B==0 -> w=0 -> degenerate
 
     # ----- COEFFICIENT-RING EXTENSION templates (NewSol.tex ansatz collection) -
     # Psi = Zeta(v) with a 2nd-order ODE  D*DDPsi - M*DPsi - N*Psi = 0  whose
@@ -474,17 +485,6 @@ def ansatz_spec(ansatz, coords, roots):
         ODE = '(%s)*DDPsi + (%s)*DPsi + (%s)*Psi' % (A, B, C)
         return dict(order=2, V=V, ODE=ODE, params=vp + ap + bp + cp,
                     extra=_log_relations(coords), extra_jets=['L'])
-
-    if ansatz == 1.1:
-        # Hylleraas-type cusp with quadratic amplitude: Psi = A(deg 2)*exp(B).
-        # No new template -- ansatz 1 with a quadratic A.  (report ansatz 1.1)
-        ap, A = trial('a', gens, 2, roots=rset)
-        bp, B = trial('b', gens, 1, constant=False, roots=rset)
-        eqs = (['Psi - (%s)*Phi' % A]
-               + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
-               + ['B - (%s)' % B])
-        return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
-                    equations=eqs, params=ap + bp, v_params=bp, amp_params=ap)
 
     if ansatz == 20:
         # EXPONENTIATED FOCK (Myers-Umrigar-Sethna-Morgan 1991, sec IV): the log
