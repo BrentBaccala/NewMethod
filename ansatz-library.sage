@@ -486,6 +486,38 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
                     equations=eqs, params=ap + bp, v_params=bp, amp_params=ap)
 
+    if ansatz == 20:
+        # EXPONENTIATED FOCK (Myers-Umrigar-Sethna-Morgan 1991, sec IV): the log
+        # goes INSIDE the exponent.  Psi = exp(B + C*L) with L = log(R1^2+R2^2) =
+        # 2 log s (the triple-coalescence hyperradius) and B, C polynomial in the
+        # (R1,R2,R12) coordinates.  This is the first library entry to place the
+        # log in the exponent: exp(C*L) = (R1^2+R2^2)^C is a variable-exponent
+        # (x^x-type) factor whose Taylor series carries the UNBOUNDED (ln s)^p Fock
+        # tower with a finite parameter set.  17/17.1/18 keep the log linear /
+        # multiplicative and so can only ever represent (ln s)^1 -- which is why
+        # they came back clean-negative: too holonomic to hold the tower.
+        #   B (deg 2, non-const)  -- the log-free exponent: Kato cusp psi_{1,0}
+        #     (linear -Z(R1+R2)+R12/2) plus the O(s^2) pieces psi_{2,0} - 1/2 psi_{1,0}^2.
+        #   C (deg 2)             -- the Fock r^2 log-slot coefficient; the exact
+        #     leading term is psi_{2,1} prop. (pi-2)/(3pi) Z (R1^2+R2^2-R12^2)
+        #     = (pi-2)/(3pi) Z Y_{2,1}, so C must reach degree 2.
+        # (R1,R2,R12) ARE the KS-rationalized coordinates -- the hyperspherical
+        # sqrt(1-sin a cos t), sqrt(1+sin a) irrationalities of the angular Fock
+        # coefficients are polynomial here, so L is the only transcendental jet.
+        # Refs: MUSM 1991 eq (23); Liverts 2022 eq (8); Fournais et al. 2004/2009;
+        # ~/project/reports/helium-new-ansatze.md.
+        bp, Bx = trial('b', gens, 2, constant=False, roots=rset)   # log-free exponent
+        cp, Cx = trial('c', gens, 2, roots=rset)                   # Fock-log coefficient
+        eqs = (['Psi[%s] - Psi*(B[%s] + C[%s]*L + C*L[%s])' % (c, c, c, c)
+                for c in coords]                       # Psi = exp(B + C*L)
+               + ['B - (%s)' % Bx]
+               + ['C - (%s)' % Cx]
+               + _log_relations(coords))               # leaders L[c]
+        return dict(kind='product', jets_dep=['Psi', 'B', 'C', 'L'],
+                    equations=eqs, params=bp + cp,
+                    v_params=cp,        # C == 0 -> log gone -> Kato-only (DEGENERATE)
+                    amp_params=[])      # exp is never 0: no Psi==0 (TRIVIAL) mode
+
     raise NotImplementedError(
         "ansatz %s not yet in the differential-algebra library.\n"
         "  algebraic extension (11: gamma)  -> same template as 13." % ansatz)
