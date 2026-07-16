@@ -29,10 +29,10 @@
 #
 # Under the ranking (jets high, params low) the leaders are DDPsi, DPsi's
 # spatial derivatives, v and r; the free (parametric) jets are Psi and DPsi.
-# Homogenization (helium.sage's device for forcing polynomials nonzero) is
-# DROPPED: differential Thomas splits on those initials/separants itself, so
-# ansatz 5 and 5.01 -- distinguished in helium.sage only by homogenization --
-# are the same ansatz here.
+# Selected polynomials are NOT forced nonzero up front: differential Thomas
+# splits on the relevant initials/separants itself, so each disjoint cell
+# carries its own inequations and the degenerate loci are reported, not
+# excluded.
 #
 # build_problem(pde_name, ansatz) returns everything the solver needs:
 #   dict(R, rk, coords, roots, jets, params, ansatz_eqs, pconst, pde)
@@ -146,7 +146,7 @@ def ansatz_spec(ansatz, coords, roots):
     # engine forms A_c since A is built from the independent coordinates).  The
     # inner-variable jet is named B (exp/Chi) or C (log); its coefficients are
     # v_params, so B==0 (exponential/log collapses to a constant) reads as the
-    # degenerate case.  Homogenization is dropped (Thomas splits those loci).
+    # degenerate case, which Thomas splits off as its own cell.
 
     if ansatz == 1:
         # Psi = A * Phi,  Phi = exp(B):  Phi' = Phi, so the chain rule is
@@ -202,7 +202,6 @@ def ansatz_spec(ansatz, coords, roots):
 
     if ansatz == 5:
         # 2nd-order ODE, linear coeffs, linear inner variable.
-        # (helium.sage 5 / 5.01 -- homogenization dropped; Thomas splits it.)
         vp, V = trial('v', gens, 1, constant=False, start=1, roots=rset)
         ap, A = trial('a', ['v'], 1)
         bp, B = trial('b', ['v'], 1)
@@ -244,7 +243,7 @@ def ansatz_spec(ansatz, coords, roots):
     # C*w - B = 0 (leader w, separant C -- so C != 0 is a Thomas inequation);
     # everything else is the Zeta(V) family with w in place of v.  B/C is
     # invariant under (B,C)->(lambda B, lambda C), an extra scaling dimension we
-    # let Thomas carry (helium.sage suppressed it with homogenization).
+    # let Thomas carry rather than gauge-fix.
     if ansatz in (6, 7):
         d_bc = 1 if ansatz == 6 else 2          # degree of B, C and of the ODE coeffs
         bp, B = trial('b', gens, d_bc, roots=rset)      # numerator   (with constant)
@@ -404,9 +403,7 @@ def ansatz_spec(ansatz, coords, roots):
         # In particular 16.3 = (2,1,1) and 16.6 = (2,2,2) use a QUADRATIC radicand
         # -- g is the square root of a degree-2 polynomial, i.e. a genuinely new
         # coordinate of the same shape as hydrogen's r = sqrt(x^2+y^2+z^2), the
-        # ingredient that let ansatz 5 find the J0 Bessel solution.  (helium.sage's
-        # homogenized 16.31/16.61 collapse onto 16.3/16.6 here -- homogenization
-        # is dropped; Thomas splits those loci itself.)
+        # ingredient that let ansatz 5 find the J0 Bessel solution.
         deg16 = {16: (1, 1, 1), 16.1: (1, 2, 1), 16.2: (1, 1, 2),
                  16.3: (2, 1, 1), 16.4: (1, 2, 2), 16.5: (2, 1, 2),
                  16.6: (2, 2, 2)}
