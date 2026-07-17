@@ -227,9 +227,10 @@ def ansatz_spec(ansatz, coords, roots):
         ODE = '(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)
         return dict(order=2, V=V, ODE=ODE, params=vp + dp + mp + np_, extra=[])
 
-    if ansatz in (5.3, 10):
+    if ansatz == 5.3:
         # 2nd-order ODE, QUADRATIC coeffs, QUADRATIC inner variable.
-        # (helium.sage 5.3 and 10 coincide in this formulation.)
+        # (helium.sage 5.3 and 10 coincide as single-Zeta specs; ansatz 10 is
+        # now repurposed below as the product-of-two-ODE-functions family.)
         vp, V = trial('v', gens, 2, constant=False, roots=rset)
         dp, D = trial('d', ['v'], 2)
         mp, M = trial('m', ['v'], 2)
@@ -274,6 +275,49 @@ def ansatz_spec(ansatz, coords, roots):
         np_, N = trial('n', ['v'], 0)          # N = n0
         ODE = 'DPsi - (%s)*Psi' % N
         return dict(order=1, V=V, ODE=ODE, params=vp + np_, extra=[])
+
+    # ----- PRODUCT-OF-TWO-ODE-FUNCTIONS template: Ψ = F(ξ)·G(η) --------------
+    # A product of two unknown functions, each of its OWN floating linear inner
+    # variable, each obeying its own 2nd-order ODE with coefficients linear in
+    # that inner variable.  The minimal product analogue of ansatz 5 — and
+    # ansatz 5 is its G≡const face, so this SUBSUMES ansatz 5: a hydrogen run
+    # must re-find ansatz 5's radial + E=0 J₀-Bessel varieties as the single-
+    # factor faces, plus — if the two-factor machinery closes — the E≠0
+    # parabolic product on top.
+    #
+    #   inner variables (floating):  ξ = p₀·R₁ + p₁·R₂ + p₂·R₁₂   (+ a radial
+    #                                η = q₀·R₁ + q₁·R₂ + q₂·R₁₂    term r for H)
+    #   chain rules (F=F(ξ), G=G(η)):  F[c] − F′·ξ[c],  F′[c] − F″·ξ[c]
+    #                                  G[c] − G′·η[c],  G′[c] − G″·η[c]
+    #   product:                       Ψ − F·G
+    #   the two ODEs:
+    #       (a₀ + a₁·ξ)·F″ + (b₀ + b₁·ξ)·F′ + (c₀ + c₁·ξ)·F  = 0
+    #       (d₀ + d₁·η)·G″ + (e₀ + e₁·η)·G′ + (f₀ + f₁·η)·G  = 0
+    #
+    # The inner variables FLOAT (not hard-coded): for hydrogen this discovers the
+    # parabolic coordinates ξ=r+z, η=r−z of Landau–Lifshitz vol.3 §37 (up to the
+    # arbitrary field axis); for helium it discovers a Hylleraas-type product
+    # F(linear)·G(linear) — no separation is known there, so this is a genuine
+    # coordinate-discovering search.  18 params + E, 9 dependent jets: expect the
+    # heavy band.  Kept fully symmetric — NO leading-coefficient gauge-fix, so the
+    # a₁=0 / d₁=0 branches (incl. the pure-Bessel face) stay reachable.
+    # Code jet names: F″/F′→DDF/DF, G″/G′→DDG/DG, ξ/η→xi/eta.
+    if ansatz == 10:
+        pp, XI  = trial('p', gens, 1, constant=False, roots=rset)
+        qq, ETA = trial('q', gens, 1, constant=False, roots=rset)
+        eqs = (['xi - (%s)' % XI, 'eta - (%s)' % ETA]
+               + ['F[%s] - DF*xi[%s]'    % (c, c) for c in coords]
+               + ['DF[%s] - DDF*xi[%s]'  % (c, c) for c in coords]
+               + ['G[%s] - DG*eta[%s]'   % (c, c) for c in coords]
+               + ['DG[%s] - DDG*eta[%s]' % (c, c) for c in coords]
+               + ['Psi - F*G']
+               + ['(a0 + a1*xi)*DDF + (b0 + b1*xi)*DF + (c0 + c1*xi)*F']
+               + ['(d0 + d1*eta)*DDG + (e0 + e1*eta)*DG + (f0 + f1*eta)*G'])
+        odep = ['a0', 'a1', 'b0', 'b1', 'c0', 'c1', 'd0', 'd1', 'e0', 'e1', 'f0', 'f1']
+        return dict(kind='product2',
+                    jets_dep=['Psi', 'DDF', 'DF', 'F', 'DDG', 'DG', 'G', 'xi', 'eta'],
+                    equations=eqs, params=pp + qq + odep,
+                    v_params=pp + qq, amp_params=[])
 
     # ----- NESTED-ODE template: Psi = Zeta(V), V depends on Theta = Theta(U) --
     # Two coupled ODE functions.  The inner function Theta solves an ODE in the
