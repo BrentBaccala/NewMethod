@@ -38,6 +38,25 @@ January 2026).
   solution-space dimension ≥ 2). Single-linear-element case proved;
   tower-level uniform degree bound and higher-order nonlinear elements
   flagged as open. Unreviewed draft pending the author's check.
+- Drafted the **companion note `ansatz-method-provenance.md`** (`97f718c`,
+  18 July 2026; model Claude Opus 4.8): a verified four-layer provenance of the
+  "ansatz method" keyword — generic term → **Dong 2002** as the term-of-art
+  coiner (Phys. Scr. 65:289; Found. Phys. Lett. 15:385) → the **Flessas 1979**
+  polynomial×exponential trial form inside the **quasi-exactly-solvable (QES)**
+  program (Turbiner; Bender–Dunne; Ushveridze) → the **QES hidden Lie algebra**
+  (sl(2,ℝ) gauge construction; classified and lifted to two-variable PDE by
+  González-López–Kamran–Olver, J. Phys. A 24:3995 1991 and CMP 159:503 1994).
+  Grew out of an interactive session that stress-tested the paper's related-work
+  line against the strongest prior art: the naive "prior work only does ODEs" is
+  false (QES reaches PDEs via separation and via the hidden algebra), so the note
+  reframes the differentiator as **precondition-free differential elimination +
+  the completeness certificate** (applicable to non-separable, no-hidden-sl(2)
+  problems like helium). Citations CrossRef-verified; a mis-citation of DOI
+  BF02099982 (it is CMP 159:503 1994, not CMP 153:117 1993) and a Magyari-vs-
+  Flessas mis-attribution were caught. Also ran a fan-out sibling/citation-forward
+  search confirming the ansatz+Gröbner coupling is nearly unique to Chaharbashloo
+  (one verified sibling, Acosta-Humánez–Venegas-Gómez 2018; zero verified forward
+  citations). Draft pending the author's review.
 - **Restructured** the logical organization: core + general algorithm
   (`e2a7449`), then folded into one section with the "Why not
   Rosenfeld--Gröbner alone?" discussion (`c05c04a`); unified the
