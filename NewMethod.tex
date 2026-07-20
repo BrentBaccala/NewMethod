@@ -672,7 +672,7 @@ of parameters, to make the computation tractable.
 
 Several example ans\"atze will be presented in Section \ref{A Collection of Ansatze}.
 
-\subsection{Differential Reduction}
+\subsection{The Constant Loci}
 
 Given an ansatz $A(c^*) = \{ p_1(c^*),...,p_n(c^*) \}$, a collection of differential polynomials parameterized by constants $c^* \in \mathbb{C}^n$
 and a PDE $P$, another differential polynomial, we now wish to find values for the constants that will solve the PDE.
@@ -720,18 +720,30 @@ and the PDE
 P = \Psi' - \Psi
 \end{equation}
 To compute $V_\exists$, we need to identify the constants where $1 \notin [A(c), P]$.
+For any constant $c$, the leaders of $\{A(c), P\}$ are $\Psi'$ (order 1) and $\Psi''$ (order 2).
+Elements in a differential ideal are constructed by multiplying by polynomials or applying derivation
+operators, neither of which reduce the order of a polynomial (does the ranking have to be orderly
+for this to be true?).  Therefore, no polynomial of order zero can appear in $\{A(c), P\}$ and,
+in particular, $1 \notin [A(c), P]$, so $V_\exists = \mathbb{C}$.
+
+To compute $V_{\exists \backslash \Psi}$, we need to identify the constants where $1 \notin [A(c), P] : \Psi^\infty$.
+
+To compute $V_\forall$, we need to identify the constants where $P \in [A(c)]$.  Since $P$ has order 1,
+and $A(c)$ has order 2 for all values of $c$, $P$ can never be in $[A(c)]$ for any value of $c$,
+and $V_\forall = \emptyset$.
 
 \begin{equation*}
 V_\exists = \mathbb{C} \qquad V_{\exists \backslash \Psi} = \{ 1 \} \qquad V_\forall = \emptyset
 \end{equation*}
+\qed
+\end{example}
 
 It is perhaps easiest to understand this example analytically.
 For any constant $c$, we can set $\Psi=0$ and get a solution to both the ansatz and the PDE, so $V_\exists = \mathbb{C}$.
-Both $e^x$ and $e^{-x}$ solve $A(1)$, but only $e^x$ solves $P$,
-so a solution to the ansatz does not necessarily solve the PDE and $V_\forall = \emptyset$.
-However, $e^x$ is a solution to both $A(1)$ and $P$, and 1 is the only value of $c$ for which they have a common non-zero solution,
+If $c=1$, then $ae^x$ is a solution to both $A(1)$ and $P$, and 1 is the only value of $c$ for which they have a common non-zero solution,
 so $V_{\exists\backslash\Psi} = \{ 1 \}$.
-\end{example}
+However, although both $ae^x$ and $ae^{-x}$ solve $A(1)$, only $ae^x$ solves $P$,
+so a solution to the ansatz does not necessarily solve the PDE and $V_\forall = \emptyset$.
 
 The most straightforward way to compute the existence loci $V_\exists$ or $V_{\exists\backslash\Psi}$ is to proceed
 as their definitions suggest: combine the PDE and the ansatz together as the generators of a singular differential
