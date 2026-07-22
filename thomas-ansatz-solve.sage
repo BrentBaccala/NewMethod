@@ -203,6 +203,34 @@ def _sympy_to_polyring(expr):
     return PolyRing(d)
 
 
+# BLAD differential polynomial -> PolyRing, DIRECTLY (no sympy round-trip).
+# `_blad.read_terms` already yields (coeff, [(name, degree), ...]) -- exactly an
+# exponent/coefficient dict -- so we build the PolyRing element in one O(terms)
+# pass, grouping like terms as we go.  This replaces the _elt_to_sympy ->
+# _sympy_to_polyring detour, whose incremental `out += mon` was O(terms^2)
+# (sympy re-sorts the whole Add on every addition) and blew up on the large
+# remainders the cell_eqs reducer produces.  A bracketed derivative jet has no
+# generator (it should have been eliminated by the reduction) and raises, the
+# same guard _sympy_to_polyring gave.
+_GEN_IDX = {str(g): i for i, g in enumerate(PolyRing.gens())}
+
+
+def _elt_to_polyring(e):
+    n = PolyRing.ngens()
+    d = {}
+    for coeff, term in _blad.read_terms(e._h()):
+        exps = [0] * n
+        for nm, deg in term:
+            i = _GEN_IDX.get(nm)
+            if i is None:
+                raise TypeError("no PolyRing generator for %r "
+                                "(derivative jet survived reduction?)" % (nm,))
+            exps[i] += int(deg)
+        key = tuple(exps)
+        d[key] = d.get(key, QQ(0)) + QQ(int(coeff))
+    return PolyRing(d)
+
+
 def forces_v_zero(P):
     """True iff the prime forces the inner variable v == 0 identically (every
     inner-variable coefficient lies in P) -- i.e. the ansatz has collapsed to a
@@ -276,14 +304,14 @@ def adapt_cell(ds):
     for e in cell_eqs(ds):
         if e.is_zero() or has_jet(e) or is_param_constancy(e):
             continue
-        param_eqs.append(_elt_to_sympy(e))
+        param_eqs.append(_elt_to_polyring(e))
     for q in cell_ineqs(ds):
         if has_jet(q):
             jet_ineqs.append(q)
         elif is_param_constancy(q):
             continue
         else:
-            param_ineqs.append(_elt_to_sympy(q))
+            param_ineqs.append(_elt_to_polyring(q))
     return dict(param_eqs=param_eqs, param_ineqs=param_ineqs, jet_ineqs=jet_ineqs)
 
 
@@ -347,26 +375,33 @@ for num, ds in enumerate(_cells, 1):
     Z = sorted((p for p in cp['param_eqs']), key=str)
     Zkey = tuple(map(str, Z))
 
-    if Zkey not in strata_cache:
-        sub, spec = specialize(cp['param_eqs'])
-        reductors = reductors_for(spec)
+    # Reduce the PDE against the cell's OWN differential-triangular equations
+    # (`cell_eqs`, polynomial form, initials carried as cofactors/inequations by
+    # the Thomas decomposition) instead of a sympy-solved re-specialization of
+    # the ansatz.  Dropping `specialize`/`sympy.solve` avoids its radicals,
+    # RootOf objects, injected denominators, arbitrary branch choice, and
+    # zero-substitution fallback.  Keyed on the cell's equations (not just the
+    # parametric stratum Zkey), since the reduction now depends on the full cell.
+    ce = cell_eqs(ds)
+    cache_key = tuple(sorted(str(e) for e in ce))
+    if cache_key not in strata_cache:
+        reductors = list(ce) + list(pconst)
         rem_elt, h = full_prem(PDE, reductors)
         psi_rem_elt, _ = full_prem(R('Psi'), reductors)
         trivial = psi_rem_elt.is_zero()
-        rem = _elt_to_sympy(rem_elt)
-        if rem == 0:
+        rem = _elt_to_polyring(rem_elt)
+        if rem.is_zero():
             eqns = ()
         else:
-            eqns = build_system_of_equations(_sympy_to_polyring(rem),
-                                             PolyRing_constants)
-        gens = list(eqns) + [_sympy_to_polyring(p) for p in Z]
+            eqns = build_system_of_equations(rem, PolyRing_constants)
+        gens = list(eqns) + list(Z)
         I = ideal(gens) if gens else ideal(PolyRing.zero())
         primes = I.minimal_associated_primes()
-        strata_cache[Zkey] = dict(spec_len=len(spec), rem=rem, eqns=eqns,
-                                  primes=primes, trivial=trivial)
+        strata_cache[cache_key] = dict(spec_len=len(reductors), rem=rem, eqns=eqns,
+                                       primes=primes, trivial=trivial)
 
-    sc = strata_cache[Zkey]
-    ineq_polys = [_sympy_to_polyring(f) for f in cp['param_ineqs']]
+    sc = strata_cache[cache_key]
+    ineq_polys = list(cp['param_ineqs'])
     survivors = []
     for P in sc['primes']:
         if P.is_one():
@@ -381,7 +416,7 @@ for num, ds in enumerate(_cells, 1):
              len(cp['param_ineqs']), len(cp['jet_ineqs']), tag))
     if VERBOSE_REM:
         print("  remainder:", sc['rem'])
-    if sc['rem'] == 0 and not sc['trivial']:
+    if sc['rem'].is_zero() and not sc['trivial']:
         print("  PDE reduces to 0: the whole stratum solves the PDE (nontrivially)")
     if not survivors:
         print("  surviving solution varieties: NONE (all pruned / empty)")
