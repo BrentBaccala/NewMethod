@@ -151,7 +151,29 @@ def is_param_constancy(p):
     return False
 
 
-PolyRing = PolynomialRing(QQ, names=(COORDS + prob['jets'] + ['E'] + PARAMS))
+# Under the ELIMINATION ranking, full_prem's normal form may legitimately retain
+# parametric DERIVATIVE jets: the block ranking makes the order-0 jets the
+# leaders of the chain rules (DPsi outranks Psi[R1], so `Psi[R1] - DPsi*v[R1]`
+# rewrites DPsi), leaving derivative jets like Psi[R12] under the staircase.
+# Those surviving jets are the cell's parametric derivatives -- free on the cell
+# exactly like the order-0 jets are under the orderly ranking -- so they get
+# PolyRing generators of their own (bracket-free mangled names; the BLAD-name ->
+# generator map is patched into _GEN_IDX below).  Order <= 3 covers everything
+# the order-2 PDEs can leave; a higher-order survivor still raises the explicit
+# TypeError in _elt_to_polyring.  Gated on the ranking so the orderly path is
+# byte-identical to before.
+EXTRA_JET_PAIRS = []                 # [(blad_name, mangled_generator_name)]
+if RANKING in ('elimination', 'block', 'elim'):
+    from itertools import combinations_with_replacement
+    for _head in prob['jets']:
+        for _k in (1, 2, 3):
+            for _idx in combinations_with_replacement(COORDS, _k):
+                EXTRA_JET_PAIRS.append(('%s[%s]' % (_head, ','.join(_idx)),
+                                        '%s_%s' % (_head, '_'.join(_idx))))
+
+PolyRing = PolynomialRing(QQ, names=(COORDS + prob['jets']
+                                     + [m for _b, m in EXTRA_JET_PAIRS]
+                                     + ['E'] + PARAMS))
 PolyRing_constants = list(map(PolyRing, [str(c) for c in constants]))
 V_PARAM_GENS = [PolyRing(p) for p in prob['v_params']]
 AMP_PARAM_GENS = [PolyRing(p) for p in prob.get('amp_params', [])]
@@ -159,8 +181,14 @@ AMP_PARAM_GENS = [PolyRing(p) for p in prob.get('amp_params', [])]
 # sympy images of PolyRing's generators, in generator order.  _elt_to_sympy maps
 # coords -> Symbol, bare jets -> IndexedBase, E/params -> Symbol, so this list is
 # the exact mirror of PolyRing.gens().
+def _blad_jet_to_sympy(blad_name):
+    head, rest = blad_name.split('[', 1)
+    return _IB[head][tuple(_DERIV[d] for d in rest.rstrip(']').split(','))]
+
+
 _SYMPY_GENS = ([_DERIV[c] for c in COORDS]
                + [_IB[j] for j in prob['jets']]
+               + [_blad_jet_to_sympy(b) for b, _m in EXTRA_JET_PAIRS]
                + [_PARAM['E']]
                + [_PARAM[p] for p in PARAMS])
 assert len(_SYMPY_GENS) == PolyRing.ngens()
@@ -218,6 +246,10 @@ def _sympy_to_polyring(expr):
 # generator (it should have been eliminated by the reduction) and raises, the
 # same guard _sympy_to_polyring gave.
 _GEN_IDX = {str(g): i for i, g in enumerate(PolyRing.gens())}
+# derivative-jet generators are keyed by their BLAD name (`Psi[R1,R2]`), which
+# is what read_terms yields; the mangled python-safe name never appears there.
+for _b, _m in EXTRA_JET_PAIRS:
+    _GEN_IDX[_b] = _GEN_IDX.pop(_m)
 
 
 def _elt_to_polyring(e):
