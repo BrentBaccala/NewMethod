@@ -50,9 +50,14 @@ ANSATZ = float(ANSATZ) if '.' in str(ANSATZ) else int(ANSATZ)
 DECOMPOSE_ONLY = '--decompose-only' in sys.argv
 VERBOSE_REM = '--verbose-remainder' in sys.argv
 MAX_CELLS = int(_argval('--max-cells', '0'))
+# Differential ranking: 'orderly' (degrevlex, coordinate-order dominates) or
+# 'elimination' (block ranking, each jet its own block so a high jet like DDPsi
+# outranks all lower-jet derivatives).  The ranking changes the decomposition,
+# so the cells file name records which one was used.
+RANKING = _argval('--ranking', 'orderly')
 CELLS_OUT = _argval('--cells-out',
-                    os.path.expanduser('~/thomas-experiments/%s_ansatz%s.cells'
-                                       % (PDE_NAME, ANSATZ)))
+                    os.path.expanduser('~/thomas-experiments/%s_ansatz%s_%s.cells'
+                                       % (PDE_NAME, ANSATZ, RANKING)))
 os.makedirs(os.path.dirname(CELLS_OUT), exist_ok=True)
 
 
@@ -71,7 +76,7 @@ patch_latex_varify()
 # ==========================================================================
 print("Building %s / ansatz %s from the differential-algebra library ..."
       % (PDE_NAME, ANSATZ), flush=True)
-prob = build_problem(PDE_NAME, ANSATZ)
+prob = build_problem(PDE_NAME, ANSATZ, ranking=RANKING)
 
 R = prob['R']
 COORDS = prob['coords']
@@ -385,9 +390,18 @@ for num, ds in enumerate(_cells, 1):
     ce = cell_eqs(ds)
     cache_key = tuple(sorted(str(e) for e in ce))
     if cache_key not in strata_cache:
-        reductors = list(ce) + list(pconst)
+        # pconst dropped: cell_eqs already carries the (triangularized) constancy
+        # relations, so `+ pconst` was redundant reductors (extra per-pass cost).
+        reductors = list(ce)
+        # Flushed phase markers with timings, so a stall is diagnosable from the
+        # LAST line: stuck after "entering full_prem" => in the pseudo-reduction;
+        # stuck after "entering GTZ" => in minimal_associated_primes (primdec).
+        print("  [cell %d] entering full_prem: %d reductors ..." % (num, len(reductors)),
+              flush=True)
+        _t = time.time()
         rem_elt, h = full_prem(PDE, reductors)
         psi_rem_elt, _ = full_prem(R('Psi'), reductors)
+        t_prem = time.time() - _t
         trivial = psi_rem_elt.is_zero()
         rem = _elt_to_polyring(rem_elt)
         if rem.is_zero():
@@ -396,7 +410,12 @@ for num, ds in enumerate(_cells, 1):
             eqns = build_system_of_equations(rem, PolyRing_constants)
         gens = list(eqns) + list(Z)
         I = ideal(gens) if gens else ideal(PolyRing.zero())
+        print("  [cell %d] full_prem %.1fs (%d eqns); entering GTZ minimal_associated_primes"
+              " (%d gens) ..." % (num, t_prem, len(eqns), len(gens)), flush=True)
+        _t = time.time()
         primes = I.minimal_associated_primes()
+        t_gtz = time.time() - _t
+        print("  [cell %d] GTZ %.1fs -> %d primes" % (num, t_gtz, len(primes)), flush=True)
         strata_cache[cache_key] = dict(spec_len=len(reductors), rem=rem, eqns=eqns,
                                        primes=primes, trivial=trivial)
 
@@ -413,19 +432,19 @@ for num, ds in enumerate(_cells, 1):
     tag = "TRIVIAL (Psi==0 forced)" if sc['trivial'] else "nontrivial"
     print("\n--- cell %d: zero {%s}; ansatz %d eqs; %d param-ineqs, %d jet-ineqs; %s ---"
           % (num, ', '.join(Zkey) or '(none, generic)', sc['spec_len'],
-             len(cp['param_ineqs']), len(cp['jet_ineqs']), tag))
+             len(cp['param_ineqs']), len(cp['jet_ineqs']), tag), flush=True)
     if VERBOSE_REM:
-        print("  remainder:", sc['rem'])
+        print("  remainder:", sc['rem'], flush=True)
     if sc['rem'].is_zero() and not sc['trivial']:
-        print("  PDE reduces to 0: the whole stratum solves the PDE (nontrivially)")
+        print("  PDE reduces to 0: the whole stratum solves the PDE (nontrivially)", flush=True)
     if not survivors:
-        print("  surviving solution varieties: NONE (all pruned / empty)")
+        print("  surviving solution varieties: NONE (all pruned / empty)", flush=True)
     for P in survivors:
         triv = sc['trivial'] or forces_psi_zero(P)
         deg = forces_v_zero(P)
         label = ("  [TRIVIAL: Psi=0]" if triv else
                  "  [DEGENERATE: v=0]" if deg else "  [GENUINE: v!=0]")
-        print("   V:", P, label)
+        print("   V:", P, label, flush=True)
         bucket = (trivial_primes if triv
                   else degenerate_primes if deg else union_primes)
         bucket.setdefault(prime_key(P), (P, []))[1].append(num)

@@ -662,7 +662,7 @@ def build_pde_string(pde_name, coords):
 # ==========================================================================
 # assemble the full problem
 # ==========================================================================
-def build_problem(pde_name, ansatz):
+def build_problem(pde_name, ansatz, ranking='orderly'):
     coords, roots = coordinate_system(pde_name)
     spec = ansatz_spec(ansatz, coords, roots)
     params = spec['params']
@@ -697,7 +697,15 @@ def build_problem(pde_name, ansatz):
     # jets high->low: dependent jets, then roots.
     jets = list(jets_dep) + [rn for rn, _ in roots]
     IVAR = coords
-    DVAR = jets + ['E'] + params
+    if ranking in ('elimination', 'block', 'elim'):
+        # Block ranking: each jet its own block (highest first), E+params in a
+        # final low block.  The block comparison dominates coordinate-order, so a
+        # high jet like DDPsi outranks ALL lower-jet derivatives (e.g. DPsi[R1]).
+        # The chain rule DPsi[c]-DDPsi*v[c] then eliminates DDPsi directly instead
+        # of forcing the cleared high-degree prolongation the orderly ranking does.
+        DVAR = [[j] for j in jets] + [['E'] + params]
+    else:                                          # 'orderly' -- degrevlex
+        DVAR = jets + ['E'] + params
     rk = dt.compute_ranking(IVAR, DVAR)
     R = rk.ring
 
