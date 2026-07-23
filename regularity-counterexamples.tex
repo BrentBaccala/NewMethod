@@ -1,0 +1,131 @@
+
+\documentclass{article}
+
+\title{A New Method of Solving PDEs}
+\author{Brent Baccala\footnote{Email address: \tt cosine@freesoft.org}}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\usepackage{mathtools}  % for /xRightarrow
+\usepackage{amsthm}
+% Single shared counter for every theorem-like environment: theorems,
+% lemmas, corollaries, algorithms, examples, and definitions are numbered
+% in one sequence (1, 2, 3, ...) in order of appearance.  Cross-reference
+% them with \label/\ref throughout, never by a hard-coded number.
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{plain}
+
+\usepackage{float}  % for the [H] (put the figure right "here") tag
+\usepackage{xcolor}
+\usepackage{comment}
+
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{tabularx}
+
+\usepackage{longtable}
+
+\begin{document}
+
+\noindent{\bf Regularity of the separants.}
+Hypothesis~(4) asks that $A(c^*)$ be {\it squarefree}, not merely a regular
+chain.  Squarefreeness is what forces the remainder --- which Rosenfeld's
+Lemma places in $(A(c^*)) : S_{A(c^*)}^\infty$ --- to lie in
+$\operatorname{sat}(A(c^*))$, where reduction by $A(c^*)$ recognizes it.
+Drop it, and the separant saturation can be strictly larger than
+$\operatorname{sat}(A(c^*))$ and harbour a nonzero fully reduced element.
+
+{\it Counterexample.}
+Take $A = \{u^3 - u^2\}$ in $K[u]$, a single polynomial with leader~$u$ of
+degree~$3$ and separant $s = 3u^2 - 2u = u(3u - 2)$.  Then
+%
+\[
+s^2 (u - 1) \;=\; u^2(3u-2)^2(u-1) \;=\; (u^3 - u^2)(3u-2)^2 \;\in\; (A),
+\]
+%
+so $u - 1 \in (A) : S_A^\infty$.  The polynomial $u - 1$ is fully reduced
+(its degree in~$u$ is $1 < 3$) and nonzero, yet it lies in the saturation:
+indeed $(A) : S_A^\infty = (u - 1)$, strictly larger than
+$(A) = (u^2(u-1))$.  Inverting the separant peels off the factor~$u^2$.
+
+{\it What goes wrong.}
+The separant $s = u(3u - 2)$ shares the factor~$u$ with $A$ --- equivalently,
+it is a zero-divisor modulo $(A)$, vanishing on the component $u = 0$, an
+embedded prime of $(A) = (u^2(u-1))$.  Saturating by~$s$ deletes that
+component and lowers the degree of~$u$ from~$3$ to~$1$, leaving the fully
+reduced $u - 1$.
+
+{\it The remedy.}
+A separant that is a non-zero-divisor cannot do this: it shares no factor
+with its element, which is then squarefree in its leader, so the leader
+keeps its full degree under saturation.  This is what hypothesis~(4) asks
+of every nonlinear element.
+
+\vfill\eject
+
+\medskip
+\noindent{\bf Regularity of the initials.}
+The other half of hypothesis~(4) --- that $A(c^*)$ be a {\it regular chain}
+at all, i.e.\ that its initials be regular --- cannot be dropped either.  A
+triangular set all of whose separants are regular need not be a regular
+chain; and when it is not, it fails to be a characteristic set of its
+saturated ideal, so a fully reduced nonzero element can sit in
+$\operatorname{sat}(A(c^*))$ --- indeed in $(A(c^*))$ itself.
+
+{\it Counterexample.}
+In $K[t, w]$ with the ranking $w > t$, take
+%
+\[
+A \;=\; \{\, t^2 - t, \;\; t\,w^2 - w \,\},
+\]
+%
+a triangular set whose leaders are $t$ and $w$, each of degree~$2$.  Both
+separants are non-zero-divisors modulo $(A)$:
+$\operatorname{sep}(t^2 - t) = 2t - 1$ and
+$\operatorname{sep}(t w^2 - w) = 2tw - 1$ vanish on none of the components
+listed below.  A hypothesis demanding only that the separants be regular
+would thus be satisfied.  Yet
+%
+\[
+w(t - 1) \;=\; w^2 (t^2 - t) \;-\; (t-1)(t w^2 - w) \;\in\; (A)
+\]
+%
+is fully reduced (of degree $1 < 2$ in each leader) and nonzero.  A fully
+reduced nonzero element therefore sits in $(A)$ --- hence in
+$\operatorname{sat}(A) = (A) : I_A^\infty$ --- so $A$ is not a characteristic
+set of $\operatorname{sat}(A)$ and reduction no longer detects membership.
+
+{\it What goes wrong.}
+The initial of $t w^2 - w$ --- the coefficient $t$ of $w^2$ --- is a
+zero-divisor modulo $(A)$, since $t(t - 1) \in (t^2 - t)$.  Multiplying
+$t w^2 - w$ by $t - 1$ annihilates its leading term, $t(t-1)w^2$ being a
+multiple of the lower generator $t^2 - t$, and the $w$-degree collapses.
+The primary decomposition exhibits the loss directly,
+%
+\[
+(A) \;=\; (t, w) \,\cap\, (t-1, w) \,\cap\, (t-1, w-1),
+\]
+%
+three points rather than the $d_t \cdot d_w = 4$ that the reduced monomials
+would count were $A$ a regular chain: the leaders fail to attain their
+nominal degrees because the leading coefficient of one element vanishes on a
+component cut out by another.
+
+{\it The remedy.}
+This is why hypothesis~(4) requires $A(c^*)$ to be a {\it regular chain},
+its initials regular and not only its separants.  For the ans\"atze of this
+paper the requirement holds: the only nonlinear element is the radius
+relation $r^2 - x^2 - y^2 - z^2$ (initial~$1$, separant~$2r$ a
+non-zero-divisor), and an element linear in its leader meets both conditions
+automatically --- its initial equals its separant, a non-zero-divisor
+modulo $\operatorname{sat}(A(c^*))$ even when (as for the ODE separant
+$a_0 + a_1 v$) it is a zero-divisor modulo $(A(c^*))$.
+
+\end{document}
