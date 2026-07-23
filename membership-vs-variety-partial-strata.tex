@@ -151,6 +151,75 @@ $e^{x}$ mode and discards $e^{-x}$. Exactly half the family solves the PDE ---
 ``some, but not all'' --- so $c = 1 \notin \Var$ even though it is a genuine,
 nonempty solution stratum of the joint system.
 
+\section{Matching the orders does not help}
+\label{sec:orders}
+
+Example~\ref{ex:partial} pairs a \emph{second}-order ansatz with a
+\emph{first}-order PDE, which invites the hope that a partial stratum is an
+order-mismatch artifact: raise the PDE to the ansatz's order and the gap might
+close. It does not. The reason is structural. Ritt's full reduction of $P$
+modulo $A$ rewrites $\Psib^{(n)}$ (and every higher derivative) through the
+ansatz's order-$n$ ODE, so the \emph{remainder is always confined to order
+$\le n-1$}, whatever the order of $P$. The PDE's content at and above the
+ansatz leader is washed out; only the reduced remainder --- an operator of
+order $\le n-1$ --- can distinguish the ansatz modes, and whether it shares a
+\emph{proper} right factor with the ansatz operator is a condition on the
+constants, indifferent to how $P$'s order compares with $n$. What closes the
+gap is $n \le 1$ (a one-dimensional solution space; \S\ref{sec:onedim}),
+a property of the \emph{ansatz}, not of the PDE or of the two orders' relation.
+
+\begin{example}[both components second order]
+\label{ex:both2}
+%
+\begin{equation}
+\label{eq:both2}
+A(c): \quad \Psib'' - c\,\Psib = 0,
+\qquad\qquad
+P: \quad \Psib'' - 3\Psib' + 2\Psib = 0 .
+\end{equation}
+%
+Both are second order. The ansatz has the two-mode family
+$\{e^{\sqrt{c}\,x}, e^{-\sqrt{c}\,x}\}$; the PDE has solutions $\{e^{x},
+e^{2x}\}$.
+\end{example}
+
+\paragraph{Membership.}
+Reducing $P$ modulo $A$ ($\Psib'' \equiv c\,\Psib$, with multiplier $h = 1$,
+so $h \neq 0$ \emph{everywhere} --- the strata below are genuine, not
+bad-locus artifacts) gives
+\[
+r \;=\; c\,\Psib - 3\Psib' + 2\Psib \;=\; -3\,\Psib' + (c+2)\,\Psib .
+\]
+The projection coefficients are $-3$ and $c+2$; the first never vanishes, so
+$\Var = \varnothing$.
+
+\paragraph{Existence.}
+A mode $e^{\rho x}$ ($\rho = \pm\sqrt{c}$) solves $P$ iff
+$\rho^2 - 3\rho + 2 = 0$, i.e.\ $\rho \in \{1, 2\}$, i.e.\ $c = \rho^2 \in
+\{1, 4\}$:
+%
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+$c$ & ansatz modes & solves $P$ & other mode \\
+\midrule
+$1$ & $e^{\pm x}$  & $e^{x}$  ($1-3+2=0$) & $e^{-x}$: $1+3+2 = 6 \neq 0$ \\
+$4$ & $e^{\pm 2x}$ & $e^{2x}$ ($4-6+2=0$) & $e^{-2x}$: $4+6+2 = 12 \neq 0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+%
+\noindent
+So $V_{\exists\backslash\Psib} = \{1, 4\}$ while $\Var = \varnothing$: at each
+of $c = 1, 4$ exactly one of the two ansatz modes survives $P$, a genuine
+partial stratum with $h \neq 0$. The GCRD test agrees: the reduced remainder
+is $R \sim \partial - \tfrac{c+2}{3}$, which right-divides $\partial^2 - c$ iff
+$\big(\tfrac{c+2}{3}\big)^2 = c$, i.e.\ $c^2 - 5c + 4 = (c-1)(c-4) = 0$, the
+order-$1$ (partial-stratum) case of the trichotomy. The example is
+Example~\ref{ex:partial} with its first-order PDE replaced by a second-order
+one that reduces to the same kind of order-$1$ remainder; the two behave
+identically precisely because reduction erases $P$'s second-order part.
+
 \section{The correct selection criterion}
 
 Equation~\eqref{eq:overcount} warns that projecting the \emph{whole} combined
@@ -168,6 +237,7 @@ one-dimensional slice), so $\Var = \varnothing$, consistent with the direct
 reduction.
 
 \section{Contrast: a one-dimensional ansatz has no partial strata}
+\label{sec:onedim}
 
 Shrink the ansatz to one dimension and test a second-order PDE:
 %
