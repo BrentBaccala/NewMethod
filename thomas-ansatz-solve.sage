@@ -55,6 +55,12 @@ MAX_CELLS = int(_argval('--max-cells', '0'))
 # outranks all lower-jet derivatives).  The ranking changes the decomposition,
 # so the cells file name records which one was used.
 RANKING = _argval('--ranking', 'orderly')
+# By default, prune GENUINE varieties whose zero-set is contained in another
+# genuine variety's, printing only the maximal (enclosing) ones.  Two "genuine"
+# primes coming out of different cells are often nested (e.g. the c1=0 wall of a
+# larger E=-1/2 component reappears as its own prime), which double-counts one
+# solution family.  --keep-enclosed restores the raw per-cell union.
+PRUNE_ENCLOSED = '--keep-enclosed' not in sys.argv
 CELLS_OUT = _argval('--cells-out',
                     os.path.expanduser('~/thomas-experiments/%s_ansatz%s_%s.cells'
                                        % (PDE_NAME, ANSATZ, RANKING)))
@@ -482,16 +488,115 @@ for num, ds in enumerate(_cells, 1):
         bucket.setdefault(prime_key(P), (P, []))[1].append(num)
 
 
-def dump_union(title, d):
-    print("\n%s (%d distinct primes):\n" % (title, len(d)))
+def prune_enclosed(d):
+    r"""
+    Keep only the maximal (enclosing) varieties in a bucket of solution primes.
+
+    A prime `P_i` is dropped when some other prime `P_j` defines a larger
+    variety, `V(P_i) \subseteq V(P_j)`.  For the radical (prime) ideals here
+    that containment is exactly the reverse ideal containment
+    `P_j \subseteq P_i`, tested with Sage's native ``P_j <= P_i``.  Equal ideals
+    -- mutual containment, e.g. the same variety surfacing from two different
+    cells -- are a tie, broken by keeping the lowest-indexed entry so duplicates
+    collapse to a single one.  Each dropped variety's source-cell list is folded
+    into the entry that encloses it, so no cell provenance is lost.
+
+    INPUT:
+
+    - ``d`` -- a bucket ``{key: (P, cells)}`` mapping a prime's
+      :func:`prime_key` to the prime ideal ``P`` and the list of cell numbers
+      that produced it (the shape built for ``union_primes`` and its siblings)
+
+    OUTPUT:
+
+    a pair ``(kept, dropped)``, where ``kept`` is a bucket of the same shape
+    holding only the enclosing varieties (with absorbed cells merged in) and
+    ``dropped`` is the list of ``(dropped_key, encloser_key)`` pairs
+
+    EXAMPLES:
+
+    The `d_0 = d_1 = 0` wall of an `E = -1/2` component is contained in the full
+    component, so it is pruned and its cell folded into the encloser::
+
+        sage: R.<v4,a0,a1,b0,b1,c0,c1,E> = PolynomialRing(QQ)
+        sage: wall = ideal(v4*c0 - b0, c1, b1, a1, a0, E + 1/2)
+        sage: full = ideal(-b1*c0 + b0*c1, v4*c1 - b1, v4*c0 - b0, a1, a0, E + 1/2)
+        sage: d = {prime_key(wall): (wall, [12]), prime_key(full): (full, [7])}
+        sage: kept, dropped = prune_enclosed(d)
+        sage: len(kept)
+        1
+        sage: P, cells = next(iter(kept.values()))
+        sage: P == full
+        True
+        sage: cells
+        [7, 12]
+    """
+    entries = [(k, P, list(cells)) for k, (P, cells) in d.items()]
+    n = len(entries)
+    encloser = [None] * n
+    for i in range(n):
+        Pi = entries[i][1]
+        for j in range(n):
+            if i == j:
+                continue
+            Pj = entries[j][1]
+            if Pj <= Pi:                        # ideal Pj ⊆ Pi ⟺ V(Pi) ⊆ V(Pj)
+                if not (Pi <= Pj) or j < i:      # strict, else tie -> low index
+                    encloser[i] = j
+                    break
+    kept = {k: (P, list(cells)) for i, (k, P, cells) in enumerate(entries)
+            if encloser[i] is None}
+    dropped = []
+    for i, (k, P, cells) in enumerate(entries):
+        if encloser[i] is None:
+            continue
+        j = encloser[i]
+        while encloser[j] is not None:                   # walk to a kept ancestor
+            j = encloser[j]
+        ek = entries[j][0]
+        Pk, ck = kept[ek]
+        kept[ek] = (Pk, sorted(set(ck) | set(cells)))
+        dropped.append((k, ek))
+    return kept, dropped
+
+
+def dump_union(title, d, prune=False):
+    r"""
+    Print a bucket of solution varieties under ``title``, one prime per line.
+
+    INPUT:
+
+    - ``title`` -- a heading string printed above the list
+
+    - ``d`` -- a bucket ``{key: (P, cells)}`` (see :func:`prune_enclosed`)
+
+    - ``prune`` -- boolean (default: ``False``); when ``True`` and the global
+      ``PRUNE_ENCLOSED`` is set, first drop the varieties contained in a larger
+      one (via :func:`prune_enclosed`) so that only the enclosing varieties are
+      printed, with a count of how many sub-varieties were pruned
+
+    OUTPUT:
+
+    the bucket actually printed -- the pruned one when pruning applies, otherwise
+    ``d`` unchanged -- so the caller can report its size (e.g. in the verdict)
+
+    """
+    dropped = []
+    if prune and PRUNE_ENCLOSED:
+        d, dropped = prune_enclosed(d)
+    note = ("" if not dropped
+            else ", %d enclosed sub-variety(ies) pruned" % len(dropped))
+    print("\n%s (%d distinct primes%s):\n" % (title, len(d), note))
     for key, (P, cells_for) in sorted(d.items(), key=lambda kv: str(kv[0])):
         print("  V:", P, "  (from cells:",
               ", ".join(map(str, sorted(set(cells_for)))) + ")")
+    return d
 
 
 print("\n" + "=" * 72)
-dump_union("GENUINE solution varieties over all cells (v != 0 -- the real union)",
-          union_primes)
+genuine_primes = dump_union(
+          "GENUINE solution varieties over all cells (v != 0 -- the real union)",
+          union_primes, prune=True)
 print("\n" + "-" * 72)
 dump_union("DEGENERATE strata (nontrivial but v == 0, ansatz collapsed)",
           degenerate_primes)
@@ -499,9 +604,9 @@ print("\n" + "-" * 72)
 dump_union("TRIVIAL (Psi==0) strata over all cells", trivial_primes)
 
 print("\n" + "=" * 72)
-if union_primes:
+if genuine_primes:
     print("VERDICT: %d GENUINE solution variety(ies) found for %s / ansatz %s."
-          % (len(union_primes), PDE_NAME, ANSATZ))
+          % (len(genuine_primes), PDE_NAME, ANSATZ))
 else:
     print("VERDICT: NO genuine solution for %s / ansatz %s "
           "(every stratum is degenerate v=0 or trivial Psi=0)."
