@@ -1,0 +1,282 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black}
+
+\newcommand{\Var}{\mathcal{V}}
+\newcommand{\code}[1]{\texttt{#1}}
+\DeclareMathOperator{\Sol}{Sol}
+\DeclareMathOperator{\GCRD}{GCRD}
+\DeclareMathOperator{\ord}{ord}
+\newcommand{\Vall}{V_{\forall}}
+\newcommand{\Vex}{V_{\exists\backslash\Psi}}
+\newcommand{\vlin}{v_{\mathrm{lin}}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\title{When the membership and homogeneous-existence loci coincide,\\
+       and a proof that they do for ansatz~5 on hydrogen}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\noindent
+A companion note to \emph{A New Method of Solving PDEs}, and a sequel to
+\emph{Membership versus variety, and the partial-solution strata} and
+\emph{Recovering the partial-solution strata by membership alone: a GCRD closure
+construction}. The core algorithm computes the \textbf{membership locus}
+$\Vall(A)=\{c:P\in[A(c)]\}$; the existential computation on $A\cup\{P\}$ computes
+the \textbf{homogeneous existence locus} $\Vex(A)=\{c:1\notin[A(c),P]:\Psi^\infty\}$.
+This note (i) records the exact condition under which the two coincide, (ii)
+proves coincidence unconditionally for one-dimensional ans\"atze, and (iii)
+proves by an explicit greatest-common-right-divisor (GCRD) computation that
+\emph{ansatz~5 on the hydrogen Schr\"odinger equation has no genuine partial
+strata}, so that the two loci coincide there off the bad locus, and the whole
+gap between them is confined to the ODE-degeneration loci that the differential
+Thomas decomposition already resolves cell by cell.
+
+\section{The exact gap, and its GCRD reading}
+
+The relationship between the two loci was established in the two companion
+notes. Writing the existential projection as membership plus a remainder,
+\begin{equation}
+\label{eq:gap}
+\Vex(A) \;=\; \Vall(A)\ \sqcup\ \{\text{partial-solution strata}\},
+\end{equation}
+where a \emph{partial-solution stratum} (companion note~I, Definition~1) is a
+$c$ at which a proper nontrivial subfamily of $\Sol(A(c))$ satisfies $P$ while
+the family as a whole does not. Hence
+\begin{equation}
+\label{eq:coincide}
+\boxed{\ \Vall(A)=\Vex(A)\ \iff\ A\ \text{has no partial-solution strata.}\ }
+\end{equation}
+
+For an ansatz whose top element is a \emph{linear} ODE $L$ of order $n$ in the
+inner variable $v$, companion note~II sharpens this into an order condition.
+Ritt-reducing $P$ modulo $A$ and splitting the remainder over base power
+products yields operators $R_1,\dots,R_s\in K(v)[\partial]$ of order $\le n-1$;
+with
+\[
+G(c^*)\;=\;\GCRD\big(L(c^*),R_1(c^*),\dots,R_s(c^*)\big),\qquad k=\ord G(c^*),
+\]
+the trichotomy (note~II, Theorem~1) reads: $k=n\iff c^*\in\Vall$ (the whole
+family solves $P$); $k=0\iff$ no common solution; and $0<k<n\iff c^*$ is a
+partial stratum. Therefore
+\begin{equation}
+\label{eq:gcrd-coincide}
+\Vall(A)=\Vex(A)\quad\text{off the bad locus}\quad\iff\quad
+\ord G(c^*)\in\{0,n\}\ \text{ for all such }c^* .
+\end{equation}
+Coincidence is exactly the statement that the GCRD never has intermediate
+order.
+
+\section{One-dimensional ans\"atze coincide unconditionally}
+
+The cleanest sufficient condition is dimensional and needs no GCRD machinery.
+
+\begin{lemma}[dimension-one coincidence]
+\label{lem:dim1}
+Let $P$ be linear and homogeneous in $\Psi$. If, for every $c^*$ off the bad
+locus, $\dim_{\mathbb C}\Sol(A(c^*))\le 1$, then $\Vall(A)=\Vex(A)$ off the bad
+locus.
+\end{lemma}
+
+\begin{proof}
+For $P$ linear and homogeneous, $\{\Psi\in\Sol(A(c^*)):P(\Psi)=0\}$ is a
+\emph{linear} subspace of $\Sol(A(c^*))$. A space of dimension $\le 1$ has only
+$\{0\}$ and itself as subspaces, so either every ansatz solution solves $P$
+(then $c^*\in\Vall$) or only the zero solution does (then $c^*\notin\Vex$). In
+both cases $c^*$ lies in $\Vall$ iff it lies in $\Vex$. In the GCRD reading,
+$n\le 1$ forces $k\in\{0,n\}$, so \eqref{eq:gcrd-coincide} holds.
+\end{proof}
+
+The Schr\"odinger operator is linear and homogeneous in $\Psi$, so
+Lemma~\ref{lem:dim1} applies to every ansatz of the library whose solution
+space is one-dimensional --- the first-order-ODE and pure-exponential families.
+The two-dimensional (second-order ODE) families are not covered, and, as
+companion note~I shows with $A:\Psi''-c\Psi$, $P:\Psi''-3\Psi'+2\Psi$, they can
+carry genuine partial strata even when the PDE order matches the ansatz order.
+Whether a \emph{particular} second-order ansatz has strata against a
+\emph{particular} PDE is the residual question; \S\ref{sec:ansatz5} settles it
+for ansatz~5 on hydrogen.
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+$\dim\Sol(A(c))$ & library ans\"atze & status \\
+\midrule
+$1$ (1st-order ODE / pure exp) & 8, 9, 1, 1.1, 20, 20.1 & coincide (Lemma~\ref{lem:dim1}) \\
+$1$? (log additive mode) & 2, 17, 17.1, 18, 19 & dimension check pending \\
+$2$ (2nd-order linear ODE) & 5, 5.1, 5.2, 5.3, 3, 6, 7, 13, 14, 15, 16 & GCRD analysis (\S\ref{sec:ansatz5}) \\
+higher / nested & 12 & GCRD tower recursion \\
+nonlinear (product $F\!\cdot\!G$) & 10 & outside the linear theory \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Ansatz~5 on hydrogen has no genuine partial strata}
+\label{sec:ansatz5}
+
+We carry out the GCRD analysis of \eqref{eq:gcrd-coincide} for the paper's
+figure ``ansatz~5'' against the hydrogen Schr\"odinger equation, and find that
+the only partial strata sit on the bad locus. The computation is elementary
+linear algebra over $\mathbb{Q}(c)$; the verification scripts are
+\code{ansatz5\_gcrd.sage} and \code{ansatz5\_gcrd2.sage}.
+
+\subsection{Setup and the reduced remainder}
+
+Ansatz~5 is $\Psi=\zeta(v)$ with inner variable
+$v=v_1x+v_2y+v_3z+v_4r$, $r^2=x^2+y^2+z^2$, and second-order top element
+\begin{equation}
+\label{eq:L}
+L\;=\;A_2\,\partial^2+L_1\,\partial+L_0,\qquad
+A_2=a_0+a_1v,\ L_1=b_0+b_1v,\ L_0=c_0+c_1v,\ \partial=\tfrac{d}{dv}.
+\end{equation}
+Write $\vlin=(v_1,v_2,v_3)$ and $K=|\vlin|^2-v_4^2$. Since
+$v_{\mathrm{lin}}\!\cdot x=v-v_4r$, the gradient and Laplacian of the inner
+variable are
+\[
+|\nabla v|^2=K+\frac{2v_4v}{r},\qquad \nabla^2v=\frac{2v_4}{r},
+\]
+so, for $\Psi=\zeta(v)$,
+$\nabla^2\Psi=\zeta''\big(K+\tfrac{2v_4v}{r}\big)+\zeta'\,\tfrac{2v_4}{r}$.
+Clearing the Schr\"odinger equation $-\tfrac12\nabla^2\Psi-\tfrac1r\Psi-E\Psi=0$
+by $-2r$ gives
+\begin{equation}
+\label{eq:prereduce}
+\zeta''\,(Kr+2v_4v)+2v_4\,\zeta'+2\zeta+2Er\,\zeta \;=\;0 .
+\end{equation}
+Reducing $\zeta''$ through $L$ --- multiply \eqref{eq:prereduce} by $A_2$ and
+substitute $A_2\zeta''=-L_1\zeta'-L_0\zeta$ --- and collecting on the
+\emph{independent} radical $r$ (valid where $|\vlin|\neq0$, so that $v$ and $r$
+vary independently; Remark~\ref{rem:generic}) leaves a remainder
+\begin{equation}
+\label{eq:rem}
+r\,\big(R_1\zeta\big)+\big(R_0\zeta\big)\;=\;0,
+\qquad h=A_2=a_0+a_1v,
+\end{equation}
+where the two first-order remainder operators are
+\begin{align}
+\label{eq:R1}
+R_1&=-K L_1\,\partial+\big(2E A_2-K L_0\big),\\
+\label{eq:R0}
+R_0&=2v_4\,(A_2-vL_1)\,\partial+2\,(A_2-v_4vL_0).
+\end{align}
+Because $v$ and $r$ are independent, \eqref{eq:rem} forces $R_1\zeta=0$ and
+$R_0\zeta=0$ separately. A partial stratum off the bad locus ($h\ne0$) is thus a
+parameter point at which $L$, $R_1$, $R_0$ share a nonzero solution, i.e.\
+$\ord\GCRD(L,R_1,R_0)=1$.
+
+\begin{remark}[base-splitting genericity]
+\label{rem:generic}
+The split on $r$ requires $v$ and $r$ to be independent coordinates, i.e.\
+$|\vlin|\neq0$; it also uses $A_2\ne0$ (the multiplier $h$) and, to keep $R_1$
+of order one, $K\neq0$ and $v_4\neq0$. The excluded loci $\{|\vlin|=0\}$
+(radial inner variable, $v=v_4r$), $\{K=0\}$, $\{v_4=0\}$ and $\{h=0\}$ are
+precisely the ODE-degeneration strata handled cell by cell by the differential
+Thomas decomposition; the radial locus $\{|\vlin|=0\}$ is where the hydrogen
+bound states live.
+\end{remark}
+
+\subsection{The GCRD computation}
+
+With $\rho=-B_1/A_1$ the exponent of the $R_1$-mode ($A_1=-KL_1$,
+$B_1=2EA_2-KL_0$), a common solution of $L,R_1,R_0$ exists iff
+\begin{itemize}
+\item[(P)] $R_0$ selects the same mode: $A_1B_0-A_0B_1=0$ identically in $v$; and
+\item[(R)] that mode solves $L$: $A_2(\rho'+\rho^2)+L_1\rho+L_0=0$ (the Riccati
+of $L$), cleared by $A_1^2$ to
+$A_2\big(B_1^2-B_1'A_1+B_1A_1'\big)-L_1B_1A_1+L_0A_1^2=0$.
+\end{itemize}
+Each is an identity in $v$; equating $v$-coefficients gives polynomial equations
+in $(a_0,a_1,b_0,b_1,c_0,c_1,K,v_4,E)$. Let $J$ be their ideal.
+
+\begin{theorem}[no genuine partial strata for ansatz~5 / hydrogen]
+\label{thm:ansatz5}
+Off the degenerate loci $\{K=0\}\cup\{v_4=0\}\cup\{|\vlin|=0\}$, the ansatz~5
+system for the hydrogen Schr\"odinger equation has no partial-solution stratum
+with $h\not\equiv 0$. Consequently $\Vall=\Vex$ off the bad locus, and the
+entire gap $\Vex\setminus\Vall$ lies on the ODE-degeneration loci.
+\end{theorem}
+
+\begin{proof}
+Saturating $J$ by $K$ and $v_4$ (genericity) and then by $(a_0,a_1)$
+(imposing $h\not\equiv 0$) and computing a Gr\"obner basis, one finds the basis
+contains $b_0^2,\ b_0b_1,\ b_1^2$; hence every solution with $h\not\equiv 0$
+lies on $\{b_0=b_1=0\}$, i.e.\ $L_1\equiv0$. Saturating additionally by
+$(b_0,b_1)$ --- the branch $L_1\neq0$ --- yields the unit ideal: there is no
+partial stratum with a genuine first-derivative term.
+
+On the residual branch $L_1\equiv0$ the derivation above degenerates, since
+$A_1=-KL_1=0$ and $R_1$ drops to order zero; it must be treated directly.
+There $R_1=B_1$, so $R_1\zeta=0$ forces $B_1=0$, i.e.\ $2EA_2=KL_0$, whence
+$L_0=(2E/K)A_2$ and, dividing $L$ by $A_2\neq0$, the ODE is
+$\zeta''+(2E/K)\zeta=0$. The remaining operator is
+$R_0=2A_2\big(v_4\partial+1-(2Ev_4/K)v\big)$, giving
+$\rho_0=\zeta'/\zeta=-1/v_4+(2E/K)v$; requiring $\rho_0$ to solve the ODE's
+Riccati $\rho_0'+\rho_0^2+2E/K=0$ and clearing by $(Kv_4)^2$ gives
+\[
+4v_4^2E^2\,v^2-4Kv_4E\,v+4Kv_4^2E+K^2\;=\;0\quad(\text{in }v),
+\]
+whose $v^2$-coefficient forces $E=0$ and whose constant term then forces
+$K^2=0$, i.e.\ $K=0$, excluded. So this branch is empty as well. Both branches
+being empty, no $h\not\equiv0$ partial stratum exists; by \eqref{eq:coincide}
+and \eqref{eq:gcrd-coincide}, $\Vall=\Vex$ off the bad locus, and
+\eqref{eq:gap} leaves the gap on the degeneration loci.
+\end{proof}
+
+\subsection{Reading}
+
+For ansatz~5 on hydrogen the second-order solution space never lets the
+Schr\"odinger equation peel off a single mode away from the degeneration loci:
+the potential's $-1/r$ term and the $K,v_4$ geometry conspire so that (P) and
+(R) are jointly unsatisfiable with $h\neq0$. Consequently the membership
+computation, run \emph{per Thomas cell}, already recovers the full homogeneous
+existence locus: the cells on the bad locus $\{h=0\}$ and the radial locus
+$\{|\vlin|=0\}$ --- where the bound-state energies $E=-\tfrac12,-\tfrac18$ sit
+--- are the only places $\Vall$ and $\Vex$ can differ, and those are exactly the
+degenerate cells the decomposition isolates. No separate GCRD $\forall$-cover
+(companion note~II) is needed for ansatz~5; it remains the general safety net
+for ans\"atze whose GCRD does reach intermediate order.
+
+\begin{remark}[scope]
+Theorem~\ref{thm:ansatz5} is specific to the \emph{hydrogen} Hamiltonian and to
+ansatz~5's linear-coefficient second-order ODE. It does not follow from
+order-matching (companion note~I gives a both-second-order counterexample with
+genuine strata) and does not transfer automatically: the helium Hamiltonian,
+and the quadratic-coefficient variants 5.1--5.3 and the coefficient-ring
+extensions 13--16, require re-running the same computation. The scripts
+\code{ansatz5\_gcrd.sage}/\code{ansatz5\_gcrd2.sage} are parameterized to make
+that a mechanical substitution.
+\end{remark}
+
+\section{Summary}
+
+\begin{itemize}
+\item $\Vall=\Vex\iff$ no partial strata $\iff$ (linear-ODE ans\"atze)
+      $\ord\GCRD(L,\{R_\beta\})\in\{0,n\}$ everywhere (\eqref{eq:coincide},
+      \eqref{eq:gcrd-coincide}).
+\item One-dimensional ans\"atze coincide unconditionally
+      (Lemma~\ref{lem:dim1}); this covers the first-order and pure-exponential
+      library families.
+\item Ansatz~5 on hydrogen has no genuine ($h\neq0$) partial strata
+      (Theorem~\ref{thm:ansatz5}); its $\Vall$-vs-$\Vex$ gap is entirely on the
+      ODE-degeneration loci resolved by the Thomas decomposition, so per-cell
+      membership recovers $\Vex$ with no existential computation.
+\item Open: the log ans\"atze dimension check (2, 17, 17.1, 18, 19); the
+      quadratic-coefficient and coefficient-ring second-order families; the
+      nested (12) and product (10) ans\"atze; and the helium Hamiltonian.
+\end{itemize}
+
+\end{document}
