@@ -81,6 +81,47 @@ partial stratum. Therefore
 Coincidence is exactly the statement that the GCRD never has intermediate
 order.
 
+\begin{remark}[hypotheses and their necessity]
+\label{rem:hyp}
+Everything past \eqref{eq:coincide} rests on two standing hypotheses, and both
+are load-bearing.
+
+\emph{(H1) $P$ is linear and homogeneous in $\Psi$.} Linearity is what makes
+the reduced remainder a \emph{linear} operator: $r=\sum_\beta m_\beta
+R_\beta(\Psi)$ with $R_\beta\in K(v)[\partial]$, the object whose GCRD with $L$
+the whole analysis takes. A $\Psi^2$- or $|\Psi|^2\Psi$-term would make $r$
+nonlinear in the jets, and there would be no operator to divide --- the Ore
+ring, the kernel-intersection identity, the Wronskian argument and the
+subresultant strata equations all require $r$ to be an operator. Homogeneity is
+what makes the $P$-solving solutions a linear \emph{subspace} of
+$\Sol(A(c^*))$, on which Lemma~\ref{lem:dim1} turns; without it a
+one-dimensional family could solve $P$ at isolated scalings and the dimension
+argument would fail. Linearity here means linear in $\Psi$ and its
+derivatives; arbitrary coefficients in the independent variables are allowed,
+so the Coulomb $-1/r$ is fine and the Schr\"odinger equation satisfies~(H1). A
+nonlinear Schr\"odinger / Gross--Pitaevskii equation does not, and lies outside
+the theory of this note entirely.
+
+\emph{(H2) the ansatz top element is a linear ODE.} This is what places $L$ in
+the right-Euclidean ring $K(v)[\partial]$, where GCRDs exist and are
+computable; the trichotomy is a statement about $\ord\GCRD$ of linear
+operators. Nonlinear structure \emph{below} the top is admissible provided it
+is absorbed into the differential base field: the algebraic-extension elements
+of ans\"atze 13 and 16, the roots, and the coefficient-ring extensions 14, 15
+leave the top element linear (over $K(v)(g)$, say), and GCRD theory is valid
+over any differential field. Companion note~II further relaxes~(H2) for a
+\emph{first-order} nonlinear top, which has an algebraic-extension closure of
+bounded degree; a \emph{higher-order} nonlinear top is open. The one library
+ansatz that genuinely violates~(H2) is the product family~10
+($\Psi=F(\xi)\,G(\eta)$): eliminating $F,G$ from the nonlinear relation
+$\Psi-F\!\cdot\!G$ gives a nonlinear top for $\Psi$, outside $K(v)[\partial]$.
+
+Both hydrogen and helium are linear and homogeneous in $\Psi$, so~(H1) holds
+throughout; every library ansatz except~10 satisfies~(H2). The
+ansatz-5 result of \S\ref{sec:ansatz5} sits squarely in the doubly-linear
+regime.
+\end{remark}
+
 \section{One-dimensional ans\"atze coincide unconditionally}
 
 The cleanest sufficient condition is dimensional and needs no GCRD machinery.
