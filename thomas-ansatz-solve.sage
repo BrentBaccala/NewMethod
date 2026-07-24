@@ -101,11 +101,50 @@ ansatz0 = prob['ansatz_eqs']
 pconst = prob['pconst']
 PDE = prob['pde']
 
-print("PDE:", PDE)
+
+# --- consistent variable rendering ----------------------------------------
+# Three notations reach the output otherwise: `str()` on a BLAD differential
+# polynomial writes a derivative jet with UNDERSCORES (`Psi_x_x`), the ansatz
+# strings that built the ring use DifferentialAlgebra's BRACKET input notation
+# (`Psi[x,x]`), and a bare python list of names prints QUOTED.  Print bracket
+# notation everywhere -- it is what the ring parser accepts, so the output can
+# be fed back in.  (The `elimination` ranking's mangled PolyRing generator names
+# are underscore-form too, so they normalise through the same function.)
+_COORD_SET = set(COORDS)
+
+
+def to_bracket(s):
+    r"""
+    Rewrite underscore-form derivative jets in ``s`` as bracket-form ones.
+
+    A token is rewritten only when every underscore-separated piece after the
+    head is a coordinate name, so ordinary names pass through untouched and a
+    string already in bracket form is a fixed point.
+
+    INPUT:
+
+    - ``s`` -- anything with a ``str()`` (a BLAD element, a polynomial, a string)
+
+    OUTPUT: a string
+
+    EXAMPLES::
+
+        sage: to_bracket('-Psi_x_x*r - 2*Psi*r*E')      # not tested (needs COORDS)
+        '-Psi[x,x]*r - 2*Psi*r*E'
+    """
+    def repl(m):
+        head, *idx = m.group(0).split('_')
+        if idx and head and all(p in _COORD_SET for p in idx):
+            return '%s[%s]' % (head, ','.join(idx))
+        return m.group(0)
+    return re.sub(r'[A-Za-z]\w*', repl, str(s))
+
+
+print("PDE:", to_bracket(PDE))
 print("ansatz (%d eqs):" % len(ansatz0))
 for s in prob['ansatz_eqs_str']:
-    print("   ", s)
-print("params:", PARAMS)
+    print("   ", to_bracket(s))
+print("params:", ", ".join(PARAMS))
 
 
 # ==========================================================================
@@ -339,8 +378,8 @@ try:
     with open(CELLS_OUT, 'w') as fh:
         for i, ds in enumerate(cells_ds, 1):
             fh.write("--- cell %d ---\nEQS: %s\nINEQS: %s\n\n"
-                     % (i, [str(e) for e in cell_eqs(ds)],
-                        [str(q) for q in cell_ineqs(ds)]))
+                     % (i, [to_bracket(e) for e in cell_eqs(ds)],
+                        [to_bracket(q) for q in cell_ineqs(ds)]))
     print("Wrote raw cells to", CELLS_OUT, flush=True)
 except Exception as ex:
     print("(could not write cells file: %s)" % ex, flush=True)
@@ -490,7 +529,7 @@ for num, ds in enumerate(_cells, 1):
           % (num, ', '.join(Zkey) or '(none, generic)', sc['spec_len'],
              len(cp['param_ineqs']), len(cp['jet_ineqs']), tag), flush=True)
     if VERBOSE_REM:
-        print("  remainder:", sc['rem'], flush=True)
+        print("  remainder:", to_bracket(sc['rem']), flush=True)
     if sc['rem'].is_zero() and not sc['trivial']:
         print("  PDE reduces to 0: the whole stratum solves the PDE (nontrivially)", flush=True)
     if not survivors:
