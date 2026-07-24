@@ -25,11 +25,14 @@
 #
 #   sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 [--decompose-only]
 #   sage thomas-ansatz-solve.sage --pde helium   --ansatz 5
+#   sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 --latex
 #
 # Author: Brent Baccala (AI assistant: Claude).  July 2026.
 
 import os, re, sys, time
 import sympy
+
+_T_START = time.time()
 
 sys.path.insert(0, os.path.expanduser('~/DifferentialThomas-sage'))
 sys.path.insert(0, os.path.expanduser('~/sage-differential-polynomial/src'))
@@ -61,6 +64,11 @@ RANKING = _argval('--ranking', 'orderly')
 # larger E=-1/2 component reappears as its own prime), which double-counts one
 # solution family.  --keep-enclosed restores the raw per-cell union.
 PRUNE_ENCLOSED = '--keep-enclosed' not in sys.argv
+# Re-print the final GENUINE union as a LaTeX `subequations`/`align` block, in
+# the form the paper uses (one \left(...\right) per prime, each \label'd
+# `ideal:N`).  Coefficients are cleared of denominators first, so `a1 - 1/2*b0`
+# prints as `2 a_{1} - b_{0}`.
+LATEX_OUT = '--latex' in sys.argv
 CELLS_OUT = _argval('--cells-out',
                     os.path.expanduser('~/thomas-experiments/%s_ansatz%s_%s.cells'
                                        % (PDE_NAME, ANSATZ, RANKING)))
@@ -337,8 +345,15 @@ try:
 except Exception as ex:
     print("(could not write cells file: %s)" % ex, flush=True)
 
+def print_total_time():
+    t = time.time() - _T_START
+    print("Total time: %.1fs (%d:%02d:%05.2f)"
+          % (t, int(t) // 3600, (int(t) % 3600) // 60, t % 60), flush=True)
+
+
 if DECOMPOSE_ONLY:
     print("\n--decompose-only: stopping before the prime pipeline.", flush=True)
+    print_total_time()
     sys.exit(0)
 
 
@@ -434,7 +449,10 @@ for num, ds in enumerate(_cells, 1):
         # Flushed phase markers with timings, so a stall is diagnosable from the
         # LAST line: stuck after "entering full_prem" => in the pseudo-reduction;
         # stuck after "entering GTZ" => in minimal_associated_primes (primdec).
-        print("  [cell %d] entering full_prem: %d reductors ..." % (num, len(reductors)),
+        # Leading blank line so each cell's timing block is separated from the
+        # previous cell's variety list (the "--- cell N ---" header supplies the
+        # blank line before the result block).
+        print("\n  [cell %d] entering full_prem: %d reductors ..." % (num, len(reductors)),
               flush=True)
         _t = time.time()
         rem_elt, h = full_prem(PDE, reductors)
@@ -593,6 +611,58 @@ def dump_union(title, d, prune=False):
     return d
 
 
+def clear_denominators(g):
+    r"""
+    Scale a polynomial over `\QQ` by the lcm of its coefficient denominators.
+
+    The paper writes generators with integer coefficients, so ``a1 - 1/2*b0``
+    must appear as `2 a_{1} - b_{0}`.  Signs are left alone (a leading minus is
+    part of the generator as GTZ returned it).
+
+    EXAMPLES::
+
+        sage: R.<a0,a1,b0> = PolynomialRing(QQ)
+        sage: clear_denominators(a1 - 1/2*b0)
+        2*a1 - b0
+        sage: clear_denominators(R.zero())
+        0
+    """
+    dens = [c.denominator() for c in g.coefficients()]
+    return g * lcm(dens) if dens else g
+
+
+def latex_union(d, label='ideal'):
+    r"""
+    Print a bucket of solution varieties as a LaTeX ``subequations`` block.
+
+    Each prime becomes one ``align`` row, ``& \left(g_1, \ldots, g_k\right)``
+    followed by ``\label{<label>:N}``, numbered ``1..n`` in the same order
+    :func:`dump_union` prints them.  Coefficients are cleared of denominators
+    by :func:`clear_denominators`.
+
+    INPUT:
+
+    - ``d`` -- a bucket ``{key: (P, cells)}`` (see :func:`prune_enclosed`) --
+      normally the pruned genuine union returned by :func:`dump_union`
+
+    - ``label`` -- string (default: ``'ideal'``); the ``\label`` prefix, also
+      used as the block's own ``\label``
+
+    OUTPUT: ``None`` (the block is printed)
+    """
+    items = sorted(d.items(), key=lambda kv: str(kv[0]))
+    rows = []
+    for i, (_key, (P, _cells)) in enumerate(items, 1):
+        gens = ", ".join(latex(clear_denominators(g)) for g in P.gens())
+        rows.append(r"& \left(%s\right)\label{%s:%d}" % (gens, label, i))
+    print(r"\begin{subequations}")
+    print(r"\label{%s}" % label)
+    print(r"\begin{align}")
+    print(" \\\\\n".join(rows))
+    print(r"\end{align}")
+    print(r"\end{subequations}")
+
+
 print("\n" + "=" * 72)
 genuine_primes = dump_union(
           "GENUINE solution varieties over all cells (v != 0 -- the real union)",
@@ -611,3 +681,11 @@ else:
     print("VERDICT: NO genuine solution for %s / ansatz %s "
           "(every stratum is degenerate v=0 or trivial Psi=0)."
           % (PDE_NAME, ANSATZ))
+
+if LATEX_OUT and genuine_primes:
+    print("\n" + "-" * 72)
+    print("GENUINE solution varieties, LaTeX (paper) form:\n")
+    latex_union(genuine_primes)
+
+print("\n" + "=" * 72)
+print_total_time()
