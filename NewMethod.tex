@@ -1573,7 +1573,7 @@ p = p_1 x + p_2 y + p_3 z + p_4 t + p_5 \Psi \\
 %%\section*{An Example: The New Solution of Hydrogen}
 %%\section{Example: A New Pseudo-Solution of Hydrogen}
 \vfill\eject
-\section{Example: A New Solution of Hydrogen}
+\section{Example: Hydrogen Schr\"odinger Equation}
 \label{sec:Example}
 
 We seek to demonstrate the operation of the algorithm on the following Schr\"o\-dinger equation for hydrogen \cite{pauling and wilson}:
@@ -1676,46 +1676,11 @@ Use Cartesian coordinates.  Let $v$ be a linear polynomial in the coordinates an
 Reduce the input PDE \eqref{schrodinger} modulo differential ideal \eqref{ansatz 5}, obtaining
 \end{comment}
 
-To use Ritt's reduction algorithm, we must now specify a ranking.
+To use Ritt's reduction algorithm, we must now specify a ranking.  While the algorithm's correct
+operation does not depend on any particular ordering, different rankings can produce
+dramatically different performance timings.
 
-We want $\Psi''$ to be eliminated in favor of $\Psi'$ and $\Psi$, so we need $\Psi''$
-to be the leader of \eqref{ansatz 5 plus:1}.  This requires that $\Psi''$ be ranked above $\Psi'$,
-$\Psi$, $v$, and the constants, suggesting
-
-\begin{equation}
-\label{ranking 1}
-\Psi'' > \Psi' > \Psi > v > {\rm constants}
-\end{equation}
-
-Also, we want the
-derivatives of $\Psi$ and $\Psi'$ (like $\Psi_x$) to be eliminated in favor of $\Psi'$ and $\Psi''$,
-so we need $\Psi_x$ to be the leader of $\Psi_x - \Psi' v_x$.
-This requires that $\Psi_x$ be ranked above both $\Psi'$ and $v_x$.
-\eqref{ranking 1} and \eqref{ranking compatibility} already imply that $\Psi_x > v_x$.
-$\Psi_x$ will be ranked higher than $\Psi'$ if \eqref{ranking 1} is ranked
-in an {\it orderly} manner,
-meaning that all of the derivatives (like $\Psi_x$) rank higher than the pure indeterminates (like $\Psi$ and $\Psi'$).
-
-We want the derivatives of $v$ to be eliminated in favor of $r$, so we need $v > r$.
-For example, applying $dx$ to \eqref{ansatz 5 plus:2}, we obtain
-
-\begin{equation}
-\begin{gathered}
-\label{vx derivation}
-%%v - (v_1 x + v_2 y + v_3 z + v_4 r) \Longrightarrow v_x - v_4 r_x \\
-%%r^2 - (x^2 + y^2 + z^2) \Longrightarrow 2 r r_x - 2 x
-v - (v_1 x + v_2 y + v_3 z + v_4 r) \xRightarrow{\quad dx\quad} v_x - v_4 r_x \\
-% r^2 - (x^2 + y^2 + z^2) \xRightarrow{\quad dx\quad} 2 r r_x - 2 x
-\end{gathered}
-\end{equation}
-
-$v_x$ will be the leader of \eqref{vx derivation} if $v$ is ranked greater than both $r$ and the constants, suggesting:
-
-\begin{equation}
-\Psi'' > \Psi' > \Psi > v > r > {\rm constants}
-\end{equation}
-
-Finally, the {\tt DifferentialAlgebra} library \cite{DifferentialAlgebra} always ranks
+The {\tt DifferentialAlgebra} library \cite{DifferentialAlgebra} always ranks
 indeterminates associated with derivations below everything else, so we use this orderly ranking:
 
 \begin{equation}
@@ -1725,296 +1690,34 @@ indeterminates associated with derivations below everything else, so we use this
 
 \subsection{Differential Reduction Step}
 
-Applying Ritt's full reduction algorithm to \eqref{schrodinger hydrogen 2} modulo \eqref{ansatz 5 plus} with ranking \eqref{ranking}, we obtain
-the remainder:
+The author has used an AI coding assistent to prepare a Sage port of the LPGL-licensed {\tt DifferentialThomas} library for Maple
+that uses the {\tt DifferentialAlgebra} library \cite{DifferentialAlgebra} for its underlying differential algebra
+operations.  A script is available to do all of the calculations in this paper.
 
-\begin{equation}
-32 ( x^{2} + y^{2} + z^{2} ) p
-\end{equation}
-
-where $p$ is an 85 term differential polynomial that begins:
-
-\begin{equation}
-\label{schrodinger modulo ansatz 5}
-%sage: print(latex(sum(eq_a_reduceRing_n.terms()[0:4])).replace('Zeta', 'Psi'))
-% then add "+ \cdots" at the end
-%r \Psi' x^{3} v_{1}^{3} b_{1} + r \Psi' x y^{2} v_{1}^{3} b_{1} + r \Psi' x z^{2} v_{1}^{3} b_{1} + r \Psi' x^{2} y v_{1}^{2} v_{2} b_{1} + \cdots
-%-2*E*a0*Psi*r - 2*E*a1*v1*x*Psi*r - 2*E*a1*v2*y*Psi*r - 2*E*a1*v3*z*Psi*r
-x \Psi' r v_{1}^{3} b_{1} + y \Psi' r v_{1}^{2} v_{2} b_{1} + x \Psi' r v_{1} v_{2}^{2} b_{1} + y \Psi' r v_{2}^{3} b_{1} + \cdots
-\end{equation}
-
-% The denominator, after replacing $x^2+y^2+z^2$ with $r^2$, reads:
-
-The ``denominator'' produced by the Ritt algorithm reads:
-
-\begin{equation}
-\label{eq:ansatz5-denominator}
-% 2 r^3 (a_1 (v_1 x + v_2 y + v_3 z + v_4 r) + a_0)
-%64 v r^{2} a_{1} + 64 r^{2} a_{0}
-64 r^{2} (v a_{1} + a_{0})
-\end{equation}
-
-so neither $r$ nor $(v a_1 + a_0)$ can be zero.
-In other words, the radius can't be zero, and the ODE's second order coefficient must be non-zero.
-
-\begin{comment}
-What does this mean?
-
-If I took the original differential polynomial (PDE), multiplied it by $h$, and subtracted the remainder, I would get something
-in the differential ideal.
-
-In particular, if I multiplied by $r^2$ and subtracted the remainder, which factors, I'd get something like this:
-
-        r^2 PDE - (x^2 + y^2 + z^2) p   \in  [S]
-
-I've already expanded PDE into a rational function and discarded its denominator.  $r$ appears in PDE to the first degree.
-
-$p$ includes $r$, to the first degree, but can't include $r$ to a higher power because then $p$ wouldn't be reduced.
-
-[S] includes $r^2 - (x^2 + y^2 + z^2)$, and therefore $r^2 PDE - (x^2 + y^2 + z^2) PDE$
-\end{comment}
-
-\subsection{Projection Step}
-
-Having reduced PDE \eqref{schrodinger hydrogen 2} modulo \eqref{ansatz 5 plus},
-we now wish to project our solution into the vector space of the constants.  We're looking for
-constants that will solve equation \eqref{schrodinger modulo ansatz 5} for all values of $x$, $y$, $z$, $r$,
-$\Psi$, and $\Psi'$, so
-we collect like terms in $x$, $y$, $z$, $r$, $\Psi$, and $\Psi'$, organizing equation \eqref{schrodinger modulo ansatz 5} like this:
-
-\begin{equation}
-%sage: print(latex(Factorization([(e,1) for e in list(system_of_like_terms.items())[0]], sort=False)).replace('Zeta','Psi'))
-%(r \Psi' x^{3}) \cdot (v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} + 3 v_{1} v_{4}^{2} b_{1})
-% then drop the parens and the \cdot and add plus sign and \cdots at the end
-r \Psi' x^{3} (v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} + 3 v_{1} v_{4}^{2} b_{1}) + \cdots
-\end{equation}
-
-The expressions in parenthesis (only one is shown) gives us a system of equations
-involving only constants
-that, if satisfied,
-will yield a solution to \eqref{schrodinger hydrogen 2} in the form \eqref{ansatz 5 plus}.
-Note that $E$, although
-not a parameter in the ansatz, is included with them because it is a constant.  The
-correct operation of the algorithm is predicated on nothing more than separating
-the indeterminates into constants and non-constants, and it makes no difference whether
-the constants are introduced in the ansatz or appear in the original PDE.
-The system has 28 equations:
-
-%% The problem with making this a "figure" is that it's a numbered system of equations
-\begin{equation}
-\label{polynomial system}
-% sage: load('joca.sage')
-% sage: bwb = build_system_of_equations(PolyRing(r.args[2]), PolyRing_constants)
-% sage: latex(matrix(sorted(bwb)).transpose())
-% then copy-and-paste
-\begin{array}{r}
--2 v_{1} v_{4} a_{1} + 2 v_{1} v_{4} b_{0} \\
--2 v_{2} v_{4} a_{1} + 2 v_{2} v_{4} b_{0} \\
--2 v_{3} v_{4} a_{1} + 2 v_{3} v_{4} b_{0} \\
--2 v_{4}^{2} a_{1} + v_{1}^{2} b_{0} + v_{2}^{2} b_{0} + v_{3}^{2} b_{0} + v_{4}^{2} b_{0} \\
--2 v_{4} a_{0} \\
--2 a_{0} \\
-2 v_{3} v_{4} c_{0} - 2 v_{3} a_{1} \\
-2 v_{2} v_{4} c_{0} - 2 v_{2} a_{1} \\
-2 v_{1} v_{4} c_{0} - 2 v_{1} a_{1} \\
-v_{1}^{2} c_{0} + v_{2}^{2} c_{0} + v_{3}^{2} c_{0} + v_{4}^{2} c_{0} - 2 E a_{0} - 2 v_{4} a_{1} \\
-4 v_{2} v_{3} v_{4} c_{1} \\
-4 v_{1} v_{3} v_{4} c_{1} \\
-4 v_{1} v_{2} v_{4} c_{1} \\
-v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + 3 v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
-v_{1}^{2} v_{4} c_{1} + 3 v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
-3 v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
-v_{1}^{2} v_{3} c_{1} + v_{2}^{2} v_{3} c_{1} + v_{3}^{3} c_{1} + 3 v_{3} v_{4}^{2} c_{1} - 2 E v_{3} a_{1} \\
-v_{1}^{2} v_{2} c_{1} + v_{2}^{3} c_{1} + v_{2} v_{3}^{2} c_{1} + 3 v_{2} v_{4}^{2} c_{1} - 2 E v_{2} a_{1} \\
-v_{1}^{3} c_{1} + v_{1} v_{2}^{2} c_{1} + v_{1} v_{3}^{2} c_{1} + 3 v_{1} v_{4}^{2} c_{1} - 2 E v_{1} a_{1} \\
-4 v_{2} v_{3} v_{4} b_{1} \\
-4 v_{1} v_{3} v_{4} b_{1} \\
-4 v_{1} v_{2} v_{4} b_{1} \\
-v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + 3 v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
-v_{1}^{2} v_{4} b_{1} + 3 v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
-3 v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
-v_{1}^{2} v_{3} b_{1} + v_{2}^{2} v_{3} b_{1} + v_{3}^{3} b_{1} + 3 v_{3} v_{4}^{2} b_{1} \\
-v_{1}^{2} v_{2} b_{1} + v_{2}^{3} b_{1} + v_{2} v_{3}^{2} b_{1} + 3 v_{2} v_{4}^{2} b_{1} \\
-v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} + 3 v_{1} v_{4}^{2} b_{1}
-\end{array}
-\end{equation}
-
-% This is the unsorted list of equations
-\begin{comment}
-\begin{equation}
-\label{polynomial system}
-% sage: load('joca.sage')
-% sage: bwb = build_system_of_equations(PolyRing(r.args[2]), PolyRing_constants)
-% sage: latex(matrix(bwb).transpose())
-% then copy-and-paste
-\begin{array}{r}
-4 v_{1} v_{2} v_{4} c_{1} \\
-4 v_{1} v_{3} v_{4} c_{1} \\
--2 a_{0} \\
-v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + 3 v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
-v_{1}^{2} v_{4} b_{1} + 3 v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
-v_{1}^{2} v_{2} c_{1} + v_{2}^{3} c_{1} + v_{2} v_{3}^{2} c_{1} + 3 v_{2} v_{4}^{2} c_{1} - 2 E v_{2} a_{1} \\
-v_{1}^{2} v_{4} c_{1} + 3 v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
-4 v_{1} v_{3} v_{4} b_{1} \\
--2 v_{1} v_{4} a_{1} + 2 v_{1} v_{4} b_{0} \\
-4 v_{1} v_{2} v_{4} b_{1} \\
--2 v_{3} v_{4} a_{1} + 2 v_{3} v_{4} b_{0} \\
-v_{1}^{2} c_{0} + v_{2}^{2} c_{0} + v_{3}^{2} c_{0} + v_{4}^{2} c_{0} - 2 E a_{0} - 2 v_{4} a_{1} \\
-2 v_{1} v_{4} c_{0} - 2 v_{1} a_{1} \\
--2 v_{2} v_{4} a_{1} + 2 v_{2} v_{4} b_{0} \\
-v_{1}^{2} v_{2} b_{1} + v_{2}^{3} b_{1} + v_{2} v_{3}^{2} b_{1} + 3 v_{2} v_{4}^{2} b_{1} \\
-4 v_{2} v_{3} v_{4} b_{1} \\
-v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} + 3 v_{1} v_{4}^{2} b_{1} \\
-v_{1}^{2} v_{3} b_{1} + v_{2}^{2} v_{3} b_{1} + v_{3}^{3} b_{1} + 3 v_{3} v_{4}^{2} b_{1} \\
--2 v_{4}^{2} a_{1} + v_{1}^{2} b_{0} + v_{2}^{2} b_{0} + v_{3}^{2} b_{0} + v_{4}^{2} b_{0} \\
-3 v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
--2 v_{4} a_{0} \\
-v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + 3 v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
-v_{1}^{2} v_{3} c_{1} + v_{2}^{2} v_{3} c_{1} + v_{3}^{3} c_{1} + 3 v_{3} v_{4}^{2} c_{1} - 2 E v_{3} a_{1} \\
-3 v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
-2 v_{2} v_{4} c_{0} - 2 v_{2} a_{1} \\
-4 v_{2} v_{3} v_{4} c_{1} \\
-v_{1}^{3} c_{1} + v_{1} v_{2}^{2} c_{1} + v_{1} v_{3}^{2} c_{1} + 3 v_{1} v_{4}^{2} c_{1} - 2 E v_{1} a_{1} \\
-2 v_{3} v_{4} c_{0} - 2 v_{3} a_{1}
-\end{array}
-\end{equation}
-\end{comment}
-
-% This is the system of 34 equations that results if we don't remove the 32(x^2 + y^2 + z^2) factor
-\begin{comment}
-\begin{equation}
-\label{polynomial system}
-% sage: load('joca.sage')
-% sage: latex(matrix(eqns).transpose())
-% then copy-and-paste
-\begin{array}{r}
--64 v_{4}^{2} a_{1} + 32 v_{1}^{2} b_{0} + 32 v_{2}^{2} b_{0} + 32 v_{3}^{2} b_{0} + 32 v_{4}^{2} b_{0} \\
-32 v_{1}^{2} v_{3} c_{1} + 32 v_{2}^{2} v_{3} c_{1} + 32 v_{3}^{3} c_{1} + 96 v_{3} v_{4}^{2} c_{1} - 64 E v_{3} a_{1} \\
-64 v_{1} v_{4} c_{0} - 64 v_{1} a_{1} \\
--64 v_{1} v_{4} a_{1} + 64 v_{1} v_{4} b_{0} \\
-128 v_{1} v_{2} v_{4} c_{1} \\
-128 v_{1} v_{2} v_{4} b_{1} \\
-32 v_{1}^{2} c_{0} + 32 v_{2}^{2} c_{0} + 32 v_{3}^{2} c_{0} + 32 v_{4}^{2} c_{0} - 64 E a_{0} - 64 v_{4} a_{1} \\
-64 v_{3} v_{4} c_{0} - 64 v_{3} a_{1} \\
--64 a_{0} \\
-32 v_{1}^{3} c_{1} + 32 v_{1} v_{2}^{2} c_{1} + 32 v_{1} v_{3}^{2} c_{1} + 96 v_{1} v_{4}^{2} c_{1} - 64 E v_{1} a_{1} \\
-96 v_{1}^{2} v_{4} c_{1} + 32 v_{2}^{2} v_{4} c_{1} + 32 v_{3}^{2} v_{4} c_{1} + 32 v_{4}^{3} c_{1} - 64 E v_{4} a_{1} \\
-32 v_{1}^{2} v_{4} c_{1} + 96 v_{2}^{2} v_{4} c_{1} + 32 v_{3}^{2} v_{4} c_{1} + 32 v_{4}^{3} c_{1} - 64 E v_{4} a_{1} \\
-32 v_{1}^{2} v_{4} c_{1} + 32 v_{2}^{2} v_{4} c_{1} + 96 v_{3}^{2} v_{4} c_{1} + 32 v_{4}^{3} c_{1} - 64 E v_{4} a_{1} \\
--64 v_{4} a_{0} \\
-128 v_{1} v_{3} v_{4} c_{1} \\
-96 v_{1}^{2} v_{4} b_{1} + 32 v_{2}^{2} v_{4} b_{1} + 32 v_{3}^{2} v_{4} b_{1} + 32 v_{4}^{3} b_{1} \\
-128 v_{1}^{2} v_{4} b_{1} + 128 v_{2}^{2} v_{4} b_{1} + 64 v_{3}^{2} v_{4} b_{1} + 64 v_{4}^{3} b_{1} \\
-32 v_{1}^{2} v_{4} b_{1} + 96 v_{2}^{2} v_{4} b_{1} + 32 v_{3}^{2} v_{4} b_{1} + 32 v_{4}^{3} b_{1} \\
-128 v_{1}^{2} v_{4} b_{1} + 64 v_{2}^{2} v_{4} b_{1} + 128 v_{3}^{2} v_{4} b_{1} + 64 v_{4}^{3} b_{1} \\
-32 v_{1}^{2} v_{3} b_{1} + 32 v_{2}^{2} v_{3} b_{1} + 32 v_{3}^{3} b_{1} + 96 v_{3} v_{4}^{2} b_{1} \\
-64 v_{1}^{2} v_{4} b_{1} + 128 v_{2}^{2} v_{4} b_{1} + 128 v_{3}^{2} v_{4} b_{1} + 64 v_{4}^{3} b_{1} \\
-32 v_{1}^{2} v_{4} b_{1} + 32 v_{2}^{2} v_{4} b_{1} + 96 v_{3}^{2} v_{4} b_{1} + 32 v_{4}^{3} b_{1} \\
-32 v_{1}^{2} v_{2} c_{1} + 32 v_{2}^{3} c_{1} + 32 v_{2} v_{3}^{2} c_{1} + 96 v_{2} v_{4}^{2} c_{1} - 64 E v_{2} a_{1} \\
-128 v_{2} v_{3} v_{4} b_{1} \\
-128 v_{1} v_{3} v_{4} b_{1} \\
-32 v_{1}^{2} v_{2} b_{1} + 32 v_{2}^{3} b_{1} + 32 v_{2} v_{3}^{2} b_{1} + 96 v_{2} v_{4}^{2} b_{1} \\
-128 v_{1}^{2} v_{4} c_{1} + 128 v_{2}^{2} v_{4} c_{1} + 64 v_{3}^{2} v_{4} c_{1} + 64 v_{4}^{3} c_{1} - 128 E v_{4} a_{1} \\
-128 v_{1}^{2} v_{4} c_{1} + 64 v_{2}^{2} v_{4} c_{1} + 128 v_{3}^{2} v_{4} c_{1} + 64 v_{4}^{3} c_{1} - 128 E v_{4} a_{1} \\
-64 v_{1}^{2} v_{4} c_{1} + 128 v_{2}^{2} v_{4} c_{1} + 128 v_{3}^{2} v_{4} c_{1} + 64 v_{4}^{3} c_{1} - 128 E v_{4} a_{1} \\
-64 v_{2} v_{4} c_{0} - 64 v_{2} a_{1} \\
--64 v_{3} v_{4} a_{1} + 64 v_{3} v_{4} b_{0} \\
--64 v_{2} v_{4} a_{1} + 64 v_{2} v_{4} b_{0} \\
-32 v_{1}^{3} b_{1} + 32 v_{1} v_{2}^{2} b_{1} + 32 v_{1} v_{3}^{2} b_{1} + 96 v_{1} v_{4}^{2} b_{1} \\
-128 v_{2} v_{3} v_{4} c_{1}
-\end{array}
-\end{equation}
-\end{comment}
-
-% This is the system of 34 equations from the older version of the code
-% that doesn't seem to be consistently ordered (it changes every time I run the script)
-\begin{comment}
-\begin{equation}
-% sage: load('helium.sage')
-% sage: prep_hydrogen(5)
-% sage: init()
-% sage: latex(matrix(eqns_RQQ).transpose())
-% then copy-and-paste
-\label{polynomial system}
-\begin{array}{r}
-4 v_{1} v_{3} v_{4} b_{1} \\
-v_{1}^{2} v_{2} b_{1} + v_{2}^{3} b_{1} + v_{2} v_{3}^{2} b_{1} + 3 v_{2} v_{4}^{2} b_{1} \\
--2 v_{4} a_{0} \\
-4 v_{1}^{2} v_{4} b_{1} + 4 v_{2}^{2} v_{4} b_{1} + 2 v_{3}^{2} v_{4} b_{1} + 2 v_{4}^{3} b_{1} \\
-3 v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
-v_{1}^{2} v_{3} b_{1} + v_{2}^{2} v_{3} b_{1} + v_{3}^{3} b_{1} + 3 v_{3} v_{4}^{2} b_{1} \\
-2 v_{1}^{2} v_{4} c_{1} + 4 v_{2}^{2} v_{4} c_{1} + 4 v_{3}^{2} v_{4} c_{1} + 2 v_{4}^{3} c_{1} - 4 E v_{4} a_{1} \\
-4 v_{1} v_{3} v_{4} c_{1} \\
-v_{1}^{2} v_{3} c_{1} + v_{2}^{2} v_{3} c_{1} + v_{3}^{3} c_{1} + 3 v_{3} v_{4}^{2} c_{1} - 2 E v_{3} a_{1} \\
-2 v_{2} v_{4} c_{0} - 2 v_{2} a_{1} \\
--2 v_{2} v_{4} a_{1} + 2 v_{2} v_{4} b_{0} \\
-4 v_{1}^{2} v_{4} c_{1} + 4 v_{2}^{2} v_{4} c_{1} + 2 v_{3}^{2} v_{4} c_{1} + 2 v_{4}^{3} c_{1} - 4 E v_{4} a_{1} \\
-3 v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
-v_{1}^{2} v_{4} c_{1} + 3 v_{2}^{2} v_{4} c_{1} + v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
-4 v_{1}^{2} v_{4} c_{1} + 2 v_{2}^{2} v_{4} c_{1} + 4 v_{3}^{2} v_{4} c_{1} + 2 v_{4}^{3} c_{1} - 4 E v_{4} a_{1} \\
-4 v_{2} v_{3} v_{4} c_{1} \\
-v_{1}^{2} v_{4} c_{1} + v_{2}^{2} v_{4} c_{1} + 3 v_{3}^{2} v_{4} c_{1} + v_{4}^{3} c_{1} - 2 E v_{4} a_{1} \\
-2 v_{3} v_{4} c_{0} - 2 v_{3} a_{1} \\
--2 a_{0} \\
--2 v_{4}^{2} a_{1} + v_{1}^{2} b_{0} + v_{2}^{2} b_{0} + v_{3}^{2} b_{0} + v_{4}^{2} b_{0} \\
-2 v_{1}^{2} v_{4} b_{1} + 4 v_{2}^{2} v_{4} b_{1} + 4 v_{3}^{2} v_{4} b_{1} + 2 v_{4}^{3} b_{1} \\
-v_{1}^{2} v_{4} b_{1} + v_{2}^{2} v_{4} b_{1} + 3 v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
-4 v_{1} v_{2} v_{4} c_{1} \\
-v_{1}^{3} b_{1} + v_{1} v_{2}^{2} b_{1} + v_{1} v_{3}^{2} b_{1} + 3 v_{1} v_{4}^{2} b_{1} \\
--2 v_{3} v_{4} a_{1} + 2 v_{3} v_{4} b_{0} \\
-v_{1}^{2} c_{0} + v_{2}^{2} c_{0} + v_{3}^{2} c_{0} + v_{4}^{2} c_{0} - 2 E a_{0} - 2 v_{4} a_{1} \\
-2 v_{1} v_{4} c_{0} - 2 v_{1} a_{1} \\
-v_{1}^{2} v_{2} c_{1} + v_{2}^{3} c_{1} + v_{2} v_{3}^{2} c_{1} + 3 v_{2} v_{4}^{2} c_{1} - 2 E v_{2} a_{1} \\
--2 v_{1} v_{4} a_{1} + 2 v_{1} v_{4} b_{0} \\
-v_{1}^{2} v_{4} b_{1} + 3 v_{2}^{2} v_{4} b_{1} + v_{3}^{2} v_{4} b_{1} + v_{4}^{3} b_{1} \\
-v_{1}^{3} c_{1} + v_{1} v_{2}^{2} c_{1} + v_{1} v_{3}^{2} c_{1} + 3 v_{1} v_{4}^{2} c_{1} - 2 E v_{1} a_{1} \\
-4 v_{1} v_{2} v_{4} b_{1} \\
-4 v_{1}^{2} v_{4} b_{1} + 2 v_{2}^{2} v_{4} b_{1} + 4 v_{3}^{2} v_{4} b_{1} + 2 v_{4}^{3} b_{1} \\
-4 v_{2} v_{3} v_{4} b_{1}
-\end{array}
-\end{equation}
-\end{comment}
-
-\subsection{Prime Decomposition}
-
-We now form
-an ideal $I$ in $\mathbb{Q}[a_0,...,v_4,E]$ from \eqref{polynomial system}, and
-compute its associated prime ideals:
-
-\newcommand{\Bold}[1]{\mathbb{#1}}
+Computing a differential Thomas decomposition of \eqref{ansatz 5 plus} with ranking \eqref{ranking} takes about seven minutes
+on an AMD Ryzen 5 processor and produces 29 cells.  Performing the differential reduction / projection / irreducible
+decomposition pipeline on each of those cells takes another half hour and computes the following four solution varieties:
 
 \begin{subequations}
 \label{ideal}
-%sage: latex(I.minimal_associated_primes())
 \begin{align}
-% sage: sorted([latex(tuple(P.gens())) for P in I.minimal_associated_primes()])
-% remove the list brackets and commas, add & at the beginning of each line, add \label and \\ at end of each line, normalize a fraction
-& \left(a_{0}, v_{4}, v_{3}, v_{2}, v_{1}\right)\label{ideal:5} \\
-& \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}\right)\label{ideal:4} \\
-& \left(v_{1}^{2} + v_{2}^{2} + v_{3}^{2}, a_{1}, a_{0}, v_{4}\right)\label{ideal:3} \\
-& \left(v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, -v_{4}^{2} c_{1} + E b_{0}, b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}\right)\label{ideal:2} \\
-& \left(v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}, c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E\right)\label{ideal:1}
+& \left(v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, -v_{4}^{2} c_{1} + E b_{0}, b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}\right)\label{ideal:1} \\
+& \left(v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}, c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E\right)\label{ideal:2} \\
+& \left(-b_{1} c_{0} + b_{0} c_{1}, v_{4} c_{1} - b_{1}, v_{4} c_{0} - b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right)\label{ideal:3} \\
+& \left(c_{0}^{2} + 4 b_{0} c_{1}, 4 v_{4} c_{1} + c_{0}, v_{4} c_{0} - b_{0}, 2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right)\label{ideal:4}
 \end{align}
 \end{subequations}
 
-Several of these varieties solve the system of equations, but do not lead to a meaningful solution to the differential equation.
 In brief,
 
 \begin{itemize}
-\item[\eqref{ideal:5}] sets the variable $v$ to zero, so we discard it,
-\item[\eqref{ideal:4}] sets all coefficients of the ODE to zero, so we discard it,
-\item[\eqref{ideal:3}] sets the coefficient of
-%$\frac{d^2\Psi}{dv^2}$
-%$D^2\Psi$
-$\Psi''$
-in the ODE to zero, resulting in a first-order ODE, so we discard it, too,
-\item[\eqref{ideal:2}] corresponds to the classical solutions (see below), and
-\item[\eqref{ideal:1}] gives us a new solution (see below).
-
+\item[\eqref{ideal:1}] corresponds to the classical radial solutions,
+\item[\eqref{ideal:2}] is a solution in parabolic coordinates,
+\item[\eqref{ideal:3}] is a first-order solution for the 1s shell, and
+\item[\eqref{ideal:4}] is a first-order solution for the 2s shell.
 \end{itemize}
 
-How to understand ideal \eqref{ideal:2}?  $a_0$ is an ideal generator,
-so $a_0=0$, and we can always multiply our homogenous differential polynomial by a constant without affecting our result, so we can set $a_1=1$.
+How to understand ideal \eqref{ideal:1}?  $a_0=0$, and we can always multiply our homogenous differential polynomial by a constant without affecting our result, so we can set $a_1=1$.
 Likewise, we can multiply our variable $v$ by a constant and that will only change our coefficients by constants,
 and $v_1=v_2=v_3=0$, so we can normalize by setting $v_4=1$.  This immediately implies that $b_0 = c_0 = 2$ and simplifies ideal \eqref{ideal:2} to:
 
@@ -2176,6 +1879,68 @@ In[5]:= FullSimplify[eqn /. Psi -> ({x, y, z} |-> sol[x, y, z])]
 Out[5]= True
 \end{verbatim}
 \end{tiny}
+
+Now \eqref{ideal:3}.  For this one, $a_0=a_1=0$,
+
+\begin{equation}
+\left(-b_{1} c_{0} + b_{0} c_{1}, v_{4} c_{1} - b_{1}, v_{4} c_{0} - b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right)
+\end{equation}
+
+\begin{equation}
+\begin{gathered}
+E = -\frac{1}{2} \\
+a_0 = a_1 = 0 \qquad
+b_0 = 1 \qquad
+c_0 = 1 \qquad
+b_1 = c_1 \qquad
+b_1 = 0 \\
+v_1 = v_2 = v_3 = 0 \qquad
+v_4 = 1
+\end{gathered}
+\end{equation}
+
+\begin{equation}
+\label{classical eq in ideal}
+\begin{gathered}
+v=r \\
+(b_1 v + b_0) \Psi' + (b_1 v + b_0) \Psi = 0 \\
+\Psi' + \Psi = 0 \\
+\Psi = e^{-r}
+\end{gathered}
+\end{equation}
+
+Now \eqref{ideal:4}.
+
+\begin{equation}
+\left(c_{0}^{2} + 4 b_{0} c_{1}, 4 v_{4} c_{1} + c_{0}, v_{4} c_{0} - b_{0}, 2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right)
+\end{equation}
+
+\begin{equation}
+\begin{gathered}
+E = -\frac{1}{8} \\
+a_0 = a_1 = 0 \qquad
+b_0 = 1 \qquad
+c_0 = 1 \qquad
+c_1 = - 1/4 \qquad
+b_1 = - 1/2 \qquad
+v_4 = 1
+\end{gathered}
+\end{equation}
+
+
+% In[2]:= DSolve[(-1/2*x+1)*y'[x] + (-1/4*x+1)*y[x] == 0, y[x], x]
+%                    (-x + 2 Log[-2 + x])/2
+% Out[2]= {{y[x] -> E                       C[1]}}
+
+\begin{equation}
+\label{classical eq in ideal}
+\begin{gathered}
+v=r \\
+(- 1/2 b_0 v + b_0) \Psi' + (- 1/4 b_0 v + b_0) \Psi = 0 \\
+(- 1/2 v + 1) \Psi' + (- 1/4 v + 1) \Psi = 0 \\
+\Psi = e^{(-r + 2\ln(-2+r))/2} = (2-r)e^{-r/2}
+\end{gathered}
+\end{equation}
 
 \vfill\eject
 
