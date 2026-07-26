@@ -1748,12 +1748,12 @@ where $l$ is the orbital quantum number, which can be zero.  Set $l=0$, $v=r$ an
 expand out the derivative to obtain \eqref{classical eq in ideal}.  This solution has been
 known for a hundred years; its presence here was expected and won't be commented on further.
 
-Ideal \eqref{ideal:1} was not expected, and contains a previously unknown solution.
+Ideal \eqref{ideal:2} was not expected, and contains a previously unknown solution.
 $a_0$ is an ideal generator,
 so $a_0=0$, and we can set $a_1=1$, by the same logic as above.
 If we limit our $v_i$ coefficients to be real, all of their squares must
 be positive, and since $v_1^2+v_2^2+v_3^3-v_4^2=0$, $v_4$ must be non-zero.  So we can normalize by setting $v_4=1$.
-Substituting in these values, we find ideal generators that imply $b_0=1$ and simplify \eqref{ideal:1} to this ideal:
+Substituting in these values, we find ideal generators that imply $b_0=1$ and simplify \eqref{ideal:2} to this ideal:
 
 \begin{equation}
 \left(v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - 1, v_{4} - 1, c_{0} - 1, c_{1}, b_{1}, 1 - b_{0}, a_1 - 1, a_{0}, E\right)
@@ -1830,8 +1830,8 @@ $\xi = r + x$ one of the parabolic coordinates, \eqref{solution} is a function
 of $\xi$ alone, the azimuthally symmetric ($m=0$) separated solution at $E=0$
 (\cite{LandauLifshitz}, \S37).  This is no accident, and it is illuminated by
 the two branches the algorithm returned.  The classical branch
-\eqref{ideal:2}, with $v = r$, is the spherical separation; the present branch
-\eqref{ideal:1}, with $v = v_1 x + v_2 y + v_3 z + v_4 r$, is the parabolic
+\eqref{ideal:1}, with $v = r$, is the spherical separation; the present branch
+\eqref{ideal:2}, with $v = v_1 x + v_2 y + v_3 z + v_4 r$, is the parabolic
 one.  That the hydrogen atom separates in {\it both} systems is the signature
 of its hidden symmetry: beyond the angular momentum $\mathbf{L}$, the Coulomb
 problem conserves the Laplace--Runge--Lenz vector $\mathbf{A}$, and together
@@ -1900,7 +1900,7 @@ v_4 = 1
 \end{equation}
 
 \begin{equation}
-\label{classical eq in ideal}
+\label{1s eq in ideal}
 \begin{gathered}
 v=r \\
 (b_1 v + b_0) \Psi' + (b_1 v + b_0) \Psi = 0 \\
@@ -1933,7 +1933,7 @@ v_4 = 1
 % Out[2]= {{y[x] -> E                       C[1]}}
 
 \begin{equation}
-\label{classical eq in ideal}
+\label{2s eq in ideal}
 \begin{gathered}
 v=r \\
 (- 1/2 b_0 v + b_0) \Psi' + (- 1/4 b_0 v + b_0) \Psi = 0 \\
@@ -2178,7 +2178,7 @@ In short, the differential algebra techniques used to analyze integrals and line
 to handling PDEs, and no theory is available at this time to guide the selection of an ansatz.
 The ansatz used for the hydrogen example
 was an educated guess.  It was designed to be general enough to find the existing
-classical solution, and so to be used for testing the software.  The appearance of \eqref{ideal:1}
+classical solution, and so to be used for testing the software.  The appearance of \eqref{ideal:2}
 was not anticipated, as the solutions was previously unknown,
 and serves to illustrate the mysterious nature of these ans\"atze.
 
@@ -2195,7 +2195,7 @@ SageMath \cite{sage} integrates dozens of open source mathematical programs and 
 a unified, Python-based framework.  For this calculation, it uses Fran\c{c}ois Boulier's
 {\tt DifferentialAlgebra} package \cite{DifferentialAlgebra} to perform the Ritt reduction
 step, and Singular \cite{DGPS}'s implementation of the GTZ algorithm \cite{GTZ}
-to compute the associated prime ideals of \eqref{polynomial system}
+to compute the associated prime ideals of polynomial systems.
 
 %%\section*{Current Implementation Status}
 %%\subsection{Current Implementation Status}
@@ -2212,28 +2212,6 @@ on ans\"atze to force the functions into $H^2(\Omega)$, might yield
 useful techniques to better select ans\"atze.
 
 What relationship is there between the constant ideals and the function space?
-
-The ranking was selected in somewhat of an ad hoc manner.  A more systematic
-method of analyzing an ansatz to determine a suitable ranking would be useful.
-
-The algorithm, insofar as it relies on separating constant and non-constant indeterminates,
-produces correct solutions, but there is no proof that all possible solutions will be
-found.  Different rankings produce systems with more non-constant indeterminates,
-suggesting that finding all possible solutions places requirements on the ranking.
-
-While discarding ideals \eqref{ideal:5} and \eqref{ideal:4} seems justified
-(the independent variable must not be zero, and the ODE must have some non-zero coefficients),
-discarding ideal \eqref{ideal:3} (setting the ODE's second-order term to zero)
-seems somewhat arbitrary.  We would like to
-analyze the first-order ODE case as a special case of the second-order ODE.
-The Rosenfeld-Gr\"obner algorithm \cite{blop} may provide a suitable tool for such
-an analysis, as it decomposes a system of differential polynomials into
-a family of overlapping systems with regularity properties that include requiring
-the {\it initials} of the differential polynomials to be non-zero.  For an $n$-order ODE,
-requiring its initial to be non-zero would require its $n$-th order term to be non-zero,
-so Rosenfeld-Gr\"obner should split \eqref{ideal:3} into a separate system.
-Unfortunately, our current implementation of Rosenfeld-Gr\"obner (\cite{DifferentialAlgebra})
-runs for five days on this system without termination.
 
 The utility of this algorithm is currently limited by our Gr\"obner basis software.
 For example, I have formed a system of 1570 equations with 1,296,960 terms
