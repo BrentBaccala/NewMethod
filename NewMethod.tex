@@ -63,13 +63,10 @@
 \begin{abstract}
 The author has developed an algorithm
 for finding exact, non-sep\-arable solutions of partial differential equations.
-The algorithm uses Ritt's full reduction algorithm \cite{Ritt} and the GTZ algorithm \cite{GTZ}
+The algorithm uses differential Thomas decompositon, Ritt's full reduction algorithm \cite{Ritt} and the GTZ algorithm \cite{GTZ}
 to find ODEs that solve the PDE.  We prove a completeness theorem for the
-core algorithm, and then give a general form that, using the
-Rosenfeld--Gr\"obner algorithm and a terminating recursion, is complete for
-an arbitrary ansatz.  The algorithm has been implemented
-in software and has been used to find a previously unknown solution
-to hydrogen's Schr\"odinger equation.
+core algorithm, and demonstrate how to use the algorithm
+to solve hydrogen's Schr\"odinger equation.
 \end{abstract}
 
 \parskip 12pt
@@ -207,7 +204,7 @@ that produce a different ODE:
 v \frac{d^2 \Psi}{dv}(v) + \frac{d\Psi}{dv}(v) + \Psi(v) = 0
 \end{equation}
 
-which can be solved to find a previously unknown solution to \eqref{schrodinger hydrogen}:
+which can be solved to find a different solution to \eqref{schrodinger hydrogen}:
 
 \begin{equation}
 \Psi = J_0(2\sqrt{x+r})
