@@ -1589,6 +1589,7 @@ and we use Hartree atomic units to render the equation dimensionless.
 %, though for our purposes we can
 %ignore any physical interpretation of the problem and treat it simply as an equation to be solved.
 
+\begin{comment}
 We'll work mostly in the following differential ring:
 
 \newcommand{\ols}[1]{\mskip.5\thinmuskip\overline{\mskip-.5\thinmuskip {#1} \mskip-.5\thinmuskip}\mskip.5\thinmuskip} % overline short
@@ -1616,9 +1617,12 @@ To elaborate,
    \item Later we will specify a ranking.
 \end{itemize}
 
-\subsection{Ansatz}
+\end{comment}
 
-We'll use the first ansatz from the previous section, a second order ODE with first degree coefficients and a first degree independent variable.
+% \subsection{Ansatz}
+
+We'll use the first ansatz from section \ref{A Collection of Ansatze},
+a second order ODE with first degree coefficients and a first degree independent variable.
 (Figure \ref{ansatz 5 figure}).
 
 To equations \eqref{ansatz 5b}, \eqref{ansatz 5c} and \eqref{ansatz 5a} we append
@@ -1640,7 +1644,7 @@ r^2 - (x^2 + y^2 + z^2)
 \end{gather}
 \end{subequations}
 
-\subsection{Ranking}
+% \subsection{Ranking}
 
 %I attempted to use the Rosenfeld-Gr\"obner algorithm to reduce equation \eqref{schrodinger hydrogen}
 %modulo \eqref{ansatz 5}, but it ultimately ran out of memory on a 96 GB computer after
@@ -1678,17 +1682,17 @@ Reduce the input PDE \eqref{schrodinger} modulo differential ideal \eqref{ansatz
 
 To use Ritt's reduction algorithm, we must now specify a ranking.  While the algorithm's correct
 operation does not depend on any particular ordering, different rankings can produce
-dramatically different performance timings.
+dramatically different performance timings.  We use this orderly ranking:
 
-The {\tt DifferentialAlgebra} library \cite{DifferentialAlgebra} always ranks
-indeterminates associated with derivations below everything else, so we use this orderly ranking:
+% The {\tt DifferentialAlgebra} library \cite{DifferentialAlgebra} always ranks
+% indeterminates associated with derivations below everything else, so we use this orderly ranking:
 
 \begin{equation}
 \Psi'' > \Psi' > \Psi > v > r > {\rm constants} > x,y,z
 \label{ranking}
 \end{equation}
 
-\subsection{Differential Reduction Step}
+% \subsection{Differential Reduction Step}
 
 % A script is available to do all of the calculations in this paper.
 
@@ -1715,7 +1719,8 @@ In brief,
 \item[\eqref{ideal:4}] is a first-order solution for the 2s shell.
 \end{itemize}
 
-How to understand ideal \eqref{ideal:1}?  $a_0=0$, and we can always multiply our homogenous differential polynomial by a constant without affecting our result, so we can set $a_1=1$.
+As an example, let's analyze ideal \eqref{ideal:1}.
+$a_0=0$, and we can always multiply our homogenous differential polynomial by a constant without affecting our result, so we can set $a_1=1$.
 Likewise, we can multiply our variable $v$ by a constant and that will only change our coefficients by constants,
 and $v_1=v_2=v_3=0$, so we can normalize by setting $v_4=1$.  This immediately implies that $b_0 = c_0 = 2$ and simplifies ideal \eqref{ideal:2} to:
 
@@ -1743,12 +1748,12 @@ though it is more commonly written in this form:
 \end{equation}
 
 where $l$ is the orbital quantum number, which can be zero.  Set $l=0$, $v=r$ and $\Psi=R$ and
-expand out the derivative to obtain \eqref{classical eq in ideal}.  This solution has been
-known for a hundred years; its presence here was expected and won't be commented on further.
+expand out the derivative to obtain \eqref{classical eq in ideal}.
+% This solution has been
+% known for a hundred years; its presence here was expected and won't be commented on further.
 
-Ideal \eqref{ideal:2} was not expected, and contains a previously unknown solution.
-$a_0$ is an ideal generator,
-so $a_0=0$, and we can set $a_1=1$, by the same logic as above.
+Ideal \eqref{ideal:2} is the most unusual of the four.
+$a_0=0$ and we can set $a_1=1$, by the same logic as above.
 If we limit our $v_i$ coefficients to be real, all of their squares must
 be positive, and since $v_1^2+v_2^2+v_3^3-v_4^2=0$, $v_4$ must be non-zero.  So we can normalize by setting $v_4=1$.
 Substituting in these values, we find ideal generators that imply $b_0=1$ and simplify \eqref{ideal:2} to this ideal:
@@ -1820,6 +1825,16 @@ leading to the following exact solution to \eqref{schrodinger hydrogen 2}, with 
 where $x,y,z$ are Cartesian coordinates, $r=\sqrt{x^2+y^2+z^2}$, $E=0$,
 and $J_0$ is the ordinary Bessel function $J_0$.
 
+\eqref{schrodinger hydrogen 2} admits a separation of variables
+in parabolic coordinates (\cite{LandauLifshitz} \S37):
+
+\begin{equation}
+\xi = r + z \qquad \eta = r - z \qquad \psi = \tan^{-1} \frac{y}{x}
+\end{equation}
+
+Solution \eqref{solution} is in this parabolic form.
+
+\begin{comment}
 This solution is not of either standard separated form --- neither the
 spherical $R(r)\,\Theta(\theta)\,\Phi(\varphi)$ nor the Cartesian
 $X(x)Y(y)Z(z)$ --- so separation of variables in those coordinates cannot
@@ -1842,6 +1857,7 @@ recovers {\it both} separations from a single ansatz, without committing to any
 coordinate system in advance --- and the unit vector fixing the parabolic axis
 in the generalized solution \eqref{generalized solution} is precisely the
 direction of the Runge--Lenz vector.
+\end{comment}
 
 % \vskip 12pt
 
@@ -1878,69 +1894,33 @@ Out[5]= True
 \end{verbatim}
 \end{tiny}
 
-Now \eqref{ideal:3}.  For this one, $a_0=a_1=0$,
+The remaining ideals are first order ODEs and can be analyzed in a similar fashion, yielding the following solutions:
 
-\begin{equation}
-\left(-b_{1} c_{0} + b_{0} c_{1}, v_{4} c_{1} - b_{1}, v_{4} c_{0} - b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right)
-\end{equation}
+\begin{center}
+$ \left(-b_{1} c_{0} + b_{0} c_{1}, v_{4} c_{1} - b_{1}, v_{4} c_{0} - b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) $
 
-\begin{equation}
-\begin{gathered}
-E = -\frac{1}{2} \\
-a_0 = a_1 = 0 \qquad
-b_0 = 1 \qquad
-c_0 = 1 \qquad
-b_1 = c_1 \qquad
-b_1 = 0 \\
-v_1 = v_2 = v_3 = 0 \qquad
-v_4 = 1
-\end{gathered}
-\end{equation}
+$ E = -\frac{1}{2} \qquad v=r \qquad \Psi' + \Psi = 0 $
 
-\begin{equation}
-\label{1s eq in ideal}
-\begin{gathered}
-v=r \\
-(b_1 v + b_0) \Psi' + (b_1 v + b_0) \Psi = 0 \\
-\Psi' + \Psi = 0 \\
-\Psi = e^{-r}
-\end{gathered}
-\end{equation}
+$ \Psi = e^{-r} $
 
-Now \eqref{ideal:4}.
+$\left(c_{0}^{2} + 4 b_{0} c_{1}, 4 v_{4} c_{1} + c_{0}, v_{4} c_{0} - b_{0}, 2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right)$
 
-\begin{equation}
-\left(c_{0}^{2} + 4 b_{0} c_{1}, 4 v_{4} c_{1} + c_{0}, v_{4} c_{0} - b_{0}, 2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right)
-\end{equation}
+$ E = -\frac{1}{8} \qquad v=r \qquad (1 - \frac{1}{2} v) \Psi' + (1 - \frac{1}{4} v) \Psi = 0$
 
-\begin{equation}
-\begin{gathered}
-E = -\frac{1}{8} \\
-a_0 = a_1 = 0 \qquad
-b_0 = 1 \qquad
-c_0 = 1 \qquad
-c_1 = - 1/4 \qquad
-b_1 = - 1/2 \qquad
-v_4 = 1
-\end{gathered}
-\end{equation}
+$\Psi = (2-r)e^{-r/2}$
 
+\end{center}
 
 % In[2]:= DSolve[(-1/2*x+1)*y'[x] + (-1/4*x+1)*y[x] == 0, y[x], x]
 %                    (-x + 2 Log[-2 + x])/2
 % Out[2]= {{y[x] -> E                       C[1]}}
 
-\begin{equation}
-\label{2s eq in ideal}
-\begin{gathered}
-v=r \\
-(- 1/2 b_0 v + b_0) \Psi' + (- 1/4 b_0 v + b_0) \Psi = 0 \\
-(- 1/2 v + 1) \Psi' + (- 1/4 v + 1) \Psi = 0 \\
-\Psi = e^{(-r + 2\ln(-2+r))/2} = (2-r)e^{-r/2}
-\end{gathered}
-\end{equation}
+In short, the algorithm presented in section \ref{sec:Solution Algorithm} finds solutions expressed
+in both first and second order differential equations, in both spherical and cylindrical coordinates.
 
 \vfill\eject
+
+\begin{comment}
 
 \subsection{Physical Interpretation}
 \label{sec:physical}
@@ -2031,6 +2011,8 @@ $\eta = r - x$ (\cite{LandauLifshitz}, \S37).  Recovering the discrete spectrum
 $E_n = -1/2n^2$ in this way, with the algorithm discovering the two-coordinate
 parabolic structure rather than presupposing it, is a natural direction for
 future work.
+
+\end{comment}
 
 \section{Generalization of the Algorithm}
 \label{sec:Generalization of the Algorithm}
@@ -2393,6 +2375,9 @@ W. Decker, G.-M. Greuel, G. Pfister, H. Sch\"onemann, Singular 4-4-1 --- A compu
 \bibitem{bachler}
 Bachler, Gerdt, Lange, Hegermann, Robertz.
 Algorithmic Thomas Decomposition of Algebraic and Differential Systems (2012)
+
+\bibitem{landau}
+Landau and Lifschitz
 \end{thebibliography}
 
 \vfill\eject
