@@ -1692,7 +1692,9 @@ indeterminates associated with derivations below everything else, so we use this
 
 % A script is available to do all of the calculations in this paper.
 
-The algorithm of section \ref{sec:Solution Algorithm} computes the following four solution varieties:
+A differential Thomas decomposition of ansatz \eqref{ansatz 5 plus} with ranking \eqref{ranking} produces 29 cells,
+and the algorithm of section \ref{sec:Solution Algorithm} then computes the following four solution varieties
+for PDE \eqref{schrodinger hydrogen 2}:
 
 \begin{subequations}
 \label{ideal}
@@ -2183,18 +2185,19 @@ and serves to illustrate the mysterious nature of these ans\"atze.
 
 The calculations in section \ref{sec:Example} were done with
 SageMath \cite{sage}, a computer algeba system that integrates dozens of open source mathematical programs and libraries into
-a unified, Python-based framework, though stock Sage is generally lacking in differential algebra tools.
+a unified, Python-based framework, though stock Sage is generally lacking in differential algebra tools.  Therefore,
+the author used an AI coding assistent (Claude Opus) to prepare two additional Sage packages.
 
-Fran\c{c}ois Boulier's BLAD libraries were used for many fundamental differential algebra operations, such
+The first is a Sage interface to Fran\c{c}ois Boulier's BLAD libraries, which is used for many fundamental differential algebra operations, such
 as representing differential rings, polynomials and rankings, as well as Ritt reduction.
-The author has used an AI coding assistent (Claude Opus) to prepare a Sage interface to BLAD, available here:
+The package is available here:
 
 \centerline{\url{https://github.com/BrentBaccala/sage-differential-polynomial}}
 
 % {\tt DifferentialAlgebra} package \cite{DifferentialAlgebra}
 
-For the differential Thomas decomposition, the author used Claude Opus to prepare a Sage port
-of the LPGL-licensed {\tt DifferentialThomas} library for Maple, available here:
+Second, for the differential Thomas decomposition, the author prepared a Sage port
+of Maple's {\tt DifferentialThomas} library, available here:
 
 \centerline{\url{https://github.com/BrentBaccala/DifferentialThomas-sage}}
 
@@ -2205,11 +2208,11 @@ of the LPGL-licensed {\tt DifferentialThomas} library for Maple, available here:
 % and Singular \cite{DGPS}'s implementation of the GTZ algorithm \cite{GTZ}
 % to compute the associated prime ideals of polynomial systems.
 
-The script used to perform the calculations in this paper is available here:
+The script that used these packages to perform the calculations in this paper is available here:
 
 \centerline{\url{https://github.com/BrentBaccala/Papers/NewMethod}}
 
-{\tt thomas-ansatz-solve.sage} is a Sage script, verified to work with Sage 10.6
+{\tt thomas-ansatz-solve.sage} is verified to work with Sage 10.6
 and the two libraries described above.
 
 Computing a differential Thomas decomposition of \eqref{ansatz 5 plus} with ranking \eqref{ranking} takes about seven minutes
