@@ -674,7 +674,7 @@ the existence loci $V_\exists$ or $V_{\exists\backslash\Psi}$.
 
 % We see that $h=0$ could lead to extraneous solutions, so we require $h\ne 0$.
 
-\subsection{Solution Algorithm}
+\subsection{Computing the Membership Locus}
 
 Given an ansatz $A(c^*)$, we first compute a differential Thomas decomposition of the ansatz,
 which produces a partition of the constant space into quasi-projective varieties (i.e, defined
@@ -750,25 +750,35 @@ algorithms have been proposed and implemented to compute them (\cite{GTZ},
 among others).  We use one of them to decompose the system into
 its irreducible components and present them as the final result of the algorithm.
 
-To summarize, the core of the method is the following.
+To summarize, given a PDE and having selected an ansatz, the membership locus can be computed as follows:
 
-\begin{algorithm}[core solution]
+\begin{algorithm}
 \label{alg:core}
-Given a PDE defined by one or more differential polynomials:
-\begin{enumerate}
-\item Select an ansatz that defines a differential function space parameterized by constants.
 
+{\bf Input:} A PDE defined by one or more differential polynomials and an ansatz, one or more differential
+polynomials parameterized by constants
+{\bf Output:} The generators of a set of ideals $\{I_1,...,I_n\}$ in the constants such that $P \in [A(c^*)] \iff \exists n, c^* \in \mathcal{V}(I_n)$
+\begin{enumerate}
 \item Perform a differential Thomas decomposition on the ansatz.
 
-\item For each simple subsystem in the differential Thomas decomposition, reduce the PDE modulo the ansatz (differential elimination step).
+\item For each simple subsystem $(S^=, S^{\ne})$, in the differential Thomas decomposition,
 
-\item Construct a system of polynomial equations in the constants by collecting like terms in the constants and independent variables ($\forall$ projection step).
+\item \qquad Reduce the PDE modulo $S^=$ (differential elimination step).
 
-\item Project the variety defined by that system onto the constants ($\exists$ projection step).
+\item \qquad Construct a system of polynomial equations in the constants by collecting like terms in the constants and independent variables ($\forall$ projection step).
 
-\item Form a polynomial ideal from that system of equations, and compute its minimal associated prime ideals.
+\item \qquad Project the variety defined by that system onto the constants ($\exists$ projection step).
 
-\item Each prime ideal corresponds to an irreducible variety in the space of constants; their union is the solution space of the PDE within the ansatz.
+\item \qquad Compute its minimal associated prime ideals.
+
+\item \qquad Saturate each prime ideal by $S^{\ne}$
+
+% \item Each prime ideal corresponds to an irreducible variety in the space of constants; their union is the solution space of the PDE within the ansatz.
+\item Form the union of all minimal associated prime ideals
+
+\item Remove any redundant ideals
+
+\item The union is the solution space of the PDE within the ansatz.
 \end{enumerate}
 \end{algorithm}
 
