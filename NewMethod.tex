@@ -296,6 +296,7 @@ Section \ref{sec:Future Work} discusses future work and section \ref{sec:Conclus
 \label{sec:Solution Algorithm}
 
 \subsection{Differential Algebra Preliminaries}
+\label{sec:preliminaries}
 
 We first recall the notions from differential algebra on which
 the hypotheses and theorems below rest.  For the Ritt-reduction apparatus ---
@@ -554,8 +555,35 @@ coherent (\cite{ThomasDecomp}, \S\,1, ``the output systems are Janet-involutive
 $\ldots$ and hence they are coherent'').  The converse is not claimed, and does
 not hold --- involutivity is a stronger completion than coherence, and unlike
 coherence it depends on the choice of division.  The implication is used below
-only in the direction stated, and it is the sole property of coherence the
-argument requires.
+only in the direction stated.
+
+\smallskip
+Coherence is retained here for exactly one purpose.  The completeness argument
+of \S\ref{sec:completeness} is ideal-theoretic: it must pass from membership in
+a {\it differential} ideal to membership in an {\it algebraic} one, and the only
+bridge available is Rosenfeld's Lemma, whose hypotheses are stated in terms of
+coherence.
+
+\begin{quote}
+{\bf Rosenfeld's Lemma} (\cite{blop}, Theorem~23).  Let $A = 0$, $S \ne 0$ be a
+differential system such that (C1) $A$ is differentially triangular; (C2) $S$
+contains the separants of the elements of $A$ and is partially reduced with
+respect to $A$; and (C3) every critical pair of $A$ is solved by $A = 0$,
+$S \ne 0$.  Then every differential polynomial in $[A] : S^\infty$ that is
+partially reduced with respect to $A$ belongs to $(A) : S^\infty$.
+\end{quote}
+
+\noindent
+A system satisfying (C1)--(C3) is what \cite{blop}, Definition~22, calls a {\it
+regular differential system}; we do not otherwise need the notion, and state the
+conditions directly.  A differentially simple system meets them.  (C3) is
+coherence, which follows from~(S2).  Triangularity in~(C1) is part of~(S1).
+For~(C2), square-freeness has the side effect that a square-free polynomial and
+its separant have no common root, so the separants of $S^=$ do not vanish on the
+solutions of the lower-ranking subsystems (\cite{ThomasDecomp}, \S\,3,
+footnote~3); they may therefore be adjoined to $S^{\ne}$ without altering the
+solution set, and enlarging the inequation set only enlarges both saturations in
+the statement above.
 
 \smallskip
 Two notions from the theory of (algebraic) triangular sets enter the
@@ -969,11 +997,11 @@ $r(c^*) \in [A(c^*)]$.
 Because $r(c^*)$ is fully reduced with respect to $A(c^*)$ it is in
 particular partially reduced.  Since $c^*$ lies in the cell cut out by
 $(S^=, S^{\ne})$, Lemma~\ref{lem:specialization} makes $(S^=(c^*),
-S^{\ne}(c^*))$ differentially simple; by~(S2) it is Janet-involutive and
-therefore coherent.  By Rosenfeld's Lemma (\cite{blop},
-Theorem~23), every partially reduced element of
-$[A(c^*)] : S_{A(c^*)}^\infty$ lies in the algebraic saturation, so
-$r(c^*) \in (A(c^*)) : S_{A(c^*)}^\infty$.
+S^{\ne}(c^*))$ differentially simple, hence --- as recorded in
+\S\ref{sec:preliminaries} --- a system satisfying hypotheses (C1)--(C3) of
+Rosenfeld's Lemma.  By that lemma (\cite{blop}, Theorem~23), every partially
+reduced element of $[A(c^*)] : S_{A(c^*)}^\infty$ lies in the algebraic
+saturation, so $r(c^*) \in (A(c^*)) : S_{A(c^*)}^\infty$.
 
 By~(S1), $A(c^*)$ is a squarefree regular chain, so its separants
 are non-zero-divisors modulo $\operatorname{sat}(A(c^*))$; as
