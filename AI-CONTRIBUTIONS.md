@@ -2,12 +2,13 @@
 
 *Working record, kept so the required journal statement on generative-AI use
 can be written from fact rather than memory. Reconstructed from this
-repository's git history; covers contributions through 5 June 2026 and should
+repository's git history; covers contributions through 27 July 2026 and should
 be updated as work continues. Commit hashes are given for auditability.*
 
 The AI tool is **Anthropic's Claude**, used both interactively and through the
-**Claude Code** CLI (which authors the `Claude Code` git commits; recent
-sessions ran models in the Claude Opus 4 family). A few citation suggestions
+**Claude Code** CLI (which authors the `Claude Code` git commits; sessions
+through mid-2026 ran models in the Claude Opus 4 family, later ones Claude
+Opus 5). A few citation suggestions
 came from **OpenAI's GPT-5** (commit `55487de`). **All AI output was reviewed
 and edited by the author (B. Baccala), who takes full responsibility for the
 content. AI is not, and cannot be, an author.**
@@ -57,6 +58,43 @@ January 2026).
   search confirming the ansatz+Gröbner coupling is nearly unique to Chaharbashloo
   (one verified sibling, Acosta-Humánez–Venegas-Gómez 2018; zero verified forward
   citations). Draft pending the author's review.
+- **Repaired the containment proofs in "The Constant Loci"** (author's commit
+  `92e77e5`, 27 July 2026; model Claude Opus 5). Found that the claimed
+  containment V_∀ ⊆ V_{∃\Ψ} is **false** as stated — consistency of the ansatz
+  is too weak a hypothesis. Supplied the missing condition (that the ansatz not
+  force Ψ to vanish, 1 ∉ [A(c*)]:Ψ^∞), the two-line proof (equal ideals have
+  equal saturations, so P ∈ [A(c*)] gives [A(c*),P]:Ψ^∞ = [A(c*)]:Ψ^∞), and a
+  counterexample family A(c) = {Ψ″−Ψ, Ψ′−cΨ}, in which (c²−1)Ψ ∈ [A(c)] and so
+  V_∀ = ℂ∖{−1} while V_{∃\Ψ} = {1}. Observed that the draft's homogeneity step
+  (Ψ ∈ [A(c*)] ⟹ P ∈ [A(c*)]) is what *generates* such counterexamples rather
+  than a step toward the theorem, and that the repaired proof needs no
+  homogeneity hypothesis at all — homogeneity is required only upstream, to make
+  V_{∃\Ψ} the object of interest. Also caught a ∨-for-∧ error in the V_∀ ⊆ V_∃
+  proof. The author incorporated these; flagged and still open at the time of
+  writing are a quantifier gap between the pointwise hypothesis and the global
+  containment, the now-redundant weaker consistency assumption, and the missing
+  prose justification for the third proof.
+- **Located the differential-algebra definition of homogeneity, and the correct
+  grading for the ansatz** (27 July 2026; model Claude Opus 5). Text-extracted
+  and searched 201 PDFs (the `~/project/papers` collection and the author's
+  *Books/Differential Algebra*), plus DjVu OCR of the classical texts, for a
+  differential-algebra definition of "homogeneous differential equation".
+  **Robertz, LNM 2121, Def. A.3.13 / Lemma A.3.14 / Remark A.3.16** is the only
+  genuine one — homogeneous differential ideal with respect to the standard
+  grading, the equivalence to closure of the solution set under scalar
+  multiplication, and the caveat that homogeneity is not invariant under
+  coordinate changes of the dependent variables; van der Put–Singer define the
+  term for scalar *linear* equations only (b = 0). Ritt (1932, 1950), Kolchin
+  *Differential Algebraic Groups*, Hubert I/II, Boulier–Lazard–Ollivier–Petitot,
+  Bächler et al., the BLAD manual, Fakouri and Lange-Hegermann use "linear
+  homogeneous" as an undefined adjective or never (Kolchin *DAAG* and Kaplansky
+  are image-only scans and were not checked). Identified that the paper's ansatz
+  ideals *are* homogeneous under the **Ψ-degree grading** — auxiliary
+  indeterminates v, x, y, z, r in degree 0, a grading the derivations preserve —
+  resolving the author's concern that the ansatz ideal need not be homogeneous,
+  and flagged that the hypothesis "if P is homogenous (and the ansatz too)" is
+  false under the paper's own definition of homogeneity, since the generator
+  defining the independent variable is Ψ-free.
 - **Restructured** the logical organization: core + general algorithm
   (`e2a7449`), then folded into one section with the "Why not
   Rosenfeld--Gröbner alone?" discussion (`c05c04a`); unified the
@@ -83,7 +121,14 @@ January 2026).
 Elsevier's numbered style (`2b71ff5`) and added/repaired citations (`02b57b8`
 and others); tightened and reconciled prose in the Projection and completeness
 subsections (`aba1b6e`, `0aee721`, `6e1ee75`, `52664d7`); fixed LaTeX warnings
-(`226a2a5`).
+(`226a2a5`). Line-level review of the Constant Loci subsection (July 2026):
+notation collisions (a set-builder colon abutting an ideal saturation; a
+differential ring written with the independent variable and the differential
+indeterminate interchanged), an independent variable named inconsistently
+between the algebraic and analytic readings of the same example, an unresolved
+author query left in the body text, a locus asserted in the summary line whose
+announced computation is never carried out, and the paper-wide
+"homogenous"/"homogeneous" spelling split.
 
 **Artifacts.** The **Graphical Abstract** is AI-generated (`6db3f5b`); the
 supporting computation scripts (`joca-rg.sage`, `rg_basefield.py`), the
@@ -96,4 +141,5 @@ abstract) go beyond language polishing; the author should decide how to
 characterize these in the submitted statement, methods, and/or
 acknowledgements, and confirm the journal's current requirements.
 
-*/Claude Opus 4.8 (this record drafted by the AI it documents).*
+*/Claude Opus 4.8 (this record drafted by the AI it documents); updated
+27 July 2026 by /Claude Opus 5.*
