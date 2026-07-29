@@ -300,10 +300,10 @@ Section \ref{sec:Future Work} discusses future work and section \ref{sec:Conclus
 
 We first recall the notions from differential algebra on which
 the hypotheses and theorems below rest.  For the Ritt-reduction apparatus ---
-rankings, leaders, initials and separants, reduction, critical pairs and
-coherence --- our terminology and numbering follow \cite{blop}, \S\S\,3--4.  For
-involutivity, simple systems and the Thomas decomposition we follow
-\cite{ThomasDecomp}, \S\S\,2--3.
+rankings, leaders, initials and separants, reduction --- our terminology and
+numbering follow \cite{blop}, \S\S\,3--4.  For involutivity, simple systems and
+the Thomas decomposition we follow \cite{ThomasDecomp}, \S\S\,2--3, and for the
+ideal-theoretic properties of simple systems, \cite{RobertzLNM}, \S\,2.2.
 
 J.F. Ritt introduced differential algebra \cite{Ritt}.
 Starting with a ring $R$ or a field $F$, we can construct a
@@ -437,29 +437,6 @@ elements are pairwise distinct, and {\it differentially triangular}
 (\cite{blop}, Definition~13) if in addition its elements are pairwise
 partially reduced.
 
-\smallskip
-Two differential polynomials form a {\it critical pair} (\cite{blop},
-Definition~17) if their leaders have a common derivative.  For a critical
-pair $\{p_1, p_2\}$, write $\theta_1 u$ and $\theta_2 u$ for the two
-leaders, $\theta_{12} u$ for their least common derivative, and $s_1, s_2$
-for the separants; the associated {\it $\Delta$-polynomial} (\cite{blop},
-Definition~18) is
-%
-\[
-\Delta(p_1, p_2) \;=\; s_1\,\frac{\theta_{12}}{\theta_2}\,p_2
-                    \;-\; s_2\,\frac{\theta_{12}}{\theta_1}\,p_1,
-\]
-%
-where $\theta_{12}/\theta_i$ denotes the derivation operator carrying
-$\theta_i u$ to $\theta_{12} u$; its leader is strictly below
-$\theta_{12} u$.  The critical pair is {\it solved} by a system
-$A = 0$, $S \ne 0$ (\cite{blop}, Definition~19) if
-$\Delta(p_1, p_2) \in (A_v) : (S \cap R_v)^\infty$ for some derivative
-$v < \theta_{12} u$, where $A_v$ and $R_v$ collect the derivatives of
-elements of $A$, respectively all differential polynomials, whose leaders
-are at most $v$.  A system is {\it coherent} when every critical pair
-of $A$ is solved.
-
 \begin{comment}
 A failure of coherence is not a contradiction.  It means the
 cross-derivatives expose a constraint not visible in the triangular set
@@ -499,8 +476,8 @@ reduction.
 \end{comment}
 
 \smallskip
-Coherence is a condition to be verified rather than a recipe for achieving it.
-The differential Thomas decomposition supplies a constructive replacement.  Fix
+The differential Thomas decomposition rests on a constructive completion
+condition, phrased through an involutive division.  Fix
 an ordering $d_1 < \cdots < d_n$ of the derivations.  Given a finite set $U$ of
 derivatives, write each $u \in U$ as $\theta v$ for an indeterminate $v$ and
 $\theta = d_1^{\mu_1} \cdots d_n^{\mu_n} \in \Theta$, and call
@@ -550,62 +527,51 @@ decomposition}.  \cite{ThomasDecomp} gives an algorithm computing one, and
 \cite{RobertzLNM} develops the theory at length.
 
 \smallskip
-The two vocabularies meet in one direction: a Janet-involutive system is
-coherent (\cite{ThomasDecomp}, \S\,1, ``the output systems are Janet-involutive
-$\ldots$ and hence they are coherent'').  The converse is not claimed, and does
-not hold --- involutivity is a stronger completion than coherence, and unlike
-coherence it depends on the choice of division.  The implication is used below
-only in the direction stated.
-
-\smallskip
-Coherence is retained here for exactly one purpose.  The completeness argument
-of \S\ref{sec:completeness} is ideal-theoretic: it must pass from membership in
-a {\it differential} ideal to membership in an {\it algebraic} one, and the only
-bridge available is Rosenfeld's Lemma, whose hypotheses are stated in terms of
-coherence.
+Everything the completeness argument of \S\ref{sec:completeness} requires is
+supplied by a single result about simple systems, which we state in the form we
+use.  Write $q$ for the product of the initials and separants of the equations
+of $S^=$.
 
 \begin{quote}
-{\bf Rosenfeld's Lemma} (\cite{blop}, Theorem~23).  Let $A = 0$, $S \ne 0$ be a
-differential system such that (C1) $A$ is differentially triangular; (C2) $S$
-contains the separants of the elements of $A$ and is partially reduced with
-respect to $A$; and (C3) every critical pair of $A$ is solved by $A = 0$,
-$S \ne 0$.  Then every differential polynomial in $[A] : S^\infty$ that is
-partially reduced with respect to $A$ belongs to $(A) : S^\infty$.
+{\bf Proposition} (\cite{RobertzLNM}, Prop.~2.2.50).  Let $S$ be a simple
+differential system with equations $p_1 = 0, \ldots, p_s = 0$, let
+$E = [p_1, \ldots, p_s]$ be the differential ideal they generate, and let $q$ be
+the product of the initials and separants of $p_1, \ldots, p_s$.  Then
+$E : q^\infty$ is a radical differential ideal, and for $p \in R$,
+%
+\[
+p \in E : q^\infty
+\quad\Longleftrightarrow\quad
+\text{the pseudo-remainder of $p$ modulo $p_1, \ldots, p_s$}
+\]
+\[
+\text{and their derivatives is zero.}
+\]
 \end{quote}
 
 \noindent
-A system satisfying (C1)--(C3) is what \cite{blop}, Definition~22, calls a {\it
-regular differential system}; we do not otherwise need the notion, and state the
-conditions directly.  A differentially simple system meets them.  (C3) is
-coherence, which follows from~(S2).  Triangularity in~(C1) is part of~(S1).
-For~(C2), square-freeness has the side effect that a square-free polynomial and
-its separant have no common root, so the separants of $S^=$ do not vanish on the
-solutions of the lower-ranking subsystems (\cite{ThomasDecomp}, \S\,3,
-footnote~3); they may therefore be adjoined to $S^{\ne}$ without altering the
-solution set, and enlarging the inequation set only enlarges both saturations in
-the statement above.
+Two features of this statement matter here.  It is an {\it equivalence}, so
+reduction to zero is a decision procedure and not merely a sufficient condition;
+and its hypothesis is simplicity alone, so no separate coherence, regularity or
+characteristic-set hypothesis is needed.  The same proposition is restated, with
+proof references, as Proposition~2.29 of \cite{LHRcontrol}.
 
 \smallskip
-Two notions from the theory of (algebraic) triangular sets enter the
-hypotheses below.  Write $\operatorname{sat}(A) = (A) : I_A^\infty$ for the
-saturation of the algebraic ideal $(A)$ by the initials of~$A$.  A
-triangular set $A$, with leaders $u_1 < \cdots < u_k$, is a {\it regular
-chain} (\cite{hubert}, Definition~5.7) if the initial of each $a_i$ is a
-non-zero-divisor modulo $\operatorname{sat}(a_1, \ldots, a_{i-1})$, and a
-{\it squarefree regular chain} (\cite{hubert}, Definition~7.2) if, in
-addition, no separant of $A$ is a zero-divisor modulo
-$\operatorname{sat}(A)$.  A regular chain is a characteristic set of
-$\operatorname{sat}(A)$ --- reduction by $A$ is a normal form modulo
-$\operatorname{sat}(A)$, so a polynomial fully reduced with respect to~$A$
-and lying in $\operatorname{sat}(A)$ is zero --- and a regular chain is
-squarefree if and only if $\operatorname{sat}(A)$ is radical
-(\cite{hubert}, Corollary~7.3).
-
-\smallskip
-These are the algebraic content of condition~(S1).  Triangularity together with
-non-vanishing initials makes $S^=$ a regular chain, and square-freeness makes it
-a squarefree one, so $\operatorname{sat}(S^=)$ is radical and $S^=$ is a
-characteristic set of it.  We use (S1) below only through this reading.
+The companion statement assembles the components of a decomposition.  For a
+system $S$ that is {\it not} assumed simple, with Thomas decomposition
+$S_1, \ldots, S_r$, writing $E^{(i)}$ for the differential ideal generated by the
+equations of $S_i$ and $q^{(i)}$ for the corresponding product of initials and
+separants (\cite{RobertzLNM}, Prop.~2.2.72),
+%
+\[
+\sqrt{E : q^\infty}
+  \;=\; \bigl(E^{(1)} : (q^{(1)})^\infty\bigr)
+        \,\cap\,\cdots\,\cap\,
+        \bigl(E^{(r)} : (q^{(r)})^\infty\bigr).
+\]
+%
+A differential polynomial is therefore a consequence of the whole system exactly
+when it reduces to zero modulo every component of the decomposition.
 
 % The Risch algorithm
 
@@ -963,23 +929,15 @@ Hypothesis~(2) is the ``denominator condition'' already noted in
 Ritt reduction must not vanish.  At parameter values where they do vanish,
 the reduction degenerates and the algorithm may miss solutions.
 
-The theorem needs no further hypothesis, because the remaining two ingredients
-of the proof are supplied by differential simplicity itself.  The argument
-consumes coherence, in order to apply Rosenfeld's Lemma, and radicality of
-$\operatorname{sat}(A(c^*))$, in order to conclude that a fully reduced element
-of it vanishes.  Condition~(S2) gives involutivity and hence coherence;
-condition~(S1) gives a squarefree regular chain and hence radicality.  Both
-travel to the point $c^*$ by Lemma~\ref{lem:specialization}.
-
-This is the structural reason for decomposing the ansatz with a differential
-Thomas decomposition rather than a Rosenfeld--Gr\"obner one.  A regular
-differential system delivers coherence but not square-freeness, so an earlier
-formulation of this theorem had to assume the latter separately, as a condition
-on $A(c^*)$ that the decomposition did not guarantee and that
-Lemma~\ref{lem:specialization} could not transport.  The components of a
-differential Thomas decomposition satisfy both by construction, so the
-hypotheses hold on every component and nothing remains to be checked
-component-by-component.
+The theorem needs no further hypothesis.  The whole of what the proof requires
+--- that reduction to zero decide membership, and that the relevant ideal be
+radical --- is delivered by \cite{RobertzLNM}, Prop.~2.2.50, whose only
+hypothesis is that the system be simple.  That is exactly what the components of
+a differential Thomas decomposition are, and Lemma~\ref{lem:specialization}
+carries the property to the point $c^*$.  This is the structural reason for
+decomposing the ansatz with a differential Thomas decomposition: its output
+satisfies the theorem's hypotheses by construction, so nothing remains to be
+verified component by component.
 
 The theorem establishes only the completeness of the algorithm: every valid
 choice of constants will be found.  It says nothing about sufficiency ---
@@ -994,30 +952,15 @@ $h(c^*) \cdot P - r(c^*) \in [A(c^*)]$.
 By hypotheses~(1) and~(2), $h(c^*) \cdot P \in [A(c^*)]$, hence
 $r(c^*) \in [A(c^*)]$.
 
-Because $r(c^*)$ is fully reduced with respect to $A(c^*)$ it is in
-particular partially reduced.  Since $c^*$ lies in the cell cut out by
-$(S^=, S^{\ne})$, Lemma~\ref{lem:specialization} makes $(S^=(c^*),
-S^{\ne}(c^*))$ differentially simple, hence --- as recorded in
-\S\ref{sec:preliminaries} --- a system satisfying hypotheses (C1)--(C3) of
-Rosenfeld's Lemma.  By that lemma (\cite{blop}, Theorem~23), every partially
-reduced element of $[A(c^*)] : S_{A(c^*)}^\infty$ lies in the algebraic
-saturation, so $r(c^*) \in (A(c^*)) : S_{A(c^*)}^\infty$.
-
-By~(S1), $A(c^*)$ is a squarefree regular chain, so its separants
-are non-zero-divisors modulo $\operatorname{sat}(A(c^*))$; as
-$(A(c^*)) \subseteq \operatorname{sat}(A(c^*))$ and the latter is therefore
-unchanged by saturating further at the separants,
-%
-\[
-r(c^*) \;\in\; (A(c^*)) : S_{A(c^*)}^\infty
-        \;\subseteq\; \operatorname{sat}(A(c^*)) .
-\]
-%
-But $A(c^*)$ is a characteristic set of $\operatorname{sat}(A(c^*))$, so a
-polynomial fully reduced with respect to $A(c^*)$ and lying in
-$\operatorname{sat}(A(c^*))$ must vanish (\cite{hubert}, Theorem~5.13; the
-vanishing is then immediate from Definition~5.5).  Hence
-$r(c^*) = 0$.
+Since $c^*$ lies in the cell cut out by $(S^=, S^{\ne})$,
+Lemma~\ref{lem:specialization} makes $(S^=(c^*), S^{\ne}(c^*))$ a simple
+differential system.  Writing $E = [A(c^*)]$ and $q$ for the product of the
+initials and separants of $A(c^*)$, we have
+$r(c^*) \in E \subseteq E : q^\infty$, so by \cite{RobertzLNM}, Prop.~2.2.50,
+the pseudo-remainder of $r(c^*)$ modulo $A(c^*)$ and its derivatives is zero.
+But $r$ is fully reduced with respect to $A$, and by hypothesis~(2) no initial
+or separant vanishes at $c^*$, so $r(c^*)$ is fully reduced with respect to
+$A(c^*)$ and is therefore its own pseudo-remainder.  Hence $r(c^*) = 0$.
 
 Since the power products $m_\alpha$ are distinct monomials in a
 polynomial ring (hence linearly independent over~$\mathbb{C}$),
@@ -2488,6 +2431,9 @@ T. B\"achler, V. P. Gerdt, M. Lange-Hegermann, D. Robertz, Algorithmic Thomas de
 
 \bibitem{RobertzLNM}
 D. Robertz, Formal Algorithmic Elimination for PDEs, Lecture Notes in Mathematics, vol.~2121, Springer, Cham, 2014. \url{https://doi.org/10.1007/978-3-319-11445-3}.
+
+\bibitem{LHRcontrol}
+M. Lange-Hegermann, D. Robertz, Thomas decomposition and nonlinear control systems, in: Algebraic and Symbolic Computation Methods in Dynamical Systems, Advances in Delays and Dynamics, vol.~9, Springer, Cham, 2020, pp.~117--146. \url{https://doi.org/10.1007/978-3-030-38356-5_4}.
 
 \bibitem{Montes}
 A. Montes, A new algorithm for discussing Gr\"obner bases with parameters, J. Symbolic Comput. 33~(2) (2002) 183--208. \url{https://doi.org/10.1006/jsco.2001.0510}.
