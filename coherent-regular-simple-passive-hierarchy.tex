@@ -285,13 +285,43 @@ tuple-decomposition and passivity theorems; the section's framing is explicit
 that this direction is the useful one: ``\emph{coherent d-asc sets are, in some
 sense, simpler than passive d-asc sets}.'' The converse is \emph{not} claimed.
 
+\paragraph{Whose ``passive''?} Li--Wang do \emph{not} define the term. \S4.1
+opens, immediately above Theorem~3:
+
+\begin{quote}
+``Passive systems were investigated by Ritt$^{[3]}$. \textbf{The reader is
+referred to Wu ([2]) for a general theory for passive d-asc sets and precise
+definitions of terms not defined in this section.}''
+\end{quote}
+
 \noindent
-The same implication is stated operationally in the differential-Thomas paper:
-B\"achler, Gerdt, Lange-Hegermann \& Robertz (2012), \S1: ``\emph{the output
-systems are Janet-involutive $\dots$ and \textbf{hence they are coherent}},''
-and, on the algorithm, ``\emph{the involutive approach, which we utilize to make
-the subsystems coherent}.'' Direction: involutive $\Rightarrow$ coherent, via
-Gerdt's involutivity criterion.
+--- reference [2] being Wu, \emph{On the foundation of algebraic differential
+geometry}, Sys.\ Sci.\ Math.\ Scis.\ \textbf{2} (1989) 289--312. The proof of
+Theorem~3 is correspondingly conducted in imported Wu machinery
+($\mathrm{CTUP}_k(\mathbb{A})$, the tuple-decomposition theorem, the passivity
+theorem, M-derivatives, non-multiplier coordinates), none of it defined in
+Li--Wang.
+
+So Theorem~3 is a statement about \emph{Wu-passive} d-asc sets. It is
+\emph{not}, as stated, a statement about Janet-involutivity in the sense of
+Gerdt Def.~14 or of B\"achler et al.\ Def.~3.5. The two notions are surely
+closely related --- both formalize Janet--Riquier completion --- but no source
+consulted here states the identification, and this note should not assume it.
+
+\noindent
+For the Janet-involutive notion the implication has its own, same-framework
+source: B\"achler, Gerdt, Lange-Hegermann \& Robertz (2012), \S1: ``\emph{the
+output systems are Janet-involutive $\dots$ and \textbf{hence they are
+coherent}},'' and, on the algorithm, ``\emph{the involutive approach, which we
+utilize to make the subsystems coherent}.'' Direction: involutive
+$\Rightarrow$ coherent, via Gerdt's involutivity criterion.
+
+\noindent
+\textbf{Practical upshot.} There are two arrows into coherence, with different
+antecedents and different sources. Work that starts from a differential Thomas
+decomposition should cite B\"achler et al.\ \S1, not Li--Wang Theorem~3; the
+latter requires Wu's definition of passivity and an identification nobody has
+written down.
 
 \paragraph{Correction to an earlier informal claim.} It is tempting (and was
 asserted in passing during the discussion that produced this note) to attribute
@@ -303,8 +333,9 @@ papers on involutive/Pommaret bases and $\delta$-regularity and contain
 \emph{zero} occurrences of ``coherence,'' ``Rosenfeld,'' or ``regular
 differential.'' They connect involution to Janet--Riquier \emph{passivity}, not
 to RG coherence. The defensible, sourced statement is the \emph{implication}
-above, not an equivalence, and its primary home is Li--Wang 1999 (Thm.~3) and
-Gerdt 1999/2008, not Seiler. (Seiler's $\delta$-regularity work is nonetheless
+above, not an equivalence; for Janet-involutivity its home is B\"achler et al.\
+(2012), \S1, resting on Gerdt 1999/2008, and for Wu-passivity it is Li--Wang
+1999 (Thm.~3), resting on Wu 1989 --- in neither case Seiler. (Seiler's $\delta$-regularity work is nonetheless
 the right reference for \emph{why} Pommaret-involution --- unlike Janet-involution
 and unlike coherence --- is coordinate-dependent, which is a second, independent
 reason the two notions cannot be identical.)
@@ -315,7 +346,11 @@ Collecting Definitions 5, 6, 8 and Theorems 2, 3 of Li--Wang with Gerdt's
 Theorem 16:
 \[
 \begin{gathered}
-  \underbrace{\text{passive}}_{\substack{\text{Janet-involutive}\\ \text{Gerdt Def.~14/Thm.~16}}}
+  \underbrace{\text{Janet-involutive}}_{\substack{\text{Gerdt Def.~14/Thm.~16}\\ \text{BGLR Def.~3.5}}}
+  \;\xRightarrow{\ \text{BGLR \S1}\ }\;
+  \text{coherent}
+  \\[1ex]
+  \underbrace{\text{Wu-passive}}_{\text{Wu 1989}}
   \;\xRightarrow{\ \text{L--W Thm.~3}\ }\;
   \text{coherent}
   \\[1.5ex]
@@ -334,9 +369,10 @@ Theorem 16:
 Node & Defining condition & Decomposition & Source \\
 \midrule
 coherent & $\Delta$-polys reduce to $0$ & (property) & L--W Def.~5 \\
-passive / involutive & non-mult.\ prolongations reduce to $0$ & (property) & Gerdt Def.~14, Thm.~16 \\
+Janet-involutive & non-mult.\ prolongations reduce to $0$ & (property) & Gerdt Def.~14, Thm.~16; BGLR Def.~3.5 \\
+Wu-passive & (not defined in L--W; see Wu 1989) & (property) & Wu 1989 \\
 regular & coherent $+$ e-tri (sep./init.\ invertible on the component) & intersection (RG weak form) & L--W Def.~6 \\
-simple (d-sim) & regular $+$ w-simple (triangular, non-vanishing init., square-free) & disjoint (Thomas) & L--W Def.~8 \\
+simple (d-sim) & \emph{coherent} d-tri $+$ w-simple (triangular, non-vanishing init., square-free) & disjoint (Thomas) & L--W Def.~8 \\
 \bottomrule
 \end{tabular}
 \end{center}
