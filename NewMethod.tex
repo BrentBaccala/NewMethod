@@ -928,6 +928,54 @@ not in the membership locus.  Since the cells need not be disjoint
 than a variety.  Only steps~1 and~3 involve differential algebra; steps~4--7 are
 ordinary commutative algebra and algebraic geometry in the $n$ constants.
 
+Carrying out that intersection takes a word, since unlike step~7b its operands
+do not arrive in the form the output requires.  Each factor is first written as
+a union of locally closed pieces.  Step~6 supplies $W_i$ already in that form,
+and for the complement,
+$\mathbb{C}^n \setminus C_i = (\mathbb{C}^n \setminus V(E_i)) \cup V(h_i)$,
+where $\mathbb{C}^n \setminus V(E_i)$ is the union of the open sets
+$e \ne 0$ taken over a generating set of $E_i$.  So
+%
+\[
+W_i \cup (\mathbb{C}^n \setminus C_i)
+\;=\;
+\bigcup_{\mathfrak{p}} \bigl( V(\mathfrak{p}) \setminus V(h_i) \bigr)
+\;\cup\;
+\bigcup_{e} \bigl( \mathbb{C}^n \setminus V(e) \bigr)
+\;\cup\;
+V(h_i),
+\]
+%
+one piece for each prime produced by step~6, one for each generator of $E_i$,
+and one more, every piece of the form $V(\mathfrak{a}) \setminus V(f)$.
+Intersection distributes over these unions, and two pieces meet in
+%
+\[
+\bigl( V(\mathfrak{a}) \setminus V(f) \bigr) \cap \bigl( V(\mathfrak{b}) \setminus V(g) \bigr)
+\;=\; V(\mathfrak{a} + \mathfrak{b}) \setminus V(fg),
+\]
+%
+so choosing one piece from each of the $r$ factors contributes the single piece
+$V(\sum_i \mathfrak{a}_i) \setminus V(\prod_i f_i)$.  That piece is returned to
+the output form exactly as in step~6 --- minimal associated primes of
+$(\sum_i \mathfrak{a}_i) : (\prod_i f_i)^\infty$, paired with the residual
+condition $\prod_i f_i \ne 0$ --- and it is empty precisely when that saturation
+is the unit ideal, which is also the test for discarding it.
+
+Done naively this enumerates the product over $i$ of the number of pieces in the
+$i$th factor, nearly all of the combinations empty, and it is this blow-up ---
+not the ideal arithmetic, which is trivial --- that makes 7a the expensive
+branch.  Two things keep it in hand.  The factors should be brought in one at a
+time, discarding empty and redundant pieces (by the test in step~7b) before the
+next factor is intersected, so that pruning happens at every stage rather than
+at the end.  And most factors need not be split at all: for a running piece $Z$,
+if $Z \cap C_i = \emptyset$ then $Z$ already lies in $\mathbb{C}^n \setminus C_i$
+and the $i$th factor may be skipped, while if $Z \subseteq C_i$ the factor
+reduces to $Z \cap W_i$ with no complement to form.  The three-way split is
+needed only for those components whose cell boundary actually cuts $Z$, which is
+the computational form of the remark that a component contributes a condition
+only where its cell lies.
+
 Step~7b is offered for the reader content with an approximation.  It replaces
 the intersection by a plain union of the $W_i$, and so never forms a
 complement --- the pieces come out of step~6 ready to be listed.  What it
