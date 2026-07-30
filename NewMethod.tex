@@ -377,6 +377,9 @@ $\Psi_x$ is the derivation $dx$ applied to $\Psi$.
 A differential ideal is a subring of a differential ring, closed under arbitrary
 derivation and multiplication by arbitrary ring elements.  Given a set of generators $g_1,...,g_n$,
 the differential ideal they generate is denoted $[g_1,...,g_n]$.
+We write $\sqrt{I}$ for the {\it radical} of a differential ideal $I$, the set of
+differential polynomials some power of which lies in~$I$; in characteristic zero
+it is again a differential ideal.
 
 A differential ideal $I$ is {\it consistent} if $1 \notin I$; otherwise it is {\it inconsistent}.
 
@@ -596,6 +599,7 @@ when it reduces to zero modulo every component of the decomposition.
 % The failure of differential Galois theory to answer the obvious question about PDE.
 
 \subsection{The Constant Loci}
+\label{sec:constant-loci}
 
 We wish to solve a system of differential equations, where the solution must be of a restricted form, parameterized by constants.
 We term this restricted form the {\it ansatz}.
@@ -620,11 +624,16 @@ derivative (not necessarily proper) of $\Psi$ to first degree.  If $P$ is homoge
 the {\it homogenous existence locus} as the set of constants that make the differential ideal $[A(c^*), P] : \Psi^\infty$ consistent.
 
 \begin{equation}
-V_{\forall} = \{ c^* \in {\mathbb C}^n : P \in [A(c^*)] \}
+V_{\forall} = \{ c^* \in {\mathbb C}^n : P \in \sqrt{[A(c^*)]} \}
 \end{equation}
 
-The {\it membership locus} is the set of constants for which $P$ is in the differential ideal defined by the ansatz,
-meaning that any function satisfies the ansatz will satisfy the PDE.
+The {\it membership locus} is the set of constants for which $P$ is in the
+radical differential ideal defined by the ansatz, meaning that any function
+satisfying the ansatz will satisfy the PDE.  The radical is the right ideal to
+take here: it is the vanishing ideal of the ansatz's solution set, so membership
+in it says exactly what the words ``any function satisfying the ansatz'' say,
+whereas membership in $[A(c^*)]$ itself is a strictly stronger and less natural
+condition.
 
 Often we are interested in finding the existence locus, but
 if $P$ is homogenous (and the ansatz too), then $V_\exists$ is all of ${\mathbb C}^n$, since the zero function will solve a homogenous differential
@@ -652,31 +661,42 @@ V_{\exists\backslash\Psi} \subseteq V_\exists
 \end{gathered}
 \end{equation}
 
-Furthermore, if an element is in a differential ideal, adding it to the list of generators
-changes nothing, so if $[A(c^*)]$ is consistent,
+{\bf Note:} We introduce the assumption here that the ansatz (by itself) is consistent for all values of $c^*$.
+
+Furthermore, if $P$ lies in $\sqrt{[A(c^*)]}$ then so does the whole ideal
+$[A(c^*), P]$, since $\sqrt{[A(c^*)]}$ is a differential ideal containing both
+$A(c^*)$ and~$P$.  Hence
 
 \begin{equation}
 \begin{gathered}
-P \in [A(c^*)] \implies [A(c^*)] = [A(c^*), P] \\
-P \in [A(c^*)] \wedge 1 \notin [A(c^*)] \implies 1 \notin [A(c^*), P] \\
+P \in \sqrt{[A(c^*)]} \implies [A(c^*), P] \subseteq \sqrt{[A(c^*)]} \\
+P \in \sqrt{[A(c^*)]} \wedge 1 \notin [A(c^*)] \implies 1 \notin [A(c^*), P] \\
 V_{\forall} \subseteq V_\exists
 \end{gathered}
 \end{equation}
 
-{\bf Note:} We introduce the assumption here that the ansatz (by itself) is consistent for all values of $c^*$.
+\noindent
+the second line because $1 \in \sqrt{I}$ if and only if $1 \in I$.
 
-If $A(c^*)$ is ``homogenously consistent'' w.r.t. $\Psi$, i.e, $1 \notin [A(c^*)]:\Psi^\infty$, then
+If the ansatz does not force $\Psi$ to vanish --- that is, if
+$\Psi \notin \sqrt{[A(c^*)]}$ --- then saturating the containment above
+by~$\Psi^\infty$ gives
 
 \begin{equation}
 \begin{gathered}
-%% 1 \notin [A(c^*), P] : \Psi^\infty \implies \Psi \notin [A(c^*), P] \\
-%% \Psi \in [A(c^*)] \implies P \in [A(c^*)] \\
-%% P \in [A(c^*)] \implies [A(c^*)] = [A(c^*), P] \subseteq [A(c^*), P] : \Psi^\infty \\
-%% P \in [A(c^*)] \implies [A(c^*),P] = [A(c^*)] \implies [A(c^*),P]:\Psi^\infty = [A(c^*)]:\Psi^\infty \not\ni 1 \\
-P \in [A(c^*)] \wedge 1 \notin [A(c^*)]:\Psi^\infty \implies 1 \notin [A(c^*),P]:\Psi^\infty \\
+P \in \sqrt{[A(c^*)]} \implies [A(c^*),P] : \Psi^\infty \subseteq \sqrt{[A(c^*)]} : \Psi^\infty \\
+\Psi \notin \sqrt{[A(c^*)]} \implies 1 \notin \sqrt{[A(c^*)]} : \Psi^\infty \\
 V_\forall \subseteq V_{\exists\backslash\Psi}
 \end{gathered}
 \end{equation}
+
+\noindent
+the middle line because $1 \in \sqrt{[A(c^*)]} : \Psi^\infty$ means
+$\Psi^k \in \sqrt{[A(c^*)]}$ for some~$k$, and a radical ideal containing
+$\Psi^k$ contains~$\Psi$.  This is the one place where the radical formulation
+pays a visible dividend: the non-degeneracy condition, which for the
+non-radical ideal had to be written $1 \notin [A(c^*)] : \Psi^\infty$, becomes
+the transparent statement that the ansatz does not force $\Psi \equiv 0$.
 
 These relationships are illustrated by the following example.
 
@@ -698,9 +718,11 @@ in particular, $1 \notin [A(c), P]$, so $V_\exists = \mathbb{C}$.
 
 To compute $V_{\exists \backslash \Psi}$, we need to identify the constants where $1 \notin [A(c), P] : \Psi^\infty$.
 
-To compute $V_\forall$, we need to identify the constants where $P \in [A(c)]$.  Since $P$ has order 1,
-and $A(c)$ has order 2 for all values of $c$, $P$ can never be in $[A(c)]$ for any value of $c$,
-and $V_\forall = \emptyset$.
+To compute $V_\forall$, we need to identify the constants where
+$P \in \sqrt{[A(c)]}$.  Since $A(c)$ has order 2 for all values of $c$, every
+element of $[A(c)]$ has order at least 2, while every power of $P$ has order 1.
+So no power of $P$ lies in $[A(c)]$, hence $P \notin \sqrt{[A(c)]}$ for any
+value of $c$, and $V_\forall = \emptyset$.
 
 \begin{equation*}
 V_\exists = \mathbb{C} \qquad V_{\exists \backslash \Psi} = \{ 1 \} \qquad V_\forall = \emptyset
@@ -749,18 +771,14 @@ To perform the projection, it is useful to classify the indeterminates in our di
 - independent variables
 - algebraic functions of the independent variables
 
-The independent variables and their algebraic functions have the property that the PDE must be satisfied
-for all values in an open set.  For example, $x$, $y$, and $z$ could be any real numbers,
-and $r=\sqrt{x^2+y^2+z^2}$ could be any non-negative number.  On the other hand, a valid solution
-could have dependent variables that are constants, or their jet coordinates could be constants.
-If, for example, a dependent variable had no dependence on a specific independent variable, its derivative
-with respect to that independent variable would be zero.
+Membership of $P$ in $\sqrt{[A(c^*)]}$ is a statement about $r$ as a
+polynomial, not about its value at any particular point: it requires $r$ to
+vanish identically once the constants are fixed.  We therefore treat all of the
+non-constant indeterminates alike, making no distinction between the
+independent variables, the dependent variables and their jet coordinates.
 
-In short, the solution must be valid over an entire open set of the independent variables and their algebraic functions,
-while it needs only be valid at a single point of the dependent variables and their jet coordinates.
-
-Therefore, we split each term of the reduced equation $r$ into a coefficient in
-the constants, dependent variables, and their jets, and a power product in the independent variables and their algebraic functions,
+Accordingly, we split each term of the reduced equation $r$ into a power product
+in the non-constant indeterminates and a coefficient in the constants alone,
 gathering the terms that share a power product:
 %
 \begin{equation}
@@ -769,28 +787,33 @@ r \;=\; \sum_{\alpha=1}^{N} m_\alpha \, p_\alpha(c),
 \end{equation}
 %
 where the $m_\alpha$ are the $N$ distinct power products and each coefficient
-$p_\alpha(c)$ is a polynomial in the constants, dependent variables and their jets.
+$p_\alpha(c)$ is a polynomial in the constants.
 
-Because the $m_\alpha$ are distinct monomials that range over an entire open set, they are linearly independent
-over the constants, so $r$ vanishes identically
-only if and only if every coefficient does.  The projection step
-therefore replaces the reduced PDE $r$ by the system
+Distinct monomials in a polynomial ring are linearly independent over
+$\mathbb{C}$, so $r$ vanishes identically at $c^*$ if and only if every
+coefficient does.  The projection step therefore replaces the reduced PDE $r$
+by the system
 %
 \begin{equation}
 \label{eq:projection-system}
 p_1(c) = p_2(c) = \cdots = p_N(c) = 0
 \end{equation}
 %
-of polynomial equations in the constants, dependent variables and their jet coordiantes.
-Satisfying this system makes $r$ vanish; the reduction identity then places $h$ times the PDE in the
-differential ideal generated by the ansatz, so the ansatz solves the PDE at
-every choice of constants, dependent variables and their jet coordiantes for which $h$ does not vanish.
+of polynomial equations in the constants alone.  No elimination is required:
+because the coefficients already involve nothing but the constants, the system
+is a description of the locus in $\mathbb{C}^n$ directly.
 
-Next, we now use standard Gr\"obner basis techniques of algebraic geometry (\cite{iva}, Chapter 3, §2, Theorem 3)
-to further project this variety onto the subspace of constants.  The first projection step (collection
-of like terms) projects solutions that exist {\it for all} points in an open set of the eliminated indeterminates,
-while the second projection step (the elimination ideal) projects solutions that exist {\it at any}
-point above the constant subspace.
+An earlier form of this algorithm split the terms more coarsely --- a power
+product in the independent variables and their algebraic functions, against a
+coefficient in the constants, the dependent variables and their jets --- and
+then projected onto the constants with an elimination ideal.  That variant is
+cheaper, since it produces fewer and lower-degree coefficients, and it remains
+{\it complete}: a $c^*$ at which $r$ vanishes identically certainly admits some
+assignment of the jet coordinates killing the coefficients.  But the converse
+fails, because an assignment may exist without $r(c^*)$ being the zero
+polynomial, so the elimination variant returns a superset of the membership
+locus.  The splitting above is the one for which Theorem~\ref{thm:completeness}
+is an equivalence.
 
 Finally, the remaining system defines an algebraic variety
 %
@@ -815,7 +838,7 @@ To summarize, given a PDE and having selected an ansatz, the membership locus ca
 
 {\bf Input:} A PDE defined by one or more differential polynomials and an ansatz, one or more differential
 polynomials parameterized by constants
-{\bf Output:} The generators of a set of ideals $\{I_1,...,I_n\}$ in the constants such that $P \in [A(c^*)] \iff \exists n, c^* \in \mathcal{V}(I_n)$
+{\bf Output:} The generators of a set of ideals $\{I_1,...,I_n\}$ in the constants such that $P \in \sqrt{[A(c^*)]} \iff \exists n, c^* \in \mathcal{V}(I_n)$
 \begin{enumerate}
 \item Perform a differential Thomas decomposition on the ansatz.
 
@@ -823,9 +846,7 @@ polynomials parameterized by constants
 
 \item \qquad Reduce the PDE modulo $S^=$ (differential elimination step).
 
-\item \qquad Construct a system of polynomial equations in the constants by collecting like terms in the constants and independent variables ($\forall$ projection step).
-
-\item \qquad Project the variety defined by that system onto the constants ($\exists$ projection step).
+\item \qquad Construct a system of polynomial equations in the constants by collecting like terms in every non-constant indeterminate ($\forall$ projection step).
 
 \item \qquad Compute its minimal associated prime ideals.
 
@@ -925,9 +946,17 @@ $p_\alpha$ are polynomials in the constants.  Let
 $\mathcal{V} = V(p_1, \ldots, p_N) \subseteq \mathbb{C}^n$ be the variety
 defined by setting all constant coefficients to zero.
 
-Suppose $c^*$ lies in the cell of the component --- the projection of its
-solution set onto $\mathbb{C}^n$ --- and $P \in [A(c^*)]$.
-Then $c^* \in \mathcal{V}$.
+Let $q$ be the product of the initials and separants of $A$, and suppose $c^*$
+lies in the cell of the component --- the projection of its solution set onto
+$\mathbb{C}^n$.  Then
+%
+\[
+c^* \in \mathcal{V}
+\quad\Longleftrightarrow\quad
+P \in [A(c^*)] : q^\infty .
+\]
+%
+In particular, $P \in \sqrt{[A(c^*)]}$ implies $c^* \in \mathcal{V}$.
 \end{theorem}
 
 Note that $h$ is in general a
@@ -951,34 +980,101 @@ decomposing the ansatz with a differential Thomas decomposition: its output
 satisfies the theorem's hypotheses by construction, so nothing remains to be
 verified component by component.
 
-The theorem establishes only the completeness of the algorithm: every valid
-choice of constants will be found.  It says nothing about sufficiency ---
-there may exist points in $\mathcal{V}$ that do not actually solve the PDE.
+Because the theorem is an equivalence, it settles both directions at once: the
+algorithm is complete, in that every valid choice of constants is found, and
+also sufficient, in that no point of $\mathcal{V}$ is spurious.  The ideal
+characterized is the saturation $[A(c^*)] : q^\infty$, which by
+Proposition~\ref{prop:simple-membership} is radical and therefore contains
+$\sqrt{[A(c^*)]}$; the final clause of the theorem is that containment.  The two
+can differ, so $\mathcal{V}$ may contain constants at which $P$ lies in the
+saturation without lying in $\sqrt{[A(c^*)]}$ --- but the saturation is the
+vanishing ideal of the component's own solution set, so at such a point the
+ansatz does solve the PDE on that component.
 
 {\it Proof.}
 Ritt's full reduction algorithm produces $h$ and $r$ satisfying \eqref{ritt reduction 1}, with
 $r$ fully reduced with respect to~$A$.
 Evaluating the constants at $c = c^*$ gives
 $h(c^*) \cdot P - r(c^*) \in [A(c^*)]$.
-By hypothesis~(1), $P \in [A(c^*)]$, and a differential ideal absorbs
-multiplication, so $h(c^*) \cdot P \in [A(c^*)]$ whatever the value of $h(c^*)$;
-hence $r(c^*) \in [A(c^*)]$.
-
+Write $E = [A(c^*)]$.
 Since $c^*$ lies in the cell, Lemma~\ref{lem:specialization} makes
-$(S^=(c^*), S^{\ne}(c^*))$ a simple differential system.  Writing
-$E = [A(c^*)]$ and $q$ for the product of the initials and separants of
-$A(c^*)$, we have
-$r(c^*) \in E \subseteq E : q^\infty$, so by Proposition~\ref{prop:simple-membership}
-the pseudo-remainder of $r(c^*)$ modulo $A(c^*)$ and its derivatives is zero.
+$(S^=(c^*), S^{\ne}(c^*))$ a simple differential system, so
+Proposition~\ref{prop:simple-membership} applies to it.
+
 Now $r$ is fully reduced with respect to $A$, and as observed above $h(c^*)$ is
 not identically zero, so no leader of $A$ drops in degree upon specialization
-and $r(c^*)$ is fully reduced with respect to $A(c^*)$.  It is therefore its own
-pseudo-remainder, and $r(c^*) = 0$.
+and $r(c^*)$ is fully reduced with respect to $A(c^*)$; it is therefore its own
+pseudo-remainder.  Proposition~\ref{prop:simple-membership} then gives
+%
+\[
+r(c^*) = 0
+\quad\Longleftrightarrow\quad
+r(c^*) \in E : q^\infty .
+\]
+%
+Since $h(c^*) \cdot P - r(c^*) \in E \subseteq E : q^\infty$, the right-hand
+side holds if and only if $h(c^*) \cdot P \in E : q^\infty$.  And $h$ is a power
+product of elements of $H_A$ while $q$ is the product of all of them, so $h$
+divides some power of $q$; as $E : q^\infty$ is unchanged by further saturation
+at $q$, we get $h(c^*) \cdot P \in E : q^\infty$ if and only if
+$P \in E : q^\infty$.  Chaining,
+%
+\[
+r(c^*) = 0
+\quad\Longleftrightarrow\quad
+P \in [A(c^*)] : q^\infty .
+\]
+%
+Finally, the power products $m_\alpha$ are distinct monomials in a polynomial
+ring, hence linearly independent over~$\mathbb{C}$, so $r(c^*) = 0$ if and only
+if every coefficient $p_\alpha(c^*) = 0$, which is to say $c^* \in \mathcal{V}$.
+The last clause follows because $E : q^\infty$ is radical and contains $E$,
+hence contains $\sqrt{E}$. \hfill $\square$
 
-Since the power products $m_\alpha$ are distinct monomials in a
-polynomial ring (hence linearly independent over~$\mathbb{C}$),
-each coefficient $p_\alpha(c^*) = 0$, whence
-$c^* \in \mathcal{V}$. \hfill $\square$
+\medskip
+Theorem~\ref{thm:completeness} concerns a single component.  The membership
+locus of the ansatz as a whole is recovered by intersecting over the
+decomposition.
+
+\begin{corollary}
+\label{cor:assembly}
+Let $\mathcal{V}_1, \ldots, \mathcal{V}_r$ be the varieties produced by
+Theorem~\ref{thm:completeness} from the components $S_1, \ldots, S_r$ of a
+differential Thomas decomposition of the ansatz.  Then, for $c^*$ at which the
+ansatz is consistent,
+%
+\[
+c^* \in V_\forall
+\quad\Longleftrightarrow\quad
+c^* \in \mathcal{V}_i \ \text{ for every $i$ whose cell contains $c^*$}.
+\]
+\end{corollary}
+
+{\it Proof.}
+By Lemma~\ref{lem:specialization} the components whose cells contain $c^*$
+specialize to simple differential systems, and their fibres over $c^*$ partition
+the solution set of $A(c^*)$; the remaining components have no solution over
+$c^*$ and contribute nothing.  The ansatz carries no inequations, so
+$q = 1$ in \cite{RobertzLNM}, Prop.~2.2.72 (\cite{RobertzCIRM}, Prop.~3.32), and
+that proposition reads
+%
+\[
+\sqrt{[A(c^*)]} \;=\; \bigcap_i \bigl( E^{(i)} : (q^{(i)})^\infty \bigr),
+\]
+%
+the intersection running over those components.  By
+Theorem~\ref{thm:completeness}, $P \in E^{(i)} : (q^{(i)})^\infty$ if and only if
+$c^* \in \mathcal{V}_i$. \hfill $\square$
+
+\medskip
+\noindent
+So the per-component test decides membership in the {\it saturated} ideal of
+that component, while intersecting over the decomposition decides membership in
+the {\it radical} differential ideal of the ansatz --- which is the membership
+locus as defined in \S\ref{sec:constant-loci}.  Note that this is an
+intersection of loci in the space of constants, not a union: a $c^*$ at which
+$P$ fails on even one component is not in $V_\forall$, since the ansatz there
+has solutions that do not satisfy the PDE.
 
 \vfill\eject
 
