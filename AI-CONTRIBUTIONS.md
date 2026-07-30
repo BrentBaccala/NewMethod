@@ -211,7 +211,27 @@ through the completeness proof and the algorithm.
   meet in V(𝔞+𝔟) ∖ V(fg), the emptiness-and-discard test (the saturation being
   the unit ideal), and the observation that the combinatorial blow-up over
   choices of one piece per factor — not the ideal arithmetic — is what makes 7a
-  the expensive branch, with two mitigations that keep it in hand.
+  the expensive branch, with two mitigations that keep it in hand. That
+  hand-rolled recipe was then **replaced by the published one** (`ab1166c`)
+  after a literature search established that set-theoretic computation with
+  constructible sets is solved and implemented: the right operation is a
+  disjoint refinement of the family W_1, C_1, …, W_r, C_r, after which each
+  block lies inside or outside every W_i and C_i and both assemblies are a
+  selection of blocks — irredundant by construction, so the containment test
+  drafted for 7b became unnecessary and was removed. Identified the refinement
+  as the set-theoretic coprime factorization problem of the already-cited CTD
+  paper (whose difference algorithm works on regular systems — a regular chain
+  plus an inequation, the same shape as step 6's output), its implementation as
+  MakePairwiseDisjoint in ConstructibleSetTools, the algebraic Thomas
+  decomposition as the cheaper route here since it is step 1's algorithm in the
+  non-differential case and returns disjoint output already, and Brunat–Montes
+  for a canonical rather than merely irredundant representation. Two references
+  added and the previously uncited Montes bibitem put to use. One citation trap
+  caught: search engines report the companion manuscript "Computing with
+  Constructible Sets in Maple" as J. Symbolic Comput. 45(1) 124–149; those pages
+  are in fact Boulier–Lemaire–Moreno Maza on differential characteristic sets,
+  and the manuscript appears never to have been published, so the ICCSA 2008
+  proceedings version is cited instead.
 - **Errors of mine during this arc, and how they were caught.** Twice I
   over-claimed and had to withdraw. First, that moving to the radical made the
   per-component test exact — the author's question about the Thomas
