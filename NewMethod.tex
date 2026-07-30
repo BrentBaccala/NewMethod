@@ -701,6 +701,7 @@ the transparent statement that the ansatz does not force $\Psi \equiv 0$.
 These relationships are illustrated by the following example.
 
 \begin{example}
+\label{ex:three-loci}
 In the differential ring ${\mathbb C}(c)\{t\}[\Psi]$, consider the ansatz
 \begin{equation}
 A(c) = \{ \Psi'' - c \Psi \}
@@ -840,9 +841,10 @@ To summarize, given a PDE and having selected an ansatz, the membership locus ca
 {\bf Input:} A PDE $P$, one or more differential polynomials, and an ansatz
 $A(c)$, one or more differential polynomials parameterized by constants.
 
-{\bf Output:} A constructible subset of $\mathbb{C}^n$ equal to the membership
-locus, i.e. such that $c^*$ belongs to it if and only if
-$P \in \sqrt{[A(c^*)]}$.
+{\bf Output:} A constructible subset of $\mathbb{C}^n$.  Step~6a returns the
+membership locus itself, i.e. the set of $c^*$ with $P \in \sqrt{[A(c^*)]}$;
+step~6b, which is simpler, returns the larger intermediate locus
+$V_{\exists\forall}$ discussed below.
 \begin{enumerate}
 \item Perform a differential Thomas decomposition on the ansatz, with the
 constants ranked below all other indeterminates, obtaining simple subsystems
@@ -860,7 +862,7 @@ $\mathcal{V}_i \subseteq \mathbb{C}^n$ be the variety it defines
 \item \qquad Read off the cell $C_i \subseteq \mathbb{C}^n$: the equations and
 inequations of $S_i$ whose leaders are constants.
 
-\item Assemble the membership locus as
+\item[6a.] {\it (Membership locus.)}  Assemble
 %
 \[
 V_\forall \;=\; \bigcap_{i=1}^{r} \bigl( \mathcal{V}_i \cup (\mathbb{C}^n \setminus C_i) \bigr),
@@ -869,23 +871,98 @@ V_\forall \;=\; \bigcap_{i=1}^{r} \bigl( \mathcal{V}_i \cup (\mathbb{C}^n \setmi
 that is, $c^*$ qualifies exactly when it lies in $\mathcal{V}_i$ for every
 component whose cell contains it.
 
-\item Replace each ideal by its radical and compute minimal associated primes,
+\item[6b.] {\it (Intermediate locus; alternative to 6a.)}  Assemble
+%
+\[
+V_{\exists\forall} \;=\; \bigcup_{i=1}^{r} \bigl( \mathcal{V}_i \cap C_i \bigr),
+\]
+%
+that is, $c^*$ qualifies as soon as it lies in $\mathcal{V}_i$ for {\it some}
+component whose cell contains it.
+
+\item[7.] Replace each ideal by its radical and compute minimal associated primes,
 presenting the result as a finite union of irreducible locally closed sets;
 discard any redundant piece.
 \end{enumerate}
 \end{algorithm}
 
-Step~6 is an intersection, not a union.  A component contributes a condition
+Step~6a is an intersection, not a union.  A component contributes a condition
 only where its cell lies, but where it does lie the condition must be met: if
 $c^*$ falls in the cells of two components and the ansatz fails to solve the PDE
 on the second, then $A(c^*)$ has solutions that do not satisfy $P$, and $c^*$ is
 not in the membership locus.  Since the cells need not be disjoint
 (Corollary~\ref{cor:assembly}), the result is in general constructible rather
-than a variety.  All of step~6 is ordinary algebraic geometry in the $n$
-constants; no differential computation is involved.
+than a variety.  Both variants of step~6 are ordinary algebraic geometry in the
+$n$ constants; no differential computation is involved.
 
-Algorithm~\ref{alg:core} runs on any ansatz, and by
-Theorem~\ref{thm:completeness} and Corollary~\ref{cor:assembly} what it returns
+Step~6b is offered for the reader content with an approximation.  It replaces
+the intersection by a plain union of the $\mathcal{V}_i$, each cut down to its
+own cell, and so never forms a complement.  What it computes is not the
+membership locus but an intermediate one.  Because the components of a Thomas
+decomposition partition the solution set of $A(c^*)$, the loci are distinguished
+by a pair of quantifiers, one ranging over components and one over the solutions
+within a component:
+
+\begin{center}
+\begin{tabular}{llll}
+\hline
+locus & components & solutions & $P$ vanishes \ldots \\
+\hline
+$V_\forall$          & $\forall$ & $\forall$ & on every solution \\
+$V_{\exists\forall}$ & $\exists$ & $\forall$ & on some entire component \\
+$V_\exists$          & $\exists$ & $\exists$ & at some one solution \\
+\hline
+\end{tabular}
+\end{center}
+
+\noindent
+The middle row is weaker than the first and stronger than the third, so
+
+\begin{equation}
+\label{eq:intermediate-sandwich}
+V_\forall \;\subseteq\; V_{\exists\forall} \;\subseteq\; V_\exists .
+\end{equation}
+
+For the left inclusion, a point of $V_\forall$ lies in some cell --- the ansatz
+is consistent, so it has a solution, and that solution lies on some component
+--- and Corollary~\ref{cor:assembly} then places the point in that component's
+$\mathcal{V}_i$.  For the right inclusion, if $c^* \in \mathcal{V}_i \cap C_i$
+then component~$i$ carries at least one solution over $c^*$
+(Lemma~\ref{lem:specialization}) and, by Theorem~\ref{thm:completeness}, $P$
+vanishes on all of them; so $A(c^*)$ and $P$ have a common solution and
+$1 \notin [A(c^*), P]$.
+
+Three cautions attend step~6b.  First, both inclusions in
+\eqref{eq:intermediate-sandwich} can be strict, and the second can be as wide as
+possible: in Example~\ref{ex:three-loci} the ansatz is already simple, so the
+decomposition has the single component $\{\Psi'' - c\Psi\}$, the reduced PDE
+$\Psi' - \Psi$ has coefficients $1$ and $-1$, and $\mathcal{V}_1 = \emptyset$ ---
+whence $V_{\exists\forall} = \emptyset$ against $V_\exists = \mathbb{C}$.  This
+is not a defect of the assembly step but of the projection step that precedes
+it, which asks the reduced PDE to vanish identically and so cannot see a single
+solution satisfying $P$; no rearrangement of step~6 recovers it.  Computing
+$V_\exists$ genuinely requires the PDE inside the decomposition, which is the
+computation \S\ref{sec:constant-loci} set aside as infeasible.  Second, cutting
+each $\mathcal{V}_i$ down to its cell is not cosmetic: outside $C_i$ the
+component has no solutions at all, Theorem~\ref{thm:completeness} says nothing,
+and the right inclusion of \eqref{eq:intermediate-sandwich} fails.  Third,
+$V_{\exists\forall}$ is not intrinsic to the ansatz and the PDE the way
+$V_\forall$ and $V_\exists$ are --- it depends on which decomposition was
+computed, since a finer stratification makes ``vanishes on an entire component''
+easier to satisfy.
+
+When $P$ is homogeneous with respect to $\Psi$, $V_\exists$ is all of
+$\mathbb{C}^n$ and the upper bound in \eqref{eq:intermediate-sandwich} says
+nothing.  The useful statement is then obtained by discarding the components on
+which $\Psi$ itself reduces to zero: restricting the union in step~6b to those
+$i$ with $\Psi \notin E^{(i)} : (q^{(i)})^\infty$ forces the witnessing solution
+to be non-trivial, and gives
+$V_{\exists\forall} \subseteq V_{\exists\backslash\Psi}$.  By
+Proposition~\ref{prop:simple-membership} the test is one reduction of $\Psi$ modulo
+$S^=_i$ per component.
+
+Algorithm~\ref{alg:core} runs on any ansatz, and with step~6a, by
+Theorem~\ref{thm:completeness} and Corollary~\ref{cor:assembly}, what it returns
 is exactly the membership locus --- neither missing valid choices of constants
 nor admitting spurious ones.  The next section proves this.
 

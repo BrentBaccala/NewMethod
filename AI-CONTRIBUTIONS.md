@@ -111,6 +111,19 @@ January 2026).
   rewrote the passage with the Laplace–Runge–Lenz / SO(4) framing, a structural
   (non-`L²`) explanation, and supporting citations (`806b526`), checked against
   Landau–Lifshitz §37.
+- **Drafted the 6a/6b split of the core algorithm's assembly step** (July 2026),
+  at the author's request: worked out that replacing the intersection by a union
+  of the per-component varieties, each cut down to its own cell, yields an
+  intermediate locus V_{∃∀} with V_∀ ⊆ V_{∃∀} ⊆ V_∃. Supplied the quantifier
+  table distinguishing the three loci (∀/∀, ∃/∀, ∃/∃ over components and over
+  the solutions within a component), both containment arguments, the observation
+  that the paper's own three-loci example makes the upper containment maximally
+  strict (V_{∃∀} = ∅ against V_∃ = ℂ), the reason no rearrangement of the
+  assembly step can compute V_∃ — the ∀-projection has already discarded the
+  needed information — and the Ψ-reduction filter that places the intermediate
+  locus inside V_{∃∖Ψ} in the homogeneous case. Also noted that, unlike V_∀ and
+  V_∃, the intermediate locus is not intrinsic: it depends on which
+  decomposition was computed.
 - **Computational verification** that informed the text: ran the author's Sage
   computation and profiled the Rosenfeld–Gröbner step (gdb backtrace into BLAD;
   the base-field fix), grounding the efficiency discussion and the corrected
