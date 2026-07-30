@@ -251,7 +251,16 @@ through the completeness proof and the algorithm.
   assembly needs no hypothesis at all, a block lying in no cell satisfying its
   condition vacuously and being returned — which is correct, the radical being
   the unit ideal there. The ∃∀ assembly still needs it, as does the sandwich,
-  since at an inconsistent c* the point lies in V_∀ but not V_∃.
+  since at an inconsistent c* the point lies in V_∀ but not V_∃. Consequently
+  dropped the same hypothesis from the assembly corollary (`f4996bb`), the
+  intersection over an empty index set being the whole ring and hence exactly
+  the radical there; and, at the author's suggestion, moved the refinement
+  inside the branch, observing further that the ∃∀ condition mentions neither
+  ℂⁿ nor the cells, so that branch refines s sets rather than 2s+1. In the same
+  pass **corrected my own Output specification**: a refinement block is a
+  Boolean combination of the sets refined and an intersection of irreducible
+  sets need not be irreducible, so the promised presentation by primes required
+  a final normalization line, which had been missing.
 - **Errors of mine during this arc, and how they were caught.** Twice I
   over-claimed and had to withdraw. First, that moving to the radical made the
   per-component test exact — the author's question about the Thomas
