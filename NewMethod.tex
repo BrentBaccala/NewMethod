@@ -378,13 +378,29 @@ is an algebraic concept.  The distinction is much the same
 as between the real number $\sqrt{2}$ and the element $\gamma$
 in the algebraic extension of $\mathbb{Q}$ defined modulo the ideal $(\gamma^2-2)$.
 
-Ritt's convention was to write differential rings by stating their coefficient
-field, then listing the associated indeterminates of derivations enclosed in curly
-braces.  Each listed indeterminate corresponds to both a derivation (prefixed by $d$)
-and its associated indeterminate, i.e, $\mathbb{Q}\{x,y,z\}$ is a differential
-ring with coefficients in $\mathbb{Q}$, three indeterminates $x,y,z$ and three
-matching derivations $dx, dy, dz$.  The derivations we often write as subscripts:
-$\Psi_x$ is the derivation $dx$ applied to $\Psi$.
+Ritt's convention, which we follow, is to write a differential ring by stating
+its coefficient ring and then listing the {\it differential indeterminates} ---
+the dependent variables --- in curly braces: $\mathfrak{F}\{y_1, \ldots, y_n\}$
+is the totality of differential polynomials in $y_1, \ldots, y_n$ over
+$\mathfrak{F}$ (\cite{Ritt}, \S3).  The braces do {\it not} list the derivations,
+which are separate data; we write $\Delta = \{\delta_1, \ldots, \delta_m\}$ for
+them, and $\Theta$ for the free commutative monoid they generate, so that the
+elements $\theta y_i$ with $\theta \in \Theta$ are the {\it derivatives} of the
+indeterminates.  The independent variables belong to the coefficient ring, where
+they satisfy $\delta_i x_j = \delta_{ij}$ --- Ritt's own convention (\S29), and
+the one \cite{blop} and \cite{Fakouri2018} follow.  Thus
+$\mathbb{Q}[x,y,z]\{\Psi\}$ is the ring of differential polynomials in the single
+dependent variable $\Psi$, over coefficients involving the three independent
+variables $x,y,z$, with $\Delta = \{\delta_x, \delta_y, \delta_z\}$.  The
+derivations we often write as subscripts: $\Psi_x$ is $\delta_x$ applied
+to~$\Psi$.
+
+Constants are differential indeterminates too --- those that every derivation
+sends to zero.  Writing them in the braces alongside the others, rather than
+burying them in the coefficient ring, is what allows a decomposition to split on
+them; this is the source of the cells of \S\ref{sec:completeness}, and it is what
+lets the method solve for a constant such as an energy eigenvalue rather than be
+handed it.  We name them $c_1, \ldots, c_n$ and impose $\delta_i c_j = 0$.
 
 A differential ideal is a subring of a differential ring, closed under arbitrary
 derivation and multiplication by arbitrary ring elements.  Given a set of generators $g_1,...,g_n$,
@@ -415,6 +431,12 @@ A ranking on a differential ring $R$ is an ordering on the ring's indeterminates
 \forall \delta\in\Theta, \, \forall u \in R & \quad u < \delta u
 \end{aligned}
 \end{equation}
+
+The standard definition orders only the derivatives of the differential
+indeterminates.  We follow \cite{DifferentialAlgebra} in extending a ranking to
+the independent variables of the coefficient ring as well, placing them in the
+lowest block; nothing in the theory depends on this, but it lets a single
+ordering be written for every indeterminate the computation touches.
 
 A ranking is said to be {\it orderly} if meets the additional condition:
 
@@ -714,7 +736,8 @@ These relationships are illustrated by the following example.
 
 \begin{example}
 \label{ex:three-loci}
-In the differential ring ${\mathbb C}(c)\{t\}[\Psi]$, consider the ansatz
+In the differential ring $\mathbb{C}[c][t]\{\Psi\}$, with the single derivation
+$\delta_t$ and $\delta_t c = 0$, consider the ansatz
 \begin{equation}
 A(c) = \{ \Psi'' - c \Psi \}
 \end{equation}
@@ -895,11 +918,19 @@ $\mathrm{SMPD}$ & 11, 14
 \label{alg:core}
 \mbox{}
 
-{\bf Input:} A differential polynomial $P$; an ansatz $A(c)$, a finite set of
-differential polynomials parameterized by constants $c = (c_1, \ldots, c_n)$;
-a ranking $\prec$ in which the constants are ranked below all other
-indeterminates; and a flag $\mu \in \{\forall, \, \exists\forall\}$ selecting
-the assembly.
+{\bf Input:} A differential polynomial ring
+$R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$ with
+derivations $\Delta = \{\delta_1, \ldots, \delta_m\}$ satisfying
+$\delta_i x_j = \delta_{ij}$ and $\delta_i c_l = 0$; a differential polynomial
+$P \in R$; an ansatz $A(c) \subset R$, a finite set of differential polynomials
+parameterized by the constants $c = (c_1, \ldots, c_n)$; a block ranking $\prec$
+with
+%
+\[
+\{u_1, \ldots, u_k\} \;\gg\; \{c_1, \ldots, c_n\} \;\gg\; \{x_1, \ldots, x_m\};
+\]
+%
+and a flag $\mu \in \{\forall, \, \exists\forall\}$ selecting the assembly.
 
 {\bf Output:} A constructible subset of $\mathbb{C}^n$, presented as a finite
 set of pairs $(\mathfrak{p}, h)$ in which $\mathfrak{p}$ generates a prime
@@ -1406,7 +1437,7 @@ has solutions that do not satisfy the PDE.
 \scalebox{0.73}{
   \begin{tikzpicture}[remember picture]
     \node (oPsi) [poly, text width=200pt] {Polynomial selected from ring: $\framebox(10,10){}\tikzmark{a}$};
-    \node (ring) [ring, node distance=50pt, below of=oPsi, text width=200pt] {differential ring, labeled like\\${\mathbb C}\{x,y,z\}$};
+    \node (ring) [ring, node distance=50pt, below of=oPsi, text width=200pt] {differential ring, labeled like\\$\mathbb{C}[x,y,z]$};
 %    \draw[degree] (a.west) -- (a.west|-ring.north) node[right,pos=0.6] {1\tikzmark{one}};
 %    \node [anchor=west, align=left, right of=one] {(degree bound on polynomial)};
     \draw[degree] (a.west) -- (a.west|-ring.north) node[right,pos=0.6] {1\qquad $\Longleftarrow$ \qquad Degree bound on polynomial};
@@ -1505,7 +1536,8 @@ and using no other non-constant indeterminates or derivatives
 %% \item We equate the independent variable $v$ to some parameterized differential polynomial
 \end{itemize}
 
-{\bf Example:} In the differential ring $\mathbb{C}\{x,y\}$, we can construct an ODE
+{\bf Example:} In the differential ring $\mathbb{C}[x,y]\{\Psi,\Psi',v\}$, with
+$\Delta = \{\delta_x, \delta_y\}$, we can construct an ODE
 extension specified by the dependent indeterminate $\Psi$, its derivative $\Psi'$, independent indeterminate $v$, and differential polynomial
 $\Psi' = \Psi$.  This differential polynomial
 maps to the analytic equation $\frac{d\Psi}{dv}=\Psi$ and is solved
@@ -1537,7 +1569,8 @@ using the technique of the previous subsection.
 
 % by adding the differential polynomial equation $y_{\theta\theta} +y=0$ to the system.
 
-For example, consider introducing the function $\cos x$ in the differential ring $\mathbb{Q}\{x,y\}$.
+For example, consider introducing the function $\cos x$ in the differential ring
+$\mathbb{Q}[x,y]\{f,f'\}$, with $\Delta = \{\delta_x, \delta_y\}$.
 We can replace $\cos x$ with a new indeterminate, say $f$,
 and write $f'' = -f$, where the derivative is taken with respect to $x$.  The technique from the
 previous section is used to connect this with the existing derivations, as follows:
@@ -1645,7 +1678,7 @@ denominator.
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
     \end{scope}
-    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}\{x,y,z\}[r]/(r^2-x^2-y^2-z^2)$};
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \end{minipage}%
@@ -1700,8 +1733,10 @@ v = v_1 x + v_2 y + v_3 z + v_4 r
 
 Our differential ring is equipped with three derivations $dx$, $dy$, and $dz$.
 Our base ring
-is $\mathbb{Q}\{x,y,z\}[r]/(r^2-x^2-y^2-z^2)$, and from this we select
-a linear variable $v$ using equation \eqref{ansatz 5a}.
+is $\mathbb{Q}[x,y,z]$, and $r$ is a differential indeterminate carrying the
+relation $r^2 - x^2 - y^2 - z^2$ in the system rather than a quotient taken in
+the ring; from this we select a linear variable $v$ using equation
+\eqref{ansatz 5a}.
 The $v_i$'s (and the $a_i$'s, $b_i$'s and $c_i$'s) are constants.
 Strictly speaking, a $v_0$ constant term
 should also be present, but we often drop the constant term from the
@@ -1742,7 +1777,7 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE.
         \node (Theta field) [ring, fill=none, fit=(Theta block), text width=250pt] {};
     \end{scope}
 
-    \node (base) [ring, node distance=70pt, below=of Theta field.east, anchor=east, text width=250pt] {$\mathbb{Q}\{x,y,z\}[r]/(r^2-x^2-y^2-z^2)$};
+    \node (base) [ring, node distance=70pt, below=of Theta field.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
     \draw[degree] (v.south) -- (v.south|-Theta field.north) node[right,pos=0.7] {1};
     \draw[degree] (u.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
@@ -1803,11 +1838,11 @@ We don't write the PDE explicitly because the ans\"atze can be applied to many P
     \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\gamma^2 + \framebox(10,10){}\tikzmark{b}\,\gamma + \coeff\tikzmark{c}$};
     \begin{scope}[on background layer]
         \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
-        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}\{x,y,z\}[r,\gamma]/(r^2-x^2-y^2-z^2, \framebox(10,10){}\,\gamma^2 + \framebox(10,10){}\,\gamma + \coeff\,)$};
+        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}[x,y,z]\{r,\gamma\}$ with $r^2-x^2-y^2-z^2$ and $\framebox(10,10){}\,\gamma^2 + \framebox(10,10){}\,\gamma + \coeff$ in the system};
         \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
     \end{scope}
     \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {1};
-    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}\{x,y,z\}[r]/(r^2-x^2-y^2-z^2)$};
+    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
     \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {1};
     \draw[degree] (b.west) -- (b.west|-base.north) node[right,pos=0.8] {1};
     \draw[degree] (c.west) -- (c.west|-base.north) node[right,pos=0.8] {1};
@@ -1860,11 +1895,11 @@ r^2 - (x^2 + y^2 + z^2)
     \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\gamma^2 = \framebox(10,10){}\tikzmark{a}$};
     \begin{scope}[on background layer]
         \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
-        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}\{r_1,r_2,r_{12}\}[\gamma]/(\gamma^2 - \coeff\,)$};
+        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}[r_1,r_2,r_{12}]\{\gamma\}$ with $\gamma^2 - \coeff$ in the system};
         \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
     \end{scope}
     \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {2};
-    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}\{r_1,r_2,r_{12}\}$};
+    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[r_1,r_2,r_{12}]$};
     \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {2};
   \end{tikzpicture}
 \end{minipage}
@@ -1917,7 +1952,7 @@ v = v_1 r_1 + v_2 r_2 + v_3 r_{12} + v_4 \gamma + v_5 r_1^2 + v_6 r_2^2 \nonumbe
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (Qvw) (v), inner sep=10pt, element] {};
     \end{scope}
-    \node (base) [ring, node distance=20pt, below=of Psi block.south, anchor=north, text width=250pt] {$\mathbb{Q}\{x,y,z\}$};
+    \node (base) [ring, node distance=20pt, below=of Psi block.south, anchor=north, text width=250pt] {$\mathbb{Q}[x,y,z]$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \end{center}
@@ -1970,7 +2005,7 @@ v = v_1 x + v_2 y + v_3 z
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
     \end{scope}
-    \node (base) [ring, node distance=100pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}\{x,y,z\}$};
+    \node (base) [ring, node distance=100pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \end{minipage}%
@@ -2023,10 +2058,10 @@ v = v_1 x + v_2 y + v_3 z
     \draw[degree] (Qv.north|-bwb2) -- (Qv.north);
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
-        \node (Psi block title) [node distance=20pt, above=of Psi block.north, anchor=center, text centered] {$\mathbb{Q}\{x,y,z,t\}[\Psi,\Psi',\Psi'']$};
+        \node (Psi block title) [node distance=20pt, above=of Psi block.north, anchor=center, text centered] {$\mathbb{Q}[x,y,z,t]\{\Psi,\Psi',\Psi''\}$};
         \node (Psi block field) [ring, fill=none, fit=(Psi block) (Psi block title)] {};
     \end{scope}
-    \node (base) [ring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}\{x,y,z,t\}$};
+    \node (base) [ring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}[x,y,z,t]$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
 
     \node (u) [poly, text width=20pt, node distance=20pt, above=of Psi block field.north west] {u};
@@ -2099,35 +2134,35 @@ and we use Hartree atomic units to render the equation dimensionless.
 %, though for our purposes we can
 %ignore any physical interpretation of the problem and treat it simply as an equation to be solved.
 
-\begin{comment}
-We'll work mostly in the following differential ring:
-
-\newcommand{\ols}[1]{\mskip.5\thinmuskip\overline{\mskip-.5\thinmuskip {#1} \mskip-.5\thinmuskip}\mskip.5\thinmuskip} % overline short
-\newcommand{\olsi}[1]{\,\overline{\!{#1}}} % overline short italic
+We work in the following differential ring:
 
 \begin{equation}
-\begin{gathered}
-%%   R= \mathbb{Q}\{x,y,z\}[E,a_0,...,v_4,r,\Psi,\Psi',\Psi'',v] \mod (r^2-x^2-y^2-z^2) \\
-%%   R= \mathbb{Q}\{x,y,z\}[E,a_0,...,v_4,r,\Psi,\Psi',\Psi'',v] \\
-%%   {\rm where\ } a_0,...,v_4 = a_0,a_1,b_0,b_1,c_0,c_1,v_1,v_2,v_3,v_4 \\
-   R= \mathbb{Q}\{x,y,z\}[E,a_0,a_1,b_0,b_1,c_0,c_1,v_1,v_2,v_3,v_4,r,\Psi,\Psi',\Psi'',v] \\
-\end{gathered}
+\label{eq:hydrogen-ring}
+R \;=\; \mathbb{Q}[x,y,z]\{\,\Psi, \Psi', \Psi'', v, r,\;
+   E, a_0, a_1, b_0, b_1, c_0, c_1, v_1, v_2, v_3, v_4 \,\}
 \end{equation}
 
-To elaborate,
+\noindent
+with $\Delta = \{\delta_x, \delta_y, \delta_z\}$.  To elaborate,
 \begin{itemize}
-   \item $\mathbb{Q}\{x,y,z\}$ (and thus $R$) is a differential ring with derivations $dx$, $dy$ and $dz$ and matching indeterminates $x$, $y$, and $z$
-   \item $\mathbb{Q}\{x,y,z\}$ is extended by adjoining sixteen indeterminates with no matching derivations
-   \item $E,a_0,..,v_4$ are constants, which are mapped to zero by all derivations
-   \item $r$, $\Psi$, $\Psi'$, $\Psi''$, and $v$ are indeterminates that will ultimately be mapped into a function space,
-   so often we can think of them as functions.  All we can really say about them at this point,
-   aside from trivial statements like $dx(\Psi) = \Psi_x$,
-   is that they are not constants.
-%%   \item An algebraic extension is used to relate $r$ to the radius
-   \item Later we will specify a ranking.
+   \item the independent variables $x, y, z$ lie in the coefficient ring, where
+   $\delta_i x_j = \delta_{ij}$;
+   \item $E, a_0, \ldots, v_4$ are the eleven constants, sent to zero by every
+   derivation.  $E$ is a constant of the PDE rather than of the ansatz, but the
+   algorithm makes no distinction: all eleven are ranked together in the lowest
+   block, and the membership locus is a subset of $\mathbb{C}^{11}$ having $E$
+   among its coordinates.  This is what allows the eigenvalue to be solved for
+   rather than supplied;
+   \item $\Psi, \Psi', \Psi'', v, r$ are the five non-constant differential
+   indeterminates.  They will ultimately be mapped into a function space, so it
+   is often convenient to think of them as functions; algebraically, all that is
+   asserted of them here is that they are not constants.  Note that $\Psi'$ and
+   $\Psi''$ are separate indeterminates, not $\Delta$-derivatives of $\Psi$ ---
+   they are tied to $\Psi$ by the chain-rule equations of the ansatz, and $r$
+   likewise carries $r^2 - x^2 - y^2 - z^2$ in the system rather than as a
+   quotient of the ring;
+   \item the ranking is specified below.
 \end{itemize}
-
-\end{comment}
 
 % \subsection{Ansatz}
 
@@ -2198,9 +2233,16 @@ dramatically different performance timings.  We use this orderly ranking:
 % indeterminates associated with derivations below everything else, so we use this orderly ranking:
 
 \begin{equation}
-\Psi'' > \Psi' > \Psi > v > r > {\rm constants} > x,y,z
 \label{ranking}
+\{\Psi'' > \Psi' > \Psi > v > r\}
+\;\gg\; \{E, a_0, \ldots, v_4\}
+\;\gg\; \{x, y, z\}
 \end{equation}
+
+\noindent
+in the block form of Algorithm~\ref{alg:core}: the five non-constant
+indeterminates, ordered among themselves as shown, above the eleven constants,
+above the independent variables.
 
 % \subsection{Differential Reduction Step}
 
