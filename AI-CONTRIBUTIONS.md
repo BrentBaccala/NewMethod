@@ -204,7 +204,14 @@ through the completeness proof and the algorithm.
   (prime containment alone can fail when V(𝔭) lies inside V(h_j)); and the
   radical is never formed, an ideal and its radical having the same minimal
   primes, so the paragraph instructing the reader to take the radical first was
-  wrong as an instruction and was rewritten as motivation.
+  wrong as an instruction and was rewritten as motivation. Finally supplied the
+  missing recipe for step 7a (`07ab265`), which until then was a formula with no
+  method behind it: writing each factor as a union of locally closed pieces
+  (W_i, one open set per generator of E_i, and V(h_i)), the rule that two pieces
+  meet in V(𝔞+𝔟) ∖ V(fg), the emptiness-and-discard test (the saturation being
+  the unit ideal), and the observation that the combinatorial blow-up over
+  choices of one piece per factor — not the ideal arithmetic — is what makes 7a
+  the expensive branch, with two mitigations that keep it in hand.
 - **Errors of mine during this arc, and how they were caught.** Twice I
   over-claimed and had to withdraw. First, that moving to the radical made the
   per-component test exact — the author's question about the Thomas
