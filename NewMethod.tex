@@ -547,7 +547,7 @@ use.  Write $q$ for the product of the initials and separants of the equations
 of $S^=$.
 
 \begin{quote}
-{\bf Proposition} (\cite{RobertzLNM}, Prop.~2.2.50; \cite{RobertzCIRM}, Prop.~3.29).  Let $S$ be a simple
+{\bf Proposition X} (\cite{RobertzLNM}, Prop.~2.2.50; \cite{RobertzCIRM}, Prop.~3.29).  Let $S$ be a simple
 differential system with equations $p_1 = 0, \ldots, p_s = 0$, let
 $E = [p_1, \ldots, p_s]$ be the differential ideal they generate, and let $q$ be
 the product of the initials and separants of $p_1, \ldots, p_s$.  Then
@@ -924,23 +924,11 @@ $\mathcal{V} = V(p_1, \ldots, p_N) \subseteq \mathbb{C}^n$ be the variety
 defined by setting all constant coefficients to zero.
 
 Suppose $c^*$ lies in the cell of the component --- the projection of its
-solution set onto $\mathbb{C}^n$ --- and satisfies
-
-\begin{enumerate}
-\item $P \in [A(c^*)]$, i.e., the ansatz evaluated at $c^*$ solves the PDE.
-\end{enumerate}
-
+solution set onto $\mathbb{C}^n$ --- and $P \in [A(c^*)]$.
 Then $c^* \in \mathcal{V}$.
 \end{theorem}
 
-Hypothesis~(1) states that the ansatz at $c^*$ ``solves the PDE'' in the
-strong sense that $P$ lies in the differential ideal $[A(c^*)]$: every
-function satisfying the ansatz also satisfies the PDE.
-
-Earlier formulations of this theorem carried a second, ``denominator''
-hypothesis: that the power product $h$ of initials and separants arising from
-the Ritt reduction not vanish at~$c^*$.  It is not needed, because membership of
-$c^*$ in the cell already supplies it.  Note first that $h$ is in general a
+Note that $h$ is in general a
 polynomial in the constants {\it and} in jet variables ranked below the leaders
 of~$A$, so the condition that matters is that $h(c^*)$ not be the zero
 polynomial; that is what preserves the degrees of the leaders in $A(c^*)$, and
@@ -953,8 +941,7 @@ not identically zero.
 
 The theorem needs no further hypothesis.  The whole of what the proof requires
 --- that reduction to zero decide membership, and that the relevant ideal be
-radical --- is delivered by \cite{RobertzLNM}, Prop.~2.2.50
-(\cite{RobertzCIRM}, Prop.~3.29), whose only
+radical --- is delivered by Proposition X,whose only
 hypothesis is that the system be simple.  That is exactly what the components of
 a differential Thomas decomposition are, and Lemma~\ref{lem:specialization}
 carries the property to the point $c^*$.  This is the structural reason for
@@ -979,8 +966,7 @@ Since $c^*$ lies in the cell, Lemma~\ref{lem:specialization} makes
 $(S^=(c^*), S^{\ne}(c^*))$ a simple differential system.  Writing
 $E = [A(c^*)]$ and $q$ for the product of the initials and separants of
 $A(c^*)$, we have
-$r(c^*) \in E \subseteq E : q^\infty$, so by \cite{RobertzLNM}, Prop.~2.2.50
-(\cite{RobertzCIRM}, Prop.~3.29),
+$r(c^*) \in E \subseteq E : q^\infty$, so by Proposition X
 the pseudo-remainder of $r(c^*)$ modulo $A(c^*)$ and its derivatives is zero.
 Now $r$ is fully reduced with respect to $A$, and as observed above $h(c^*)$ is
 not identically zero, so no leader of $A$ drops in degree upon specialization
