@@ -190,6 +190,21 @@ through the completeness proof and the algorithm.
   Ψ-reduction filter that places the intermediate locus inside V_{∃∖Ψ} in the
   homogeneous case. Also noted that, unlike V_∀ and V_∃, the intermediate locus
   is not intrinsic: it depends on which decomposition was computed.
+  **Restructured the algorithm** in a follow-on (`232cec8`), prompted by the
+  author's question of how the new branch is actually computed: since
+  𝒱_i ∪ (ℂⁿ∖C_i) = W_i ∪ (ℂⁿ∖C_i), both assemblies read 𝒱_i only through
+  W_i = 𝒱_i ∩ C_i, so the prime decomposition was hoisted out of a trailing
+  step and into the per-component loop, and the two assembly formulas became
+  steps 7a and 7b. Named the ideals the loop actually builds (the coefficient
+  ideal J_i, the cell's equation ideal E_i and inequation product h_i, the
+  saturation (J_i + E_i):h_i^∞), and supplied three corrections: saturation
+  returns the Zariski *closure*, so each surviving prime still carries h_i ≠ 0
+  as a residual condition and it is this — not anything in the assembly — that
+  makes the output constructible; the redundancy test needs the inequations
+  (prime containment alone can fail when V(𝔭) lies inside V(h_j)); and the
+  radical is never formed, an ideal and its radical having the same minimal
+  primes, so the paragraph instructing the reader to take the radical first was
+  wrong as an instruction and was rewritten as motivation.
 - **Errors of mine during this arc, and how they were caught.** Twice I
   over-claimed and had to withdraw. First, that moving to the radical made the
   per-component test exact — the author's question about the Thomas
