@@ -857,7 +857,7 @@ $h \in \mathbb{Q}[c_1, \ldots, c_n]$ denotes the constructible set
 $V(F) \setminus V(h) \subseteq \mathbb{C}^n$, and a finite set of such pairs
 denotes the union of the sets its members denote.  We call the subalgorithms
 $\mathrm{DifferentialDecompose}$ and $\mathrm{Reduce}$ of \cite{ThomasDecomp}
-and $\mathrm{DisjointRefinement}$ of \cite{CTD}.
+and $\mathrm{SMPD}$ of \cite{CTD}.
 
 \begin{algorithm}[MembershipLocus]
 \label{alg:core}
@@ -891,10 +891,10 @@ reports, as described below.
 \item \algind $W_i \leftarrow \bigl\{\, (\mathfrak{p}, h_i) \;:\; \mathfrak{p} \in \mathrm{minAss}\bigl( \langle J_i \cup E_i \rangle : h_i^\infty \bigr) \,\bigr\}$
 \item {\bf end for}
 \item {\bf if} $\mu = \forall$ {\bf then}
-\item \algind $\mathcal{B} \leftarrow \mathrm{DisjointRefinement}(\mathbb{C}^n, W_1, C_1, \ldots, W_s, C_s)$
+\item \algind $\mathcal{B} \leftarrow \mathrm{SMPD}(\mathbb{C}^n, W_1, C_1, \ldots, W_s, C_s)$
 \item \algind $D \leftarrow \bigcup \bigl\{\, B \in \mathcal{B} \;:\; B \subseteq W_i \text{ for every $i$ with } B \subseteq C_i \,\bigr\}$
 \item {\bf else}
-\item \algind $D \leftarrow \bigcup \mathrm{DisjointRefinement}(W_1, \ldots, W_s)$
+\item \algind $D \leftarrow \bigcup \mathrm{SMPD}(W_1, \ldots, W_s)$
 \item {\bf end if}
 \item {\bf return} $\bigl\{\, (\mathfrak{p}, h) \;:\; (F, h) \in D, \; \mathfrak{p} \in \mathrm{minAss}(\langle F \rangle : h^\infty) \,\bigr\}$
 \end{pseudocode}
@@ -948,11 +948,12 @@ ordinary commutative algebra and algebraic geometry in the $n$ constants.
 Carrying out either assembly is a set-theoretic computation on constructible
 sets --- note that $\mathbb{C}^n \setminus C_i = (\mathbb{C}^n \setminus V(E_i))
 \cup V(h_i)$ is constructible, so all the operands are --- and the operation to
-ask for is a {\it disjoint refinement}: given constructible sets
-$A_1, \ldots, A_s$, a family $B_1, \ldots, B_t$ of pairwise disjoint
-constructible sets such that each $A_i$ is a union of some of the $B_j$.  Applied
-at line~11 to $\mathbb{C}^n$ together with the family
-$W_1, C_1, \ldots, W_s, C_s$, it partitions the constant space and leaves every
+ask for is the one \cite{CTD} calls $\mathrm{SMPD}$, {\it strongly make pairwise
+disjoint}: given pieces $A_1, \ldots, A_t$, it returns pairwise disjoint pieces
+$B_1, \ldots, B_u$ such that each $A_k$ is a union of some of the $B_l$.  The
+property passes from the pieces to any union of them, so applying it at line~11
+to the pieces making up $\mathbb{C}^n$ and the family
+$W_1, C_1, \ldots, W_s, C_s$ partitions the constant space and leaves every
 block $B$ either contained in or disjoint from each $W_i$ and each $C_i$, so
 that the assemblies become a selection of blocks:
 %
@@ -979,12 +980,14 @@ a heuristic --- only the components whose cells contain a block are ever
 consulted for it, which is the computational form of the remark that a component
 contributes a condition only where its cell lies.
 
-Such a refinement is the set-theoretic instance of the coprime factorization
-problem solved in \cite{CTD}, whose main technical tool is an algorithm for the
-difference of two constructible sets presented by {\it regular systems} --- a
-regular chain together with an inequation, the same shape as the pairs line~8
-produces --- and it is implemented as \verb|MakePairwiseDisjoint| in the
-\verb|ConstructibleSetTools| module of the \verb|RegularChains| library
+This is what \cite{CTD} calls the set-theoretic version of the coprime
+factorization problem; $\mathrm{SMPD}$ is its Algorithm~3, built on an algorithm
+for the difference of two constructible sets presented by {\it regular systems}
+--- a regular chain together with an inequation, the same shape as the pairs
+line~8 produces.  The constructible sets themselves are available as a type, with
+the difference and union operations and the weaker $\mathrm{MPD}$ (which merely
+removes duplicated data from a single constructible set, preserving its union),
+in the \verb|ConstructibleSetTools| module of the \verb|RegularChains| library
 \cite{CSTools}.  There is a second route that is more economical here, being the
 algorithm of line~1 in its non-differential case: an algebraic Thomas
 decomposition returns a disjoint decomposition to begin with, and the
