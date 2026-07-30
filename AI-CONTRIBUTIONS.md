@@ -95,6 +95,114 @@ January 2026).
   and flagged that the hypothesis "if P is homogenous (and the ansatz too)" is
   false under the paper's own definition of homogeneity, since the generator
   defining the independent variable is Ψ-free.
+
+The bullets that follow record a single connected arc, 28–30 July 2026 (model
+Claude Opus 5), carried out at the author's direction: shifting the paper's
+foundations from Rosenfeld–Gröbner regular systems to the differentially simple
+systems of the differential Thomas decomposition, and following the consequences
+through the completeness proof and the algorithm.
+
+- **Rewrote the preliminaries on simple systems** (`7532ee5`, `68af580`).
+  Filled in the stubbed block: Janet division, multiplicative and
+  non-multiplicative variables, non-multiplicative prolongation,
+  Janet-involutive, algebraically simple, differentially simple (S1)–(S4), and
+  the Thomas decomposition itself; dropped Boulier–Lazard–Ollivier–Petitot
+  Def. 22, restated the specialization lemma for a Thomas component, and
+  collapsed two theorem hypotheses into one. **Introduced a bug and caught
+  it**: removing BLOP Def. 22 left the proof citing BLOP Thm. 23, whose
+  hypothesis is literally "regular differential system". Repaired by stating
+  Rosenfeld's Lemma inline with (C1)–(C3) unfolded and bridging from
+  differential simplicity — (C3) from (S2), triangularity from (S1), (C2) from
+  square-freeness via Bächler et al. footnote 3 — which the next commit then
+  made moot.
+- **Established that the "Janet-involutive ⟹ coherent" step the paper was
+  leaning on has no published source, and found the bypass** (`d015a61`).
+  Literature search: Bächler et al. §1's "hence they are coherent" has nothing
+  behind it, Chen and Gao (2003) list the relation as an open problem, and
+  Bächler et al. never attach an ideal to a simple system at all, so the ideal
+  theory could not come from there either. The replacement is **Robertz,
+  LNM 2121, Prop. 2.2.50** — one numbered equivalence whose only hypothesis is
+  simplicity, delivering what coherence, Rosenfeld and Lazard were being
+  assembled to deliver. Verified in the source rather than taken from the
+  search report, which turned up **Prop. 2.2.72** alongside it — the
+  decomposition identity √(E:q^∞) = ⋂_i (E^(i):(q^(i))^∞) — closing a gap that
+  had been flagged as unsourced. Net −54 lines: critical pairs, Δ-polynomials,
+  coherence, Rosenfeld's Lemma and the Hubert regular-chain block all left the
+  preliminaries. Also answered the author's objection that Prop. 2.2.50 says
+  nothing about the pseudo-remainder lying in the *algebraic* ideal: Ritt full
+  reduction is partial reduction followed by algebraic reduction, the old proof
+  stopped at the seam, and Prop. 2.2.50 states the composite (Li–Wang Thm. 8
+  confirms by stopping at the same seam explicitly).
+- **Read Li–Wang from page images and corrected the companion hierarchy note**
+  (`41a7102`, `coherent-regular-simple-passive-hierarchy.tex`). The local PDF is
+  an image-only scan; rendering it page by page established that Li–Wang **never
+  define "passive"** — §4.1 defers to Wu (1989) — so their Thm. 3 is about
+  Wu-passivity, not Janet-involutivity, and the note's implication lattice had
+  been using it to justify a Janet-involutive arrow. Split into two arrows.
+  Second correction to the same note: it described 𝕋 as a characteristic set of
+  a **prime** differential ideal, where Li–Wang Cor. 2 says **radical** — a
+  second-hand claim the note had carried unchecked.
+- **Corrected the Robertz 2018 citation and the proposition numbers**
+  (`93a031b`, `6617bdd`). It is a **published article** — *Les cours du CIRM*
+  vol. 6 no. 1, Course no. III, pp. 1–37, doi:10.5802/ccirm.28 — not lecture
+  notes; the English title in the PDF metadata is a leftover `\hypersetup` from
+  the 2014 book. The published version inserts two definitions, so **the
+  proposition numbers shift by two** from the preprint the paper had been citing
+  (3.29/3.30 → 3.31/3.32); verified against the published PDF, which was
+  downloaded and added to the local collection. Every Robertz citation site now
+  carries both references, at the author's request, and the proposition was
+  numbered into the paper's shared theorem sequence.
+- **Dropped the denominator hypothesis** (`3d92072`). h(c*) ≠ 0 follows from c*
+  lying in the cell, once "cell" is taken to mean the projection of the
+  component's solution set — with the subtlety that h involves jet variables, so
+  what is actually needed is h ≢ 0 as a polynomial. Algebraic simplicity written
+  out as (A1)–(A3) in the same enumerated style as (S1)–(S4), at the author's
+  request.
+- **Reformulated the membership locus on the radical, and made the theorem an
+  equivalence** (`d9c4c8d`). Proposed by the author (that the argument yields
+  P ∈ √[A(c*)] for free) and sharpened here: the exact object is [A(c*)]:q^∞,
+  which contains the radical, and every step is reversible, so
+  c* ∈ 𝒱 ⟺ P ∈ [A(c*)]:q^∞ and the sufficiency disclaimer could go. Four
+  coupled changes followed — V_∀ redefined on the radical, the standing
+  assumption simplified to the transparent Ψ ∉ √[A(c*)], the ∃-projection
+  dropped from the algorithm (kept on record as a cheaper, complete but
+  inexact variant), and a new corollary reading Prop. 2.2.72 with q = 1, so that
+  the per-component test decides the saturation while the intersection over
+  components decides the radical.
+- **Recorded how a component's cell is obtained** (`83a4465`) — read off the
+  equations and inequations whose leaders are constants, justified by Bächler
+  et al. Remark 2.3's extension property, with a warning against confusing this
+  with the algorithm's projection step (applying the latter to the ansatz's own
+  equations would return the empty cell). Then **corrected the algorithm's
+  assembly** (`26ff25e`) from a union of components to
+  ⋂_i (𝒱_i ∪ (ℂⁿ∖C_i)), the cells being quasi-affine and overlapping rather
+  than partitioning.
+- **Added a second, cheaper assembly step** (`1380cf6`, 30 July 2026), at the
+  author's request: alongside step 6a (the intersection, which returns the
+  membership locus exactly) a step 6b taking the union of the per-component
+  varieties cut down to their own cells, yielding an intermediate locus V_{∃∀}
+  with V_∀ ⊆ V_{∃∀} ⊆ V_∃. Supplied the quantifier table distinguishing the
+  three loci (∀/∀, ∃/∀, ∃/∃, over components and over the solutions within a
+  component), both containment arguments, the observation that the paper's own
+  three-loci example makes the upper containment maximally strict (V_{∃∀} = ∅
+  against V_∃ = ℂ), the reason no rearrangement of the assembly step can compute
+  V_∃ — the ∀-projection has already discarded the needed information — and the
+  Ψ-reduction filter that places the intermediate locus inside V_{∃∖Ψ} in the
+  homogeneous case. Also noted that, unlike V_∀ and V_∃, the intermediate locus
+  is not intrinsic: it depends on which decomposition was computed.
+- **Errors of mine during this arc, and how they were caught.** Twice I
+  over-claimed and had to withdraw. First, that moving to the radical made the
+  per-component test exact — the author's question about the Thomas
+  decomposition not using saturated ideals exposed that the inequations need
+  saturating too. Second, that the change from union to intersection was global
+  — the author pushed back ("those ideals are ideals in the space of constants —
+  we still want union"), and the resolution is union-across-cells with
+  intersection-within, settled only once the cells were understood to overlap
+  rather than partition. A duplicated `Input:` line was introduced and removed
+  during an edit of the algorithm. On the other side, one confusion of the
+  author's was clarified: the ∃-projection *gains* points rather than imposing
+  an additional condition, since the open-set condition is the ∀ step over
+  independent variables, which both variants perform.
 - **Restructured** the logical organization: core + general algorithm
   (`e2a7449`), then folded into one section with the "Why not
   Rosenfeld--Gröbner alone?" discussion (`c05c04a`); unified the
@@ -111,19 +219,6 @@ January 2026).
   rewrote the passage with the Laplace–Runge–Lenz / SO(4) framing, a structural
   (non-`L²`) explanation, and supporting citations (`806b526`), checked against
   Landau–Lifshitz §37.
-- **Drafted the 6a/6b split of the core algorithm's assembly step** (July 2026),
-  at the author's request: worked out that replacing the intersection by a union
-  of the per-component varieties, each cut down to its own cell, yields an
-  intermediate locus V_{∃∀} with V_∀ ⊆ V_{∃∀} ⊆ V_∃. Supplied the quantifier
-  table distinguishing the three loci (∀/∀, ∃/∀, ∃/∃ over components and over
-  the solutions within a component), both containment arguments, the observation
-  that the paper's own three-loci example makes the upper containment maximally
-  strict (V_{∃∀} = ∅ against V_∃ = ℂ), the reason no rearrangement of the
-  assembly step can compute V_∃ — the ∀-projection has already discarded the
-  needed information — and the Ψ-reduction filter that places the intermediate
-  locus inside V_{∃∖Ψ} in the homogeneous case. Also noted that, unlike V_∀ and
-  V_∃, the intermediate locus is not intrinsic: it depends on which
-  decomposition was computed.
 - **Computational verification** that informed the text: ran the author's Sage
   computation and profiled the Rosenfeld–Gröbner step (gdb backtrace into BLAD;
   the base-field fix), grounding the efficiency discussion and the corrected
@@ -155,4 +250,4 @@ characterize these in the submitted statement, methods, and/or
 acknowledgements, and confirm the journal's current requirements.
 
 */Claude Opus 4.8 (this record drafted by the AI it documents); updated
-27 July 2026 by /Claude Opus 5.*
+27 July 2026 and 30 July 2026 by /Claude Opus 5.*
