@@ -893,10 +893,7 @@ V_{\exists\forall} \;=\; \bigcup_{i=1}^{r} W_i ,
 \]
 %
 that is, $c^*$ qualifies as soon as it lies in $\mathcal{V}_i$ for {\it some}
-component whose cell contains it.  Discard any piece contained in another,
-testing the containment of $V(\mathfrak{p}) \setminus V(h_i)$ in
-$V(\mathfrak{q}) \setminus V(h_j)$ as $\mathfrak{p} \supseteq \mathfrak{q}$
-together with $h_j \notin \mathfrak{p}$.
+component whose cell contains it.
 \end{enumerate}
 \end{algorithm}
 
@@ -928,53 +925,54 @@ not in the membership locus.  Since the cells need not be disjoint
 than a variety.  Only steps~1 and~3 involve differential algebra; steps~4--7 are
 ordinary commutative algebra and algebraic geometry in the $n$ constants.
 
-Carrying out that intersection takes a word, since unlike step~7b its operands
-do not arrive in the form the output requires.  Each factor is first written as
-a union of locally closed pieces.  Step~6 supplies $W_i$ already in that form,
-and for the complement,
-$\mathbb{C}^n \setminus C_i = (\mathbb{C}^n \setminus V(E_i)) \cup V(h_i)$,
-where $\mathbb{C}^n \setminus V(E_i)$ is the union of the open sets
-$e \ne 0$ taken over a generating set of $E_i$.  So
+Carrying out either assembly is a set-theoretic computation on constructible
+sets --- note that $\mathbb{C}^n \setminus C_i = (\mathbb{C}^n \setminus V(E_i))
+\cup V(h_i)$ is constructible, so all the operands are --- and the operation to
+ask for is a {\it disjoint refinement}: given constructible sets
+$A_1, \ldots, A_s$, a family $B_1, \ldots, B_t$ of pairwise disjoint
+constructible sets such that each $A_i$ is a union of some of the $B_j$.  Applied
+once to the family $W_1, C_1, \ldots, W_r, C_r$, it leaves every block $B$ either
+contained in or disjoint from each $W_i$ and each $C_i$, and both assemblies
+become a selection of blocks:
 %
 \[
-W_i \cup (\mathbb{C}^n \setminus C_i)
-\;=\;
-\bigcup_{\mathfrak{p}} \bigl( V(\mathfrak{p}) \setminus V(h_i) \bigr)
-\;\cup\;
-\bigcup_{e} \bigl( \mathbb{C}^n \setminus V(e) \bigr)
-\;\cup\;
-V(h_i),
+B \subseteq V_\forall
+\iff
+B \subseteq W_i \ \text{ for every $i$ with } B \subseteq C_i,
+\qquad
+B \subseteq V_{\exists\forall}
+\iff
+B \subseteq W_i \ \text{ for some $i$.}
 \]
 %
-one piece for each prime produced by step~6, one for each generator of $E_i$,
-and one more, every piece of the form $V(\mathfrak{a}) \setminus V(f)$.
-Intersection distributes over these unions, and two pieces meet in
-%
-\[
-\bigl( V(\mathfrak{a}) \setminus V(f) \bigr) \cap \bigl( V(\mathfrak{b}) \setminus V(g) \bigr)
-\;=\; V(\mathfrak{a} + \mathfrak{b}) \setminus V(fg),
-\]
-%
-so choosing one piece from each of the $r$ factors contributes the single piece
-$V(\sum_i \mathfrak{a}_i) \setminus V(\prod_i f_i)$.  That piece is returned to
-the output form exactly as in step~6 --- minimal associated primes of
-$(\sum_i \mathfrak{a}_i) : (\prod_i f_i)^\infty$, paired with the residual
-condition $\prod_i f_i \ne 0$ --- and it is empty precisely when that saturation
-is the unit ideal, which is also the test for discarding it.
+Nothing beyond the refinement is computed: the conditions are read off block by
+block, and the answer is irredundant because the blocks are disjoint, so the
+containment test of step~7b is not needed either.  A component whose cell misses
+a block imposes nothing on it, and in this formulation that is exact rather than
+a heuristic --- only the components whose cells contain a block are ever
+consulted for it, which is the computational form of the remark that a component
+contributes a condition only where its cell lies.
 
-Done naively this enumerates the product over $i$ of the number of pieces in the
-$i$th factor, nearly all of the combinations empty, and it is this blow-up ---
-not the ideal arithmetic, which is trivial --- that makes 7a the expensive
-branch.  Two things keep it in hand.  The factors should be brought in one at a
-time, discarding empty and redundant pieces (by the test in step~7b) before the
-next factor is intersected, so that pruning happens at every stage rather than
-at the end.  And most factors need not be split at all: for a running piece $Z$,
-if $Z \cap C_i = \emptyset$ then $Z$ already lies in $\mathbb{C}^n \setminus C_i$
-and the $i$th factor may be skipped, while if $Z \subseteq C_i$ the factor
-reduces to $Z \cap W_i$ with no complement to form.  The three-way split is
-needed only for those components whose cell boundary actually cuts $Z$, which is
-the computational form of the remark that a component contributes a condition
-only where its cell lies.
+Such a refinement is the set-theoretic instance of the coprime factorization
+problem solved in \cite{CTD}, whose main technical tool is an algorithm for the
+difference of two constructible sets presented by {\it regular systems} --- a
+regular chain together with an inequation, the same shape as the pairs step~6
+produces --- and it is implemented as \verb|MakePairwiseDisjoint| in the
+\verb|ConstructibleSetTools| module of the \verb|RegularChains| library
+\cite{CSTools}.  There is a second route that is more economical here, being the
+algorithm of step~1 in its non-differential case: an algebraic Thomas
+decomposition returns a disjoint decomposition to begin with, and the
+implementation accompanying \cite{ThomasDecomp} represents complements and
+intersections of solution sets as decompositions into simple systems.  Where a
+{\it canonical} representation is wanted and not merely an irredundant one, the
+constructible sets of the parametric Gr\"obner literature (\cite{Montes} and its
+successors) carry one, computed in \cite{BrunatMontes}.
+
+Step~7a remains the more expensive of the two.  Step~7b can be read directly off
+the output of step~6, using the refinement only to tidy the result, whereas
+step~7a genuinely needs the complements $\mathbb{C}^n \setminus C_i$, and it is
+the splitting these force --- not the ideal arithmetic, which is elementary ---
+that carries the cost.
 
 Step~7b is offered for the reader content with an approximation.  It replaces
 the intersection by a plain union of the $W_i$, and so never forms a
@@ -2763,6 +2761,12 @@ A. Montes, A new algorithm for discussing Gr\"obner bases with parameters, J. Sy
 
 \bibitem{CTD}
 C. Chen, O. Golubitsky, F. Lemaire, M. Moreno Maza, W. Pan, Comprehensive triangular decomposition, in: V.G. Ganzha, E.W. Mayr, E.V. Vorozhtsov (Eds.), Computer Algebra in Scientific Computing (CASC 2007), Lecture Notes in Computer Science, vol.~4770, Springer, Berlin, Heidelberg, 2007, pp.~73--101. \url{https://doi.org/10.1007/978-3-540-75187-8_7}.
+
+\bibitem{CSTools}
+C. Chen, F. Lemaire, L. Li, M. Moreno Maza, W. Pan, Y. Xie, The ConstructibleSetTools and ParametricSystemTools modules of the RegularChains library in Maple, in: Proceedings of the 2008 International Conference on Computational Sciences and Its Applications (ICCSA 2008), IEEE Computer Society, 2008, pp.~342--352. \url{https://doi.org/10.1109/ICCSA.2008.61}.
+
+\bibitem{BrunatMontes}
+J. M. Brunat, A. Montes, Computing the canonical representation of constructible sets, Math. Comput. Sci. 10~(1) (2016) 165--178. \url{https://doi.org/10.1007/s11786-016-0248-2}.
 
 \bibitem{gianni}
 P. Gianni, Properties of Gr\"obner bases under specializations, in: J.H. Davenport (Ed.), EUROCAL '87, Lecture Notes in Computer Science, vol.~378, Springer, Berlin, Heidelberg, 1989, pp.~293--297. \url{https://doi.org/10.1007/3-540-51517-8_128}.
