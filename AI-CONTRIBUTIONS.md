@@ -231,7 +231,15 @@ through the completeness proof and the algorithm.
   Constructible Sets in Maple" as J. Symbolic Comput. 45(1) 124–149; those pages
   are in fact Boulier–Lemaire–Moreno Maza on differential characteristic sets,
   and the manuscript appears never to have been published, so the ICCSA 2008
-  proceedings version is cited instead.
+  proceedings version is cited instead. Finally **reformatted the algorithm to
+  the conventions of the papers it cites** (`4afff4d`) — Bächler et al. (JSC
+  2012) and Fakouri et al. (2018): a named algorithm (MembershipLocus), Input
+  and Output as pre- and postconditions rather than prose, numbered pseudocode
+  lines with assignment arrows and explicit control flow, named subalgorithms
+  called and cited the way those papers call their own, and the 7a/7b branch
+  recast as a mode flag with two returns. Caught in passing a pre-existing
+  notation collision — r was both the number of components and the remainder
+  produced by reduction — and renamed the component count to s.
 - **Errors of mine during this arc, and how they were caught.** Twice I
   over-claimed and had to withdraw. First, that moving to the radical made the
   per-component test exact — the author's question about the Thomas
