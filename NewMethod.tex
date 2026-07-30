@@ -16,6 +16,7 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
 \theoremstyle{definition}
 \newtheorem{algorithm}[theorem]{Algorithm}
 \newtheorem{example}[theorem]{Example}
@@ -546,8 +547,9 @@ supplied by a single result about simple systems, which we state in the form we
 use.  Write $q$ for the product of the initials and separants of the equations
 of $S^=$.
 
-\begin{quote}
-{\bf Proposition X} (\cite{RobertzLNM}, Prop.~2.2.50; \cite{RobertzCIRM}, Prop.~3.31).  Let $S$ be a simple
+\begin{proposition}[\cite{RobertzLNM}, Prop.~2.2.50; \cite{RobertzCIRM}, Prop.~3.31]
+\label{prop:simple-membership}
+Let $S$ be a simple
 differential system with equations $p_1 = 0, \ldots, p_s = 0$, let
 $E = [p_1, \ldots, p_s]$ be the differential ideal they generate, and let $q$ be
 the product of the initials and separants of $p_1, \ldots, p_s$.  Then
@@ -561,7 +563,7 @@ p \in E : q^\infty
 \[
 \text{and their derivatives is zero.}
 \]
-\end{quote}
+\end{proposition}
 
 \noindent
 Two features of this statement matter here.  It is an {\it equivalence}, so
@@ -941,7 +943,7 @@ not identically zero.
 
 The theorem needs no further hypothesis.  The whole of what the proof requires
 --- that reduction to zero decide membership, and that the relevant ideal be
-radical --- is delivered by Proposition X, whose only
+radical --- is delivered by Proposition~\ref{prop:simple-membership}, whose only
 hypothesis is that the system be simple.  That is exactly what the components of
 a differential Thomas decomposition are, and Lemma~\ref{lem:specialization}
 carries the property to the point $c^*$.  This is the structural reason for
@@ -966,7 +968,7 @@ Since $c^*$ lies in the cell, Lemma~\ref{lem:specialization} makes
 $(S^=(c^*), S^{\ne}(c^*))$ a simple differential system.  Writing
 $E = [A(c^*)]$ and $q$ for the product of the initials and separants of
 $A(c^*)$, we have
-$r(c^*) \in E \subseteq E : q^\infty$, so by Proposition X
+$r(c^*) \in E \subseteq E : q^\infty$, so by Proposition~\ref{prop:simple-membership}
 the pseudo-remainder of $r(c^*)$ modulo $A(c^*)$ and its derivatives is zero.
 Now $r$ is fully reduced with respect to $A$, and as observed above $h(c^*)$ is
 not identically zero, so no leader of $A$ drops in degree upon specialization
