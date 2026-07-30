@@ -1678,7 +1678,7 @@ denominator.
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
     \end{scope}
-    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \end{minipage}%
@@ -1777,7 +1777,7 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE.
         \node (Theta field) [ring, fill=none, fit=(Theta block), text width=250pt] {};
     \end{scope}
 
-    \node (base) [ring, node distance=70pt, below=of Theta field.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
+    \node (base) [ring, node distance=70pt, below=of Theta field.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
     \draw[degree] (v.south) -- (v.south|-Theta field.north) node[right,pos=0.7] {1};
     \draw[degree] (u.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
