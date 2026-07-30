@@ -837,44 +837,68 @@ To summarize, given a PDE and having selected an ansatz, the membership locus ca
 \begin{algorithm}
 \label{alg:core}
 
-{\bf Input:} A PDE defined by one or more differential polynomials and an ansatz, one or more differential
-polynomials parameterized by constants
-{\bf Output:} The generators of a set of ideals $\{I_1,...,I_n\}$ in the constants such that $P \in \sqrt{[A(c^*)]} \iff \exists n, c^* \in \mathcal{V}(I_n)$
-\begin{enumerate}
-\item Perform a differential Thomas decomposition on the ansatz.
+{\bf Input:} A PDE $P$, one or more differential polynomials, and an ansatz
+$A(c)$, one or more differential polynomials parameterized by constants.
 
-\item For each simple subsystem $(S^=, S^{\ne})$, in the differential Thomas decomposition,
+{\bf Output:} A constructible subset of $\mathbb{C}^n$ equal to the membership
+locus, i.e. such that $c^*$ belongs to it if and only if
+$P \in \sqrt{[A(c^*)]}$.
+\begin{enumerate}
+\item Perform a differential Thomas decomposition on the ansatz, with the
+constants ranked below all other indeterminates, obtaining simple subsystems
+$S_1, \ldots, S_r$.
+
+\item For each simple subsystem $S_i = (S^=, S^{\ne})$,
 
 \item \qquad Reduce the PDE modulo $S^=$ (differential elimination step).
 
-\item \qquad Construct a system of polynomial equations in the constants by collecting like terms in every non-constant indeterminate ($\forall$ projection step).
+\item \qquad Construct a system of polynomial equations in the constants by
+collecting like terms in every non-constant indeterminate, and let
+$\mathcal{V}_i \subseteq \mathbb{C}^n$ be the variety it defines
+($\forall$ projection step).
 
-\item \qquad Compute its minimal associated prime ideals.
+\item \qquad Read off the cell $C_i \subseteq \mathbb{C}^n$: the equations and
+inequations of $S_i$ whose leaders are constants.
 
-\item \qquad Saturate each prime ideal by $S^{\ne}$
+\item Assemble the membership locus as
+%
+\[
+V_\forall \;=\; \bigcap_{i=1}^{r} \bigl( \mathcal{V}_i \cup (\mathbb{C}^n \setminus C_i) \bigr),
+\]
+%
+that is, $c^*$ qualifies exactly when it lies in $\mathcal{V}_i$ for every
+component whose cell contains it.
 
-% \item Each prime ideal corresponds to an irreducible variety in the space of constants; their union is the solution space of the PDE within the ansatz.
-\item Form the union of all minimal associated prime ideals
-
-\item Remove any redundant ideals
-
-\item The union is the solution space of the PDE within the ansatz.
+\item Replace each ideal by its radical and compute minimal associated primes,
+presenting the result as a finite union of irreducible locally closed sets;
+discard any redundant piece.
 \end{enumerate}
 \end{algorithm}
 
-Algorithm~\ref{alg:core} runs on any ansatz and always returns a variety in
-the constants; whether that variety is {\it complete} --- whether it
-contains every choice of constants for which the ansatz solves the PDE ---
-is the subject of the next section.
+Step~6 is an intersection, not a union.  A component contributes a condition
+only where its cell lies, but where it does lie the condition must be met: if
+$c^*$ falls in the cells of two components and the ansatz fails to solve the PDE
+on the second, then $A(c^*)$ has solutions that do not satisfy $P$, and $c^*$ is
+not in the membership locus.  Since the cells need not be disjoint
+(Corollary~\ref{cor:assembly}), the result is in general constructible rather
+than a variety.  All of step~6 is ordinary algebraic geometry in the $n$
+constants; no differential computation is involved.
+
+Algorithm~\ref{alg:core} runs on any ansatz, and by
+Theorem~\ref{thm:completeness} and Corollary~\ref{cor:assembly} what it returns
+is exactly the membership locus --- neither missing valid choices of constants
+nor admitting spurious ones.  The next section proves this.
 
 \vfill\eject
 \subsection{Completeness of the Algorithm}
 \label{sec:completeness}
 
-A natural question arises: if some particular selection of constants
-causes the ansatz to solve the PDE (i.e, is in $V_\forall$, the membership locus),
-will the algorithm always find
-those constants in its solution space?  Theorem~\ref{thm:completeness} answers it.
+Two questions arise.  If some particular selection of constants causes the
+ansatz to solve the PDE --- that is, if it lies in $V_\forall$, the membership
+locus --- will the algorithm always find it?  And conversely, is everything the
+algorithm returns genuinely in $V_\forall$?
+Theorem~\ref{thm:completeness} answers both at once for a single component of
+the decomposition, and Corollary~\ref{cor:assembly} assembles the components.
 
 
 \medskip
