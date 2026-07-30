@@ -239,7 +239,19 @@ through the completeness proof and the algorithm.
   called and cited the way those papers call their own, and the 7a/7b branch
   recast as a mode flag with two returns. Caught in passing a pre-existing
   notation collision — r was both the number of components and the remainder
-  produced by reduction — and renamed the component count to s.
+  produced by reduction — and renamed the component count to s. Answering the
+  author's question of whether step 1 can decide the standing consistency
+  assumption, established that it can and that the assumption was therefore
+  unnecessary as a precondition (`b585d77`): inconsistency cannot surface as a
+  defective component, since every simple system has a solution (ThomasDecomp
+  Remark 2.3) and the decomposition discards a branch the moment it produces
+  c_= for a non-zero constant or 0_≠ — it surfaces as a gap in the covering by
+  cells, the cells being projections of a partition of Sol(A(c)). Refining ℂⁿ
+  along with the W_i and C_i then makes consistency a by-product, and the ∀
+  assembly needs no hypothesis at all, a block lying in no cell satisfying its
+  condition vacuously and being returned — which is correct, the radical being
+  the unit ideal there. The ∃∀ assembly still needs it, as does the sandwich,
+  since at an inconsistent c* the point lies in V_∀ but not V_∃.
 - **Errors of mine during this arc, and how they were caught.** Twice I
   over-claimed and had to withdraw. First, that moving to the radical made the
   per-component test exact — the author's question about the Thomas
