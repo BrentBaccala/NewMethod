@@ -755,6 +755,7 @@ the existence loci $V_\exists$ or $V_{\exists\backslash\Psi}$.
 % We see that $h=0$ could lead to extraneous solutions, so we require $h\ne 0$.
 
 \subsection{Computing the Membership Locus}
+\label{sec:membership-locus}
 
 Given an ansatz $A(c^*)$, we first compute a differential Thomas decomposition of the ansatz,
 which produces a partition of the constant space into quasi-projective varieties (i.e, defined
@@ -1065,6 +1066,33 @@ that proposition reads
 the intersection running over those components.  By
 Theorem~\ref{thm:completeness}, $P \in E^{(i)} : (q^{(i)})^\infty$ if and only if
 $c^* \in \mathcal{V}_i$. \hfill $\square$
+
+\medskip
+\noindent
+Determining which cells contain a given $c^*$ requires no computation.  Because
+the constants are ranked below every other indeterminate and the component is
+triangular, its equations and inequations sort by leader: those whose leader is
+a constant involve nothing but constants, and those whose leader is a
+derivative involve that derivative and lower-ranked quantities.  The first group
+is the cell.  Indeed, by \cite{ThomasDecomp}, Remark~2.3, every solution of the
+subsystem in the strictly lower-ranked variables extends to a solution of the
+next level of a simple system, and conversely every solution restricts; so,
+inductively, the projection of $\mathrm{Sol}(S^=, S^{\ne})$ onto $\mathbb{C}^n$
+is exactly the solution set of the constant-only part of $(S^=, S^{\ne})$.
+Deciding whether $c^*$ lies in the cell is therefore a matter of substituting
+$c^*$ into finitely many polynomials in the constants and checking that the
+equations vanish and the inequations do not.  The cell is thus quasi-affine ---
+cut out by equations {\it and} inequations --- and cells belonging to different
+components may overlap, even though the components themselves are disjoint,
+since a case distinction made at the level of a derivative refines the fibre
+without refining the base.
+
+This is a different operation from the projection step of
+\S\ref{sec:membership-locus}, and the two should not be confused.  There we ask
+the reduced PDE to vanish {\it identically}, and so set the coefficient of every
+power product to zero; here the equations of the component are constraints
+cutting out its solution set, not identities holding on it, and their
+coefficients are not required to vanish at all.
 
 \medskip
 \noindent
