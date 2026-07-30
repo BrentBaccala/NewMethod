@@ -393,7 +393,11 @@ $\mathbb{Q}[x,y,z]\{\Psi\}$ is the ring of differential polynomials in the singl
 dependent variable $\Psi$, over coefficients involving the three independent
 variables $x,y,z$, with $\Delta = \{\delta_x, \delta_y, \delta_z\}$.  The
 derivations we often write as subscripts: $\Psi_x$ is $\delta_x$ applied
-to~$\Psi$.
+to~$\Psi$.  Primes are reserved for a different purpose --- the derivatives
+internal to an ODE extension, where $\Psi'$ means $d\Psi/dv$ for the extension's
+own independent variable~$v$.  Such a prime is never a $\Delta$-derivative:
+$\Psi'$ is a differential indeterminate in its own right, tied to $\Psi$ by the
+chain rule.
 
 Constants are differential indeterminates too --- those that every derivation
 sends to zero.  Writing them in the braces alongside the others, rather than
@@ -739,14 +743,14 @@ These relationships are illustrated by the following example.
 In the differential ring $\mathbb{C}[t]\{\Psi, c\}$, with the single derivation
 $\delta_t$ and $\delta_t c = 0$, consider the ansatz
 \begin{equation}
-A(c) = \{ \Psi'' - c \Psi \}
+A(c) = \{ \Psi_{tt} - c \Psi \}
 \end{equation}
 and the PDE
 \begin{equation}
-P = \Psi' - \Psi
+P = \Psi_t - \Psi
 \end{equation}
 To compute $V_\exists$, we need to identify the constants where $1 \notin [A(c), P]$.
-For any constant $c$, the leaders of $\{A(c), P\}$ are $\Psi'$ (order 1) and $\Psi''$ (order 2).
+For any constant $c$, the leaders of $\{A(c), P\}$ are $\Psi_t$ (order 1) and $\Psi_{tt}$ (order 2).
 Elements in a differential ideal are constructed by multiplying by polynomials or applying derivation
 operators, neither of which reduce the order of a polynomial (does the ranking have to be orderly
 for this to be true?).  Therefore, no polynomial of order zero can appear in $\{A(c), P\}$ and,
@@ -768,9 +772,9 @@ V_\exists = \mathbb{C} \qquad V_{\exists \backslash \Psi} = \{ 1 \} \qquad V_\fo
 
 It is perhaps easiest to understand this example analytically.
 For any constant $c$, we can set $\Psi=0$ and get a solution to both the ansatz and the PDE, so $V_\exists = \mathbb{C}$.
-If $c=1$, then $ae^x$ is a solution to both $A(1)$ and $P$, and 1 is the only value of $c$ for which they have a common non-zero solution,
+If $c=1$, then $ae^t$ is a solution to both $A(1)$ and $P$, and 1 is the only value of $c$ for which they have a common non-zero solution,
 so $V_{\exists\backslash\Psi} = \{ 1 \}$.
-However, although both $ae^x$ and $ae^{-x}$ solve $A(1)$, only $ae^x$ solves $P$,
+However, although both $ae^t$ and $ae^{-t}$ solve $A(1)$, only $ae^t$ solves $P$,
 so a solution to the ansatz does not necessarily solve the PDE and $V_\forall = \emptyset$.
 
 The most straightforward way to compute the existence loci $V_\exists$ or $V_{\exists\backslash\Psi}$ is to proceed
@@ -1078,7 +1082,7 @@ Inconsistency never shows up as a defective component --- every simple system
 has a solution (\cite{ThomasDecomp}, Remark~2.3), and
 $\mathrm{DifferentialDecompose}$ discards a branch as soon as it produces an
 equation $c_=$ with $c$ a non-zero constant, or the inequation $0_{\ne}$ --- it
-shows up as a gap in the covering.  For the ansatz $\{\,c\Psi' - 1\,\}$, say,
+shows up as a gap in the covering.  For the ansatz $\{\,c\Psi_t - 1\,\}$, say,
 the decomposition splits on the initial $c$, throws away the branch $c = 0$
 where the equation becomes $-1_=$, and returns a single component whose cell is
 $\{\,c \ne 0\,\}$; the point $c = 0$ lies in no cell.
@@ -1144,8 +1148,8 @@ $1 \notin [A(c^*), P]$.
 Three cautions attend the $\exists\forall$ assembly.  First, both inclusions in
 \eqref{eq:intermediate-sandwich} can be strict, and the second can be as wide as
 possible: in Example~\ref{ex:three-loci} the ansatz is already simple, so the
-decomposition has the single component $\{\Psi'' - c\Psi\}$, the reduced PDE
-$\Psi' - \Psi$ has coefficients $1$ and $-1$, and $\mathcal{V}_1 = \emptyset$ ---
+decomposition has the single component $\{\Psi_{tt} - c\Psi\}$, the reduced PDE
+$\Psi_t - \Psi$ has coefficients $1$ and $-1$, and $\mathcal{V}_1 = \emptyset$ ---
 whence $V_{\exists\forall} = \emptyset$ against $V_\exists = \mathbb{C}$.  This
 is not a defect of the assembly step but of the projection step that precedes
 it, which asks the reduced PDE to vanish identically and so cannot see a single
