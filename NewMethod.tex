@@ -736,7 +736,7 @@ These relationships are illustrated by the following example.
 
 \begin{example}
 \label{ex:three-loci}
-In the differential ring $\mathbb{C}[c][t]\{\Psi\}$, with the single derivation
+In the differential ring $\mathbb{C}[t]\{\Psi, c\}$, with the single derivation
 $\delta_t$ and $\delta_t c = 0$, consider the ansatz
 \begin{equation}
 A(c) = \{ \Psi'' - c \Psi \}
@@ -880,34 +880,33 @@ denotes the union of the sets its members denote.
 
 Nothing in the algorithm is new.  It calls four subroutines, each taken from the
 literature and used unmodified; the work is in what is handed to them and how
-their results are combined.  We name them as their sources do, and cite by name
-rather than by number, numbering being the less stable of the two across
-editions.
+their results are combined.  We name them as their sources do, and give the
+source's own numbering where the source numbers its algorithms.
 
 \begin{center}
 \small
-\begin{tabularx}{\textwidth}{@{}llXl@{}}
+\begin{tabularx}{\textwidth}{@{}lXl@{}}
 \hline
-subroutine & lines & what it computes & source \\
+subroutine & what it computes & source \\
 \hline
-$\mathrm{DifferentialDecompose}$ & 1
+$\mathrm{DifferentialDecompose}$
   & a differential Thomas decomposition: a partition of the solution set of a
     differential system into finitely many differentially simple subsystems
-  & \cite{ThomasDecomp} \\[3pt]
-$\mathrm{Reduce}$ & 3
+  & \cite{ThomasDecomp}, Alg.~3.6 \\[3pt]
+$\mathrm{Reduce}$
   & the full reduction of a differential polynomial modulo the equations of a
     simple system, which vanishes exactly on the members of the system's
     saturated ideal (Proposition~\ref{prop:simple-membership})
-  & \cite{ThomasDecomp} \\[3pt]
-$\mathrm{minAss}$ & 8, 16
+  & \cite{ThomasDecomp}, Alg.~2.6 \\[3pt]
+$\mathrm{minAss}$
   & generating sets for the minimal associated primes of an ideal presented by
     generators
   & \cite{GTZ} \\[3pt]
-$\mathrm{SMPD}$ & 11, 14
+$\mathrm{SMPD}$
   & {\it strongly make pairwise disjoint}: replaces a family of pieces by
     pairwise disjoint pieces, each member of the family being a union of some
     of them
-  & \cite{CTD} \\
+  & \cite{CTD}, Alg.~3 \\
 \hline
 \end{tabularx}
 \end{center}
@@ -947,9 +946,9 @@ reports, as described below.
 \item $(S_1, \ldots, S_s) \leftarrow \mathrm{DifferentialDecompose}(A(c), \prec)$
 \item {\bf for} $i = 1, \ldots, s$ {\bf do}
 \item \algind $r \leftarrow \mathrm{Reduce}(P, S^=_i)$
-\item \algind $J_i \leftarrow$ the coefficients of $r$, collected with respect to the non-constant indeterminates
-\item \algind $E_i \leftarrow$ the equations of $S^=_i$ whose leader is a constant
-\item \algind $h_i \leftarrow$ the product of the inequations of $S^{\ne}_i$ whose leader is a constant, or $1$ if there are none
+\item \algind $J_i \leftarrow$ the coefficients of $r$, as polynomials in $\mathbb{Q}[c_1, \ldots, c_n]$, collected with respect to power products in $x_1, \ldots, x_m, u_1, \ldots, u_k$
+\item \algind $E_i \leftarrow$ the equations of $S^=_i$ lying in $\mathbb{Q}[c_1, \ldots, c_n]$
+\item \algind $h_i \leftarrow$ the product of the inequations of $S^{\ne}_i$ lying in $\mathbb{Q}[c_1, \ldots, c_n]$, or $1$ if there are none
 \item \algind $C_i \leftarrow (E_i, h_i)$
 \item \algind $W_i \leftarrow \bigl\{\, (\mathfrak{p}, h_i) \;:\; \mathfrak{p} \in \mathrm{minAss}\bigl( \langle J_i \cup E_i \rangle : h_i^\infty \bigr) \,\bigr\}$
 \item {\bf end for}
@@ -1387,11 +1386,12 @@ $\sqrt{[A(c^*)]} = (1)$, and the condition on the right is vacuous.
 \medskip
 \noindent
 Determining which cells contain a given $c^*$ requires no computation.  Because
-the constants are ranked below every other indeterminate and the component is
-triangular, its equations and inequations sort by leader: those whose leader is
-a constant involve nothing but constants, and those whose leader is a
-derivative involve that derivative and lower-ranked quantities.  The first group
-is the cell.  Indeed, by \cite{ThomasDecomp}, Remark~2.3, every solution of the
+the constants form a block below every non-constant indeterminate and the
+component is triangular, its equations and inequations sort by leader: those
+whose leader is a non-constant indeterminate involve that indeterminate and
+lower-ranked quantities, while the rest involve only the constants and the
+independent variables.  Of the latter, those lying in
+$\mathbb{Q}[c_1, \ldots, c_n]$ are the cell.  Indeed, by \cite{ThomasDecomp}, Remark~2.3, every solution of the
 subsystem in the strictly lower-ranked variables extends to a solution of the
 next level of a simple system, and conversely every solution restricts; so,
 inductively, the projection of $\mathrm{Sol}(S^=, S^{\ne})$ onto $\mathbb{C}^n$
