@@ -2059,6 +2059,13 @@ components may overlap, even though the components themselves are disjoint,
 since a case distinction made at the level of a derivative refines the fibre
 without refining the base.
 
+All of this rests on the constants being differential indeterminates in their
+own right, ranked as a block, rather than elements of the coefficient ring.
+Buried in the coefficients they would be inert: no decomposition would ever
+split on them, and there would be no cells to read off.  It is the same choice
+that lets the method solve for a constant --- an energy eigenvalue, say ---
+rather than be handed it.
+
 This is a different operation from the projection step of
 \S\ref{sec:membership-locus}, and the two should not be confused.  There we ask
 the reduced PDE to vanish {\it identically}, and so set the coefficient of every
