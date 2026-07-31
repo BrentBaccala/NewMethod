@@ -897,12 +897,12 @@ $\mathrm{DifferentialDecompose}$
   & a differential Thomas decomposition: a partition of the solution set of a
     differential system into finitely many differentially simple subsystems
   & \cite{ThomasDecomp}, Alg.~3.6 \\[3pt]
-$\mathrm{Reduce}$
-  & the full differential reduction of a polynomial modulo the equations of a
-    simple system: a polynomial vanishing on exactly the same solutions, and not
-    Janet-reducible.  Because the system is simple, it is zero precisely for the
-    members of the saturated ideal (Proposition~\ref{prop:simple-membership})
-  & \cite{ThomasDecomp}, Alg.~3.3 \\[3pt]
+$\mathrm{FullReduce}$
+  & Ritt's full reduction: the remainder $r$, fully reduced with respect to the
+    equations of the system.  Because the system is simple, $r$ is zero
+    precisely for the members of the saturated ideal
+    (Proposition~\ref{prop:simple-membership})
+  & \cite{Ritt} \\[3pt]
 $\mathrm{minAss}$
   & generating sets for the minimal associated primes of an ideal presented by
     generators
@@ -950,7 +950,7 @@ reports, as described below.
 \begin{pseudocode}
 \item $(S_1, \ldots, S_s) \leftarrow \mathrm{DifferentialDecompose}(A(c), \prec)$
 \item {\bf for} $i = 1, \ldots, s$ {\bf do}
-\item \algind $r \leftarrow \mathrm{Reduce}(P, S^=_i)$
+\item \algind $r \leftarrow \mathrm{FullReduce}(P, S^=_i)$
 \item \algind $J_i \leftarrow$ the coefficients of $r$, as polynomials in $\mathbb{Q}[c_1, \ldots, c_n]$, collected with respect to power products in $x_1, \ldots, x_m, u_1, \ldots, u_k$
 \item \algind $E_i \leftarrow$ the equations of $S^=_i$ lying in $\mathbb{Q}[c_1, \ldots, c_n]$
 \item \algind $h_i \leftarrow$ the product of the inequations of $S^{\ne}_i$ lying in $\mathbb{Q}[c_1, \ldots, c_n]$, or $1$ if there are none
