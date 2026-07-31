@@ -248,16 +248,19 @@ a computable algorithm to find the solutions therein.
 
 \subsection*{Organization of the Paper}
 
-Section \ref{sec:Ansatze} illustrates a half dozen ans\"atze that can be used.
-Section \ref{sec:Solution Algorithm} presents the core algorithm, which fits a given
-PDE to a given ansatz defined using differential polynomials, and proves its
-completeness under structural hypotheses on the ansatz; it then gives a
-general algorithm that discharges those hypotheses for an arbitrary ansatz
-using the Rosenfeld--Gr\"obner algorithm and a terminating recursion over the
-constant space.
+Section \ref{sec:Ansatze} develops the ansatz.  It recalls the differential
+polynomials in which an ansatz is written, shows how ODEs, algebraic extensions
+and non-polynomial functions are expressed in them, defines what we require of
+an ansatz, and closes with a half dozen worked examples.
+Section \ref{sec:Solution Algorithm} presents the core algorithm, which fits a
+given PDE to a given ansatz: a differential Thomas decomposition of the ansatz,
+Ritt reduction of the PDE modulo each component, and a projection onto the space
+of constants.  It then proves that what the algorithm returns is exactly the set
+of constants for which the ansatz solves the PDE --- neither missing valid
+choices nor admitting spurious ones.
 Section \ref{sec:Example} illustrates the algorithm by computing a previously unknown solution to the hydrogen Schr\"odinger equation.
 Section \ref{sec:Generalization of the Algorithm} discusses how the algorithm can be generalized
-and section \ref{sec:Selection of an Ansatz} discuss the theoretical issues surrounding selection of an ansatz.
+and section \ref{sec:Selection of an Ansatz} discusses the theoretical issues surrounding selection of an ansatz.
 Section \ref{sec:Software} outlines the software used in the example from section \ref{sec:Example}.
 Section \ref{sec:Future Work} discusses future work and section \ref{sec:Conclusion} is the conclusion.
 
@@ -506,7 +509,7 @@ and the roots of polynomials are solutions to polynomial equations,
 so most elementary and special functions can be expressed using
 differential polynomials.
 
-\subsection{The Ansatz}
+\subsection{Forming an Ansatz}
 
 My primary goal is to ``solve'' a PDE by finding solutions described using ODEs.
 Therefore, all of my current ans\"atze attempt to express solutions to the PDE using
