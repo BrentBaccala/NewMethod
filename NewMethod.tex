@@ -242,19 +242,19 @@ can be easily modeled, as will be shown below.
 In short, to solve the PDE, we restrict our attention to a subset of the function
 space, parameterized by a finite number of constants
 and described using differential polynomials.
-A quick glance at Section \ref{A Collection of Ansatze} should indicate the great variety of such ``ans\"atze''.
+A quick glance at Section \ref{sec:Ansatze} should indicate the great variety of such ``ans\"atze''.
 If we can, by luck or by theory, pick a good ansatz, then we have
 a computable algorithm to find the solutions therein.
 
 \subsection*{Organization of the Paper}
 
+Section \ref{sec:Ansatze} illustrates a half dozen ans\"atze that can be used.
 Section \ref{sec:Solution Algorithm} presents the core algorithm, which fits a given
 PDE to a given ansatz defined using differential polynomials, and proves its
 completeness under structural hypotheses on the ansatz; it then gives a
 general algorithm that discharges those hypotheses for an arbitrary ansatz
 using the Rosenfeld--Gr\"obner algorithm and a terminating recursion over the
 constant space.
-Section \ref{A Collection of Ansatze} illustrates a half dozen ans\"atze that can be used.
 Section \ref{sec:Example} illustrates the algorithm by computing a previously unknown solution to the hydrogen Schr\"odinger equation.
 Section \ref{sec:Generalization of the Algorithm} discusses how the algorithm can be generalized
 and section \ref{sec:Selection of an Ansatz} discuss the theoretical issues surrounding selection of an ansatz.
@@ -304,6 +304,698 @@ Section \ref{sec:Future Work} discusses future work and section \ref{sec:Conclus
 \label{concept figure}
 \end{figure}
 
+
+\section{The Ansatz}
+\label{sec:Ansatze}
+
+The primary intent of the algorithm is find solutions to a PDE in the form
+of nested extensions, either ODE or algebraic.
+
+We do this by introducing additional differential polynomials, parameterized with constants,
+forming what we term the ``ansatz''.
+
+Using differential polynomials means that we can't restrict our functions to
+something like $L^2(\mathbb{R})$, because that requires imposing a global integral condition,
+and there's no way to specify that using only differential polynomials.
+Nor can we specify any kind of boundary condition.
+
+We can, however, restrict the function space by requiring the solutions
+to satisfy additional differential equations.
+
+\subsection{Describing ODEs}
+
+Ultimately, we are operating in a partial differential ring, but we are
+seeking to solve the PDE using ODEs.  How, then, do we describe ODEs using differential polynomials?
+Initially, we consider homogenous linear ODEs, but this is not a fundamental limitation;
+see below, for example, Figure \ref{nonlinear ansatz figure} and equations \eqref{ansatz 18}.
+
+An $n^{\rm th}$-order homogeneous linear ODE takes the form:
+
+\begin{equation}
+\label{analytic ODE}
+a_n(v) y^{(n)} + a_{n-1}(v) y^{(n-1)} \cdots a_1(v) y' + a_0(v) y = 0
+\end{equation}
+
+where $y^{(n)}, y^{(n-1)}, ... y'$ are derivatives of the dependent variable $y$ with respect to the independent variable $v$.
+Note that all of the coefficient functions are univariate functions of $v$.  We will further
+restrict them to be polynomials in $v$, but this is also not a fundamental limitation;
+see the ans\"atze in Figures \ref{ansatz 17 figure} and \ref{ansatz 13 figure} and equations \eqref{ansatz 17} and \eqref{ansatz 13}.
+
+% How to introduce a new ODE?  First, we wish to avoid the complexities of introducing new derivations,
+% so we seek to specify how the ODE behaves under the existing derivations.
+
+To describe equation \eqref{analytic ODE} using differential polynomials, we introduce $n+2$ new indeterminates.
+We need $n+1$ indeterminates for $y$ and its first $n$ derivatives, and we
+introduce another indeterminate for the {\it independent variable} $v$.
+
+We create a differential polynomial in $y$ and its derivatives
+whose coefficients are polynomials in $v$ with constant coefficients (either numeric constants or constant indeterminates).
+Thus, the coefficients of the ODE's defining differential polynomial are
+selected not from the existing field, but rather from ${\mathbb Q}(v)$, an auxiliary field
+constructed using the independent variable $v$.
+
+How do the existing derivations operate on the new indeterminates?  The independent variable needs
+no special attention; it is the operation of the derivations on the dependent variable and its derivatives that must be specified.
+% We can expess our previously existing derivatives in terms of the new one using the chain rule.
+All that required is the chain rule.  We need to specify how the new interderminates behave under the existing
+derivations, and that relationship is analytically:
+
+\begin{equation}
+\frac{{\rm d}\Psi}{{\rm d}x} = \frac{{\rm d}\Psi}{{\rm d}v} \frac{{\rm d}v}{{\rm d}x}
+\end{equation}
+
+Algebraically, we write:
+
+\begin{equation}
+\Psi_x = \Psi' v_x
+\end{equation}
+
+We use apostrophes, and not the jet notation subscripts, when writing
+the differential polynomial in the ODE case to emphasize that we are not introducing a new derivation,
+nor is the ODE's derivative any of the existing derivatives.
+
+In short, to construct a new ODE extension:
+
+\begin{itemize}
+% \item We wish to avoid introducing new derivations.
+\item We introduce new indeterminates $\Psi, \Psi',..., \Psi^{(n)}, v$
+\item We introduce a new differential polynomial involving only the new indeterminates and constants,
+and using no other non-constant indeterminates or derivatives
+\item We define the derivatives of $\Psi, \Psi',...,\Psi^{(n-1)}$ using the chain rule
+%: \hfil\break $\Psi_x = \Psi' v_x$ \qquad $\Psi'_x = \Psi'' v_x$
+%% \item We equate the independent variable $v$ to some parameterized differential polynomial
+\end{itemize}
+
+{\bf Example:} In the differential ring $\mathbb{C}[x,y]\{\Psi,\Psi',v\}$, with
+$\Delta = \{\delta_x, \delta_y\}$, we can construct an ODE
+extension specified by the dependent indeterminate $\Psi$, its derivative $\Psi'$, independent indeterminate $v$, and differential polynomial
+$\Psi' = \Psi$.  This differential polynomial
+maps to the analytic equation $\frac{d\Psi}{dv}=\Psi$ and is solved
+by the analytic functions $Ae^v$ ($A$ is an arbitrary constant).  If $v=x^2+y$, then
+the functions $Ae^{x^2+y}$ are solutions to this ODE; the differential polynomials required to model $Ae^{x^2+y}$ are:
+
+\begin{equation}
+\Psi_x = 2 \Psi' x \qquad
+\Psi_y = \Psi' \qquad
+\Psi' = \Psi
+\end{equation}
+
+which, due to the equality of $e^v$ with its own derivative, simplify to:
+
+\begin{equation}
+\Psi_x = 2 \Psi x \qquad
+\Psi_y = \Psi \qquad
+\end{equation}
+
+\subsection{Describing Non-Polynomial Functions}
+
+Restricting from differential equations to differential
+polynomials is not a severe limitation, as so many elementary and special functions
+can be described as the solutions of differential polynomials.  For example, both
+$y=\cos \theta$ and $y=\sin \theta$ are solutions to the
+analytic equation $y''(\theta) + y(\theta) = 0$ and
+can easily be introduced into a system of differential polynomials
+using the technique of the previous subsection.
+
+% by adding the differential polynomial equation $y_{\theta\theta} +y=0$ to the system.
+
+For example, consider introducing the function $\cos x$ in the differential ring
+$\mathbb{Q}[x,y]\{f,f'\}$, with $\Delta = \{\delta_x, \delta_y\}$.
+We can replace $\cos x$ with a new indeterminate, say $f$,
+and write $f'' = -f$, where the derivative is taken with respect to $x$.  The technique from the
+previous section is used to connect this with the existing derivations, as follows:
+
+\begin{equation}
+\begin{gathered}
+f_x = f' \qquad f_y = 0 \\
+f'_x = f'' \qquad f'_y = 0 \\
+f'' = -f
+\end{gathered}
+\end{equation}
+
+This can be simplified somewhat by eliminating $f''$:
+
+\begin{equation}
+\begin{gathered}
+f_x = f' \qquad f_y = 0 \\
+f'_x = -f \qquad f'_y = 0 \\
+\end{gathered}
+\end{equation}
+
+The analytic solutions to these equations will be of the form $A\cos x + B\sin x$, but
+this does not present a serious problem.  In fact, it is quite common to find
+a space of solutions for a differential equation, and then to impose additional
+restrictions (such as boundary conditions) to further restrict those solutions.
+% The solutions of $f'' = f$, for example, will be of the form $A\cos x + B\sin x$,
+% and imposing the boundary conditions $f(0)=1$ and $f'(0)=0$ would restrict $f$
+% to be $\cos x$.
+Likewise, we can use $f$ for our calculations with differential polynomials and,
+at the conclusion of the calculations,
+restrict $f$ to be $\cos x$, not to meet a boundary condition, but to force
+$f$ to be the function required by the original problem.
+
+%The best we're likely to reduce to is an equation like $\Psi=\Psi_x$, and it's up to us
+%to solve the corresponding analytic equation and conclude that $\Psi$ is a multiple of the exponential of $x$.
+
+Likewise, $g=\exp x$ can be expressed using $g' = g$ and $h=\ln x$ using $h' = x'/x$,
+and the roots of polynomials are solutions to polynomial equations,
+so most elementary and special functions can be expressed using
+differential polynomials.
+
+\subsection{The Ansatz}
+
+My primary goal is to ``solve'' a PDE by finding solutions described using ODEs.
+Therefore, all of my current ans\"atze attempt to express solutions to the PDE using
+a finite combination of ODEs.  They do not have to be linear, seperable or homogenous.
+They do require degree bounds on all of their constituent polynomials,
+in order to obtain a finite number of constant parameters.
+
+Algebraic extensions can also be included, but since
+they must be parameterized by a finite number of constants, they can not express
+an arbitrary algebraic extension of indefinite degree.
+
+To form an ansatz, we construct a tower of ODE and/or algebraic extensions that build from the base differential ring
+(used to write our original PDE) and culminates in a newly introduced indeterminate
+that is used as the PDE's dependent variable.  It is also possible to consider a system
+of interrelated PDEs, and multiple parameterized differential polynomials, at the top of the tower,
+each equated to a new indeterminate and used
+as the dependent variables in a system of PDEs.  (see Figure \ref{nonlinear ansatz figure})
+
+The primary requirement for an ansatz is that it be expressed using differential polynomials,
+as this makes it ammenable to the techniques of differential algebra.  This excludes any
+kind of boundary conditions (which would require evaluating functions at some boundary)
+or Sobolov space restrictions (which would require evaluating integrals of the function),
+but admits almost almost any differential equation imaginable.
+
+A good ansatz will be flexible enough to match the solution sought, but require only a small number
+of parameters, to make the computation tractable.
+
+\subsection{Some Sample Ans\"atze}
+
+There is no one correct ansatz, and currently no theory to guide their selection.
+Section \ref{sec:Selection of an Ansatz} will discuss some of the difficulties
+developing such a theory.
+At the moment, ansatz selection is guided by educated guesses about what
+function spaces might hold interesting solutions to various PDEs.
+
+Over the next several pages, I'll describe several possible ans\"atze.
+
+\tikzstyle{poly}=[rectangle, draw, thick, fill=white, text width=5em, align=center, rounded corners, minimum height=2em]
+\tikzstyle{poly2}=[rectangle, draw, thick, fill=white, align=center, rounded corners, minimum height=2em]
+\tikzstyle{ring}=[rectangle, draw=blue, thick, fill=blue!20, text width=5em,align=center, rounded corners, minimum height=2em]
+\tikzstyle{element}=[rectangle, draw=orange, thick, fill=orange!20, align=center, rounded corners, minimum height=2em]
+\tikzstyle{algebraic}=[rectangle, draw=green, thick, fill=green!20, align=center, rounded corners, minimum height=2em]
+\tikzstyle{degree}=[]
+
+\begin{figure}[H]
+\fbox{
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
+\centering
+\scalebox{0.73}{
+  \begin{tikzpicture}[remember picture]
+    \node (oPsi) [poly, text width=200pt] {Polynomial selected from ring: $\framebox(10,10){}\tikzmark{a}$};
+    \node (ring) [ring, node distance=50pt, below of=oPsi, text width=200pt] {differential ring, labeled like\\$\mathbb{C}[x,y,z]$};
+%    \draw[degree] (a.west) -- (a.west|-ring.north) node[right,pos=0.6] {1\tikzmark{one}};
+%    \node [anchor=west, align=left, right of=one] {(degree bound on polynomial)};
+    \draw[degree] (a.west) -- (a.west|-ring.north) node[right,pos=0.6] {1\qquad $\Longleftarrow$ \qquad Degree bound on polynomial};
+    \node (ODE extension) [element, below=of ring, text width=200pt] {ODE element\\described by a differential equation\\and an independent variable};
+    \node (ODE extension 2) [element, right=of ODE extension, text width=200pt] {ODE extension\\generated by adjoining an ODE element\\and forming the ring so generated};
+    \node (ODE ring) [ring, fill=none, fit=(ODE extension 2)] {};
+    \node (algebraic element) [algebraic, below=of ODE extension, text width=200pt] {algebraic element\\described by minimal polynomial};
+    \node (algebraic extension) [algebraic, right=of algebraic element, text width=200pt] {algebraic extension\\generated by adjoining algebraic element\\and forming the ring so generated};
+    \node (algebraic ring) [ring, fill=none, fit=(algebraic extension)] {};
+  \end{tikzpicture}
+}
+\end{minipage}%
+}
+\caption{Key to the ansatz diagrams}
+\label{key}
+\end{figure}
+
+We use a graphical notation to describe an ansatz, for a key see Figure \ref{key}.  Blue-purple boxes
+denote rings, orange boxes denote ODE extensions, and green boxes denote
+algebraic extensions.  A blue box drawn immediately around an orange or green box
+denote the ring formed by adjoining the element defined by the orange or green box.
+Polynomials are drawn as a square white box and are
+connected by a line to the ring to which they belong.  A black number next to
+the line indicates a degree bound on the polynomial, and two numbers
+separated by a slash denote a rational function.  For example, 2/2 denotes
+a rational function with a second degree numerator and a second degree
+denominator.
+
+\vfill\eject
+
+\begin{figure}[H]
+\fbox{
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
+\centering
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbb{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+\end{minipage}%
+}
+\caption{An ansatz for a second-order linear homogenous ODE}
+\label{ansatz 5 figure}
+\end{figure}
+
+The ansatz diagramed in Figure \ref{ansatz 5 figure} uses
+a second-order linear homogenous ODE with first degree coefficients and first degree independent variable,
+and is described using differential polynomials as follows.
+
+
+%For example, consider the ansatz formed from 
+%a second-order ODE element with first-degree coefficients and an independent variable formed
+%as a first-degree polynomial in the underlying differential polynomial ring.
+%See figure \ref{ansatz 5 figure}
+%%Note in particular that there is no green box around the orange one.  The ODE
+%%element must itself solve the PDE; we do not construct the full extension field it would naturally generate.
+%We do not construct any more complicated function from $\Psi$ (although we could);
+%the element $\Psi$ must itself solve the PDE.
+
+
+First, a differential polynomial involving only $\Psi''$, $\Psi'$, $\Psi$, $v$, and constants,
+and using no non-constant indeterminates or derivatives.
+
+\begin{equation}
+\label{ansatz 5b}
+(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \\
+\end{equation}
+
+Next, the derivatives of $\Psi$ and $\Psi'$, defined using the chain rule:
+
+\begin{equation}
+\label{ansatz 5c}
+\begin{gathered}
+\Psi_x = \Psi' v_x \qquad
+\Psi_y = \Psi' v_y \qquad
+\Psi_z = \Psi' v_z \\
+\Psi'_x = \Psi'' v_x \qquad
+\Psi'_y = \Psi'' v_y \qquad
+\Psi'_z = \Psi'' v_z \\
+\end{gathered}
+\end{equation}
+
+Finally, the independent variable $v$:
+
+\begin{equation}
+\label{ansatz 5a}
+v = v_1 x + v_2 y + v_3 z + v_4 r
+\end{equation}
+
+Our differential ring is equipped with three derivations $dx$, $dy$, and $dz$.
+Our base ring
+is $\mathbb{Q}[x,y,z]$, and $r$ is a differential indeterminate carrying the
+relation $r^2 - x^2 - y^2 - z^2$ in the system rather than a quotient taken in
+the ring; from this we select a linear variable $v$ using equation
+\eqref{ansatz 5a}.
+The $v_i$'s (and the $a_i$'s, $b_i$'s and $c_i$'s) are constants.
+Strictly speaking, a $v_0$ constant term
+should also be present, but we often drop the constant term from the
+independent variable of an ODE extension, because taking
+the derivative with respect to $x+3$ is no different from taking
+the derivative with respect to $x$.
+
+The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE.
+
+\vfill\eject
+
+\begin{figure}[H]
+\fbox{
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
+\centering
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbb{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+        %\node (Psi field) [ring, fill=none, fit=(Psi block), text width=250pt] {};
+    \end{scope}
+
+    \node (Theta) [poly, node distance=110pt, below of=Psi, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Theta'' + \framebox(10,10){}\tikzmark{b}\,\Theta' + \coeff\tikzmark{c}\,\Theta$};
+    \node (Qu) [ring, below of=Theta, text width=100pt] {$\mathbb{Q}[u]$};
+    \node (u) [poly, right=of Qu] {$u$};
+    \draw[degree] (a.west) -- (a.west|-Qu.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qu.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qu.north) node[right,pos=0.6] {1};
+    \node (Theta label) [at=(v.east|-Theta.north), anchor=north east] {\Large$\Theta$};
+    \begin{scope}[on background layer]
+        \node (Theta block)[fit=(Theta) (Qu) (u), inner sep=10pt, element] {};
+        \node (Theta field) [ring, fill=none, fit=(Theta block), text width=250pt] {};
+    \end{scope}
+
+    \node (base) [ring, node distance=70pt, below=of Theta field.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
+    \draw[degree] (v.south) -- (v.south|-Theta field.north) node[right,pos=0.7] {1};
+    \draw[degree] (u.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+\end{minipage}%
+}
+\caption{Two nested ODEs}
+\label{ansatz 12 figure}
+\end{figure}
+
+Multiple extensions can be assembled together into a tower.  Both ODE and algebraic extensions can be specified.
+Figure \ref{ansatz 12 figure}'s ansatz shows two nested ODE extensions.
+
+\begin{subequations}
+\label{ansatz 12 plus}
+\begin{gather}
+\Psi_x = \Psi' v_x \qquad
+\Psi_y = \Psi' v_y \qquad
+\Psi_z = \Psi' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}a,b,c} \\
+\Psi'_x = \Psi'' v_x \qquad
+\Psi'_y = \Psi'' v_y \qquad
+\Psi'_z = \Psi'' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}d,e,f} \\
+(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \label{ansatz 12 plus:1} \\
+v = v_1 x + v_2 y + v_3 z + v_4 r + v_5 \Theta \label{ansatz 12 plus:2} \\
+\Theta_x = \Theta' v_x \qquad
+\Theta_y = \Theta' v_y \qquad
+\Theta_z = \Theta' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}i,j,k} \\
+\Theta'_x = \Theta'' v_x \qquad
+\Theta'_y = \Theta'' v_y \qquad
+\Theta'_z = \Theta'' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}l,m,n} \\
+(d_0 + d_1 u) \Theta'' + (e_0 + e_1 u) \Theta' + (f_0 + f_1 u) \Theta = 0 \label{ansatz 12 plus:3} \\
+u = u_1 x + u_2 y + u_3 z + u_4 r \label{ansatz 12 plus:4} \\
+r^2 = x^2 + y^2 + z^2
+\end{gather}
+\end{subequations}
+
+Again, we'll write the PDE (not shown) using the expected solution $\Psi$;
+that's the convention for the next several examples.
+We don't write the PDE explicitly because the ans\"atze can be applied to many PDEs.
+\eqref{ansatz 18} will shown a different way to construct PDEs.
+
+\vfill\eject
+
+\begin{figure}[H]
+\fbox{
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
+\centering
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbb{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\gamma^2 + \framebox(10,10){}\tikzmark{b}\,\gamma + \coeff\tikzmark{c}$};
+    \begin{scope}[on background layer]
+        \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
+        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}[x,y,z]\{r,\gamma\}$ with $r^2-x^2-y^2-z^2$ and $\framebox(10,10){}\,\gamma^2 + \framebox(10,10){}\,\gamma + \coeff$ in the system};
+        \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
+    \end{scope}
+    \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {1};
+    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
+    \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (b.west) -- (b.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (c.west) -- (c.west|-base.north) node[right,pos=0.8] {1};
+  \end{tikzpicture}
+\end{minipage}%
+}
+\caption{An ansatz for a second-order linear homogenous ODE with first degree coefficients and first degree independent variable, and an algebraic extension used in the formation of the independent variable}
+\label{ansatz 11 figure}
+\end{figure}
+
+Multiple extensions can be assembled together into a tower.  Both ODE and algebraic extensions can be specified.
+Figure \ref{ansatz 11 figure}'s ansatz allows a second-degree algebraic extension to be used in the formation of the distinguished variable.
+
+\begin{subequations}
+\label{ansatz 11 plus}
+\begin{gather}
+\Psi_x = \Psi' v_x \qquad
+\Psi_y = \Psi' v_y \qquad
+\Psi_z = \Psi' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}a,b,c} \\
+\Psi'_x = \Psi'' v_x \qquad
+\Psi'_y = \Psi'' v_y \qquad
+\Psi'_z = \Psi'' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}d,e,f} \\
+(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \label{ansatz 11 plus:1} \\
+v = (v_1 x + v_2 y + v_3 z + v_4 r + v_5 \gamma) \label{ansatz 11 plus:2} \\
+g_0 = (g_{00} x + g_{01} y + g_{02} z + g_{03} r) \\
+g_1 = (g_{10} x + g_{11} y + g_{12} z + g_{13} r) \\
+g_2 = (g_{20} x + g_{21} y + g_{22} z + g_{23} r) \\
+g_0 \gamma^2 + g_1 \gamma + g_2 = 0 \\
+r^2 - (x^2 + y^2 + z^2)
+\end{gather}
+\end{subequations}
+
+\vfill\eject
+
+\begin{figure}[H]
+\fbox{
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
+  \centering
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbb{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {2};
+    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {2};
+    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {2};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\gamma^2 = \framebox(10,10){}\tikzmark{a}$};
+    \begin{scope}[on background layer]
+        \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
+        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}[r_1,r_2,r_{12}]\{\gamma\}$ with $\gamma^2 - \coeff$ in the system};
+        \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
+    \end{scope}
+    \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {2};
+    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[r_1,r_2,r_{12}]$};
+    \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {2};
+  \end{tikzpicture}
+\end{minipage}
+}
+\caption{An ansatz for a second-order linear homogenous ODE with second degree coefficients and second degree independent variable, and a square root used in the formation of the independent variable}
+\label{ansatz 16 figure}
+\end{figure}
+
+Second degree algebraic extensions can be specified more concisely using a square root.  Higher degree parameterized
+polynomials can be used, second degree, in this case.
+
+Note that a different set of derivations is used and that no algebraic extension is specified to define $r$, presumably
+because it isn't needed to construct the PDE.
+
+\begin{subequations}
+\label{ansatz 16 plus}
+\begin{gather}
+\Psi_{r_1} = \Psi' v_{r_1} \qquad
+\Psi_{r_2} = \Psi' v_{r_2} \qquad
+\Psi_{r_{12}} = \Psi' v_{r_{12}} \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}a,b,c} \\
+\Psi'_{r_1} = \Psi'' v_{r_1} \qquad
+\Psi'_{r_2} = \Psi'' v_{r_2} \qquad
+\Psi'_{r_12} = \Psi'' v_{r_{12}} \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}d,e,f} \\
+(a_0 + a_1 v + a_2 v^2) \Psi'' + (b_0 + b_1 v + b_2 v^2) \Psi' + (c_0 + c_1 v + c_2 v^2) \Psi = 0 \label{ansatz 16 plus:1} \\
+v = v_1 r_1 + v_2 r_2 + v_3 r_{12} + v_4 \gamma + v_5 r_1^2 + v_6 r_2^2 \nonumber\\
++ v_7 r_{12}^2 + v_8 r_1 r_2 + v_9 r_1 r_{12} + v_{10} r_2 r_{12} + v_{11} \gamma r_1 + v_{12} \gamma r_2 + v_{13} \gamma r_{12} \label{ansatz 16 plus:2} \\
+\gamma^2 = g_0 + g_1 r_1 + g_2 r_2 + g_3 r_{12} + g_4 r_1^2 + g_5 r_2^2 + g_6 r_{12}^2 \nonumber\\
++ g_7 r_1 r_2 + g_8 r_1 r_{12} + g_9 r_2 r_{12} \label{ansatz 16 plus:3}
+\end{gather}
+\end{subequations}
+
+\vfill\eject
+
+\begin{figure}[H]
+\fbox{
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
+\begin{center}
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\coeff\tikzmark{a}\,\Psi'' + \coeff\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (Qvw) [ring, below of=Psi, text width=100pt] {$\mathbb{Q}[v,w]$ \vskip 5pt $\coeff\tikzmark{wa}\,w'' + \coeff\tikzmark{wb}\,w' + \coeff\tikzmark{wc}\,w$};
+    \node (Qv) [ring, below of=Qvw, text width=100pt] {$\mathbb{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-Qvw.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-Qvw.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-Qvw.north) node[right,pos=0.6] {1};
+    \draw[degree] (wa.west) -- (wa.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (wb.west) -- (wb.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (wc.west) -- (wc.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (Qvw) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (base) [ring, node distance=20pt, below=of Psi block.south, anchor=north, text width=250pt] {$\mathbb{Q}[x,y,z]$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+\end{center}
+\end{minipage}
+}
+\caption{An ansatz with a nested ODE extension}
+\label{ansatz 17 figure}
+\end{figure}
+
+It is also possible to introduce additional extensions into the univariate ring from which the ODE's coefficients
+are selected (Figure \ref{ansatz 17 figure}), i.e.:
+
+\begin{equation}
+\label{ansatz 17}
+\begin{gathered}
+\Psi_x = \Psi' v_x \qquad
+\Psi_y = \Psi' v_y \qquad
+\Psi_z = \Psi' v_z \\
+\Psi'_x = \Psi'' v_x \qquad
+\Psi'_y = \Psi'' v_y \qquad
+\Psi'_z = \Psi'' v_z \\
+(a_0 + a_1 v + a_2 w) \Psi'' + (b_0 + b_1 v + b_2 w) \Psi' + (c_0 + c_1 v + c_2 w) \Psi = 0 \\
+(d_0 + d_1 v) w'' + (e_0 + e_1 v) w' + (f_0 + f_1 v) w = 0 \\
+v = v_1 x + v_2 y + v_3 z
+\end{gathered}
+\end{equation}
+
+\vfill\eject
+
+\begin{figure}[H]
+\fbox{
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
+\centering
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
+    \node (alg ext) [poly, node distance=50pt, below=of Psi.east, anchor=east, text width=90pt] {$\framebox(10,10){}\tikzmark{aa}\,\gamma^2 + \framebox(10,10){}\tikzmark{bb}\,\gamma + \coeff\tikzmark{cc} = 0$};
+    \begin{scope}[on background layer]
+        \node (alg ext element) [algebraic, fit=(alg ext), inner sep=5pt] {};
+%        \node (alg ext field) [ring, fit=(alg ext element), node distance=70pt] {};
+    \end{scope}
+    \node (Qv) [ring, below of=alg ext, text width=100pt] {$\mathbb{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (a.west) -- (a.west|-alg ext.north) node[right,pos=0.6] {1};
+    \draw[degree] (b.west) -- (b.west|-alg ext.north) node[right,pos=0.6] {1};
+    \draw[degree] (c.west) -- (c.west|-alg ext.north) node[right,pos=0.6] {1};
+    \draw[degree] (aa.west) -- (aa.west|-Qv.north) node[right,pos=0.8] {1};
+    \draw[degree] (bb.west) -- (bb.west|-Qv.north) node[right,pos=0.8] {1};
+    \draw[degree] (cc.west) -- (cc.west|-Qv.north) node[right,pos=0.8] {1};
+    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+    \end{scope}
+    \node (base) [ring, node distance=100pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+\end{minipage}%
+}
+\caption{An ansatz with an algebraic extension in the ODE coefficient ring}
+\label{ansatz 13 figure}
+\end{figure}
+
+Algebraic extensions can be introduced in the ODE coefficient ring.
+
+\begin{equation}
+\label{ansatz 13}
+\begin{gathered}
+\Psi_x = \Psi' v_x \qquad
+\Psi_y = \Psi' v_y \qquad
+\Psi_z = \Psi' v_z \\
+\Psi'_x = \Psi'' v_x \qquad
+\Psi'_y = \Psi'' v_y \qquad
+\Psi'_z = \Psi'' v_z \\
+(a_0 + a_1 v + a_2 \gamma) \Psi'' + (b_0 + b_1 v + b_2 \gamma) \Psi' + (c_0 + c_1 v + c_2 \gamma) \Psi = 0 \\
+(d_0 + d_1 v) \gamma^2 + (e_0 + e_1 v) \gamma + (f_0 + f_1 v) = 0 \\
+v = v_1 x + v_2 y + v_3 z
+\end{gathered}
+\end{equation}
+
+\vfill\eject
+
+\begin{figure}[H]
+\fbox{
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
+\centering
+\scalebox{0.9}{
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=300pt] {\small$\markedcoeff{a}\Psi''^2 + \markedcoeff{b}\Psi''\Psi' + \markedcoeff{c}\Psi''\Psi + \markedcoeff{d}\Psi'^2 + \markedcoeff{e}\Psi'\Psi + \markedcoeff{f}\Psi^2 + \markedcoeff{g}\Psi'' + \markedcoeff{h}\Psi' + \markedcoeff{i}\Psi$};
+    \node (Qv) [ring, below of=Psi, text width=100pt, node distance=50pt] {$\mathbb{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \coordinate (bwb) at ($(Psi.south)!0.5!(Qv.north)$);
+    \draw[degree] (a.west) -- (a.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (a.west) -- (a.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (b.west) -- (b.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (c.west) -- (c.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (d.west) -- (d.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (e.west) -- (e.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (f.west) -- (f.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (g.west) -- (g.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (h.west) -- (h.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (i.west) -- (i.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (a.west|-bwb.north) -- (i.west|-bwb.north);
+    \coordinate (bwb2) at (a.west|-bwb.north);
+    \draw[degree] (Qv.north|-bwb2) -- (Qv.north);
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+        \node (Psi block title) [node distance=20pt, above=of Psi block.north, anchor=center, text centered] {$\mathbb{Q}[x,y,z,t]\{\Psi,\Psi',\Psi''\}$};
+        \node (Psi block field) [ring, fill=none, fit=(Psi block) (Psi block title)] {};
+    \end{scope}
+    \node (base) [ring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}[x,y,z,t]$};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+
+    \node (u) [poly, text width=20pt, node distance=20pt, above=of Psi block field.north west] {u};
+    \node (v) [poly, text width=20pt, node distance=20pt, right=of u] {v};
+    \node (w) [poly, text width=20pt, node distance=20pt, right=of v] {w};
+    \node (p) [poly, text width=20pt, node distance=20pt, right=of w] {p};
+    \coordinate (bwb2) at ($(u.south)!0.5!(Psi block field.north)$);
+    \draw[degree] (u.south) -- (u.south|-bwb2.north) node[right, pos=0.5] {1};
+    \draw[degree] (v.south) -- (v.south|-bwb2.north) node[right, pos=0.5] {1};
+    \draw[degree] (w.south) -- (w.south|-bwb2.north) node[right, pos=0.5] {1};
+    \draw[degree] (p.south) -- (p.south|-bwb2.north) node[right, pos=0.5] {1};
+    \draw[degree] (u.south|-bwb2.north) -- (p.south|-bwb2.north);
+    \coordinate (bwb3) at ($(u.south|-bwb2.north)!0.5!(p.south|-bwb2.north)$);
+    \draw[degree] (bwb3) -- (bwb3|-Psi block field.north);
+  \end{tikzpicture}
+}
+\end{minipage}%
+}
+\caption{A nonlinear second order second degree homogeneous ansatz}
+\label{nonlinear ansatz figure}
+\end{figure}
+
+Non-linear ODEs can be constructed.  For a linear homogeneous second-order ODE, we have $\Psi''$, $\Psi'$, and $\Psi$,
+multiplied by polynomials in $v$, so our differential polynomial is first degree in $\Psi$ and its derivatives $\Psi'$ and $\Psi''$.
+For a non-linear ODE, we can introduce higher degrees.  For example, a second
+degree second order ODE would add $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$, and $\Psi^2$ to the ansatz.
+See Figure \ref{nonlinear ansatz figure}.
+
+This time, rather than use $\Psi$ to solve the PDE directly,
+we define linear polynomials $u,v,w,p$ that will be used to write a system of PDEs.
+
+\begin{equation}
+\label{ansatz 18}
+\begin{gathered}
+\Psi_x = \Psi' v_x \qquad
+\Psi_y = \Psi' v_y \qquad
+\Psi_z = \Psi' v_z \qquad
+\Psi_t = \Psi' v_t \\
+\Psi'_x = \Psi'' v_x \qquad
+\Psi'_y = \Psi'' v_y \qquad
+\Psi'_z = \Psi'' v_z \qquad
+\Psi'_t = \Psi'' v_t \\
+(a_0 + a_1 v) \Psi''^2 + (b_0 + b_1 v) \Psi''\Psi' + (c_0 + c_1 v) \Psi''\Psi \\
+\quad + (d_0 + d_1 v) \Psi'^2 + (e_0 + e_1 v) \Psi'\Psi + (f_0 + f_1 v) \Psi^2 \\
+\quad + (g_0 + g_1 v) \Psi'' + (h_0 + h_1 v) \Psi' + (i_0 + i_1 v) \Psi = 0 \\
+v = v_1 x + v_2 y + v_3 z + v_4 t \\
+u = u_1 x + u_2 y + u_3 z + u_4 t + u_5 \Psi \\
+v = v_1 x + v_2 y + v_3 z + v_4 t + v_5 \Psi \\
+w = w_1 x + w_2 y + w_3 z + w_4 t + w_5 \Psi \\
+p = p_1 x + p_2 y + p_3 z + p_4 t + p_5 \Psi \\
+\end{gathered}
+\end{equation}
 
 \section{Solution Algorithm}
 \label{sec:Solution Algorithm}
@@ -1428,698 +2120,6 @@ has solutions that do not satisfy the PDE.
 
 \vfill\eject
 
-\tikzstyle{poly}=[rectangle, draw, thick, fill=white, text width=5em, align=center, rounded corners, minimum height=2em]
-\tikzstyle{poly2}=[rectangle, draw, thick, fill=white, align=center, rounded corners, minimum height=2em]
-\tikzstyle{ring}=[rectangle, draw=blue, thick, fill=blue!20, text width=5em,align=center, rounded corners, minimum height=2em]
-\tikzstyle{element}=[rectangle, draw=orange, thick, fill=orange!20, align=center, rounded corners, minimum height=2em]
-\tikzstyle{algebraic}=[rectangle, draw=green, thick, fill=green!20, align=center, rounded corners, minimum height=2em]
-\tikzstyle{degree}=[]
-
-\begin{figure}[H]
-\fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
-\centering
-\scalebox{0.73}{
-  \begin{tikzpicture}[remember picture]
-    \node (oPsi) [poly, text width=200pt] {Polynomial selected from ring: $\framebox(10,10){}\tikzmark{a}$};
-    \node (ring) [ring, node distance=50pt, below of=oPsi, text width=200pt] {differential ring, labeled like\\$\mathbb{C}[x,y,z]$};
-%    \draw[degree] (a.west) -- (a.west|-ring.north) node[right,pos=0.6] {1\tikzmark{one}};
-%    \node [anchor=west, align=left, right of=one] {(degree bound on polynomial)};
-    \draw[degree] (a.west) -- (a.west|-ring.north) node[right,pos=0.6] {1\qquad $\Longleftarrow$ \qquad Degree bound on polynomial};
-    \node (ODE extension) [element, below=of ring, text width=200pt] {ODE element\\described by a differential equation\\and an independent variable};
-    \node (ODE extension 2) [element, right=of ODE extension, text width=200pt] {ODE extension\\generated by adjoining an ODE element\\and forming the ring so generated};
-    \node (ODE ring) [ring, fill=none, fit=(ODE extension 2)] {};
-    \node (algebraic element) [algebraic, below=of ODE extension, text width=200pt] {algebraic element\\described by minimal polynomial};
-    \node (algebraic extension) [algebraic, right=of algebraic element, text width=200pt] {algebraic extension\\generated by adjoining algebraic element\\and forming the ring so generated};
-    \node (algebraic ring) [ring, fill=none, fit=(algebraic extension)] {};
-  \end{tikzpicture}
-}
-\end{minipage}%
-}
-\caption{Key to the ansatz diagrams}
-\label{key}
-\end{figure}
-
-\section{A Collection of Ans\"atze}
-\label{A Collection of Ansatze}
-
-The primary intent of the algorithm is find solutions to a PDE in the form
-of nested extensions, either ODE or algebraic.
-
-We do this by introducing additional differential polynomials into our system,
-forming what we term the ``ansatz''.
-
-Using differential polynomials means that we can't restrict our functions to
-something like $L^2(\mathbb{R})$, because that requires imposing a global integral condition,
-and there's no way to specify that using only differential polynomials.
-Nor can we specify any kind of boundary condition.
-
-We can, however, restrict the function space by requiring the solutions
-to satisfy additional differential equations.
-
-\subsection{Describing ODEs}
-
-Ultimately, we are operating in a partial differential ring, but we are
-seeking to solve the PDE using ODEs.  How, then, do we describe ODEs using differential polynomials?
-Initially, we consider homogenous linear ODEs, but this is not a fundamental limitation;
-see below, for example, Figure \ref{nonlinear ansatz figure} and equations \eqref{ansatz 18}.
-
-An $n^{\rm th}$-order homogeneous linear ODE takes the form:
-
-\begin{equation}
-\label{analytic ODE}
-a_n(v) y^{(n)} + a_{n-1}(v) y^{(n-1)} \cdots a_1(v) y' + a_0(v) y = 0
-\end{equation}
-
-where $y^{(n)}, y^{(n-1)}, ... y'$ are derivatives of the dependent variable $y$ with respect to the independent variable $v$.
-Note that all of the coefficient functions are univariate functions of $v$.  We will further
-restrict them to be polynomials in $v$, but this is also not a fundamental limitation;
-see the ans\"atze in Figures \ref{ansatz 17 figure} and \ref{ansatz 13 figure} and equations \eqref{ansatz 17} and \eqref{ansatz 13}.
-
-% How to introduce a new ODE?  First, we wish to avoid the complexities of introducing new derivations,
-% so we seek to specify how the ODE behaves under the existing derivations.
-
-To describe equation \eqref{analytic ODE} using differential polynomials, we introduce $n+2$ new indeterminates.
-We need $n+1$ indeterminates for $y$ and its first $n$ derivatives, and we
-introduce another indeterminate for the {\it independent variable} $v$.
-
-We create a differential polynomial in $y$ and its derivatives
-whose coefficients are polynomials in $v$ with constant coefficients (either numeric constants or constant indeterminates).
-Thus, the coefficients of the ODE's defining differential polynomial are
-selected not from the existing field, but rather from ${\mathbb Q}(v)$, an auxiliary field
-constructed using the independent variable $v$.
-
-How do the existing derivations operate on the new indeterminates?  The independent variable needs
-no special attention; it is the operation of the derivations on the dependent variable and its derivatives that must be specified.
-% We can expess our previously existing derivatives in terms of the new one using the chain rule.
-All that required is the chain rule.  We need to specify how the new interderminates behave under the existing
-derivations, and that relationship is analytically:
-
-\begin{equation}
-\frac{{\rm d}\Psi}{{\rm d}x} = \frac{{\rm d}\Psi}{{\rm d}v} \frac{{\rm d}v}{{\rm d}x}
-\end{equation}
-
-Algebraically, we write:
-
-\begin{equation}
-\Psi_x = \Psi' v_x
-\end{equation}
-
-We use apostrophes, and not the jet notation subscripts, when writing
-the differential polynomial in the ODE case to emphasize that we are not introducing a new derivation,
-nor is the ODE's derivative any of the existing derivatives.
-
-In short, to construct a new ODE extension:
-
-\begin{itemize}
-% \item We wish to avoid introducing new derivations.
-\item We introduce new indeterminates $\Psi, \Psi',..., \Psi^{(n)}, v$
-\item We introduce a new differential polynomial involving only the new indeterminates and constants,
-and using no other non-constant indeterminates or derivatives
-\item We define the derivatives of $\Psi, \Psi',...,\Psi^{(n-1)}$ using the chain rule
-%: \hfil\break $\Psi_x = \Psi' v_x$ \qquad $\Psi'_x = \Psi'' v_x$
-%% \item We equate the independent variable $v$ to some parameterized differential polynomial
-\end{itemize}
-
-{\bf Example:} In the differential ring $\mathbb{C}[x,y]\{\Psi,\Psi',v\}$, with
-$\Delta = \{\delta_x, \delta_y\}$, we can construct an ODE
-extension specified by the dependent indeterminate $\Psi$, its derivative $\Psi'$, independent indeterminate $v$, and differential polynomial
-$\Psi' = \Psi$.  This differential polynomial
-maps to the analytic equation $\frac{d\Psi}{dv}=\Psi$ and is solved
-by the analytic functions $Ae^v$ ($A$ is an arbitrary constant).  If $v=x^2+y$, then
-the functions $Ae^{x^2+y}$ are solutions to this ODE; the differential polynomials required to model $Ae^{x^2+y}$ are:
-
-\begin{equation}
-\Psi_x = 2 \Psi' x \qquad
-\Psi_y = \Psi' \qquad
-\Psi' = \Psi
-\end{equation}
-
-which, due to the equality of $e^v$ with its own derivative, simplify to:
-
-\begin{equation}
-\Psi_x = 2 \Psi x \qquad
-\Psi_y = \Psi \qquad
-\end{equation}
-
-\subsection{Describing Non-Polynomial Functions}
-
-Restricting from differential equations to differential
-polynomials is not a severe limitation, as so many elementary and special functions
-can be described as the solutions of differential polynomials.  For example, both
-$y=\cos \theta$ and $y=\sin \theta$ are solutions to the
-analytic equation $y''(\theta) + y(\theta) = 0$ and
-can easily be introduced into a system of differential polynomials
-using the technique of the previous subsection.
-
-% by adding the differential polynomial equation $y_{\theta\theta} +y=0$ to the system.
-
-For example, consider introducing the function $\cos x$ in the differential ring
-$\mathbb{Q}[x,y]\{f,f'\}$, with $\Delta = \{\delta_x, \delta_y\}$.
-We can replace $\cos x$ with a new indeterminate, say $f$,
-and write $f'' = -f$, where the derivative is taken with respect to $x$.  The technique from the
-previous section is used to connect this with the existing derivations, as follows:
-
-\begin{equation}
-\begin{gathered}
-f_x = f' \qquad f_y = 0 \\
-f'_x = f'' \qquad f'_y = 0 \\
-f'' = -f
-\end{gathered}
-\end{equation}
-
-This can be simplified somewhat by eliminating $f''$:
-
-\begin{equation}
-\begin{gathered}
-f_x = f' \qquad f_y = 0 \\
-f'_x = -f \qquad f'_y = 0 \\
-\end{gathered}
-\end{equation}
-
-The analytic solutions to these equations will be of the form $A\cos x + B\sin x$, but
-this does not present a serious problem.  In fact, it is quite common to find
-a space of solutions for a differential equation, and then to impose additional
-restrictions (such as boundary conditions) to further restrict those solutions.
-% The solutions of $f'' = f$, for example, will be of the form $A\cos x + B\sin x$,
-% and imposing the boundary conditions $f(0)=1$ and $f'(0)=0$ would restrict $f$
-% to be $\cos x$.
-Likewise, we can use $f$ for our calculations with differential polynomials and,
-at the conclusion of the calculations,
-restrict $f$ to be $\cos x$, not to meet a boundary condition, but to force
-$f$ to be the function required by the original problem.
-
-%The best we're likely to reduce to is an equation like $\Psi=\Psi_x$, and it's up to us
-%to solve the corresponding analytic equation and conclude that $\Psi$ is a multiple of the exponential of $x$.
-
-Likewise, $g=\exp x$ can be expressed using $g' = g$ and $h=\ln x$ using $h' = x'/x$,
-and the roots of polynomials are solutions to polynomial equations,
-so most elementary and special functions can be expressed using
-differential polynomials.
-
-\subsection{The Ansatz}
-
-My primary goal is to ``solve'' a PDE by finding solutions described using ODEs.
-Therefore, all of my current ans\"atze attempt to express solutions to the PDE using
-a finite combination of ODEs.  They do not have to be linear, seperable or homogenous.
-They do require degree bounds on all of their constituent polynomials,
-in order to obtain a finite number of constant parameters.
-
-Algebraic extensions can also be included, but since
-they must be parameterized by a finite number of constants, they can not express
-an arbitrary algebraic extension of indefinite degree.
-
-To form an ansatz, we construct a tower of ODE and/or algebraic extensions that build from the base differential ring
-(used to write our original PDE) and culminates in a newly introduced indeterminate
-that is used as the PDE's dependent variable.  It is also possible to consider a system
-of interrelated PDEs, and multiple parameterized differential polynomials, at the top of the tower,
-each equated to a new indeterminate and used
-as the dependent variables in a system of PDEs.  (see Figure \ref{nonlinear ansatz figure})
-
-The primary requirement for an ansatz is that it be expressed using differential polynomials,
-as this makes it ammenable to the techniques of differential algebra.  This excludes any
-kind of boundary conditions (which would require evaluating functions at some boundary)
-or Sobolov space restrictions (which would require evaluating integrals of the function),
-but admits almost almost any differential equation imaginable.
-
-A good ansatz will be flexible enough to match the solution sought, but require only a small number
-of parameters, to make the computation tractable.
-
-\subsection{Some Sample Ans\"atze}
-
-There is no one correct ansatz, and currently no theory to guide their selection.
-Section \ref{sec:Selection of an Ansatz} will discuss some of the difficulties
-developing such a theory.
-At the moment, ansatz selection is guided by educated guesses about what
-function spaces might hold interesting solutions to various PDEs.
-
-Over the next several pages, I'll describe several possible ans\"atze.
-
-We use a graphical notation to describe an ansatz, for a key see Figure \ref{key}.  Blue-purple boxes
-denote rings, orange boxes denote ODE extensions, and green boxes denote
-algebraic extensions.  A blue box drawn immediately around an orange or green box
-denote the ring formed by adjoining the element defined by the orange or green box.
-Polynomials are drawn as a square white box and are
-connected by a line to the ring to which they belong.  A black number next to
-the line indicates a degree bound on the polynomial, and two numbers
-separated by a slash denote a rational function.  For example, 2/2 denotes
-a rational function with a second degree numerator and a second degree
-denominator.
-
-\vfill\eject
-
-\begin{figure}[H]
-\fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
-\centering
-  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
-    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
-    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbb{Q}[v]$};
-    \node (v) [poly, right=of Qv] {$v$};
-    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
-    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
-    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
-    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
-    \begin{scope}[on background layer]
-        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
-    \end{scope}
-    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
-    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
-  \end{tikzpicture}
-\end{minipage}%
-}
-\caption{An ansatz for a second-order linear homogenous ODE}
-\label{ansatz 5 figure}
-\end{figure}
-
-The ansatz diagramed in Figure \ref{ansatz 5 figure} uses
-a second-order linear homogenous ODE with first degree coefficients and first degree independent variable,
-and is described using differential polynomials as follows.
-
-
-%For example, consider the ansatz formed from 
-%a second-order ODE element with first-degree coefficients and an independent variable formed
-%as a first-degree polynomial in the underlying differential polynomial ring.
-%See figure \ref{ansatz 5 figure}
-%%Note in particular that there is no green box around the orange one.  The ODE
-%%element must itself solve the PDE; we do not construct the full extension field it would naturally generate.
-%We do not construct any more complicated function from $\Psi$ (although we could);
-%the element $\Psi$ must itself solve the PDE.
-
-
-First, a differential polynomial involving only $\Psi''$, $\Psi'$, $\Psi$, $v$, and constants,
-and using no non-constant indeterminates or derivatives.
-
-\begin{equation}
-\label{ansatz 5b}
-(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \\
-\end{equation}
-
-Next, the derivatives of $\Psi$ and $\Psi'$, defined using the chain rule:
-
-\begin{equation}
-\label{ansatz 5c}
-\begin{gathered}
-\Psi_x = \Psi' v_x \qquad
-\Psi_y = \Psi' v_y \qquad
-\Psi_z = \Psi' v_z \\
-\Psi'_x = \Psi'' v_x \qquad
-\Psi'_y = \Psi'' v_y \qquad
-\Psi'_z = \Psi'' v_z \\
-\end{gathered}
-\end{equation}
-
-Finally, the independent variable $v$:
-
-\begin{equation}
-\label{ansatz 5a}
-v = v_1 x + v_2 y + v_3 z + v_4 r
-\end{equation}
-
-Our differential ring is equipped with three derivations $dx$, $dy$, and $dz$.
-Our base ring
-is $\mathbb{Q}[x,y,z]$, and $r$ is a differential indeterminate carrying the
-relation $r^2 - x^2 - y^2 - z^2$ in the system rather than a quotient taken in
-the ring; from this we select a linear variable $v$ using equation
-\eqref{ansatz 5a}.
-The $v_i$'s (and the $a_i$'s, $b_i$'s and $c_i$'s) are constants.
-Strictly speaking, a $v_0$ constant term
-should also be present, but we often drop the constant term from the
-independent variable of an ODE extension, because taking
-the derivative with respect to $x+3$ is no different from taking
-the derivative with respect to $x$.
-
-The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE.
-
-\vfill\eject
-
-\begin{figure}[H]
-\fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
-\centering
-  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
-    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
-    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbb{Q}[v]$};
-    \node (v) [poly, right=of Qv] {$v$};
-    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
-    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
-    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
-    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
-    \begin{scope}[on background layer]
-        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
-        %\node (Psi field) [ring, fill=none, fit=(Psi block), text width=250pt] {};
-    \end{scope}
-
-    \node (Theta) [poly, node distance=110pt, below of=Psi, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Theta'' + \framebox(10,10){}\tikzmark{b}\,\Theta' + \coeff\tikzmark{c}\,\Theta$};
-    \node (Qu) [ring, below of=Theta, text width=100pt] {$\mathbb{Q}[u]$};
-    \node (u) [poly, right=of Qu] {$u$};
-    \draw[degree] (a.west) -- (a.west|-Qu.north) node[right,pos=0.6] {1};
-    \draw[degree] (b.west) -- (b.west|-Qu.north) node[right,pos=0.6] {1};
-    \draw[degree] (c.west) -- (c.west|-Qu.north) node[right,pos=0.6] {1};
-    \node (Theta label) [at=(v.east|-Theta.north), anchor=north east] {\Large$\Theta$};
-    \begin{scope}[on background layer]
-        \node (Theta block)[fit=(Theta) (Qu) (u), inner sep=10pt, element] {};
-        \node (Theta field) [ring, fill=none, fit=(Theta block), text width=250pt] {};
-    \end{scope}
-
-    \node (base) [ring, node distance=70pt, below=of Theta field.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
-    \draw[degree] (v.south) -- (v.south|-Theta field.north) node[right,pos=0.7] {1};
-    \draw[degree] (u.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
-  \end{tikzpicture}
-\end{minipage}%
-}
-\caption{Two nested ODEs}
-\label{ansatz 12 figure}
-\end{figure}
-
-Multiple extensions can be assembled together into a tower.  Both ODE and algebraic extensions can be specified.
-Figure \ref{ansatz 12 figure}'s ansatz shows two nested ODE extensions.
-
-\begin{subequations}
-\label{ansatz 12 plus}
-\begin{gather}
-\Psi_x = \Psi' v_x \qquad
-\Psi_y = \Psi' v_y \qquad
-\Psi_z = \Psi' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}a,b,c} \\
-\Psi'_x = \Psi'' v_x \qquad
-\Psi'_y = \Psi'' v_y \qquad
-\Psi'_z = \Psi'' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}d,e,f} \\
-(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \label{ansatz 12 plus:1} \\
-v = v_1 x + v_2 y + v_3 z + v_4 r + v_5 \Theta \label{ansatz 12 plus:2} \\
-\Theta_x = \Theta' v_x \qquad
-\Theta_y = \Theta' v_y \qquad
-\Theta_z = \Theta' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}i,j,k} \\
-\Theta'_x = \Theta'' v_x \qquad
-\Theta'_y = \Theta'' v_y \qquad
-\Theta'_z = \Theta'' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}l,m,n} \\
-(d_0 + d_1 u) \Theta'' + (e_0 + e_1 u) \Theta' + (f_0 + f_1 u) \Theta = 0 \label{ansatz 12 plus:3} \\
-u = u_1 x + u_2 y + u_3 z + u_4 r \label{ansatz 12 plus:4} \\
-r^2 = x^2 + y^2 + z^2
-\end{gather}
-\end{subequations}
-
-Again, we'll write the PDE (not shown) using the expected solution $\Psi$;
-that's the convention for the next several examples.
-We don't write the PDE explicitly because the ans\"atze can be applied to many PDEs.
-\eqref{ansatz 18} will shown a different way to construct PDEs.
-
-\vfill\eject
-
-\begin{figure}[H]
-\fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
-\centering
-  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
-    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
-    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbb{Q}[v]$};
-    \node (v) [poly, right=of Qv] {$v$};
-    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {1};
-    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {1};
-    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {1};
-    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
-    \begin{scope}[on background layer]
-        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
-    \end{scope}
-    \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\gamma^2 + \framebox(10,10){}\tikzmark{b}\,\gamma + \coeff\tikzmark{c}$};
-    \begin{scope}[on background layer]
-        \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
-        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}[x,y,z]\{r,\gamma\}$ with $r^2-x^2-y^2-z^2$ and $\framebox(10,10){}\,\gamma^2 + \framebox(10,10){}\,\gamma + \coeff$ in the system};
-        \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
-    \end{scope}
-    \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {1};
-    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
-    \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {1};
-    \draw[degree] (b.west) -- (b.west|-base.north) node[right,pos=0.8] {1};
-    \draw[degree] (c.west) -- (c.west|-base.north) node[right,pos=0.8] {1};
-  \end{tikzpicture}
-\end{minipage}%
-}
-\caption{An ansatz for a second-order linear homogenous ODE with first degree coefficients and first degree independent variable, and an algebraic extension used in the formation of the independent variable}
-\label{ansatz 11 figure}
-\end{figure}
-
-Multiple extensions can be assembled together into a tower.  Both ODE and algebraic extensions can be specified.
-Figure \ref{ansatz 11 figure}'s ansatz allows a second-degree algebraic extension to be used in the formation of the distinguished variable.
-
-\begin{subequations}
-\label{ansatz 11 plus}
-\begin{gather}
-\Psi_x = \Psi' v_x \qquad
-\Psi_y = \Psi' v_y \qquad
-\Psi_z = \Psi' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}a,b,c} \\
-\Psi'_x = \Psi'' v_x \qquad
-\Psi'_y = \Psi'' v_y \qquad
-\Psi'_z = \Psi'' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}d,e,f} \\
-(a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \label{ansatz 11 plus:1} \\
-v = (v_1 x + v_2 y + v_3 z + v_4 r + v_5 \gamma) \label{ansatz 11 plus:2} \\
-g_0 = (g_{00} x + g_{01} y + g_{02} z + g_{03} r) \\
-g_1 = (g_{10} x + g_{11} y + g_{12} z + g_{13} r) \\
-g_2 = (g_{20} x + g_{21} y + g_{22} z + g_{23} r) \\
-g_0 \gamma^2 + g_1 \gamma + g_2 = 0 \\
-r^2 - (x^2 + y^2 + z^2)
-\end{gather}
-\end{subequations}
-
-\vfill\eject
-
-\begin{figure}[H]
-\fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
-  \centering
-  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
-    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
-    \node (Qv) [ring, below of=Psi, text width=100pt] {$\mathbb{Q}[v]$};
-    \node (v) [poly, right=of Qv] {$v$};
-    \draw[degree] (a.west) -- (a.west|-Qv.north) node[right,pos=0.6] {2};
-    \draw[degree] (b.west) -- (b.west|-Qv.north) node[right,pos=0.6] {2};
-    \draw[degree] (c.west) -- (c.west|-Qv.north) node[right,pos=0.6] {2};
-    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
-    \begin{scope}[on background layer]
-        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
-    \end{scope}
-    \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\gamma^2 = \framebox(10,10){}\tikzmark{a}$};
-    \begin{scope}[on background layer]
-        \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
-        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}[r_1,r_2,r_{12}]\{\gamma\}$ with $\gamma^2 - \coeff$ in the system};
-        \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
-    \end{scope}
-    \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {2};
-    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[r_1,r_2,r_{12}]$};
-    \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {2};
-  \end{tikzpicture}
-\end{minipage}
-}
-\caption{An ansatz for a second-order linear homogenous ODE with second degree coefficients and second degree independent variable, and a square root used in the formation of the independent variable}
-\label{ansatz 16 figure}
-\end{figure}
-
-Second degree algebraic extensions can be specified more concisely using a square root.  Higher degree parameterized
-polynomials can be used, second degree, in this case.
-
-Note that a different set of derivations is used and that no algebraic extension is specified to define $r$, presumably
-because it isn't needed to construct the PDE.
-
-\begin{subequations}
-\label{ansatz 16 plus}
-\begin{gather}
-\Psi_{r_1} = \Psi' v_{r_1} \qquad
-\Psi_{r_2} = \Psi' v_{r_2} \qquad
-\Psi_{r_{12}} = \Psi' v_{r_{12}} \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}a,b,c} \\
-\Psi'_{r_1} = \Psi'' v_{r_1} \qquad
-\Psi'_{r_2} = \Psi'' v_{r_2} \qquad
-\Psi'_{r_12} = \Psi'' v_{r_{12}} \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}d,e,f} \\
-(a_0 + a_1 v + a_2 v^2) \Psi'' + (b_0 + b_1 v + b_2 v^2) \Psi' + (c_0 + c_1 v + c_2 v^2) \Psi = 0 \label{ansatz 16 plus:1} \\
-v = v_1 r_1 + v_2 r_2 + v_3 r_{12} + v_4 \gamma + v_5 r_1^2 + v_6 r_2^2 \nonumber\\
-+ v_7 r_{12}^2 + v_8 r_1 r_2 + v_9 r_1 r_{12} + v_{10} r_2 r_{12} + v_{11} \gamma r_1 + v_{12} \gamma r_2 + v_{13} \gamma r_{12} \label{ansatz 16 plus:2} \\
-\gamma^2 = g_0 + g_1 r_1 + g_2 r_2 + g_3 r_{12} + g_4 r_1^2 + g_5 r_2^2 + g_6 r_{12}^2 \nonumber\\
-+ g_7 r_1 r_2 + g_8 r_1 r_{12} + g_9 r_2 r_{12} \label{ansatz 16 plus:3}
-\end{gather}
-\end{subequations}
-
-\vfill\eject
-
-\begin{figure}[H]
-\fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
-\begin{center}
-  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
-    \node (Psi) [poly, text width=100pt] {$\coeff\tikzmark{a}\,\Psi'' + \coeff\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
-    \node (Qvw) [ring, below of=Psi, text width=100pt] {$\mathbb{Q}[v,w]$ \vskip 5pt $\coeff\tikzmark{wa}\,w'' + \coeff\tikzmark{wb}\,w' + \coeff\tikzmark{wc}\,w$};
-    \node (Qv) [ring, below of=Qvw, text width=100pt] {$\mathbb{Q}[v]$};
-    \node (v) [poly, right=of Qv] {$v$};
-    \draw[degree] (a.west) -- (a.west|-Qvw.north) node[right,pos=0.6] {1};
-    \draw[degree] (b.west) -- (b.west|-Qvw.north) node[right,pos=0.6] {1};
-    \draw[degree] (c.west) -- (c.west|-Qvw.north) node[right,pos=0.6] {1};
-    \draw[degree] (wa.west) -- (wa.west|-Qv.north) node[right,pos=0.6] {1};
-    \draw[degree] (wb.west) -- (wb.west|-Qv.north) node[right,pos=0.6] {1};
-    \draw[degree] (wc.west) -- (wc.west|-Qv.north) node[right,pos=0.6] {1};
-    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
-    \begin{scope}[on background layer]
-        \node (Psi block)[fit=(Psi) (Qv) (Qvw) (v), inner sep=10pt, element] {};
-    \end{scope}
-    \node (base) [ring, node distance=20pt, below=of Psi block.south, anchor=north, text width=250pt] {$\mathbb{Q}[x,y,z]$};
-    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
-  \end{tikzpicture}
-\end{center}
-\end{minipage}
-}
-\caption{An ansatz with a nested ODE extension}
-\label{ansatz 17 figure}
-\end{figure}
-
-It is also possible to introduce additional extensions into the univariate ring from which the ODE's coefficients
-are selected (Figure \ref{ansatz 17 figure}), i.e.:
-
-\begin{equation}
-\label{ansatz 17}
-\begin{gathered}
-\Psi_x = \Psi' v_x \qquad
-\Psi_y = \Psi' v_y \qquad
-\Psi_z = \Psi' v_z \\
-\Psi'_x = \Psi'' v_x \qquad
-\Psi'_y = \Psi'' v_y \qquad
-\Psi'_z = \Psi'' v_z \\
-(a_0 + a_1 v + a_2 w) \Psi'' + (b_0 + b_1 v + b_2 w) \Psi' + (c_0 + c_1 v + c_2 w) \Psi = 0 \\
-(d_0 + d_1 v) w'' + (e_0 + e_1 v) w' + (f_0 + f_1 v) w = 0 \\
-v = v_1 x + v_2 y + v_3 z
-\end{gathered}
-\end{equation}
-
-\vfill\eject
-
-\begin{figure}[H]
-\fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
-\centering
-  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
-    \node (Psi) [poly, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\Psi'' + \framebox(10,10){}\tikzmark{b}\,\Psi' + \coeff\tikzmark{c}\,\Psi$};
-    \node (alg ext) [poly, node distance=50pt, below=of Psi.east, anchor=east, text width=90pt] {$\framebox(10,10){}\tikzmark{aa}\,\gamma^2 + \framebox(10,10){}\tikzmark{bb}\,\gamma + \coeff\tikzmark{cc} = 0$};
-    \begin{scope}[on background layer]
-        \node (alg ext element) [algebraic, fit=(alg ext), inner sep=5pt] {};
-%        \node (alg ext field) [ring, fit=(alg ext element), node distance=70pt] {};
-    \end{scope}
-    \node (Qv) [ring, below of=alg ext, text width=100pt] {$\mathbb{Q}[v]$};
-    \node (v) [poly, right=of Qv] {$v$};
-    \draw[degree] (a.west) -- (a.west|-alg ext.north) node[right,pos=0.6] {1};
-    \draw[degree] (b.west) -- (b.west|-alg ext.north) node[right,pos=0.6] {1};
-    \draw[degree] (c.west) -- (c.west|-alg ext.north) node[right,pos=0.6] {1};
-    \draw[degree] (aa.west) -- (aa.west|-Qv.north) node[right,pos=0.8] {1};
-    \draw[degree] (bb.west) -- (bb.west|-Qv.north) node[right,pos=0.8] {1};
-    \draw[degree] (cc.west) -- (cc.west|-Qv.north) node[right,pos=0.8] {1};
-    \node (Psi label) [at=(v.east|-Psi.north), anchor=north east] {\Large$\Psi$};
-    \begin{scope}[on background layer]
-        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
-    \end{scope}
-    \node (base) [ring, node distance=100pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
-    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
-  \end{tikzpicture}
-\end{minipage}%
-}
-\caption{An ansatz with an algebraic extension in the ODE coefficient ring}
-\label{ansatz 13 figure}
-\end{figure}
-
-Algebraic extensions can be introduced in the ODE coefficient ring.
-
-\begin{equation}
-\label{ansatz 13}
-\begin{gathered}
-\Psi_x = \Psi' v_x \qquad
-\Psi_y = \Psi' v_y \qquad
-\Psi_z = \Psi' v_z \\
-\Psi'_x = \Psi'' v_x \qquad
-\Psi'_y = \Psi'' v_y \qquad
-\Psi'_z = \Psi'' v_z \\
-(a_0 + a_1 v + a_2 \gamma) \Psi'' + (b_0 + b_1 v + b_2 \gamma) \Psi' + (c_0 + c_1 v + c_2 \gamma) \Psi = 0 \\
-(d_0 + d_1 v) \gamma^2 + (e_0 + e_1 v) \gamma + (f_0 + f_1 v) = 0 \\
-v = v_1 x + v_2 y + v_3 z
-\end{gathered}
-\end{equation}
-
-\vfill\eject
-
-\begin{figure}[H]
-\fbox{
-\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
-\centering
-\scalebox{0.9}{
-  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
-    \node (Psi) [poly, text width=300pt] {\small$\markedcoeff{a}\Psi''^2 + \markedcoeff{b}\Psi''\Psi' + \markedcoeff{c}\Psi''\Psi + \markedcoeff{d}\Psi'^2 + \markedcoeff{e}\Psi'\Psi + \markedcoeff{f}\Psi^2 + \markedcoeff{g}\Psi'' + \markedcoeff{h}\Psi' + \markedcoeff{i}\Psi$};
-    \node (Qv) [ring, below of=Psi, text width=100pt, node distance=50pt] {$\mathbb{Q}[v]$};
-    \node (v) [poly, right=of Qv] {$v$};
-    \coordinate (bwb) at ($(Psi.south)!0.5!(Qv.north)$);
-    \draw[degree] (a.west) -- (a.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (a.west) -- (a.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (b.west) -- (b.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (c.west) -- (c.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (d.west) -- (d.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (e.west) -- (e.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (f.west) -- (f.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (g.west) -- (g.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (h.west) -- (h.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (i.west) -- (i.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (a.west|-bwb.north) -- (i.west|-bwb.north);
-    \coordinate (bwb2) at (a.west|-bwb.north);
-    \draw[degree] (Qv.north|-bwb2) -- (Qv.north);
-    \begin{scope}[on background layer]
-        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
-        \node (Psi block title) [node distance=20pt, above=of Psi block.north, anchor=center, text centered] {$\mathbb{Q}[x,y,z,t]\{\Psi,\Psi',\Psi''\}$};
-        \node (Psi block field) [ring, fill=none, fit=(Psi block) (Psi block title)] {};
-    \end{scope}
-    \node (base) [ring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}[x,y,z,t]$};
-    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
-
-    \node (u) [poly, text width=20pt, node distance=20pt, above=of Psi block field.north west] {u};
-    \node (v) [poly, text width=20pt, node distance=20pt, right=of u] {v};
-    \node (w) [poly, text width=20pt, node distance=20pt, right=of v] {w};
-    \node (p) [poly, text width=20pt, node distance=20pt, right=of w] {p};
-    \coordinate (bwb2) at ($(u.south)!0.5!(Psi block field.north)$);
-    \draw[degree] (u.south) -- (u.south|-bwb2.north) node[right, pos=0.5] {1};
-    \draw[degree] (v.south) -- (v.south|-bwb2.north) node[right, pos=0.5] {1};
-    \draw[degree] (w.south) -- (w.south|-bwb2.north) node[right, pos=0.5] {1};
-    \draw[degree] (p.south) -- (p.south|-bwb2.north) node[right, pos=0.5] {1};
-    \draw[degree] (u.south|-bwb2.north) -- (p.south|-bwb2.north);
-    \coordinate (bwb3) at ($(u.south|-bwb2.north)!0.5!(p.south|-bwb2.north)$);
-    \draw[degree] (bwb3) -- (bwb3|-Psi block field.north);
-  \end{tikzpicture}
-}
-\end{minipage}%
-}
-\caption{A nonlinear second order second degree homogeneous ansatz}
-\label{nonlinear ansatz figure}
-\end{figure}
-
-Non-linear ODEs can be constructed.  For a linear homogeneous second-order ODE, we have $\Psi''$, $\Psi'$, and $\Psi$,
-multiplied by polynomials in $v$, so our differential polynomial is first degree in $\Psi$ and its derivatives $\Psi'$ and $\Psi''$.
-For a non-linear ODE, we can introduce higher degrees.  For example, a second
-degree second order ODE would add $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$, and $\Psi^2$ to the ansatz.
-See Figure \ref{nonlinear ansatz figure}.
-
-This time, rather than use $\Psi$ to solve the PDE directly,
-we define linear polynomials $u,v,w,p$ that will be used to write a system of PDEs.
-
-\begin{equation}
-\label{ansatz 18}
-\begin{gathered}
-\Psi_x = \Psi' v_x \qquad
-\Psi_y = \Psi' v_y \qquad
-\Psi_z = \Psi' v_z \qquad
-\Psi_t = \Psi' v_t \\
-\Psi'_x = \Psi'' v_x \qquad
-\Psi'_y = \Psi'' v_y \qquad
-\Psi'_z = \Psi'' v_z \qquad
-\Psi'_t = \Psi'' v_t \\
-(a_0 + a_1 v) \Psi''^2 + (b_0 + b_1 v) \Psi''\Psi' + (c_0 + c_1 v) \Psi''\Psi \\
-\quad + (d_0 + d_1 v) \Psi'^2 + (e_0 + e_1 v) \Psi'\Psi + (f_0 + f_1 v) \Psi^2 \\
-\quad + (g_0 + g_1 v) \Psi'' + (h_0 + h_1 v) \Psi' + (i_0 + i_1 v) \Psi = 0 \\
-v = v_1 x + v_2 y + v_3 z + v_4 t \\
-u = u_1 x + u_2 y + u_3 z + u_4 t + u_5 \Psi \\
-v = v_1 x + v_2 y + v_3 z + v_4 t + v_5 \Psi \\
-w = w_1 x + w_2 y + w_3 z + w_4 t + w_5 \Psi \\
-p = p_1 x + p_2 y + p_3 z + p_4 t + p_5 \Psi \\
-\end{gathered}
-\end{equation}
-
 %%\section*{An Example: The New Solution of Hydrogen}
 %%\section{Example: A New Pseudo-Solution of Hydrogen}
 \vfill\eject
@@ -2171,7 +2171,7 @@ with $\Delta = \{\delta_x, \delta_y, \delta_z\}$.  To elaborate,
 
 % \subsection{Ansatz}
 
-We'll use the first ansatz from section \ref{A Collection of Ansatze},
+We'll use the first ansatz from section \ref{sec:Ansatze},
 a second order ODE with first degree coefficients and a first degree independent variable.
 (Figure \ref{ansatz 5 figure}).
 
@@ -2575,7 +2575,7 @@ future work.
 \label{sec:Generalization of the Algorithm}
 
 The algorithm can search for solutions to arbitrary PDEs or systems of PDEs in more complex ans\"atze.
-A collection of sample ans\"atze was presented in Section \ref{A Collection of Ansatze}.  To handle
+A collection of sample ans\"atze was presented in Section \ref{sec:Ansatze}.  To handle
 systems of PDEs, multiple PDEs can be reduced modulo a single ansatz.  Each PDE will generate a
 system of equations in the constants.  Combining all of these equations together will produce
 a system of equations that, when satisfied, will solve all of the PDEs simultaneously.
