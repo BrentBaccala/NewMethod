@@ -965,9 +965,9 @@ v = v_1 x + v_2 y + v_3 z
 \scalebox{0.9}{
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
     \node (Psi) [poly, text width=300pt] {\small$\markedcoeff{a}\Psi''^2 + \markedcoeff{b}\Psi''\Psi' + \markedcoeff{c}\Psi''\Psi + \markedcoeff{d}\Psi'^2 + \markedcoeff{e}\Psi'\Psi + \markedcoeff{f}\Psi^2 + \markedcoeff{g}\Psi'' + \markedcoeff{h}\Psi' + \markedcoeff{i}\Psi$};
-    \node (Qv) [ring, below of=Psi, text width=100pt, node distance=50pt] {$\mathbb{Q}[v]$};
-    \node (v) [poly, right=of Qv] {$v$};
-    \coordinate (bwb) at ($(Psi.south)!0.5!(Qv.north)$);
+    \node (Qs) [ring, below of=Psi, text width=100pt, node distance=50pt] {$\mathbb{Q}[s]$};
+    \node (s) [poly, right=of Qs] {$s$};
+    \coordinate (bwb) at ($(Psi.south)!0.5!(Qs.north)$);
     \draw[degree] (a.west) -- (a.west|-bwb.north) node[right,near end] {1};
     \draw[degree] (a.west) -- (a.west|-bwb.north) node[right,near end] {1};
     \draw[degree] (b.west) -- (b.west|-bwb.north) node[right,near end] {1};
@@ -980,14 +980,14 @@ v = v_1 x + v_2 y + v_3 z
     \draw[degree] (i.west) -- (i.west|-bwb.north) node[right,near end] {1};
     \draw[degree] (a.west|-bwb.north) -- (i.west|-bwb.north);
     \coordinate (bwb2) at (a.west|-bwb.north);
-    \draw[degree] (Qv.north|-bwb2) -- (Qv.north);
+    \draw[degree] (Qs.north|-bwb2) -- (Qs.north);
     \begin{scope}[on background layer]
-        \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
+        \node (Psi block)[fit=(Psi) (Qs) (s), inner sep=10pt, element] {};
         \node (Psi block title) [node distance=20pt, above=of Psi block.north, anchor=center, text centered] {$\mathbb{Q}[x,y,z,t]\{\Psi,\Psi',\Psi''\}$};
         \node (Psi block field) [ring, fill=none, fit=(Psi block) (Psi block title)] {};
     \end{scope}
     \node (base) [ring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}[x,y,z,t]$};
-    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+    \draw[degree] (s.south) -- (s.south|-base.north) node[right,pos=0.7] {1};
 
     \node (u) [poly, text width=20pt, node distance=20pt, above=of Psi block field.north west] {u};
     \node (v) [poly, text width=20pt, node distance=20pt, right=of u] {v};
@@ -1010,29 +1010,33 @@ v = v_1 x + v_2 y + v_3 z
 \end{figure}
 
 Non-linear ODEs can be constructed.  For a linear homogeneous second-order ODE, we have $\Psi''$, $\Psi'$, and $\Psi$,
-multiplied by polynomials in $v$, so our differential polynomial is first degree in $\Psi$ and its derivatives $\Psi'$ and $\Psi''$.
+multiplied by polynomials in the ODE's independent variable, so our differential polynomial is first degree in $\Psi$ and its derivatives $\Psi'$ and $\Psi''$.
 For a non-linear ODE, we can introduce higher degrees.  For example, a second
 degree second order ODE would add $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$, and $\Psi^2$ to the ansatz.
 See Figure \ref{nonlinear ansatz figure}.
 
 This time, rather than use $\Psi$ to solve the PDE directly,
 we define linear polynomials $u,v,w,p$ that will be used to write a system of PDEs.
+The ODE's independent variable is called $s$ here, rather than $v$ as in the
+other ans\"atze, so as not to collide with the second of those four
+polynomials.  Section \ref{sec:NavierStokes} carries this ansatz through the
+incompressible Navier--Stokes equations.
 
 \begin{equation}
 \label{ansatz 18}
 \begin{gathered}
-\Psi_x = \Psi' v_x \qquad
-\Psi_y = \Psi' v_y \qquad
-\Psi_z = \Psi' v_z \qquad
-\Psi_t = \Psi' v_t \\
-\Psi'_x = \Psi'' v_x \qquad
-\Psi'_y = \Psi'' v_y \qquad
-\Psi'_z = \Psi'' v_z \qquad
-\Psi'_t = \Psi'' v_t \\
-(a_0 + a_1 v) \Psi''^2 + (b_0 + b_1 v) \Psi''\Psi' + (c_0 + c_1 v) \Psi''\Psi \\
-\quad + (d_0 + d_1 v) \Psi'^2 + (e_0 + e_1 v) \Psi'\Psi + (f_0 + f_1 v) \Psi^2 \\
-\quad + (g_0 + g_1 v) \Psi'' + (h_0 + h_1 v) \Psi' + (i_0 + i_1 v) \Psi = 0 \\
-v = v_1 x + v_2 y + v_3 z + v_4 t \\
+\Psi_x = \Psi' s_x \qquad
+\Psi_y = \Psi' s_y \qquad
+\Psi_z = \Psi' s_z \qquad
+\Psi_t = \Psi' s_t \\
+\Psi'_x = \Psi'' s_x \qquad
+\Psi'_y = \Psi'' s_y \qquad
+\Psi'_z = \Psi'' s_z \qquad
+\Psi'_t = \Psi'' s_t \\
+(a_0 + a_1 s) \Psi''^2 + (b_0 + b_1 s) \Psi''\Psi' + (c_0 + c_1 s) \Psi''\Psi \\
+\quad + (d_0 + d_1 s) \Psi'^2 + (e_0 + e_1 s) \Psi'\Psi + (f_0 + f_1 s) \Psi^2 \\
+\quad + (g_0 + g_1 s) \Psi'' + (h_0 + h_1 s) \Psi' + (i_0 + i_1 s) \Psi = 0 \\
+s = s_1 x + s_2 y + s_3 z + s_4 t \\
 u = u_1 x + u_2 y + u_3 z + u_4 t + u_5 \Psi \\
 v = v_1 x + v_2 y + v_3 z + v_4 t + v_5 \Psi \\
 w = w_1 x + w_2 y + w_3 z + w_4 t + w_5 \Psi \\
@@ -2535,6 +2539,363 @@ parabolic structure rather than presupposing it, is a natural direction for
 future work.
 
 \end{comment}
+
+\section{Example: Incompressible Navier--Stokes}
+\label{sec:NavierStokes}
+
+The hydrogen example ran the simplest ansatz of Section \ref{sec:Ansatze}
+against a single linear PDE.  We now run the {\it last} one --- the nonlinear,
+second-degree ansatz of Figure \ref{nonlinear ansatz figure}, whose four
+top-level polynomials $u,v,w,p$ were introduced precisely to serve as the
+dependent variables of a system --- against the incompressible Navier--Stokes
+equations.
+
+The purpose of the example is not to produce a new solution of Navier--Stokes.
+It is that this particular pairing of ansatz and PDE reduces in closed form,
+by hand, and that the closed form says something sharp about which solutions
+the ansatz can reach and, more interestingly, why it cannot reach the others.
+Two obstructions appear, and neither is visible from the ansatz diagram alone:
+the nonlinearity of the equations is annihilated by their own incompressibility
+condition, and the viscous term is blocked by a mismatch of degrees between
+the ansatz's ODE and the PDE.
+
+\subsection{The equations}
+
+For constant density $\rho$ and dynamic viscosity $\mu$ (kinematic viscosity
+$\nu = \mu/\rho$), the incompressible Navier--Stokes equations are
+
+\begin{subequations}
+\label{navier stokes}
+\begin{gather}
+u_x + v_y + w_z = 0 \label{navier stokes:continuity} \\
+\rho\,(u_t + u u_x + v u_y + w u_z) + p_x - \mu\,(u_{xx}+u_{yy}+u_{zz}) = 0 \label{navier stokes:x} \\
+\rho\,(v_t + u v_x + v v_y + w v_z) + p_y - \mu\,(v_{xx}+v_{yy}+v_{zz}) = 0 \label{navier stokes:y} \\
+\rho\,(w_t + u w_x + v w_y + w w_z) + p_z - \mu\,(w_{xx}+w_{yy}+w_{zz}) = 0 \label{navier stokes:z}
+\end{gather}
+\end{subequations}
+
+Unlike the hydrogen equation \eqref{schrodinger hydrogen 2}, these require no
+clearing of denominators.  Once $u,v,w,p$ are replaced by the polynomials of
+\eqref{ansatz 18} they are already differential polynomials in
+
+\begin{equation}
+\label{eq:ns-ring}
+R \;=\; \mathbb{Q}[x,y,z,t]\{\,\Psi, \Psi', \Psi'', s, u, v, w, p,\;
+   \rho, \mu, a_0, \ldots, i_1, s_1, \ldots, s_4, u_1, \ldots, p_5 \,\}
+\end{equation}
+
+\noindent
+with $\Delta = \{\delta_x, \delta_y, \delta_z, \delta_t\}$.  As with $E$ in the
+hydrogen example, nothing compels us to treat $\rho$ and $\mu$ as given; they
+are ranked in the lowest block alongside the constants of the ansatz, and the
+membership locus is free to constrain them.  It will do exactly that below.
+
+\subsection{Reduction}
+
+Because $s$ is linear in the coordinates, its derivatives $s_x = s_1$,
+$s_y = s_2$, $s_z = s_3$ and $s_t = s_4$ are constants, and the chain rules of
+\eqref{ansatz 18} collapse the first derivatives of each field to
+
+\begin{equation}
+\label{ns first derivatives}
+u_x = u_1 + u_5 s_1 \Psi' \quad
+u_y = u_2 + u_5 s_2 \Psi' \quad
+u_z = u_3 + u_5 s_3 \Psi' \quad
+u_t = u_4 + u_5 s_4 \Psi'
+\end{equation}
+
+\noindent
+and likewise for $v$, $w$ and $p$ with their own coefficients.  Applying the
+chain rules a second time, every Laplacian in \eqref{navier stokes} collapses
+to a single term,
+
+\begin{equation}
+\label{ns laplacian}
+u_{xx}+u_{yy}+u_{zz} \;=\; u_5\,\sigma\,\Psi'' ,
+\qquad \text{where} \quad \sigma \;=\; s_1^2+s_2^2+s_3^2 .
+\end{equation}
+
+It is convenient to name two vectors of constants,
+
+\begin{equation*}
+\mathbf{s} = (s_1,s_2,s_3), \qquad \mathbf{a} = (u_5,v_5,w_5),
+\end{equation*}
+
+\noindent
+$\mathbf{s}$ being the spatial part of the covector that defines the ODE's
+independent variable and $\mathbf{a}$ the amplitude with which the ODE element
+enters the velocity field, and to write $U,V,W,P$ for the parts of $u,v,w,p$
+that are linear in the coordinates, so that $u = U + u_5 \Psi$,
+$p = P + p_5\Psi$ and $\mathbf{\bar{v}} = \mathbf{L} + \mathbf{a}\Psi$ with
+$\mathbf{L} = (U,V,W)$.
+
+Substituting into \eqref{navier stokes} and collecting on the jets gives the
+reduced system
+
+\begin{subequations}
+\label{ns reduced}
+\begin{gather}
+(u_1+v_2+w_3) \;+\; (\mathbf{a}\cdot\mathbf{s})\,\Psi' \label{ns reduced:continuity} \\
+\begin{aligned}
+&\rho\bigl[\partial_t \mathbf{L} + (\mathbf{L}\cdot\nabla)\mathbf{L}\bigr] + \nabla P
+   \;+\; \rho\,\bigl[(\mathbf{a}\cdot\nabla)\mathbf{L}\bigr]\,\Psi \\
+&\quad {} + \bigl[\rho s_4\,\mathbf{a} + \rho(\mathbf{L}\cdot\mathbf{s})\,\mathbf{a}
+   + p_5\,\mathbf{s}\bigr]\,\Psi'
+   \;+\; \rho\,(\mathbf{a}\cdot\mathbf{s})\,\mathbf{a}\,\Psi\Psi'
+   \;-\; \mu\sigma\,\mathbf{a}\,\Psi''
+\end{aligned} \label{ns reduced:momentum}
+\end{gather}
+\end{subequations}
+
+\noindent
+the three momentum residuals being the three components of
+\eqref{ns reduced:momentum}.  Its $x$ component, for instance, has jet-free
+part $\rho u_4 + p_1 + \rho(u_1 U + u_2 V + u_3 W)$ and $\Psi$ coefficient
+$\rho(u_1 u_5 + u_2 v_5 + u_3 w_5)$; note that the $u_5$ there is a component
+of $\mathbf{a}$ and stays put in the $y$ and $z$ components, where the
+gradient row $(u_1,u_2,u_3)$ becomes $(v_1,v_2,v_3)$ and $(w_1,w_2,w_3)$.
+Every jet monomial appearing anywhere in \eqref{ns reduced} is drawn from the
+five-element set $\{1,\,\Psi,\,\Psi',\,\Psi\Psi',\,\Psi''\}$.  Nothing else
+occurs --- in particular no $\Psi''^2$, no $\Psi''\Psi'$ and no $\Psi'^2$.
+
+\subsection{The convective nonlinearity}
+
+Navier--Stokes is nonlinear only through the convective derivative
+$(\mathbf{\bar{v}}\cdot\nabla)\mathbf{\bar{v}}$.  Under this ansatz the velocity
+field is a fixed direction $\mathbf{a}$ modulated by a single scalar profile
+$\Psi$ of a single scalar argument $s$, superposed on a background $\mathbf{L}$
+linear in the coordinates.  Expanding the $x$ component of the convective
+derivative in those terms separates it into four pieces:
+
+\begin{equation}
+\label{convective split}
+\begin{gathered}
+(\mathbf{\bar{v}}\cdot\nabla)u \;=\;
+\underbrace{(\mathbf{L}\cdot\nabla U)}_{\text{background--background}}
+\;+\; \underbrace{(\mathbf{a}\cdot\nabla U)\,\Psi}_{\text{wave--background}} \\[6pt]
+{} \;+\; \underbrace{u_5(\mathbf{L}\cdot\mathbf{s})\,\Psi'}_{\text{background--wave}}
+\;+\; \underbrace{u_5(\mathbf{a}\cdot\mathbf{s})\,\Psi\Psi'}_{\text{wave--wave}}
+\end{gathered}
+\end{equation}
+
+Only the last piece is quadratic in the jets, and it is the only quadratic jet
+monomial in the entire system.  Its coefficient carries the factor
+$\mathbf{a}\cdot\mathbf{s}$ --- which is precisely the coefficient of $\Psi'$
+in the continuity residual \eqref{ns reduced:continuity}.
+
+The consequence is immediate, but worth stating carefully, because it is a
+property of the ansatz and not an approximation.  The decomposition splits on
+$\mathbf{a}\cdot\mathbf{s}$.  On the cells where continuity holds with a
+non-degenerate $\Psi'$ we have $\mathbf{a}\cdot\mathbf{s} = 0$, and then the
+wave--wave term of \eqref{convective split} vanishes identically --- in all
+three momentum equations at once, since their coefficients are
+$\rho u_5 (\mathbf{a}\cdot\mathbf{s})$, $\rho v_5 (\mathbf{a}\cdot\mathbf{s})$
+and $\rho w_5 (\mathbf{a}\cdot\mathbf{s})$.  What is left is linear in
+$\Psi$, $\Psi'$ and $\Psi''$.
+
+The condition $\mathbf{a}\cdot\mathbf{s} = 0$ has a clean reading: the amplitude
+of the wave is orthogonal to the direction in which the wave varies.  The field
+is transverse --- it is a shear wave, and the profile varies only along a
+direction in which the velocity does not point.  A fluid dynamicist would
+recognize the conclusion, since unidirectional flow has no self-advection, but
+here it is not assumed.  It is one of the branches the decomposition returns.
+
+Two qualifications keep this from being stronger than it is.  First, only the
+wave's self-interaction is destroyed.  The background--wave term
+$u_5(\mathbf{L}\cdot\mathbf{s})\Psi'$ survives; it is linear in the jets, but
+its coefficient is linear in $x,y,z,t$, so it contributes several distinct
+equations to the constant locus, and the example is not a linear problem in
+disguise.  Second, the jet-free row of \eqref{convective split} contributes
+$(\mathbf{L}\cdot\nabla)\mathbf{L} = 0$ up to the pressure's linear part, the
+familiar requirement that the background be one of the linear
+strain-and-rotation flows.
+
+What this says about the ansatz is that its second-degree monomials are not
+being asked for by this PDE.  Figure \ref{nonlinear ansatz figure} was drawn
+with $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$ and
+$\Psi^2$ all available, and the natural reading of the figure is that the
+ansatz's nonlinearity is there to meet Navier--Stokes' nonlinearity.  It is
+not.  The residual's only quadratic term is $\Psi\Psi'$, and incompressibility
+removes it.  A second-degree ODE buys a wider class of profile functions
+$\Psi$, which is a different thing --- and as the next subsection shows, one of
+those six monomials actively costs us something.
+
+\subsection{How the viscous term is blocked}
+
+The Laplacian is the only source of $\Psi''$ in \eqref{ns reduced}.  It enters
+each momentum residual exactly once, through \eqref{ns laplacian}, and it enters
+linearly.  Each residual is therefore of degree {\it one} in $\Psi''$.  The
+ansatz's ODE, on the other hand, is of degree {\it two} in $\Psi''$, on account
+of its $(a_0 + a_1 s)\Psi''^2$ term.
+
+$\Psi''$ is the leader of both under any ranking that places the jets above the
+constants and orders $\Psi'' \gg \Psi' \gg \Psi$.  Ritt's reduction
+(\S\ref{sec:preliminaries}) can lower the degree of a differential polynomial
+$r$ in the leader of $A$ only when $\deg_{\Psi''} r \ge \deg_{\Psi''} A$, and
+here $1 < 2$.  Nor does full reduction rescue the situation: the proper
+derivatives of $A$ introduce $\Psi'''$, and the residuals contain no $\Psi'''$
+at all.  Each momentum residual is thus {\it already fully reduced} modulo the
+ansatz.  Pseudo-division returns it unchanged, and the ODE --- the entire
+content of the figure's orange box --- contributes nothing whatever to the
+reduction.
+
+The algorithm therefore passes the residual to the projection step untouched,
+and the projection sets each of its coefficients to zero separately.  The
+$\Psi''$ coefficients give
+
+\begin{equation}
+\label{viscous block}
+\mu u_5 \sigma \;=\; \mu v_5 \sigma \;=\; \mu w_5 \sigma \;=\; 0 .
+\end{equation}
+
+If $\mu \ne 0$, then either $\sigma = 0$ or $\mathbf{a} = 0$.  Over the reals
+$\sigma = s_1^2+s_2^2+s_3^2 = 0$ forces $\mathbf{s} = 0$, so that $s = s_4 t$
+and the profile has no spatial dependence whatever, while $\mathbf{a} = 0$
+removes $\Psi$ from the velocity field altogether and leaves only the linear
+background.  On this branch, then, Navier--Stokes admits nothing but inviscid
+or spatially degenerate solutions.
+
+It is worth being precise about the culprit, because it is easy to read
+\eqref{viscous block} as a statement about fluids.  It is not.  The obstruction
+is that a PDE of degree one in a leader cannot be reduced by an ansatz of
+degree two in that same leader.  The higher degree does not add solutions; it
+makes the ansatz inert.
+
+The remedy is already inside the algorithm.  The Thomas decomposition of the
+ansatz splits on the initial of its ODE, so the locus $a_0 = a_1 = 0$ is one of
+the cells the decomposition produces, not something we have to impose by hand.
+On that cell the ODE reads
+
+\begin{equation}
+\label{ns reducible ode}
+\begin{gathered}
+\bigl[(b_0+b_1 s)\Psi' + (c_0+c_1 s)\Psi + (g_0+g_1 s)\bigr]\Psi'' \\
+{} + (d_0+d_1 s)\Psi'^2 + (e_0+e_1 s)\Psi'\Psi + (f_0+f_1 s)\Psi^2 \\
+{} + (h_0+h_1 s)\Psi' + (i_0+i_1 s)\Psi \;=\; 0
+\end{gathered}
+\end{equation}
+
+\noindent
+which is of degree one in $\Psi''$, and pseudo-division by it now does
+something.  Note how little has to be given up.  Of the six second-degree
+monomials only $\Psi''^2$ is switched off; the other five survive, and the two
+that involve the leader, $\Psi''\Psi'$ and $\Psi''\Psi$, are positively useful,
+in that they make the initial of \eqref{ns reducible ode} a non-constant
+differential polynomial on which the decomposition splits again, so that the
+degenerate loci are reported as cells of their own rather than silently
+excluded.
+
+Stated generally, this is a criterion for the selection of an ansatz
+(\S\ref{sec:Selection of an Ansatz}): the degree of the ansatz's defining
+polynomial in a given leader should not exceed the degree in which that leader
+occurs in the PDE, or the ansatz cannot act on the PDE at all.
+
+\subsection{The traveling-wave shear layer}
+
+Work on the cell $a_0 = a_1 = 0$, and take the linear background to vanish,
+$\mathbf{L} = 0$, so that $u = u_5\Psi$, $v = v_5\Psi$, $w = w_5\Psi$ and
+$p = p_1 x + p_2 y + p_3 z + p_4 t + p_5 \Psi$.  The continuity residual
+\eqref{ns reduced:continuity} then reduces to $\mathbf{a}\cdot\mathbf{s} = 0$
+alone.  Since $\mathbf{a}$ and $\mathbf{s}$ are both unknowns of the problem we
+may rotate coordinates freely; choose $\mathbf{s}$ along $z$ and $\mathbf{a}$
+along $x$, so that
+
+\begin{equation*}
+s = s_3 z + s_4 t, \qquad \mathbf{a} = (u_5,0,0), \qquad
+\sigma = s_3^2, \qquad \mathbf{a}\cdot\mathbf{s} = 0 .
+\end{equation*}
+
+The $y$ and $z$ momentum residuals then have $v \equiv w \equiv 0$ and collapse
+to $p_2 = 0$ and $p_3 + p_5 s_3 \Psi' = 0$, whence $p_3 = 0$ and $p_5 = 0$: the
+pressure carries no part of the ODE element.  The $x$ residual is what remains,
+
+\begin{equation}
+\label{ns shear residual}
+p_1 \;+\; \rho u_5 s_4\,\Psi' \;-\; \mu u_5 s_3^2\,\Psi'' \;=\; 0 .
+\end{equation}
+
+Its jet-free coefficient gives $p_1 = 0$, no mean pressure gradient --- the
+specialization to $u_4 = 0$ of the general jet-free condition
+$p_1 = -\rho u_4$, in which a uniformly accelerating background balances a
+pressure gradient.  What is left,
+
+\begin{equation}
+\label{ns shear ode}
+\mu s_3^2\,\Psi'' - \rho s_4\,\Psi' \;=\; 0 ,
+\end{equation}
+
+is not a further constraint but the ansatz's own ODE.  Matching it against
+\eqref{ns reducible ode} fixes $b_* = c_* = d_* = e_* = f_* = i_* = 0$ and
+$g_1 = h_1 = 0$, with
+
+\begin{equation*}
+\frac{h_0}{g_0} \;=\; -\,\frac{\rho s_4}{\mu s_3^2} .
+\end{equation*}
+
+The membership locus is therefore nonempty.  The reduction does not annihilate
+the ansatz's coefficients; it pins them.
+
+Integrating \eqref{ns shear ode} gives the solution
+
+\begin{equation}
+\label{ns shear solution}
+\Psi' \;\propto\; \exp\!\left(\frac{\rho s_4}{\mu s_3^2}\,s\right),
+\qquad u = u_5\,\Psi(s_3 z + s_4 t), \qquad v = w = 0 ,
+\end{equation}
+
+\noindent
+with the pressure a function of $t$ alone, which is to say an additive gauge.
+Writing $c = -s_4/s_3$ for the speed at which the profile translates and
+$\zeta = z - ct$ for the co-moving coordinate, so that $s = s_3 \zeta$,
+\eqref{ns shear solution} takes the form
+
+\begin{equation}
+\label{ns stokes layer}
+u(\zeta) \;=\; A + B\,e^{-c\zeta/\nu} , \qquad \nu = \mu/\rho ,
+\end{equation}
+
+\noindent
+an exponential shear layer of thickness $\nu/c$ propagating rigidly along $z$
+at speed $c$.  This is the traveling-wave member of the Rayleigh--Stokes family
+of viscous shear solutions: a front separating two streams, held at a fixed
+thickness by the balance between viscous diffusion, which thickens it, and the
+translation, which sweeps vorticity through it.  In profile it is the same
+exponential as the asymptotic suction boundary layer.  That
+\eqref{ns stokes layer} solves \eqref{navier stokes} exactly is immediate --- the
+convective term vanishes identically because the flow is unidirectional with
+$u_x = 0$, which is \eqref{convective split} with $\mathbf{L} = 0$ and
+$\mathbf{a}\cdot\mathbf{s} = 0$.
+
+It is instructive that the {\it original} Rayleigh problem is not in this
+family.  Stokes' first problem, the impulsively started plate, has the
+self-similar solution $u = U\operatorname{erfc}\bigl(z/2\sqrt{\nu t}\bigr)$, a
+function of $z/\sqrt{t}$.  This ansatz cannot express it, and the reason is
+visible in the diagram rather than in the analysis: the ODE's independent
+variable $s$ is drawn as a first-degree polynomial in the base ring
+$\mathbb{Q}[x,y,z,t]$, and $z/\sqrt{t}$ is not a polynomial in $x,y,z,t$ at all.
+Reaching it would mean adjoining an algebraic element $\tau$ with
+$\tau^2 = t$ and defining the independent variable by the cleared relation
+$\tau s - z$ --- the algebraic-extension mechanism of Figure
+\ref{ansatz 11 figure}, applied to the base rather than to the ODE's
+coefficients.
+
+\subsection{What the example shows}
+
+The machinery of \S\ref{sec:Solution Algorithm} runs unchanged on a nonlinear
+system of four PDEs in four dependent variables, and its output is informative
+even where the answer is largely negative.  The solutions it returns are
+exactly the parallel shear flows, and the two reasons it returns nothing else
+are structural.
+
+Removing the second obstruction costs one monomial: drop $\Psi''^2$, or equally
+well work on the cell $a_0 = a_1 = 0$ that the decomposition hands us anyway.
+Removing the first is a deeper change.  As long as $u$, $v$ and $w$ are affine
+in one common ODE element $\Psi$, the velocity is a single profile times a
+fixed direction, and $(\mathbf{\bar{v}}\cdot\nabla)\mathbf{\bar{v}}$ cannot
+survive incompressibility.  Letting the components carry {\it different} ODE
+elements --- several extensions adjoined in parallel, in the sense of
+\S\ref{sec:Generalization of the Algorithm} --- is what an ansatz would need in
+order to reach a flow whose nonlinearity is active.
 
 \section{Generalization of the Algorithm}
 \label{sec:Generalization of the Algorithm}
