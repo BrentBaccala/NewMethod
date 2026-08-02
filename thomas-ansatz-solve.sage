@@ -6,11 +6,13 @@
 # prolongation-projection-algorithm.tex (Phase III-forall / membership, run
 # per Thomas cell -- the "staged route" of section 7):
 #
-#   1. pick one ansatz + one PDE                    (ansatz-library.sage)
+#   1. pick one ansatz + one PDE system             (ansatz-library.sage)
 #   2. differential-Thomas-decompose the ANSATZ ALONE  -> disjoint cells
-#   3. reduce the PDE modulo each cell              (differential pseudo-remainder)
+#   3. reduce EACH PDE of the system modulo each cell  (differential
+#      pseudo-remainder against the same cell)
 #   4. forall-project each remainder onto the constants: collect like terms in
-#      the independents + parametric jets, zero the constant coefficients, take
+#      the independents + parametric jets, zero the constant coefficients,
+#      combine the equations of all the remainders into ONE system, take
 #      minimal associated primes, prune by the cell's inequations
 #   5. union the surviving varieties over all cells
 #   6. print the union
@@ -99,7 +101,8 @@ PARAMS = prob['params']
 JETS = prob['jets']                          # all differential indeterminates
 ansatz0 = prob['ansatz_eqs']
 pconst = prob['pconst']
-PDE = prob['pde']
+PDES = prob['pdes']                          # the PDE system (list; often 1)
+PDE_PARAMS = prob['pde_params']              # the PDE's own constants (E; rho,mu)
 
 
 # --- consistent variable rendering ----------------------------------------
@@ -140,7 +143,8 @@ def to_bracket(s):
     return re.sub(r'[A-Za-z]\w*', repl, str(s))
 
 
-print("PDE:", to_bracket(PDE))
+for _P in PDES:
+    print("PDE:", to_bracket(_P))
 print("ansatz (%d eqs):" % len(ansatz0))
 for s in prob['ansatz_eqs_str']:
     print("   ", to_bracket(s))
@@ -150,12 +154,12 @@ print("params:", ", ".join(PARAMS))
 # ==========================================================================
 # native <-> sympy bridge (dynamic names), then the DT pipeline
 # ==========================================================================
-constants = [sympy.Symbol('E')] + [sympy.Symbol(p) for p in PARAMS]
+constants = [sympy.Symbol(p) for p in (PDE_PARAMS + PARAMS)]
 strata_constants = [sympy.Symbol(p) for p in PARAMS]
 
 _IB = {nm: sympy.IndexedBase(nm) for nm in JETS}
 _DERIV = {c: sympy.Symbol(c) for c in COORDS}
-_PARAM = {p: sympy.Symbol(p) for p in (['E'] + PARAMS)}
+_PARAM = {p: sympy.Symbol(p) for p in (PDE_PARAMS + PARAMS)}
 _JET_HEADS = set(_IB)
 
 
@@ -226,7 +230,7 @@ if RANKING in ('elimination', 'block', 'elim'):
 
 PolyRing = PolynomialRing(QQ, names=(COORDS + prob['jets']
                                      + [m for _b, m in EXTRA_JET_PAIRS]
-                                     + ['E'] + PARAMS))
+                                     + PDE_PARAMS + PARAMS))
 PolyRing_constants = list(map(PolyRing, [str(c) for c in constants]))
 V_PARAM_GENS = [PolyRing(p) for p in prob['v_params']]
 AMP_PARAM_GENS = [PolyRing(p) for p in prob.get('amp_params', [])]
@@ -242,7 +246,7 @@ def _blad_jet_to_sympy(blad_name):
 _SYMPY_GENS = ([_DERIV[c] for c in COORDS]
                + [_IB[j] for j in prob['jets']]
                + [_blad_jet_to_sympy(b) for b, _m in EXTRA_JET_PAIRS]
-               + [_PARAM['E']]
+               + [_PARAM[p] for p in PDE_PARAMS]
                + [_PARAM[p] for p in PARAMS])
 assert len(_SYMPY_GENS) == PolyRing.ngens()
 
@@ -494,15 +498,27 @@ for num, ds in enumerate(_cells, 1):
         print("\n  [cell %d] entering full_prem: %d reductors ..." % (num, len(reductors)),
               flush=True)
         _t = time.time()
-        rem_elt, h = full_prem(PDE, reductors)
+        # Reduce EACH PDE of the system against the same cell.  For the
+        # membership locus every PDE must lie in the cell's differential ideal,
+        # so the constant-coefficient equations of all the remainders are
+        # combined into ONE system, solved once per cell.
+        rem_elts = [full_prem(P_, reductors)[0] for P_ in PDES]
         psi_rem_elt, _ = full_prem(R('Psi'), reductors)
         t_prem = time.time() - _t
         trivial = psi_rem_elt.is_zero()
-        rem = _elt_to_polyring(rem_elt)
-        if rem.is_zero():
+        rems = [_elt_to_polyring(re_) for re_ in rem_elts]
+        nonzero = [r_ for r_ in rems if not r_.is_zero()]
+        if not nonzero:
             eqns = ()
+        elif len(nonzero) == 1:
+            eqns = build_system_of_equations(nonzero[0], PolyRing_constants)
         else:
-            eqns = build_system_of_equations(rem, PolyRing_constants)
+            # deduplicate the combined list the same way
+            # build_system_of_equations already does internally.
+            _all = []
+            for r_ in nonzero:
+                _all.extend(build_system_of_equations(r_, PolyRing_constants))
+            eqns = tuple(set(_all))
         gens = list(eqns) + list(Z)
         I = ideal(gens) if gens else ideal(PolyRing.zero())
         print("  [cell %d] full_prem %.1fs (%d eqns); entering GTZ minimal_associated_primes"
@@ -511,7 +527,7 @@ for num, ds in enumerate(_cells, 1):
         primes = I.minimal_associated_primes()
         t_gtz = time.time() - _t
         print("  [cell %d] GTZ %.1fs -> %d primes" % (num, t_gtz, len(primes)), flush=True)
-        strata_cache[cache_key] = dict(spec_len=len(reductors), rem=rem, eqns=eqns,
+        strata_cache[cache_key] = dict(spec_len=len(reductors), rems=rems, eqns=eqns,
                                        primes=primes, trivial=trivial)
 
     sc = strata_cache[cache_key]
@@ -529,8 +545,9 @@ for num, ds in enumerate(_cells, 1):
           % (num, ', '.join(Zkey) or '(none, generic)', sc['spec_len'],
              len(cp['param_ineqs']), len(cp['jet_ineqs']), tag), flush=True)
     if VERBOSE_REM:
-        print("  remainder:", to_bracket(sc['rem']), flush=True)
-    if sc['rem'].is_zero() and not sc['trivial']:
+        for _i, _r in enumerate(sc['rems'], 1):
+            print("  remainder[pde %d]:" % _i, to_bracket(_r), flush=True)
+    if all(r_.is_zero() for r_ in sc['rems']) and not sc['trivial']:
         print("  PDE reduces to 0: the whole stratum solves the PDE (nontrivially)", flush=True)
     if not survivors:
         print("  surviving solution varieties: NONE (all pruned / empty)", flush=True)

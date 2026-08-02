@@ -35,7 +35,11 @@
 # excluded.
 #
 # build_problem(pde_name, ansatz) returns everything the solver needs:
-#   dict(R, rk, coords, roots, jets, params, ansatz_eqs, pconst, pde)
+#   dict(R, rk, coords, roots, jets, params, ansatz_eqs, pconst,
+#        pdes, pde_params)
+# where `pdes` is a LIST of differential polynomials (a PDE *system*; one
+# element for the single-PDE problems) and `pde_params` the PDE's own
+# constants (E for the Schroedinger problems, rho/mu for Navier-Stokes).
 #
 # Author: Brent Baccala (AI assistant: Claude).  July 2026.
 
@@ -869,6 +873,25 @@ def _hamiltonian(pde_name):
     return PsiF, expr
 
 
+def pde_params(pde_name):
+    """The PDE's OWN constants (not ansatz parameters): ranked with the
+    parameters in the lowest block, but NOT subject to the pconst constancy
+    equations -- a PDE constant never appears in the ansatz, so it is never
+    differentiated and needs no constancy relation."""
+    if pde_name in ('hydrogen', 'helium'):
+        return ['E']
+    raise ValueError("unknown pde %r" % pde_name)
+
+
+def pde_system(pde_name, coords):
+    """The PDE system as a LIST of ring-parser strings.  The Schroedinger
+    problems are one-element systems built through the sympy Hamiltonian
+    path (build_pde_string)."""
+    if pde_name in ('hydrogen', 'helium'):
+        return [build_pde_string(pde_name, coords)]
+    raise ValueError("unknown pde %r" % pde_name)
+
+
 def build_pde_string(pde_name, coords):
     """H(Psi)-E*Psi, jetified and denominator-cleared, as a ring-parser string."""
     PsiF, expr = _hamiltonian(pde_name)
@@ -945,23 +968,26 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
     # jets high->low: dependent jets, then roots.
     jets = list(jets_dep) + [rn for rn, _ in roots]
     IVAR = coords
+    pparams = pde_params(pde_name)
     if ranking in ('elimination', 'block', 'elim'):
-        # Block ranking: each jet its own block (highest first), E+params in a
-        # final low block.  The block comparison dominates coordinate-order, so a
-        # high jet like DDPsi outranks ALL lower-jet derivatives (e.g. DPsi[R1]).
-        # The chain rule DPsi[c]-DDPsi*v[c] then eliminates DDPsi directly instead
-        # of forcing the cleared high-degree prolongation the orderly ranking does.
-        DVAR = [[j] for j in jets] + [['E'] + params]
+        # Block ranking: each jet its own block (highest first), the PDE's own
+        # constants + params in a final low block.  The block comparison
+        # dominates coordinate-order, so a high jet like DDPsi outranks ALL
+        # lower-jet derivatives (e.g. DPsi[R1]).  The chain rule
+        # DPsi[c]-DDPsi*v[c] then eliminates DDPsi directly instead of forcing
+        # the cleared high-degree prolongation the orderly ranking does.
+        DVAR = [[j] for j in jets] + [pparams + params]
     else:                                          # 'orderly' -- degrevlex
-        DVAR = jets + ['E'] + params
+        DVAR = jets + pparams + params
     rk = dt.compute_ranking(IVAR, DVAR)
     R = rk.ring
 
     ansatz_eqs = [R(s) for s in ansatz_eqs_str]
     pconst = [R('%s[%s]' % (p, c)) for p in params for c in coords]
-    pde = R(build_pde_string(pde_name, coords))
+    pdes = [R(s) for s in pde_system(pde_name, coords)]
 
     return dict(R=R, rk=rk, coords=coords, roots=roots, jets=jets,
                 tower=tower, order=spec.get('order'), params=params,
                 v_params=v_params, amp_params=amp_params, ansatz_eqs=ansatz_eqs,
-                pconst=pconst, pde=pde, ansatz_eqs_str=ansatz_eqs_str)
+                pconst=pconst, pdes=pdes, pde_params=pparams,
+                ansatz_eqs_str=ansatz_eqs_str)
