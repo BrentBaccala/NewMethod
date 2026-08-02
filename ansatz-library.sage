@@ -266,97 +266,59 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=ap + bp + cp + dp + fp + gp,
                     v_params=bp, amp_params=ap)
 
-    # ----- ZETA template: Ψ = Z(v), linear coeffs, linear inner variable -----
+    # ----- ZETA template: Ψ = Z(v), one ODE function of one inner variable ---
     # The flagship of the library and the base case of the whole Zeta family: one
     # unknown function Z of one floating linear inner variable v, obeying a
-    # 2nd-order linear ODE whose coefficients are linear in v.  Every entry with
+    # 2nd-order linear ODE with polynomial coefficients in v.  Every entry with
     # the `order`/`V`/`ODE` return shape (5, 5.1–5.3, 8, 9, 19) is this template
     # with the degrees or the generator list changed; build_problem assembles the
     # chain rules for them from `order`, so they are not listed in `equations`.
     #
     #   inner variable (floating):  v = v₁·R₁ + v₂·R₂ + v₃·R₁₂   (+ v₄·r for H)
     #   chain rules (Z = Z(v)):     Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
-    #   the ODE:      (a₀ + a₁·v)·Ψ″ + (b₀ + b₁·v)·Ψ′ + (c₀ + c₁·v)·Ψ = 0
+    #   the ODE:      A(v)·Ψ″ + B(v)·Ψ′ + C(v)·Ψ = 0            (deg ode_deg)
+    #
+    # The decimal selects (maxdeg_v, ode_deg) — the degree of the inner variable
+    # in the coordinates and of the ODE coefficients in v:
+    #   5   = (1,1)   5.1 = (2,1)   5.2 = (1,2)   5.3 = (2,2)
+    # 5.1 lets v be a conic (R₁², R₁·R₂, …) rather than a plane, which is the
+    # lowest-degree shape a genuinely new coordinate can take.  5.2 raises the ODE
+    # instead: degree 2 in the leading coefficient is what a 2nd-order linear ODE
+    # needs to reach two regular singular points and a third at infinity, so the
+    # hypergeometric equation — and with it the Legendre / Gegenbauer / Jacobi
+    # factors — first becomes expressible there.  5.3 is the union of both, and
+    # the largest member of the single-Zeta family; helium.sage numbered it and
+    # its 10 identically, a coincidence that no longer holds here because ansatz
+    # 10 is repurposed as the product-of-two-ODE-functions family.
     #
     # v FLOATS — it is not hard-coded to a radius — so for hydrogen the search
     # returns both the radial solutions (v ∝ r, the 1s exponential) and the E = 0
     # J₀ Bessel family on a plane, as separate primes of the projected ideal.
-    # Ansatz 10 subsumes this one as its G ≡ const face.  Note the v-params here
-    # start at v₁, not v₀ (the `start=1` argument), matching the numbering of the
-    # ideals in the paper; the 5.x variants below start at v₀.
+    # Ansatz 10 subsumes ansatz 5 as its G ≡ const face.
+    #
+    # TWO NAMING CONVENTIONS live under this branch, and they are load-bearing:
+    # ansatz 5 predates the variants, numbers its inner-variable parameters from
+    # v₁, calls the ODE coefficients a/b/c and writes the ODE with plus signs —
+    # which is how the ideals are labelled in the paper, so it must not drift.
+    # 5.1–5.3 number from v₀, use d/m/n and minus signs.  Both are cosmetic (the
+    # unknown coefficients absorb the sign), but the output is read by humans and
+    # transcribed, so the merge below preserves each verbatim rather than
+    # normalizing one into the other.
     # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
 
-    if ansatz == 5:
-        vp, V = trial('v', gens, 1, constant=False, start=1, roots=rset)
-        ap, A = trial('a', ['v'], 1)
-        bp, B = trial('b', ['v'], 1)
-        cp, C = trial('c', ['v'], 1)
-        ODE = '(%s)*DDPsi + (%s)*DPsi + (%s)*Psi' % (A, B, C)
+    if int(ansatz) == 5:
+        maxdeg_v, ode_deg = {5: (1, 1), 5.1: (2, 1),
+                             5.2: (1, 2), 5.3: (2, 2)}[ansatz]
+        # (coefficient bases, v-numbering origin, ODE sign) -- see above.
+        bases, start, sgn = (('a', 'b', 'c'), 1, '+') if ansatz == 5 \
+                       else (('d', 'm', 'n'), 0, '-')
+        vp, V = trial('v', gens, maxdeg_v, constant=False, start=start,
+                      roots=rset)
+        ap, A = trial(bases[0], ['v'], ode_deg)
+        bp, B = trial(bases[1], ['v'], ode_deg)
+        cp, C = trial(bases[2], ['v'], ode_deg)
+        ODE = '(%s)*DDPsi %s (%s)*DPsi %s (%s)*Psi' % (A, sgn, B, sgn, C)
         return dict(order=2, V=V, ODE=ODE, params=vp + ap + bp + cp, extra=[])
-
-    # ----- ZETA template, QUADRATIC inner variable ---------------------------
-    # Ansatz 5 with v quadratic in the coordinates: the inner variable can be a
-    # conic (R₁², R₁·R₂, …) rather than a plane, which is the lowest-degree shape
-    # a genuinely new coordinate can take.  ODE coefficients stay linear in v.
-    #
-    #   inner variable:  v = v₀·R₁ + … + v₈·R₁₂²              (all deg 1–2)
-    #   chain rules:     Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
-    #   the ODE:         (d₀ + d₁·v)·Ψ″ − (m₀ + m₁·v)·Ψ′ − (n₀ + n₁·v)·Ψ = 0
-    #
-    # The minus signs and the d/m/n coefficient names are cosmetic differences
-    # from ansatz 5's plus signs and a/b/c — the unknown parameters absorb both,
-    # so this really is the same family with one degree raised.
-    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
-
-    if ansatz == 5.1:
-        vp, V = trial('v', gens, 2, constant=False, roots=rset)
-        dp, D = trial('d', ['v'], 1)
-        mp, M = trial('m', ['v'], 1)
-        np_, N = trial('n', ['v'], 1)
-        ODE = '(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)
-        return dict(order=2, V=V, ODE=ODE, params=vp + dp + mp + np_, extra=[])
-
-    # ----- ZETA template, QUADRATIC ODE coefficients -------------------------
-    # Ansatz 5 with the ODE coefficients quadratic in v and the inner variable
-    # left linear.  Degree 2 in the leading coefficient is what a 2nd-order linear
-    # ODE needs to reach two regular singular points and a third at infinity, so
-    # the hypergeometric equation — and with it the Legendre / Gegenbauer /
-    # Jacobi factors — first becomes expressible here, on a linear v.
-    #
-    #   inner variable:  v = v₀·R₁ + v₁·R₂ + v₂·R₁₂
-    #   chain rules:     Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
-    #   the ODE:  (d₀+d₁v+d₂v²)·Ψ″ − (m₀+m₁v+m₂v²)·Ψ′ − (n₀+n₁v+n₂v²)·Ψ = 0
-    #
-    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
-
-    if ansatz == 5.2:
-        vp, V = trial('v', gens, 1, constant=False, roots=rset)
-        dp, D = trial('d', ['v'], 2)
-        mp, M = trial('m', ['v'], 2)
-        np_, N = trial('n', ['v'], 2)
-        ODE = '(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)
-        return dict(order=2, V=V, ODE=ODE, params=vp + dp + mp + np_, extra=[])
-
-    # ----- ZETA template, QUADRATIC coefficients AND inner variable ----------
-    # Both degrees raised at once — the largest member of the single-Zeta family,
-    # and the union of what 5.1 and 5.2 reach separately.  helium.sage numbered
-    # 5.3 and 10 identically (its 10 was the same single-Zeta spec); ansatz 10
-    # here is repurposed as the product-of-two-ODE-functions family, which is a
-    # genuinely different template, so the coincidence no longer holds.
-    #
-    #   inner variable:  v = v₀·R₁ + … + v₈·R₁₂²              (all deg 1–2)
-    #   chain rules:     Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
-    #   the ODE:  (d₀+d₁v+d₂v²)·Ψ″ − (m₀+m₁v+m₂v²)·Ψ′ − (n₀+n₁v+n₂v²)·Ψ = 0
-    #
-    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
-
-    if ansatz == 5.3:
-        vp, V = trial('v', gens, 2, constant=False, roots=rset)
-        dp, D = trial('d', ['v'], 2)
-        mp, M = trial('m', ['v'], 2)
-        np_, N = trial('n', ['v'], 2)
-        ODE = '(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)
-        return dict(order=2, V=V, ODE=ODE, params=vp + dp + mp + np_, extra=[])
 
     # ----- RATIONAL-ARGUMENT template: Ψ = Z(w), w = B/C ---------------------
     # The Zeta family with a RATIONAL inner argument.  Rather than carry a
