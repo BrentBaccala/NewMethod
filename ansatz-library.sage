@@ -852,7 +852,7 @@ def _hamiltonian(pde_name):
         H = -1/2 * (diff(PsiF, x, 2) + diff(PsiF, y, 2) + diff(PsiF, z, 2)) \
             - (1/r) * PsiF
         rootsub = {}
-    else:
+    elif pde_name == 'helium':
         R1, R2, R12 = var('R1 R2 R12')
         PsiF = function('PsiF')(R1, R2, R12)
         H = (-1/2 * sum(diff(PsiF, Ri, 2) + 2/Ri * diff(PsiF, Ri) for Ri in (R1, R2))
@@ -861,6 +861,8 @@ def _hamiltonian(pde_name):
              - (R2**2 + R12**2 - R1**2)/(2*R2*R12) * diff(diff(PsiF, R12), R2)
              - sum(2/Ri for Ri in (R1, R2)) * PsiF + 1/R12 * PsiF)
         rootsub = {}
+    else:
+        raise ValueError("unknown pde %r" % pde_name)
     expr = H - Evar * PsiF
     for k, v_ in rootsub.items():
         expr = expr.subs({k: v_})
