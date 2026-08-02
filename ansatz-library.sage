@@ -120,6 +120,8 @@ def coordinate_system(pde_name):
     if pde_name == 'helium':
         # spherically-symmetric Nakatsuji S-state coordinates: no roots.
         return ['R1', 'R2', 'R12'], []
+    if pde_name in ('navier-stokes', 'navier-stokes-nd'):
+        return ['x', 'y', 'z', 't'], []
     raise ValueError("unknown pde %r" % pde_name)
 
 
@@ -830,6 +832,83 @@ def ansatz_spec(ansatz, coords, roots):
                     v_params=cp,        # C == 0 -> log gone -> DEGENERATE
                     amp_params=ap)      # A == 0 -> Psi == 0 -> TRIVIAL
 
+    # ----- NONLINEAR SECOND-DEGREE SYSTEM template: (u,v,w,p) over Ψ = Z(s) --
+    # Figure 8 / equation (25) of NewMethod.tex — hence the number — the
+    # nonlinear, second-order, second-degree ansatz whose four top-level
+    # polynomials u, v, w, p were introduced precisely to serve as the
+    # dependent variables of a SYSTEM of PDEs (incompressible Navier–Stokes
+    # being the target pairing, sec:NavierStokes).  One unknown profile Z of
+    # one floating linear inner variable — called s here, not v, so as not to
+    # collide with the second velocity component — obeying a 2nd-order ODE
+    # that carries all six second-degree jet monomials alongside the three
+    # linear ones; each field is a linear background in the coordinates plus
+    # the ODE element with its own amplitude.
+    #
+    #   chain rules:     Ψ[c] − Ψ′·s[c],  Ψ′[c] − Ψ″·s[c]      (c = x, y, z, t)
+    #   the ODE:   (a₀+a₁s)Ψ″² + (b₀+b₁s)Ψ″Ψ′ + (c₀+c₁s)Ψ″Ψ + (d₀+d₁s)Ψ′²
+    #              + (e₀+e₁s)Ψ′Ψ + (f₀+f₁s)Ψ² + (g₀+g₁s)Ψ″ + (h₀+h₁s)Ψ′
+    #              + (i₀+i₁s)Ψ = 0
+    #   inner variable:  s = s₁x + s₂y + s₃z + s₄t
+    #   the fields:      u = u₁x + u₂y + u₃z + u₄t + u₅Ψ       (v, w, p alike)
+    #
+    # The decimal selects (leader_deg, background):
+    #   25   = (2, yes)  42 params      25.1 = (1, yes)  40 params
+    #   25.2 = (2, no)   30 params      25.3 = (1, no)   28 params
+    # leader_deg = 2 includes the (a₀+a₁s)Ψ″² monomial; leader_deg = 1 omits
+    # it — the cell where the paper says the viscous solutions live, since a
+    # momentum residual of degree 1 in Ψ″ cannot be pseudo-divided by an ODE
+    # of degree 2 in Ψ″ (the "viscous block" of sec:NavierStokes).  Everything
+    # else in the ODE is unchanged: the other five second-degree monomials
+    # stay in both cases.  background = no strips u, v, w to their Ψ term
+    # alone (u − u₅Ψ), but p KEEPS its full linear part, so the run can
+    # confirm p₁ = p₂ = p₃ = 0 rather than assume it.
+    #
+    # u₅, v₅, w₅ are the v_params — the amplitude vector a of the paper.
+    # a ≡ 0 removes the ODE element from the velocity field entirely, which is
+    # the DEGENERATE case.  amp_params is EMPTY: Ψ ≡ 0 leaves the linear
+    # background, which is a real (if dull) solution of the system — one of
+    # the linear strain-and-rotation flows — not a collapse to a trivial
+    # solution, so no prime is tagged TRIVIAL on that account.
+    # Refs: NewMethod.tex Figure 8 (nonlinear ansatz figure) and eq. (25)
+    # [label `ansatz 18`], sec:NavierStokes; oracle ns-reduction-check.py.
+    # Code jet names: Ψ/Ψ′/Ψ″→Psi/DPsi/DDPsi; the ODE's independent variable
+    # is the jet s.
+
+    if int(ansatz) == 25:
+        assert coords == ['x', 'y', 'z', 't'], \
+            "ansatz 25 is the Navier-Stokes system ansatz: it requires " \
+            "coords ['x','y','z','t'], got %r" % (coords,)
+        leader_deg, background = {25: (2, True), 25.1: (1, True),
+                                  25.2: (2, False), 25.3: (1, False)}[ansatz]
+        ode_terms = (['(a0 + a1*s)*DDPsi^2'] if leader_deg == 2 else [])
+        ode_terms += ['(b0 + b1*s)*DDPsi*DPsi', '(c0 + c1*s)*DDPsi*Psi',
+                      '(d0 + d1*s)*DPsi^2', '(e0 + e1*s)*DPsi*Psi',
+                      '(f0 + f1*s)*Psi^2',
+                      '(g0 + g1*s)*DDPsi', '(h0 + h1*s)*DPsi', '(i0 + i1*s)*Psi']
+        odep = ((['a0', 'a1'] if leader_deg == 2 else [])
+                + ['b0', 'b1', 'c0', 'c1', 'd0', 'd1', 'e0', 'e1', 'f0', 'f1',
+                   'g0', 'g1', 'h0', 'h1', 'i0', 'i1'])
+        sp_ = ['s1', 's2', 's3', 's4']
+        field_eqs, fparams = [], []
+        for f in ('u', 'v', 'w', 'p'):
+            if background or f == 'p':
+                field_eqs.append('%s - (%s1*x + %s2*y + %s3*z + %s4*t + %s5*Psi)'
+                                 % (f, f, f, f, f, f))
+                fparams += ['%s%d' % (f, i) for i in range(1, 6)]
+            else:
+                field_eqs.append('%s - %s5*Psi' % (f, f))
+                fparams.append('%s5' % f)
+        eqs = (['Psi[%s] - DPsi*s[%s]' % (c, c) for c in coords]
+               + ['DPsi[%s] - DDPsi*s[%s]' % (c, c) for c in coords]
+               + [' + '.join(ode_terms)]
+               + ['s - (s1*x + s2*y + s3*z + s4*t)']
+               + field_eqs)
+        return dict(kind='nssystem',
+                    jets_dep=['u', 'v', 'w', 'p', 'DDPsi', 'DPsi', 'Psi', 's'],
+                    equations=eqs, params=sp_ + fparams + odep,
+                    v_params=['u5', 'v5', 'w5'],
+                    amp_params=[])
+
     raise NotImplementedError(
         "ansatz %s not yet in the differential-algebra library.\n"
         "  algebraic extension (11: gamma)  -> same template as 13." % ansatz)
@@ -880,6 +959,10 @@ def pde_params(pde_name):
     differentiated and needs no constancy relation."""
     if pde_name in ('hydrogen', 'helium'):
         return ['E']
+    if pde_name == 'navier-stokes':
+        return ['rho', 'mu']
+    if pde_name == 'navier-stokes-nd':               # nondimensional: rho = mu = 1
+        return []
     raise ValueError("unknown pde %r" % pde_name)
 
 
@@ -889,6 +972,17 @@ def pde_system(pde_name, coords):
     path (build_pde_string)."""
     if pde_name in ('hydrogen', 'helium'):
         return [build_pde_string(pde_name, coords)]
+    if pde_name in ('navier-stokes', 'navier-stokes-nd'):
+        # Incompressible Navier-Stokes: continuity + three momentum equations.
+        # These are already differential polynomials in the field jets u, v, w,
+        # p -- no denominators to clear, so no sympy Hamiltonian detour.
+        # 'navier-stokes-nd' is the nondimensional variant (rho = mu = 1).
+        rho, mu = ('rho', 'mu') if pde_name == 'navier-stokes' else ('1', '1')
+        mom = ('%(r)s*(%(f)s[t] + u*%(f)s[x] + v*%(f)s[y] + w*%(f)s[z])'
+               ' + p[%(c)s] - %(m)s*(%(f)s[x,x] + %(f)s[y,y] + %(f)s[z,z])')
+        return (['u[x] + v[y] + w[z]']
+                + [mom % dict(r=rho, m=mu, f=f, c=c)
+                   for f, c in (('u', 'x'), ('v', 'y'), ('w', 'z'))])
     raise ValueError("unknown pde %r" % pde_name)
 
 
