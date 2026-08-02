@@ -123,34 +123,54 @@ def coordinate_system(pde_name):
 # the ansatz listing
 # ==========================================================================
 # Entries are in NUMERICAL order by ansatz number.  Two return shapes:
-#   Zeta / single-ODE-function family (5,5.1,5.2,5.3,8,9,10,19 and the
-#     coeff-ring variants 14/15/16) -- dict(order, V, ODE, params, extra) where
+#   Zeta / single-ODE-function family (5, 5.1, 5.2, 5.3, 8, 9, 19) --
+#     dict(order, V, ODE, params, extra) where
 #       V     : inner-variable polynomial string (defines jet `v`)
 #       ODE   : the ODE as a differential polynomial in Psi/DPsi/DDPsi and v
 #       params: ALL constant parameters introduced (v-coeffs then ODE-coeffs)
 #       extra : any additional algebraic relations (e.g. algebraic extensions)
-#   every other family (product 1/1.1/2/3, rational 6/7, nested 12, algext 13,
-#     log 17/18, exp-Fock 20/20.1) -- dict(kind, jets_dep, equations, params,
-#     v_params, amp_params); its differential-polynomial equations are inline.
-# Each family's template is documented in a header comment at its first entry.
+#     build_problem assembles the chain rules for these from `order`.
+#   every other entry (product 1/1.1/2/3/18/20/20.1, rational 6/7,
+#     product-of-two 10, nested 12, algext 13, coeff-ring 14/15/16, log 17/17.1)
+#     -- dict(kind, jets_dep, equations, params, v_params, amp_params); its
+#     differential-polynomial equations are listed inline.
+#
+# EVERY entry carries a comment block in the ansatz-10 format: a banner naming
+# the template and the closed form, a prose paragraph placing it against its
+# neighbours, an indented display of the defining equations, closing prose for
+# the design choices and references, and a "Code jet names:" line mapping the
+# math notation to the identifiers used below.  The displays are written in the
+# HELIUM coordinates (R₁, R₂, R₁₂); hydrogen substitutes (x, y, z) plus the
+# algebraic root r, which adds one term to every coordinate trial polynomial.
 
 def ansatz_spec(ansatz, coords, roots):
     gens = coords + [rn for rn, _ in roots]
     rset = tuple(rn for rn, _ in roots)
 
-    # ----- PRODUCT / EXPONENTIAL template: Psi = A(coords) * F(inner) ---------
-    # The solution is a coordinate polynomial A times an ODE function F of an
-    # inner variable.  Psi is defined by  Psi - A*F = 0  (leader Psi); F has its
-    # own chain rule / ODE.  Unlike the Zeta(V) family the chain rule carries the
-    # A-factor: differentiating Psi - A*F gives Psi[c] = A_c*F + A*F[c] (the
-    # engine forms A_c since A is built from the independent coordinates).  The
-    # inner-variable jet is named B (exp/Chi) or C (log); its coefficients are
-    # v_params, so B==0 (exponential/log collapses to a constant) reads as the
-    # degenerate case, which Thomas splits off as its own cell.
+    # ----- KATO-CUSP EXPONENTIAL template: Ψ = A·exp(B) ----------------------
+    # A polynomial amplitude times the exponential of a linear form — the minimal
+    # cusp-carrying shape, and the first of the PRODUCT entries (1, 1.1, 2, 3, 18,
+    # 20.1).  In a product template Ψ itself is a leader, defined by Ψ − A·Φ = 0;
+    # unlike the Zeta family the chain rule then carries the A-factor, since
+    # differentiating Ψ − A·Φ gives Ψ[c] = A[c]·Φ + A·Φ[c] and the engine forms
+    # A[c] itself (A is built from the independent coordinates).  exp is its own
+    # derivative, so Φ = exp(B) needs no derivative jet of its own: the chain rule
+    # closes on Φ, and the whole ansatz costs 3 dependent jets.
+    #
+    #   amplitude:     A = a₀ + a₁·R₁ + a₂·R₂ + a₃·R₁₂
+    #   exponent:      B =      b₀·R₁ + b₁·R₂ + b₂·R₁₂        (no constant term —
+    #                                                          it would only
+    #                                                          rescale A)
+    #   the product:   Ψ − A·Φ
+    #   chain rule:    Φ[c] − Φ·B[c]                          (Φ′ = Φ)
+    #
+    # B's coefficients are the v_params, so B ≡ 0 — the exponential collapsing to
+    # 1 and leaving a bare polynomial Ψ = A — is the degenerate case, which Thomas
+    # splits off as its own cell rather than excluding.  A ≡ 0 (the amp_params) is
+    # the trivial Ψ ≡ 0 face.
+    # Code jet names: Φ→Phi.
 
     if ansatz == 1:
-        # Psi = A * Phi,  Phi = exp(B):  Phi' = Phi, so the chain rule is
-        # Phi[c] - Phi*B[c]  (no separate derivative jet).
         ap, A = trial('a', gens, 1, roots=rset)                    # A(coords)
         bp, B = trial('b', gens, 1, constant=False, roots=rset)    # inner B
         eqs = (['Psi - (%s)*Phi' % A]
@@ -159,9 +179,22 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
                     equations=eqs, params=ap + bp, v_params=bp, amp_params=ap)
 
+    # ----- QUADRATIC-AMPLITUDE CUSP template: Ψ = A(deg 2)·exp(B) ------------
+    # Ansatz 1 with a Hylleraas-type quadratic amplitude — no new template, one
+    # more degree on A.  The extra freedom lets Ψ carry a polynomial node/bulk
+    # factor on top of the cusp, the way hydrogen's 2s = (1 − Zr/2)·e^{−Zr/2}
+    # carries its node.  (Report ansatz 1.1.)
+    #
+    #   amplitude:     A = a₀ + a₁·R₁ + … + a₉·R₁₂²           (all deg ≤ 2)
+    #   exponent:      B =      b₀·R₁ + b₁·R₂ + b₂·R₁₂
+    #   the product:   Ψ − A·Φ
+    #   chain rule:    Φ[c] − Φ·B[c]                          (Φ′ = Φ)
+    #
+    # Degenerate / trivial faces exactly as ansatz 1: B ≡ 0 kills the exponential,
+    # A ≡ 0 kills Ψ.
+    # Code jet names: Φ→Phi.
+
     if ansatz == 1.1:
-        # Hylleraas-type cusp with quadratic amplitude: Psi = A(deg 2)*exp(B).
-        # No new template -- ansatz 1 with a quadratic A.  (report ansatz 1.1)
         ap, A = trial('a', gens, 2, roots=rset)
         bp, B = trial('b', gens, 1, constant=False, roots=rset)
         eqs = (['Psi - (%s)*Phi' % A]
@@ -170,9 +203,24 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
                     equations=eqs, params=ap + bp, v_params=bp, amp_params=ap)
 
+    # ----- LOGARITHM template: Ψ = A·log(C) ----------------------------------
+    # A polynomial amplitude times the logarithm of a linear form.  Ξ = log(C) has
+    # Ξ′ = 1/C, so the chain rule has to be cleared of its denominator; the
+    # separant of the cleared relation is C, which Thomas turns into the
+    # inequation C ≠ 0 — the branch point of the log — on every regular cell,
+    # while reporting the C ≡ 0 locus as a cell of its own.
+    #
+    #   amplitude:     A = a₀ + a₁·R₁ + a₂·R₂ + a₃·R₁₂
+    #   argument:      C =      c₀·R₁ + c₁·R₂ + c₂·R₁₂        (no constant term)
+    #   the product:   Ψ − A·Ξ
+    #   chain rule:    C·Ξ[c] − C[c]                          (Ξ′ = 1/C, cleared)
+    #
+    # C's coefficients are the v_params: C ≡ 0 kills the log outright.  This is
+    # the MULTIPLICATIVE log; for a log admitted additively see 17/17.1, through
+    # the inner variable see 19, and inside an exponent see 20/20.1.
+    # Code jet names: Ξ→Xi.
+
     if ansatz == 2:
-        # Psi = A * Xi,  Xi = log(C):  Xi' = 1/C, so the chain rule cleared of
-        # the denominator is  C*Xi[c] - C[c].
         ap, A = trial('a', gens, 1, roots=rset)                    # A(coords)
         cp, C = trial('c', gens, 1, constant=False, roots=rset)    # inner C
         eqs = (['Psi - (%s)*Xi' % A]
@@ -181,10 +229,28 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='product', jets_dep=['Psi', 'Xi', 'C'],
                     equations=eqs, params=ap + cp, v_params=cp, amp_params=ap)
 
+    # ----- COORDINATE-COEFFICIENT ODE template: Ψ = A·X(B) -------------------
+    # helium.sage's "weird second-order mess": a polynomial amplitude times an
+    # unknown X obeying a 2nd-order ODE whose coefficients are polynomials in the
+    # COORDINATES, not in the inner variable.  That is the one structural break
+    # from the Zeta family (5, 5.1–5.3), where the coefficients are polynomials in
+    # v — here the relation is not an ODE in B at all, but a linear relation among
+    # the jets with coordinate-polynomial coefficients, and an inhomogeneous one
+    # at that (the pG term, which no other entry in the library carries).
+    #
+    #   amplitude:     A  = a₀ + a₁·R₁ + a₂·R₂ + a₃·R₁₂
+    #   inner var:     B  =      b₀·R₁ + b₁·R₂ + b₂·R₁₂
+    #   coefficients:  pC, pD, pF, pG — one linear coordinate polynomial apiece,
+    #                  each with its own constant term (4 params each for helium)
+    #   the product:   Ψ − A·X
+    #   chain rules:   X[c] − X′·B[c],  X′[c] − X″·B[c]
+    #   the relation:  pC·X″ − pD·X′ − pF·X − pG = 0
+    #
+    # B's coefficients are the v_params (B ≡ 0 collapses X to a constant), A's the
+    # amp_params.  Six trial polynomials makes this the widest product entry.
+    # Code jet names: X/X′/X″→Chi/DChi/DDChi; pC/pD/pF/pG params are c*/d*/f*/g*.
+
     if ansatz == 3:
-        # Psi = A * Chi,  Chi a 2nd-order ODE function of B with COORDINATE-
-        # polynomial coefficients (helium.sage's "weird second-order mess"):
-        #   pC*Chi'' - pD*Chi' - pF*Chi - pG = 0.
         ap, A = trial('a', gens, 1, roots=rset)
         bp, B = trial('b', gens, 1, constant=False, roots=rset)    # inner B
         cp, pC = trial('c', gens, 1, roots=rset)                   # ODE coeffs
@@ -200,8 +266,27 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=ap + bp + cp + dp + fp + gp,
                     v_params=bp, amp_params=ap)
 
+    # ----- ZETA template: Ψ = Z(v), linear coeffs, linear inner variable -----
+    # The flagship of the library and the base case of the whole Zeta family: one
+    # unknown function Z of one floating linear inner variable v, obeying a
+    # 2nd-order linear ODE whose coefficients are linear in v.  Every entry with
+    # the `order`/`V`/`ODE` return shape (5, 5.1–5.3, 8, 9, 19) is this template
+    # with the degrees or the generator list changed; build_problem assembles the
+    # chain rules for them from `order`, so they are not listed in `equations`.
+    #
+    #   inner variable (floating):  v = v₁·R₁ + v₂·R₂ + v₃·R₁₂   (+ v₄·r for H)
+    #   chain rules (Z = Z(v)):     Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
+    #   the ODE:      (a₀ + a₁·v)·Ψ″ + (b₀ + b₁·v)·Ψ′ + (c₀ + c₁·v)·Ψ = 0
+    #
+    # v FLOATS — it is not hard-coded to a radius — so for hydrogen the search
+    # returns both the radial solutions (v ∝ r, the 1s exponential) and the E = 0
+    # J₀ Bessel family on a plane, as separate primes of the projected ideal.
+    # Ansatz 10 subsumes this one as its G ≡ const face.  Note the v-params here
+    # start at v₁, not v₀ (the `start=1` argument), matching the numbering of the
+    # ideals in the paper; the 5.x variants below start at v₀.
+    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
+
     if ansatz == 5:
-        # 2nd-order ODE, linear coeffs, linear inner variable.
         vp, V = trial('v', gens, 1, constant=False, start=1, roots=rset)
         ap, A = trial('a', ['v'], 1)
         bp, B = trial('b', ['v'], 1)
@@ -209,8 +294,21 @@ def ansatz_spec(ansatz, coords, roots):
         ODE = '(%s)*DDPsi + (%s)*DPsi + (%s)*Psi' % (A, B, C)
         return dict(order=2, V=V, ODE=ODE, params=vp + ap + bp + cp, extra=[])
 
+    # ----- ZETA template, QUADRATIC inner variable ---------------------------
+    # Ansatz 5 with v quadratic in the coordinates: the inner variable can be a
+    # conic (R₁², R₁·R₂, …) rather than a plane, which is the lowest-degree shape
+    # a genuinely new coordinate can take.  ODE coefficients stay linear in v.
+    #
+    #   inner variable:  v = v₀·R₁ + … + v₈·R₁₂²              (all deg 1–2)
+    #   chain rules:     Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
+    #   the ODE:         (d₀ + d₁·v)·Ψ″ − (m₀ + m₁·v)·Ψ′ − (n₀ + n₁·v)·Ψ = 0
+    #
+    # The minus signs and the d/m/n coefficient names are cosmetic differences
+    # from ansatz 5's plus signs and a/b/c — the unknown parameters absorb both,
+    # so this really is the same family with one degree raised.
+    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
+
     if ansatz == 5.1:
-        # 2nd-order ODE, linear coeffs, QUADRATIC inner variable.
         vp, V = trial('v', gens, 2, constant=False, roots=rset)
         dp, D = trial('d', ['v'], 1)
         mp, M = trial('m', ['v'], 1)
@@ -218,8 +316,20 @@ def ansatz_spec(ansatz, coords, roots):
         ODE = '(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)
         return dict(order=2, V=V, ODE=ODE, params=vp + dp + mp + np_, extra=[])
 
+    # ----- ZETA template, QUADRATIC ODE coefficients -------------------------
+    # Ansatz 5 with the ODE coefficients quadratic in v and the inner variable
+    # left linear.  Degree 2 in the leading coefficient is what a 2nd-order linear
+    # ODE needs to reach two regular singular points and a third at infinity, so
+    # the hypergeometric equation — and with it the Legendre / Gegenbauer /
+    # Jacobi factors — first becomes expressible here, on a linear v.
+    #
+    #   inner variable:  v = v₀·R₁ + v₁·R₂ + v₂·R₁₂
+    #   chain rules:     Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
+    #   the ODE:  (d₀+d₁v+d₂v²)·Ψ″ − (m₀+m₁v+m₂v²)·Ψ′ − (n₀+n₁v+n₂v²)·Ψ = 0
+    #
+    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
+
     if ansatz == 5.2:
-        # 2nd-order ODE, QUADRATIC coeffs, linear inner variable.
         vp, V = trial('v', gens, 1, constant=False, roots=rset)
         dp, D = trial('d', ['v'], 2)
         mp, M = trial('m', ['v'], 2)
@@ -227,10 +337,20 @@ def ansatz_spec(ansatz, coords, roots):
         ODE = '(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)
         return dict(order=2, V=V, ODE=ODE, params=vp + dp + mp + np_, extra=[])
 
+    # ----- ZETA template, QUADRATIC coefficients AND inner variable ----------
+    # Both degrees raised at once — the largest member of the single-Zeta family,
+    # and the union of what 5.1 and 5.2 reach separately.  helium.sage numbered
+    # 5.3 and 10 identically (its 10 was the same single-Zeta spec); ansatz 10
+    # here is repurposed as the product-of-two-ODE-functions family, which is a
+    # genuinely different template, so the coincidence no longer holds.
+    #
+    #   inner variable:  v = v₀·R₁ + … + v₈·R₁₂²              (all deg 1–2)
+    #   chain rules:     Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
+    #   the ODE:  (d₀+d₁v+d₂v²)·Ψ″ − (m₀+m₁v+m₂v²)·Ψ′ − (n₀+n₁v+n₂v²)·Ψ = 0
+    #
+    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
+
     if ansatz == 5.3:
-        # 2nd-order ODE, QUADRATIC coeffs, QUADRATIC inner variable.
-        # (helium.sage 5.3 and 10 coincide as single-Zeta specs; ansatz 10 is
-        # now repurposed below as the product-of-two-ODE-functions family.)
         vp, V = trial('v', gens, 2, constant=False, roots=rset)
         dp, D = trial('d', ['v'], 2)
         mp, M = trial('m', ['v'], 2)
@@ -238,13 +358,26 @@ def ansatz_spec(ansatz, coords, roots):
         ODE = '(%s)*DDPsi - (%s)*DPsi - (%s)*Psi' % (D, M, N)
         return dict(order=2, V=V, ODE=ODE, params=vp + dp + mp + np_, extra=[])
 
-    # ----- RATIONAL-ARGUMENT template: Psi = Zeta(w), w = B/C -----------------
-    # The inner argument is a rational function of the coordinates.  Rather than
-    # carry a denominator, introduce w as a jet defined by the cleared relation
-    # C*w - B = 0 (leader w, separant C -- so C != 0 is a Thomas inequation);
-    # everything else is the Zeta(V) family with w in place of v.  B/C is
-    # invariant under (B,C)->(lambda B, lambda C), an extra scaling dimension we
-    # let Thomas carry rather than gauge-fix.
+    # ----- RATIONAL-ARGUMENT template: Ψ = Z(w), w = B/C ---------------------
+    # The Zeta family with a RATIONAL inner argument.  Rather than carry a
+    # denominator, w enters as a jet with the cleared defining relation C·w − B;
+    # its separant is C, so C ≠ 0 becomes a Thomas inequation on every regular
+    # cell and the C ≡ 0 locus is reported as a cell rather than assumed away.
+    # Ansatz 6 takes B, C and the ODE coefficients all linear; ansatz 7 takes all
+    # three quadratic — the two share this one code path.
+    #
+    #   numerator, denominator:  B, C — coordinate polynomials of degree d, both
+    #                            with a constant term (d = 1 for 6, d = 2 for 7)
+    #   inner variable:          C·w − B = 0                   (i.e. w = B/C)
+    #   chain rules:             Ψ[c] − Ψ′·w[c],  Ψ′[c] − Ψ″·w[c]
+    #   the ODE:  D(w)·Ψ″ − M(w)·Ψ′ − N(w)·Ψ = 0               (each deg d in w)
+    #
+    # B/C is invariant under (B,C) → (λB, λC), an extra scaling dimension we let
+    # Thomas carry rather than gauge-fix, so every prime arrives with that one
+    # spurious degree of freedom.  B's coefficients are the v_params: B ≡ 0 gives
+    # w = 0, the degenerate cell.
+    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
+
     if ansatz in (6, 7):
         d_bc = 1 if ansatz == 6 else 2          # degree of B, C and of the ODE coeffs
         bp, B = trial('b', gens, d_bc, roots=rset)      # numerator   (with constant)
@@ -261,16 +394,43 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=bp + cp + dp + mp + np_,
                     v_params=bp)                         # B==0 -> w=0 -> degenerate
 
+    # ----- FIRST-ORDER ZETA template: Ψ = Z(v), M·Z′ = N·Z -------------------
+    # The 1st-order face of the Zeta family: one chain rule instead of two, one
+    # ODE of order 1 with coefficients linear in v.  Its solutions are the
+    # exponentials of a rational integral, so it is the cheapest ansatz that can
+    # still express a Kato cusp.  Ansatz 5 finds the same solutions on its
+    # a₀ = a₁ = 0 face, but carries the Ψ″ jet the whole way to get there — so
+    # this is the one to reach for when 5 is too heavy to close.
+    #
+    #   inner variable:  v = v₀·R₁ + v₁·R₂ + v₂·R₁₂
+    #   chain rule:      Ψ[c] − Ψ′·v[c]                       (order 1: one rule)
+    #   the ODE:         (m₀ + m₁·v)·Ψ′ − (n₀ + n₁·v)·Ψ = 0
+    #
+    # Code jet names: Z/Z′→Psi/DPsi.
+
     if ansatz == 8:
-        # 1st-order ODE, linear coeffs, linear inner variable: M*DPsi - N*Psi = 0.
         vp, V = trial('v', gens, 1, constant=False, roots=rset)
         mp, M = trial('m', ['v'], 1)
         np_, N = trial('n', ['v'], 1)
         ODE = '(%s)*DPsi - (%s)*Psi' % (M, N)
         return dict(order=1, V=V, ODE=ODE, params=vp + mp + np_, extra=[])
 
+    # ----- CONSTANT-RATE ZETA template: Ψ = Z(v), Z′ = n₀·Z ------------------
+    # Ansatz 8 with the rate held constant.  The ODE integrates in closed form to
+    # Ψ = const·exp(n₀·v), so this is ansatz 1 with a constant amplitude, reached
+    # through the Zeta machinery instead of the product machinery — and that
+    # overlap is the point: the two templates must return the same variety, which
+    # makes this the standard cross-check on a new PDE, a new ranking, or a change
+    # to the reduction pipeline.  4 parameters for helium, the smallest in the
+    # library.
+    #
+    #   inner variable:  v = v₀·R₁ + v₁·R₂ + v₂·R₁₂
+    #   chain rule:      Ψ[c] − Ψ′·v[c]
+    #   the ODE:         Ψ′ − n₀·Ψ = 0
+    #
+    # Code jet names: Z/Z′→Psi/DPsi.
+
     if ansatz == 9:
-        # 1st-order ODE, constant rate: DPsi - n0*Psi = 0 (pure exponential in V).
         vp, V = trial('v', gens, 1, constant=False, roots=rset)
         np_, N = trial('n', ['v'], 0)          # N = n0
         ODE = 'DPsi - (%s)*Psi' % N
@@ -302,6 +462,7 @@ def ansatz_spec(ansatz, coords, roots):
     # heavy band.  Kept fully symmetric — NO leading-coefficient gauge-fix, so the
     # a₁=0 / d₁=0 branches (incl. the pure-Bessel face) stay reachable.
     # Code jet names: F″/F′→DDF/DF, G″/G′→DDG/DG, ξ/η→xi/eta.
+
     if ansatz == 10:
         pp, XI  = trial('p', gens, 1, constant=False, roots=rset)
         qq, ETA = trial('q', gens, 1, constant=False, roots=rset)
@@ -319,14 +480,27 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=pp + qq + odep,
                     v_params=pp + qq, amp_params=[])
 
-    # ----- NESTED-ODE template: Psi = Zeta(V), V depends on Theta = Theta(U) --
-    # Two coupled ODE functions.  The inner function Theta solves an ODE in the
-    # inner-inner variable U; the OUTER inner variable V is a polynomial in the
-    # coordinates AND Theta, so the outer solution Psi = Zeta(V) is a function of
-    # a function.  Psi/DPsi/DDPsi are the outer ODE function (= Zeta); Theta/
-    # DTheta/DDTheta the inner one.  Reduction of the PDE cascades down both
-    # towers: Psi[c] -> DPsi*V[c], V[c] -> (coords) + v_theta*Theta[c],
-    # Theta[c] -> DTheta*U[c].
+    # ----- NESTED-ODE template: Ψ = Z(V), V = V(coords, Θ), Θ = Θ(U) ---------
+    # Two coupled ODE functions, one inside the other.  The inner Θ solves its own
+    # 2nd-order ODE in an inner-inner variable U; the OUTER inner variable V is a
+    # polynomial in the coordinates AND Θ, so Ψ = Z(V) is a function of a
+    # function.  Reduction of the PDE cascades down both towers:
+    # Ψ[c] → Ψ′·V[c],  V[c] → (coords) + v_Θ·Θ[c],  Θ[c] → Θ′·U[c].
+    #
+    #   inner-inner var:  U = u₀·R₁ + u₁·R₂ + u₂·R₁₂          (deg maxdeg_u)
+    #   inner chain:      Θ[c] − Θ′·U[c],  Θ′[c] − Θ″·U[c]
+    #   inner ODE:        A(U)·Θ″ − B(U)·Θ′ − C(U)·Θ = 0      (deg ode_u in U)
+    #   outer var:        V = v₀·R₁ + v₁·R₂ + v₂·R₁₂ + v₃·Θ   (deg maxdeg_v)
+    #   outer chain:      Ψ[c] − Ψ′·V[c],  Ψ′[c] − Ψ″·V[c]
+    #   outer ODE:        D(V)·Ψ″ − M(V)·Ψ′ − N(V)·Ψ = 0      (deg ode_v in V)
+    #
+    # The decimal selects (maxdeg_v, maxdeg_u, ode_v, ode_u):
+    #   12   = (1,1,1,1)   12.1 = (2,1,1,1)   12.2 = (1,2,1,1)
+    #   12.3 = (1,1,2,1)   12.4 = (1,1,1,2)
+    # 8 dependent jets even at the base degrees, second only to ansatz 10's 9 —
+    # two full ODE towers is inherently what this costs.
+    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi, Θ/Θ′/Θ″→Theta/DTheta/DDTheta.
+
     if int(ansatz) == 12:
         deg = {12: (1, 1, 1, 1), 12.1: (2, 1, 1, 1), 12.2: (1, 2, 1, 1),
                12.3: (1, 1, 2, 1), 12.4: (1, 1, 1, 2)}[ansatz]
@@ -355,13 +529,30 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=up + ap + bp + cp + vp + dp + mp + np_,
                     v_params=vp)
 
-    # ----- ALGEBRAIC-EXTENSION template (helium.sage calls it 13) -------------
-    # Psi = Zeta(V) with a 2nd-order ODE whose coefficients live in a quadratic
-    # algebraic extension: g satisfies A*g^2 + B*g + C = 0 (A,B,C polys in V), and
-    # the ODE coeffs D,M,N are polynomials in V and g.  g is a differential
-    # indeterminate with an algebraic (order-0) defining relation; its derivatives
-    # follow from prolonging that relation (separant 2*A*g+B).  This is the same
-    # template ansatz 11 needs.
+    # ----- ALGEBRAIC-EXTENSION template: Ψ = Z(V), ODE coeffs over Q(V)[g] ---
+    # (helium.sage calls this one 13.)  The Zeta family with the ODE coefficients
+    # living in a quadratic algebraic extension: g is a differential indeterminate
+    # pinned by an order-0 minimal polynomial whose own coefficients are
+    # polynomials in V, and the ODE coefficients D, M, N are polynomials in V AND
+    # g.  g's derivatives follow from prolonging the minimal polynomial, whose
+    # separant is 2A·g + B — so the branch locus of the extension arrives as a
+    # Thomas inequation rather than an assumption.  Ansatz 11 (γ) needs exactly
+    # this template.
+    #
+    #   inner variable:  V = v₀·R₁ + v₁·R₂ + v₂·R₁₂           (deg maxdeg_v)
+    #   minimal poly:    A(V)·g² + B(V)·g + C(V) = 0          (deg alg_deg in V)
+    #   chain rules:     Ψ[c] − Ψ′·V[c],  Ψ′[c] − Ψ″·V[c]
+    #   the ODE:  D(V,g)·Ψ″ − M(V,g)·Ψ′ − N(V,g)·Ψ = 0        (deg ode_deg)
+    #
+    # The decimal selects (maxdeg_v, ode_deg, alg_deg):
+    #   13   = (1,1,1)   13.1 = (2,1,1)   13.2 = (1,2,1)   13.3 = (1,1,2)
+    #   13.4 = (2,2,1)   13.5 = (2,1,2)   13.6 = (2,2,2)
+    # NOTE at ode_deg = 2 the ODE coefficients carry a g² monomial; on the A ≠ 0
+    # cells the minimal polynomial reduces it back to degree 1 in g, so that
+    # freedom is largely redundant there.  Contrast ansatz 16, where the algebraic
+    # element sits in the BASE rather than in the coefficient ring.
+    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
+
     if int(ansatz) == 13:
         deg = {13: (1, 1, 1), 13.1: (2, 1, 1), 13.2: (1, 2, 1), 13.3: (1, 1, 2),
                13.4: (2, 2, 1), 13.5: (2, 1, 2), 13.6: (2, 2, 2)}[ansatz]
@@ -384,21 +575,29 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=vp + dp + mp + np_ + ap + bp + cp,
                     v_params=vp)
 
-    # ----- COEFFICIENT-RING EXTENSION templates (NewSol.tex ansatz collection) -
-    # Psi = Zeta(v) with a 2nd-order ODE  D*DDPsi - M*DPsi - N*Psi = 0  whose
-    # coefficients D,M,N live in an EXTENSION of the coefficient ring.  Ansatz 13
-    # (already above) is the ALGEBRAIC case (g root of a quadratic).  14/15/16
-    # below add the remaining cases from NewSol.tex's ansatz collection (the
-    # section removed in Papers commit fc28cfca, Oct 2024).  These are my
-    # interpretation of the schematic paper diagrams -- base cases only (degree 1
-    # where possible), implemented faithfully; get-them-to-parse is the goal.
+    # ----- EXPONENTIAL COEFFICIENT-RING template: coeffs over Q(v)[exp(e₀v)] -
+    # The first of the three COEFFICIENT-RING entries (14, 15, 16): Ψ = Z(v) with
+    # a 2nd-order ODE whose coefficients D, M, N live in an EXTENSION of the
+    # coefficient ring.  Ansatz 13 above is the algebraic case of the same idea;
+    # 14 here is the exponential one.  An exponential t = exp(e₀·v) sits in the
+    # coefficient ring — it multiplies D, M, N, NOT Ψ — with the same defining
+    # relation shape as ansatz 1's Φ.  That distinction is the whole content of
+    # the entry: in ansatz 1 the exponential is a factor of the solution, here it
+    # is a coefficient, so the solution is a Ψ whose ODE has exponential
+    # coefficients rather than a Ψ that is itself an exponential.
+    #
+    #   inner variable:   v = v₀·R₁ + v₁·R₂ + v₂·R₁₂
+    #   the exponential:  t[c] − e₀·t·v[c]                    (t = exp(e₀·v))
+    #   chain rules:      Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
+    #   the ODE:  D(v,t)·Ψ″ − M(v,t)·Ψ′ − N(v,t)·Ψ = 0        (deg 1 in v and t)
+    #
+    # ONE rate parameter, e₀.  From NewSol.tex's ansatz collection — the section
+    # removed in Papers commit fc28cfca (Oct 2024) — read off the schematic
+    # diagrams and implemented as the base case only (degree 1 where possible);
+    # getting these to parse and decompose at all is the goal.
+    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
 
     if int(ansatz) == 14:
-        # NewSol.tex: EXPONENTIAL element in the coefficient ring.  An exponential
-        # t = exp(e0*v) sits in the ODE coefficient ring (t multiplies the
-        # coefficients D,M,N, NOT Psi), with defining relation t[c] - e0*t*v[c]
-        # per coordinate -- the same shape as ansatz 1's Phi[c]-Phi*B[c].  ONE
-        # rate parameter e0; D,M,N are degree-1 polys in v and t.
         vp, V = trial('v', gens, 1, constant=False, roots=rset)
         dp, D = trial('d', ['v', 't'], 1)
         mp, M = trial('m', ['v', 't'], 1)
@@ -413,11 +612,25 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=vp + ['e0'] + dp + mp + np_,
                     v_params=vp, amp_params=[])
 
+    # ----- HOLONOMIC COEFFICIENT-RING template: coeffs over Q(v)[t, t′] ------
+    # NewSol.tex's 2nd-order HOLONOMIC coefficient-ring case.  A holonomic element
+    # t (jets t, t′, t″) solves its OWN 2nd-order ODE in v, and Ψ's ODE
+    # coefficients are degree-1 polynomials in v, t and t′.  This is the general
+    # case of which ansatz 14 is the 1st-order specialization: any Bessel / Airy /
+    # hypergeometric factor can now appear in the coefficient ring.
+    #
+    #   inner variable:   v = v₀·R₁ + v₁·R₂ + v₂·R₁₂
+    #   t's chain rules:  t[c] − t′·v[c],  t′[c] − t″·v[c]
+    #   t's own ODE:      P(v)·t″ − Q(v)·t′ − S(v)·t = 0      (deg 1 in v)
+    #   chain rules:      Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
+    #   the ODE:  D(v,t,t′)·Ψ″ − M(v,t,t′)·Ψ′ − N(v,t,t′)·Ψ = 0
+    #
+    # Heavy — 7 dependent jets, two full towers of them.  That is inherent to a
+    # holonomic coefficient ring, not an artifact of the encoding.  Base case only
+    # (degree 1 everywhere), same provenance as ansatz 14.
+    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi, t′/t″→Dt/DDt.
+
     if int(ansatz) == 15:
-        # NewSol.tex: 2nd-order HOLONOMIC element in the coefficient ring.  A
-        # holonomic element t (jets t,Dt,DDt) solves its OWN 2nd-order ODE in v,
-        # and Psi's ODE coefficients D,M,N are degree-1 polys in v, t and Dt.
-        # Heavy (7 dependent jets) -- inherent to a holonomic coefficient ring.
         vp, V = trial('v', gens, 1, constant=False, roots=rset)
         pp, P = trial('p', ['v'], 1)                    # t's ODE coeffs (in v)
         qp, Q = trial('q', ['v'], 1)
@@ -437,17 +650,31 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=vp + pp + qp + sp + dp + mp + np_,
                     v_params=vp, amp_params=[])
 
+    # ----- ALGEBRAIC-BASE template: Ψ = Z(v), v over the coordinates AND g ---
+    # NewSol.tex / helium.sage's coded ansatz 16: an algebraic root nested BELOW
+    # the extension.  The novelty is in the BASE, not the coefficient ring — g is
+    # a square root, g² − RAD = 0 with RAD an unknown coordinate polynomial, and
+    # the inner variable v ranges over the coordinates AND g.  At rad_deg = 2
+    # (16.3, 16.5, 16.6) g is the root of a QUADRATIC: a genuinely new coordinate
+    # of the same shape as hydrogen's r = √(x²+y²+z²), which is the ingredient
+    # that let ansatz 5 find the J₀ Bessel solution.  The difference is that here
+    # the radicand is searched for rather than supplied.
+    #
+    #   the root:        g² − RAD = 0,  RAD = k₀ + k₁·R₁ + …  (deg rad_deg)
+    #   inner variable:  v = v₀·R₁ + v₁·R₂ + v₂·R₁₂ + v₃·g    (deg v_deg)
+    #   chain rules:     Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
+    #   the ODE:  A(v)·Ψ″ + B(v)·Ψ′ + C(v)·Ψ = 0              (deg ode_deg in v)
+    #
+    # The decimal selects (rad_deg, v_deg, ode_deg), matching the NewSol.tex
+    # Ansatz 16 table:
+    #   16   = (1,1,1)   16.1 = (1,2,1)   16.2 = (1,1,2)   16.3 = (2,1,1)
+    #   16.4 = (1,2,2)   16.5 = (2,1,2)   16.6 = (2,2,2)
+    # NOTE g is NOT in the trial's `roots` set, so at v_deg = 2 the inner variable
+    # carries a g² monomial that g² − RAD immediately reduces back to the
+    # radicand — one redundant parameter on 16.1, 16.4 and 16.6.
+    # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi; RAD's params are k₀….
+
     if int(ansatz) == 16:
-        # NewSol.tex / helium.sage coded ansatz 16: an algebraic root nested
-        # BELOW the extension.  Psi = Zeta(v) with a 2nd-order ODE; the novelty is
-        # in the BASE -- an algebraic element g = sqrt(radicand) with
-        # g^2 - radicand = 0, and the inner variable v ranging over the
-        # coordinates AND g.  The DECIMAL encodes three degree bounds
-        # (radicand / v / ODE-coeffs), matching the NewSol.tex Ansatz 16 table.
-        # In particular 16.3 = (2,1,1) and 16.6 = (2,2,2) use a QUADRATIC radicand
-        # -- g is the square root of a degree-2 polynomial, i.e. a genuinely new
-        # coordinate of the same shape as hydrogen's r = sqrt(x^2+y^2+z^2), the
-        # ingredient that let ansatz 5 find the J0 Bessel solution.
         deg16 = {16: (1, 1, 1), 16.1: (1, 2, 1), 16.2: (1, 1, 2),
                  16.3: (2, 1, 1), 16.4: (1, 2, 2), 16.5: (2, 1, 2),
                  16.6: (2, 2, 2)}
@@ -468,19 +695,30 @@ def ansatz_spec(ansatz, coords, roots):
                     equations=eqs, params=vp + kp + ap + bp + cp,
                     v_params=vp, amp_params=[])
 
-    # ----- LOG-HYPERRADIUS templates (Bartlett-Fock log; report ansaetze) ------
-    # Psi carrying the log-non-analyticity L = log(R1^2+R2^2) = 2 log s admitted
-    # via a transcendental jet with rational (cleared) derivatives; see
-    # ~/project/reports/helium-new-ansatze.md for the full derivation.  17/17.1
-    # (loglin) and 18 (product+log) hard-code the helium hyperradius gradient in
-    # _log_relations, so they are HELIUM-SPECIFIC (17.1 additionally hard-codes
-    # (R1^2+R2^2) in the trial form); a hydrogen build-check is not expected to be
-    # meaningful for these.  19 rides the Zeta family via the extra_jets hook.
+    # ----- LOG-HYPERRADIUS LINEAR template: Ψ = A + B·L ----------------------
+    # The first of the LOG-HYPERRADIUS entries (17, 17.1, 18, 19), which carry the
+    # Bartlett–Fock log-non-analyticity L = log(R₁² + R₂²) = 2·log s, s being the
+    # triple-coalescence hyperradius.  L enters as a transcendental jet with
+    # rational (cleared) derivatives and NO order-0 relation — log is
+    # transcendental, so its free order-0 jet is exactly the additive integration
+    # constant.  This entry admits it ADDITIVELY and linearly, the minimal form
+    # with a genuine log s.  HELIUM-SPECIFIC: _log_relations hard-codes the helium
+    # hyperradius gradient, and 17.1 additionally hard-codes (R₁² + R₂²) in the
+    # trial form, so a hydrogen run is a build check and nothing more.
+    #
+    #   the log jet:  (R₁² + R₂²)·L[c] − ∂c(R₁² + R₂²)        (leaders L[c])
+    #   17    Ψ − (A + B·L),  A, B deg 1                      (report ansatz 14)
+    #   17.1  Ψ − (A + b₀·(R₁² + R₂²)·L),  A deg 2            (report ansatz 14.1)
+    #
+    # 17.1 pins the log to the exact O(s² log s) Fock slot instead of letting it
+    # float.  B ≡ 0 (resp. b₀ ≡ 0) is the v_params face — the log gone; A ≡ B ≡ 0
+    # is the trivial Ψ ≡ 0 face.  Both keep the log LINEAR and multiplicative, so
+    # neither can represent more than (ln s)¹, which is why both came back
+    # clean-negative; ansatz 20 is the exponentiated form that holds the tower.
+    # Refs: ~/project/reports/helium-new-ansatze.md.
 
     if int(ansatz) == 17:
         if ansatz == 17:
-            # Fock-linear: Psi = A + B*L, A,B degree 1 -- the minimal form with a
-            # genuine log s.  (report ansatz 14)
             ap, A = trial('a', gens, 1, roots=rset)
             bp, B = trial('b', gens, 1, roots=rset)
             eqs = (['Psi - ((%s) + (%s)*L)' % (A, B)]   # leader Psi
@@ -490,8 +728,6 @@ def ansatz_spec(ansatz, coords, roots):
                         v_params=bp,            # B == 0  -> log gone -> DEGENERATE
                         amp_params=ap + bp)     # A==B==0 -> Psi == 0 -> TRIVIAL
         else:                                           # ansatz 17.1
-            # Fock-exact slot: Psi = A(deg 2) + b0*(R1^2+R2^2)*L -- the log pinned
-            # to the exact O(s^2 log s) Fock slot.  (report ansatz 14.1)
             ap, A = trial('a', gens, 2, roots=rset)
             eqs = (['Psi - ((%s) + b0*(R1^2 + R2^2)*L)' % A]
                    + _log_relations(coords))
@@ -499,9 +735,25 @@ def ansatz_spec(ansatz, coords, roots):
                         equations=eqs, params=ap + ['b0'],
                         v_params=['b0'], amp_params=ap + ['b0'])
 
+    # ----- KATO × FOCK template: Ψ = exp(B)·(A₀ + A₁·L) ----------------------
+    # The cusp exponential times the first Fock log — ansatz 1's product template
+    # extended by the log jet of ansatz 17.  These are the two singular structures
+    # of the helium wavefunction at the triple-coalescence point, carried
+    # simultaneously and multiplicatively.  HELIUM-SPECIFIC, for the same
+    # _log_relations reason as 17.  (Report ansatz 15.)
+    #
+    #   exponent:      B  =      b₀·R₁ + b₁·R₂ + b₂·R₁₂
+    #   amplitudes:    A₀ = a₀ + a₁·R₁ + a₂·R₂ + a₃·R₁₂
+    #                  A₁ = h₀ + h₁·R₁ + h₂·R₂ + h₃·R₁₂
+    #   the product:   Ψ − Φ·(A₀ + A₁·L)
+    #   chain rule:    Φ[c] − Φ·B[c]                          (Φ = exp(B))
+    #   the log jet:   (R₁² + R₂²)·L[c] − ∂c(R₁² + R₂²)
+    #
+    # A₁ ≡ 0 (the v_params) drops the log and lands back in ansatz-1 territory;
+    # A₀ ≡ A₁ ≡ 0 is the trivial Ψ ≡ 0 face.
+    # Code jet names: Φ→Phi; A₁'s parameters are named h₀…, not a₄….
+
     if ansatz == 18:
-        # Kato x Fock: Psi = exp(B)*(A0 + A1*L) -- cusp exponents times the first
-        # Fock log.  Product template extended by the log jet.  (report ansatz 15)
         bp,  Bx = trial('b', gens, 1, constant=False, roots=rset)
         a0p, A0 = trial('a', gens, 1, roots=rset)
         a1p, A1 = trial('h', gens, 1, roots=rset)
@@ -514,11 +766,24 @@ def ansatz_spec(ansatz, coords, roots):
                     v_params=a1p,             # A1 == 0 -> log gone (ansatz-1 land)
                     amp_params=a0p + a1p)     # A0==A1==0 -> Psi == 0
 
+    # ----- LOG-EXTENDED ZETA template: Ψ = Z(v), v over coordinates AND L ----
+    # The Zeta family with the log admitted through the INNER VARIABLE rather than
+    # through an amplitude: v ranges over the coordinates and L, so Ψ is an
+    # unknown function of a coordinate-plus-log combination.  Rides the Zeta
+    # branch of build_problem via the `extra_jets` hook, with the log relations
+    # passed through the family's `extra` slot and L ranked just below v.
+    #
+    #   inner variable:  v = v₀·R₁ + v₁·R₂ + v₂·R₁₂ + v₃·L
+    #   the log jet:     (R₁² + R₂²)·L[c] − ∂c(R₁² + R₂²)
+    #   chain rules:     Ψ[c] − Ψ′·v[c],  Ψ′[c] − Ψ″·v[c]
+    #   the ODE:  (a₀ + a₁·v)·Ψ″ + (b₀ + b₁·v)·Ψ′ + (c₀ + c₁·v)·Ψ = 0
+    #
+    # Unlike 17/17.1/18 the log is not confined to degree 1 in the answer: Z is an
+    # unknown function, so Z(… + v₃·L) can carry powers of the log — but only in
+    # that single combination v, which is the restriction ansatz 20 removes.
+    # (Report ansatz 16.)  Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
+
     if ansatz == 19:
-        # Zeta family with a log-extended inner variable: v ranges over the coords
-        # AND L = log(R1^2+R2^2), so Psi = Zeta(v1*R1+v2*R2+v3*R12+v4*L).  Uses the
-        # extra_jets hook in build_problem's Zeta branch and passes the log
-        # relations through the family's `extra` slot.  (report ansatz 16)
         vp, V = trial('v', gens + ['L'], 1, constant=False, roots=rset)
         ap, A = trial('a', ['v'], 1)
         bp, B = trial('b', ['v'], 1)
@@ -527,26 +792,34 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(order=2, V=V, ODE=ODE, params=vp + ap + bp + cp,
                     extra=_log_relations(coords), extra_jets=['L'])
 
+    # ----- EXPONENTIATED FOCK template: Ψ = exp(B + C·L) ---------------------
+    # Myers–Umrigar–Sethna–Morgan 1991, sec. IV: the log goes INSIDE the exponent.
+    # This is the first library entry to put it there, and the reason it matters
+    # is that exp(C·L) = (R₁² + R₂²)^C is a variable-exponent (xˣ-type) factor
+    # whose Taylor series carries the UNBOUNDED (ln s)^p Fock tower with a finite
+    # parameter set.  17/17.1/18 keep the log linear and multiplicative and so can
+    # only ever represent (ln s)¹ — which is why they came back clean-negative:
+    # too holonomic to hold the tower.
+    #
+    #   log-free exponent:  B = b₀·R₁ + … + b₈·R₁₂²  (deg 2, no constant) — the
+    #       Kato cusp ψ₁,₀ = −Z(R₁ + R₂) + R₁₂/2 plus the O(s²) pieces
+    #       ψ₂,₀ − ½·ψ₁,₀².
+    #   log coefficient:    C = c₀ + c₁·R₁ + … + c₉·R₁₂²  (deg 2) — the Fock r²
+    #       log slot; the exact leading term is
+    #       ψ₂,₁ ∝ (π−2)/(3π)·Z·(R₁² + R₂² − R₁₂²) = (π−2)/(3π)·Z·Y₂,₁, so C
+    #       must reach degree 2.
+    #   the exponential:    Ψ[c] − Ψ·(B[c] + C[c]·L + C·L[c])
+    #   the log jet:        (R₁² + R₂²)·L[c] − ∂c(R₁² + R₂²)
+    #
+    # (R₁, R₂, R₁₂) ARE the KS-rationalized coordinates — the hyperspherical
+    # √(1 − sin a cos t), √(1 + sin a) irrationalities of the angular Fock
+    # coefficients are polynomial here, so L is the only transcendental jet.
+    # C ≡ 0 (the v_params) drops the log and leaves Kato-only: DEGENERATE.  exp is
+    # never zero, so there is no Ψ ≡ 0 (TRIVIAL) mode and amp_params is empty.
+    # Refs: MUSM 1991 eq (23); Liverts 2022 eq (8); Fournais et al. 2004/2009;
+    # ~/project/reports/helium-new-ansatze.md.
+
     if ansatz == 20:
-        # EXPONENTIATED FOCK (Myers-Umrigar-Sethna-Morgan 1991, sec IV): the log
-        # goes INSIDE the exponent.  Psi = exp(B + C*L) with L = log(R1^2+R2^2) =
-        # 2 log s (the triple-coalescence hyperradius) and B, C polynomial in the
-        # (R1,R2,R12) coordinates.  This is the first library entry to place the
-        # log in the exponent: exp(C*L) = (R1^2+R2^2)^C is a variable-exponent
-        # (x^x-type) factor whose Taylor series carries the UNBOUNDED (ln s)^p Fock
-        # tower with a finite parameter set.  17/17.1/18 keep the log linear /
-        # multiplicative and so can only ever represent (ln s)^1 -- which is why
-        # they came back clean-negative: too holonomic to hold the tower.
-        #   B (deg 2, non-const)  -- the log-free exponent: Kato cusp psi_{1,0}
-        #     (linear -Z(R1+R2)+R12/2) plus the O(s^2) pieces psi_{2,0} - 1/2 psi_{1,0}^2.
-        #   C (deg 2)             -- the Fock r^2 log-slot coefficient; the exact
-        #     leading term is psi_{2,1} prop. (pi-2)/(3pi) Z (R1^2+R2^2-R12^2)
-        #     = (pi-2)/(3pi) Z Y_{2,1}, so C must reach degree 2.
-        # (R1,R2,R12) ARE the KS-rationalized coordinates -- the hyperspherical
-        # sqrt(1-sin a cos t), sqrt(1+sin a) irrationalities of the angular Fock
-        # coefficients are polynomial here, so L is the only transcendental jet.
-        # Refs: MUSM 1991 eq (23); Liverts 2022 eq (8); Fournais et al. 2004/2009;
-        # ~/project/reports/helium-new-ansatze.md.
         bp, Bx = trial('b', gens, 2, constant=False, roots=rset)   # log-free exponent
         cp, Cx = trial('c', gens, 2, roots=rset)                   # Fock-log coefficient
         eqs = (['Psi[%s] - Psi*(B[%s] + C[%s]*L + C*L[%s])' % (c, c, c, c)
@@ -559,13 +832,24 @@ def ansatz_spec(ansatz, coords, roots):
                     v_params=cp,        # C == 0 -> log gone -> Kato-only (DEGENERATE)
                     amp_params=[])      # exp is never 0: no Psi==0 (TRIVIAL) mode
 
+    # ----- EXPONENTIATED FOCK + AMPLITUDE: Ψ = A·exp(B + C·L) ----------------
+    # Ansatz 20 with a Hylleraas-style polynomial prefactor (cf. 1 → 1.1).  The
+    # amplitude lets Ψ carry a polynomial node/bulk factor on top of the exp-Fock
+    # singular structure, the way hydrogen's 2s = (1 − Zr/2)·e^{−Zr/2} carries its
+    # node.  Introducing A also brings the TRIVIAL mode back, which ansatz 20 does
+    # not have: A ≡ 0 gives Ψ ≡ 0.
+    #
+    #   amplitude:          A = a₀ + a₁·R₁ + a₂·R₂ + a₃·R₁₂    (deg 1)
+    #   log-free exponent:  B = b₀·R₁ + … + b₈·R₁₂²            (deg 2, no const)
+    #   log coefficient:    C = c₀ + c₁·R₁ + … + c₉·R₁₂²       (deg 2)
+    #   the product:        Ψ − A·Φ
+    #   the exponential:    Φ[c] − Φ·(B[c] + C[c]·L + C·L[c])
+    #   the log jet:        (R₁² + R₂²)·L[c] − ∂c(R₁² + R₂²)
+    #
+    # C ≡ 0 (the v_params) drops the log: DEGENERATE.  Refs as ansatz 20.
+    # Code jet names: Φ→Phi.
+
     if ansatz == 20.1:
-        # EXPONENTIATED FOCK + polynomial amplitude: Psi = A * exp(B + C*L),
-        # A degree 1 in the coordinates.  Ansatz 20 with a Hylleraas-style
-        # prefactor (cf. 1 -> 1.1): the amplitude lets Psi carry a polynomial
-        # node/bulk factor on top of the exp-Fock singular structure, the way
-        # hydrogen 2s = (1 - Zr/2) e^{-Zr/2} carries its node.  With an amplitude
-        # the Psi==0 (TRIVIAL) mode is back (A == 0).  Refs as ansatz 20.
         ap, Ax = trial('a', gens, 1, roots=rset)                   # polynomial amplitude
         bp, Bx = trial('b', gens, 2, constant=False, roots=rset)   # log-free exponent
         cp, Cx = trial('c', gens, 2, roots=rset)                   # Fock-log coefficient
