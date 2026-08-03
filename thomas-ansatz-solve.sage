@@ -335,8 +335,12 @@ def _elt_to_polyring(e):
 def forces_v_zero(P):
     """True iff the prime forces the inner variable v == 0 identically (every
     inner-variable coefficient lies in P) -- i.e. the ansatz has collapsed to a
-    constant and the 'solution' is degenerate."""
-    return all(g in P for g in V_PARAM_GENS)
+    constant and the 'solution' is degenerate.  When the ansatz declares NO
+    v_params (e.g. the normalization rungs 25.32+ pin v5 = 1, so the amplitude
+    vector cannot vanish), the test does not apply and nothing is degenerate --
+    without the bool() guard, all() on the empty list is vacuously True and
+    every nontrivial prime would be mislabeled DEGENERATE."""
+    return bool(V_PARAM_GENS) and all(g in P for g in V_PARAM_GENS)
 
 
 def forces_psi_zero(P):
