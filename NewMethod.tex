@@ -75,9 +75,10 @@
 
 \begin{abstract}
 The author has developed an algorithm
-for finding exact, non-sep\-arable solutions of partial differential equations.
+for finding exact, non-sep\-arable solutions of partial differential equations
+and of systems of them.
 The algorithm uses differential Thomas decompositon, Ritt's full reduction algorithm \cite{Ritt} and the GTZ algorithm \cite{GTZ}
-to find ODEs that solve the PDE.  We prove a completeness theorem for the
+to find ODEs that solve the system.  We prove a completeness theorem for the
 core algorithm, and demonstrate how to use the algorithm
 to solve hydrogen's Schr\"odinger equation.
 \end{abstract}
@@ -230,16 +231,20 @@ Cartesian-separable; it is, however, separable in parabolic coordinates, a
 reflection of the hydrogen atom's hidden symmetry that we take up in
 \S\ref{sec:Example}.
 
-The author has developed an algorithm that tests a PDE, specified as a differential polynomial,
-against a system of differential polynomials (which I term an ``ansatz''),
+The author has developed an algorithm that tests a system of differential
+equations, specified as a finite set of differential polynomials,
+against a second such set (which I term an ``ansatz''),
 parameterized by a finite number of constants,
 similar to \eqref{ansatz 1a} and \eqref{ansatz 1b},
 and finds solutions like \eqref{ansatz 1sol} and \eqref{J0 sol}.  This is done using the techniques of differential
 algebra and algebraic geometry.  The restriction to differential
 polynomials is not severe; most elementary and special functions
-can be easily modeled, as will be shown below.
+can be easily modeled, as will be shown below.  Nothing in the development
+requires the system to consist of partial differential equations, nor to
+contain more than one of them: a single PDE is the case treated in
+\S\ref{sec:Example}, a system of four in \S\ref{sec:NavierStokes}.
 
-In short, to solve the PDE, we restrict our attention to a subset of the function
+In short, to solve the system, we restrict our attention to a subset of the function
 space, parameterized by a finite number of constants
 and described using differential polynomials.
 A quick glance at Section \ref{sec:Ansatze} should indicate the great variety of such ``ans\"atze''.
@@ -253,10 +258,11 @@ polynomials in which an ansatz is written, shows how ODEs, algebraic extensions
 and non-polynomial functions are expressed in them, defines what we require of
 an ansatz, and closes with a half dozen worked examples.
 Section \ref{sec:Solution Algorithm} presents the core algorithm, which fits a
-given PDE to a given ansatz: a differential Thomas decomposition of the ansatz,
-Ritt reduction of the PDE modulo each component, and a projection onto the space
+given system of differential equations to a given ansatz: a differential Thomas
+decomposition of the ansatz, Ritt reduction of each equation of the system
+modulo each component, and a projection onto the space
 of constants.  It then proves that what the algorithm returns is exactly the set
-of constants for which the ansatz solves the PDE --- neither missing valid
+of constants for which the ansatz solves the system --- neither missing valid
 choices nor admitting spurious ones.
 Section \ref{sec:Example} illustrates the algorithm by computing a previously unknown solution to the hydrogen Schr\"odinger equation.
 Section \ref{sec:Generalization of the Algorithm} discusses how the algorithm can be generalized
@@ -507,8 +513,8 @@ differential polynomials.
 
 \subsection{Forming an Ansatz}
 
-My primary goal is to ``solve'' a PDE by finding solutions described using ODEs.
-Therefore, all of my current ans\"atze attempt to express solutions to the PDE using
+My primary goal is to ``solve'' a PDE, or a system of them, by finding solutions described using ODEs.
+Therefore, all of my current ans\"atze attempt to express solutions to the system using
 a finite combination of ODEs.  They do not have to be linear, seperable or homogenous.
 They do require degree bounds on all of their constituent polynomials,
 in order to obtain a finite number of constant parameters.
@@ -519,10 +525,12 @@ an arbitrary algebraic extension of indefinite degree.
 
 To form an ansatz, we construct a tower of ODE and/or algebraic extensions that build from the base differential ring
 (used to write our original PDE) and culminates in a newly introduced indeterminate
-that is used as the PDE's dependent variable.  It is also possible to consider a system
-of interrelated PDEs, and multiple parameterized differential polynomials, at the top of the tower,
+that is used as the equation's dependent variable.  When the target is a system
+of interrelated equations, several parameterized differential polynomials sit at the top of the tower,
 each equated to a new indeterminate and used
-as the dependent variables in a system of PDEs.  (see Figure \ref{nonlinear ansatz figure})
+as one of the system's dependent variables (see Figure \ref{nonlinear ansatz figure});
+the algorithm of \S\ref{sec:Solution Algorithm} handles this case with no change
+beyond reducing each equation of the system in turn.
 
 The primary requirement for an ansatz is that it be expressed using differential polynomials,
 as this makes it ammenable to the techniques of differential algebra.  This excludes any
@@ -1047,8 +1055,9 @@ p = p_1 x + p_2 y + p_3 z + p_4 t + p_5 \Psi \\
 \section{Solution Algorithm}
 \label{sec:Solution Algorithm}
 
-For a given PDE, having selected an ansatz, we now seek to find the constants
-that allow the ansatz to solve the PDE, in a sense made more specific below.
+For a given system of differential equations, having selected an ansatz, we now
+seek to find the constants that allow the ansatz to solve the system, in a sense
+made more specific below.
 
 \subsection{Differential Algebra Preliminaries}
 \label{sec:preliminaries}
@@ -1296,43 +1305,73 @@ when it reduces to zero modulo every component of the decomposition.
 We wish to solve a system of differential equations, where the solution must be of a restricted form, parameterized by constants,
 the {\it ansatz}.
 
-Given an ansatz $A(c^*) = \{ p_1(c^*),...,p_n(c^*) \}$, a collection of differential polynomials parameterized by constants $c^* \in \mathbb{C}^n$
-and a PDE $P$, another differential polynomial, we now wish to find values for the constants that will solve the PDE.
+Given an ansatz $A(c^*) = \{ a_1(c^*),...,a_k(c^*) \}$, a collection of differential polynomials parameterized by constants $c^* \in \mathbb{C}^n$,
+and a second collection $\mathcal{P} = \{ P_1, \ldots, P_t \}$ --- the system we wish to solve ---
+we now wish to find values for the constants that will solve the system.
+
+We write $\mathcal{P}$ for the target system, reserving $S$ for a system in the
+sense of \S\ref{sec:preliminaries}, which carries inequations as well as
+equations.  Nothing in what follows requires the elements of $\mathcal{P}$ to be
+partial differential equations.  An ordinary differential equation, or a purely
+algebraic relation among the dependent variables, is a differential polynomial
+like any other, and the development never asks which kind it is; all that is
+used is that $\mathcal{P}$ is a finite subset of $R$.  The case $t = 1$ recovers
+the single-PDE problem treated in \S\ref{sec:Example}; the Navier--Stokes
+example of \S\ref{sec:NavierStokes} has $t = 4$.
 
 It is convenient to define three constant loci:
 
 \begin{equation}
-V_\exists = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*), P] \}
+V_\exists = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*), \mathcal{P}] \}
 \end{equation}
 
-The {\it existence locus} is the set of constants that make the differential ideal $[A(c^*), P]$ consistent.
+The {\it existence locus} is the set of constants that make the differential ideal $[A(c^*), \mathcal{P}]$ --- generated by the ansatz together with every element of the system --- consistent.
 
 \begin{equation}
-V_{\exists \backslash \Psi} = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*), P] : \Psi^\infty \}
+V_{\exists \backslash \Psi} = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*), \mathcal{P}] : \Psi^\infty \}
 \end{equation}
 
 A differential polynomial $p$ is {\it homogenous} w.r.t. an element $\Psi$ if every term of $p$ contains exactly one
-derivative (not necessarily proper) of $\Psi$ to first degree.  If $P$ is homogenous w.r.t. $\Psi$, then we define
-the {\it homogenous existence locus} as the set of constants that make the differential ideal $[A(c^*), P] : \Psi^\infty$ consistent.
+derivative (not necessarily proper) of $\Psi$ to first degree.  If every element of $\mathcal{P}$ is homogenous w.r.t. $\Psi$, then we define
+the {\it homogenous existence locus} as the set of constants that make the differential ideal $[A(c^*), \mathcal{P}] : \Psi^\infty$ consistent.
 
 \begin{equation}
-V_{\forall} = \{ c^* \in {\mathbb C}^n : P \in \sqrt{[A(c^*)]} \}
+V_{\forall} = \{ c^* \in {\mathbb C}^n : \mathcal{P} \subseteq \sqrt{[A(c^*)]} \}
 \end{equation}
 
-The {\it membership locus} is the set of constants for which $P$ is in the
+The {\it membership locus} is the set of constants for which every element of
+$\mathcal{P}$ is in the
 radical differential ideal defined by the ansatz, meaning that any function
-satisfying the ansatz will satisfy the PDE.  The radical is the right ideal to
+satisfying the ansatz will satisfy every equation of the system.  The radical is the right ideal to
 take here: it is the vanishing ideal of the ansatz's solution set, so membership
 in it says exactly what the words ``any function satisfying the ansatz'' say,
 whereas membership in $[A(c^*)]$ itself is a strictly stronger and less natural
 condition.
 
+The membership locus is the one place where the passage from a single equation
+to a system is entirely painless.  Membership in an ideal is a condition on one
+differential polynomial at a time, so requiring it of every element of
+$\mathcal{P}$ is a conjunction of $t$ conditions of exactly the form already
+studied, and
+%
+\begin{equation}
+\label{eq:membership-intersection}
+V_\forall \;=\; \bigcap_{j=1}^{t} \{\, c^* \in \mathbb{C}^n : P_j \in \sqrt{[A(c^*)]} \,\} .
+\end{equation}
+%
+Everything below --- the reduction, the projection, the completeness theorem ---
+is applied to each $P_j$ separately, and the results are intersected.  The
+existence loci are not decomposable in this way, since consistency of
+$[A(c^*), \mathcal{P}]$ is a property of the ideal the whole system generates and
+is not implied by the consistency of its parts; that asymmetry is another reason
+to prefer the membership locus.
+
 Often we are interested in finding the existence locus, but
-if $P$ is homogenous (and the ansatz too), then $V_\exists$ is all of ${\mathbb C}^n$, since the zero function will solve a homogenous differential
+if every element of $\mathcal{P}$ is homogenous (and the ansatz too), then $V_\exists$ is all of ${\mathbb C}^n$, since the zero function will solve a homogenous differential
 equation for any value of the constants, in which case the homogenous existence locus is the more natural objective.
 
 However, computing $V_\exists$ or $V_{\exists \backslash \Psi}$ can present serious computational challenges, so for practical reasons
-it is often useful to work with the membership locus, which keeps the PDE out of the ideal's generators.
+it is often useful to work with the membership locus, which keeps the system out of the ideal's generators.
 
 % \begin{equation}
 % V_{\forall} = \{ c^* \in {\mathbb C}^n : P \in [A(c^*)] \}
@@ -1347,22 +1386,22 @@ V_\forall \subseteq V_{\exists\backslash\Psi} \subseteq V_\exists
 Proof: an ideal is always contained in its saturation, so, for a given set of constants $c^*$,
 \begin{equation}
 \begin{gathered}
-1 \in [A(c^*), P] \implies 1 \in [A(c^*), P] : \Psi^\infty \\
-1 \notin [A(c^*), P] : \Psi^\infty \implies 1 \notin [A(c^*), P] \\
+1 \in [A(c^*), \mathcal{P}] \implies 1 \in [A(c^*), \mathcal{P}] : \Psi^\infty \\
+1 \notin [A(c^*), \mathcal{P}] : \Psi^\infty \implies 1 \notin [A(c^*), \mathcal{P}] \\
 V_{\exists\backslash\Psi} \subseteq V_\exists
 \end{gathered}
 \end{equation}
 
 {\bf Note:} We introduce the assumption here that the ansatz (by itself) is consistent for all values of $c^*$.
 
-Furthermore, if $P$ lies in $\sqrt{[A(c^*)]}$ then so does the whole ideal
-$[A(c^*), P]$, since $\sqrt{[A(c^*)]}$ is a differential ideal containing both
-$A(c^*)$ and~$P$.  Hence
+Furthermore, if every element of $\mathcal{P}$ lies in $\sqrt{[A(c^*)]}$ then so does the whole ideal
+$[A(c^*), \mathcal{P}]$, since $\sqrt{[A(c^*)]}$ is a differential ideal containing both
+$A(c^*)$ and~$\mathcal{P}$.  Hence
 
 \begin{equation}
 \begin{gathered}
-P \in \sqrt{[A(c^*)]} \implies [A(c^*), P] \subseteq \sqrt{[A(c^*)]} \\
-P \in \sqrt{[A(c^*)]} \wedge 1 \notin [A(c^*)] \implies 1 \notin [A(c^*), P] \\
+\mathcal{P} \subseteq \sqrt{[A(c^*)]} \implies [A(c^*), \mathcal{P}] \subseteq \sqrt{[A(c^*)]} \\
+\mathcal{P} \subseteq \sqrt{[A(c^*)]} \wedge 1 \notin [A(c^*)] \implies 1 \notin [A(c^*), \mathcal{P}] \\
 V_{\forall} \subseteq V_\exists
 \end{gathered}
 \end{equation}
@@ -1376,7 +1415,7 @@ by~$\Psi^\infty$ gives
 
 \begin{equation}
 \begin{gathered}
-P \in \sqrt{[A(c^*)]} \implies [A(c^*),P] : \Psi^\infty \subseteq \sqrt{[A(c^*)]} : \Psi^\infty \\
+\mathcal{P} \subseteq \sqrt{[A(c^*)]} \implies [A(c^*),\mathcal{P}] : \Psi^\infty \subseteq \sqrt{[A(c^*)]} : \Psi^\infty \\
 \Psi \notin \sqrt{[A(c^*)]} \implies 1 \notin \sqrt{[A(c^*)]} : \Psi^\infty \\
 V_\forall \subseteq V_{\exists\backslash\Psi}
 \end{gathered}
@@ -1399,7 +1438,7 @@ $\delta_t$ and $\delta_t c = 0$, consider the ansatz
 \begin{equation}
 A(c) = \{ \Psi_{tt} - c \Psi \}
 \end{equation}
-and the PDE
+and the one-element system $\mathcal{P} = \{P\}$ with
 \begin{equation}
 P = \Psi_t - \Psi
 \end{equation}
@@ -1432,17 +1471,21 @@ However, although both $ae^t$ and $ae^{-t}$ solve $A(1)$, only $ae^t$ solves $P$
 so a solution to the ansatz does not necessarily solve the PDE and $V_\forall = \emptyset$.
 
 The most straightforward way to compute the existence loci $V_\exists$ or $V_{\exists\backslash\Psi}$ is to proceed
-as their definitions suggest: combine the PDE and the ansatz together as the generators of a singular differential
+as their definitions suggest: combine the system and the ansatz together as the generators of a singular differential
 ideal.  We do not wish to treat the constants as indeterminates (as they would always be non-zero), but rather
 as parameters in the base field, and seek conditions on those parameters that would yield a non-trivial
-differential ideal where $1 \notin [A(c^*), P]$ or $1 \notin [A(c^*), P]:\Psi^\infty$.  This suggests the
+differential ideal where $1 \notin [A(c^*), \mathcal{P}]$ or $1 \notin [A(c^*), \mathcal{P}]:\Psi^\infty$.  This suggests the
 use of a parametric algorithm, such as parametric Rosenfeld-Gr\"obner \cite{Fakouri2018} or a
 differential Thomas decomposition \cite{ThomasDecomp, RobertzLNM}.  The author's practical experience,
 however, is that this approach tends to be computationally infeasible.
 
 Therefore, for the remainder of this paper, we will focus our attention on the membership locus $V_\forall$.  This restriction allows
 us to develop an algorithm that, while still using a parametric decomposition, only does so on a differential
-ideal formed from the ansatz, with the PDE treated separately.
+ideal formed from the ansatz, with the system treated separately.  It is also
+what makes the size of the system almost costless: the expensive step, the
+decomposition, is performed on the ansatz alone and is therefore independent of
+$t$, and each additional equation adds only a Ritt reduction and its
+coefficients.
 This tends to be far more computationally feasible than trying to compute
 the existence loci $V_\exists$ or $V_{\exists\backslash\Psi}$.
 
@@ -1456,8 +1499,9 @@ which produces a partition of the constant space into quasi-projective varieties
 by both equations and inequations), each equiped with a specialization of the ansatz in a differentially simple form.
 For each differentially simple subsystem in the decomposition, we then proceed as follows.
 
-We use Ritt's full reduction algorithm to reduce the PDE modulo the subsystem, then
-project the reduced equation $r$ onto the space of the $n$ constant parameters
+We use Ritt's full reduction algorithm to reduce each element of the system
+modulo the subsystem, obtaining remainders $r_1, \ldots, r_t$, and project them
+onto the space of the $n$ constant parameters
 $c = (c_1, \ldots, c_n)$.
 
 To perform the projection, it is useful to classify the indeterminates in our differential ring as follows:
@@ -1466,61 +1510,77 @@ To perform the projection, it is useful to classify the indeterminates in our di
 - independent variables
 - algebraic functions of the independent variables
 
-Membership of $P$ in $\sqrt{[A(c^*)]}$ is a statement about $r$ as a
-polynomial, not about its value at any particular point: it requires $r$ to
+Membership of $P_j$ in $\sqrt{[A(c^*)]}$ is a statement about $r_j$ as a
+polynomial, not about its value at any particular point: it requires $r_j$ to
 vanish identically once the constants are fixed.  We therefore treat all of the
 non-constant indeterminates alike, making no distinction between the
 independent variables, the dependent variables and their jet coordinates.
 
-Accordingly, we split each term of the reduced equation $r$ into a power product
+Accordingly, we split each term of each reduced equation $r_j$ into a power product
 in the non-constant indeterminates and a coefficient in the constants alone,
 gathering the terms that share a power product:
 %
 \begin{equation}
 \label{eq:remainder-expansion}
-r \;=\; \sum_{\alpha=1}^{N} m_\alpha \, p_\alpha(c),
+r_j \;=\; \sum_{\alpha=1}^{N_j} m_{j\alpha} \, p_{j\alpha}(c),
+\qquad j = 1, \ldots, t,
 \end{equation}
 %
-where the $m_\alpha$ are the $N$ distinct power products and each coefficient
-$p_\alpha(c)$ is a polynomial in the constants.
+where the $m_{j\alpha}$ are the $N_j$ distinct power products occurring in $r_j$
+and each coefficient $p_{j\alpha}(c)$ is a polynomial in the constants.
 
 Distinct monomials in a polynomial ring are linearly independent over
-$\mathbb{C}$, so $r$ vanishes identically at $c^*$ if and only if every
-coefficient does.  The projection step therefore replaces the reduced PDE $r$
-by the system
+$\mathbb{C}$, so $r_j$ vanishes identically at $c^*$ if and only if every one of
+its coefficients does.  The projection step therefore replaces the reduced
+system $r_1, \ldots, r_t$ by the single system
 %
 \begin{equation}
 \label{eq:projection-system}
-p_1(c) = p_2(c) = \cdots = p_N(c) = 0
+p_{j\alpha}(c) = 0
+\qquad (1 \le j \le t, \; 1 \le \alpha \le N_j)
 \end{equation}
 %
-of polynomial equations in the constants alone.  No elimination is required:
+of $N_1 + \cdots + N_t$ polynomial equations in the constants alone.  No elimination is required:
 because the coefficients already involve nothing but the constants, the system
 is a description of the locus in $\mathbb{C}^n$ directly.
+
+This pooling of the coefficients is the whole of what a system demands.  The
+equations of $\mathcal{P}$ must hold simultaneously, so the conditions they
+impose on the constants are conjoined; and since each $r_j$ is required to
+vanish identically, the conjunction is nothing more than the union of the
+coefficient sets.  The power products are collected within each remainder and
+not across remainders: two different $r_j$ may well share a power product, but
+their coefficients are separate conditions and must not be added together.
+Nothing else in the treatment is sensitive to $t$.
 
 An earlier form of this algorithm split the terms more coarsely --- a power
 product in the independent variables and their algebraic functions, against a
 coefficient in the constants, the dependent variables and their jets --- and
 then projected onto the constants with an elimination ideal.  That variant is
 cheaper, since it produces fewer and lower-degree coefficients, and it remains
-{\it complete}: a $c^*$ at which $r$ vanishes identically certainly admits some
+{\it complete}: a $c^*$ at which $r_j$ vanishes identically certainly admits some
 assignment of the jet coordinates killing the coefficients.  But the converse
-fails, because an assignment may exist without $r(c^*)$ being the zero
+fails, because an assignment may exist without $r_j(c^*)$ being the zero
 polynomial, so the elimination variant returns a superset of the membership
 locus.  The splitting above is the one for which Theorem~\ref{thm:completeness}
-is an equivalence.
+is an equivalence.  A second reason to prefer it appears only for a system:
+under the coarse splitting the jet coordinates are existentially quantified,
+and quantifying them once per equation is weaker than quantifying them once for
+the system, so the elimination variant would have to choose between two
+inequivalent readings.  Requiring each $r_j$ to be the zero polynomial makes the
+question moot.
 
 Finally, the remaining system defines an algebraic variety
 %
 \[
-\mathcal{V} \;=\; V(p_1, \ldots, p_N) \;\subseteq\; \mathbb{C}^n,
+\mathcal{V} \;=\; V\bigl(\, p_{j\alpha} \,:\, 1 \le j \le t, \; 1 \le \alpha \le N_j \,\bigr) \;\subseteq\; \mathbb{C}^n,
 \]
 %
 which need not be irreducible.  Because only the zero locus matters, the
 decomposition we want is into irreducible components, and these are given by the
 minimal associated primes: under the well-known correspondence between prime
 ideals and irreducible varieties (\cite{iva}, Corollary~4.5.4), the minimal
-primes of $(p_1, \ldots, p_N)$ cut out the irreducible components
+primes of the ideal these generate cut out the irreducible components
 of~$\mathcal{V}$, and several algorithms have been proposed and implemented to
 compute them (\cite{GTZ}, among others).  The radical never has to be formed:
 an ideal and its radical have the same minimal primes, so the decomposition may
@@ -1579,8 +1639,9 @@ $\mathrm{SMPD}$
 {\bf Input:} A differential polynomial ring
 $R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$ with
 derivations $\Delta = \{\delta_1, \ldots, \delta_m\}$ satisfying
-$\delta_i x_j = \delta_{ij}$ and $\delta_i c_l = 0$; a differential polynomial
-$P \in R$; an ansatz $A(c) \subset R$, a finite set of differential polynomials
+$\delta_i x_j = \delta_{ij}$ and $\delta_i c_l = 0$; a finite system
+$\mathcal{P} = \{P_1, \ldots, P_t\} \subset R$ of differential polynomials; an
+ansatz $A(c) \subset R$, a finite set of differential polynomials
 parameterized by the constants $c = (c_1, \ldots, c_n)$; a block ranking $\prec$
 with
 %
@@ -1594,7 +1655,7 @@ and a flag $\mu \in \{\forall, \, \exists\forall\}$ selecting the assembly.
 set of pairs $(\mathfrak{p}, h)$ in which $\mathfrak{p}$ generates a prime
 ideal, and so as a finite union of irreducible locally closed sets.  For $\mu = \forall$ it is the
 membership locus
-$V_\forall = \{\, c^* \in \mathbb{C}^n : P \in \sqrt{[A(c^*)]} \,\}$.  For
+$V_\forall = \{\, c^* \in \mathbb{C}^n : \mathcal{P} \subseteq \sqrt{[A(c^*)]} \,\}$.  For
 $\mu = \exists\forall$ it is the intermediate locus $V_{\exists\forall}$, which
 satisfies $V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists$ whenever
 the ansatz is consistent throughout $\mathbb{C}^n$ --- a condition the algorithm
@@ -1604,8 +1665,11 @@ reports, as described below.
 \begin{pseudocode}
 \item $(S_1, \ldots, S_s) \leftarrow \mathrm{DifferentialDecompose}(A(c), \prec)$
 \item {\bf for} $i = 1, \ldots, s$ {\bf do}
-\item \algind $r \leftarrow \mathrm{FullReduce}(P, S^=_i)$
-\item \algind $J_i \leftarrow$ the coefficients of $r$, as polynomials in $\mathbb{Q}[c_1, \ldots, c_n]$, collected with respect to power products in $x_1, \ldots, x_m, u_1, \ldots, u_k$
+\item \algind $J_i \leftarrow \emptyset$
+\item \algind {\bf for} $j = 1, \ldots, t$ {\bf do}
+\item \algind\algind $r \leftarrow \mathrm{FullReduce}(P_j, S^=_i)$
+\item \algind\algind $J_i \leftarrow J_i \cup \{$ the coefficients of $r$, as polynomials in $\mathbb{Q}[c_1, \ldots, c_n]$, collected with respect to power products in $x_1, \ldots, x_m, u_1, \ldots, u_k \}$
+\item \algind {\bf end for}
 \item \algind $E_i \leftarrow$ the equations of $S^=_i$ lying in $\mathbb{Q}[c_1, \ldots, c_n]$
 \item \algind $h_i \leftarrow$ the product of the inequations of $S^{\ne}_i$ lying in $\mathbb{Q}[c_1, \ldots, c_n]$, or $1$ if there are none
 \item \algind $C_i \leftarrow (E_i, h_i)$
@@ -1621,10 +1685,13 @@ reports, as described below.
 \end{pseudocode}
 \end{algorithm}
 
-Line~3 is the differential elimination step and line~4 the $\forall$ projection
-step.  Writing $\mathcal{V}_i := V(J_i)$ for the variety of the latter and
+Line~5 is the differential elimination step and line~6 the $\forall$ projection
+step; the inner loop of lines~4--7 performs them once for each equation of the
+system and accumulates the results in a single $J_i$, which is the only respect
+in which a system differs from a single equation.  Writing
+$\mathcal{V}_i := V(J_i)$ for the variety of the projection and
 $C_i = V(E_i) \setminus V(h_i)$ for the {\it cell} of the component, we have
-$W_i = \mathcal{V}_i \cap C_i$, and the assemblies of lines~12 and~14 are
+$W_i = \mathcal{V}_i \cap C_i$, and the assemblies of lines~15 and~17 are
 %
 \[
 V_\forall \;=\; \bigcap_{i=1}^{s} \bigl( W_i \cup (\mathbb{C}^n \setminus C_i) \bigr),
@@ -1637,8 +1704,8 @@ for {\it every} component whose cell contains it, and under
 $\mu = \exists\forall$ as soon as it lies in $\mathcal{V}_i$ for {\it some} such
 component.
 
-Lines~1--9 are common to both assemblies, as is the normalization in line~16;
-only lines~10--15 differ.  The reason
+Lines~1--12 are common to both assemblies, as is the normalization in line~19;
+only lines~13--18 differ.  The reason
 is that
 $\mathcal{V}_i \cup (\mathbb{C}^n \setminus C_i) = W_i \cup (\mathbb{C}^n
 \setminus C_i)$: outside its own cell a component imposes no condition at all,
@@ -1647,7 +1714,7 @@ $W_i = \mathcal{V}_i \cap C_i$ is the only thing either assembly reads.  The
 decomposition into irreducible pieces therefore belongs inside the loop, where
 it is done once per component, rather than after the assembly.
 
-Two remarks on line~8.  Saturating by $h_i^\infty$ deletes the components of
+Two remarks on line~11.  Saturating by $h_i^\infty$ deletes the components of
 $V(J_i \cup E_i)$ that lie wholly inside the inequation locus, but it does not
 discharge the inequations: $V(\mathfrak{a} : h^\infty)$ is the Zariski {\it
 closure} of $V(\mathfrak{a}) \setminus V(h)$, so each surviving prime still carries $h_i \ne 0$ as a
@@ -1659,20 +1726,21 @@ given above: an ideal and its radical have the same minimal primes.
 
 The $\forall$ assembly is an intersection, not a union.  A component contributes a condition
 only where its cell lies, but where it does lie the condition must be met: if
-$c^*$ falls in the cells of two components and the ansatz fails to solve the PDE
-on the second, then $A(c^*)$ has solutions that do not satisfy $P$, and $c^*$ is
+$c^*$ falls in the cells of two components and the ansatz fails to solve the system
+on the second, then $A(c^*)$ has solutions that do not satisfy every element of
+$\mathcal{P}$, and $c^*$ is
 not in the membership locus.  Since the cells need not be disjoint
 (Corollary~\ref{cor:assembly}), the result is in general constructible rather
-than a variety.  Only lines~1 and~3 involve differential algebra; lines~4--16 are
+than a variety.  Only lines~1 and~5 involve differential algebra; lines~6--19 are
 ordinary commutative algebra and algebraic geometry in the $n$ constants.
 
 Carrying out either assembly is a set-theoretic computation on constructible
 sets --- note that $\mathbb{C}^n \setminus C_i = (\mathbb{C}^n \setminus V(E_i))
 \cup V(h_i)$ is constructible, so all the operands are --- and the operation to
 ask for is the one \cite{CTD} calls $\mathrm{SMPD}$, {\it strongly make pairwise
-disjoint}: given pieces $A_1, \ldots, A_t$, it returns pairwise disjoint pieces
+disjoint}: given pieces $A_1, \ldots, A_\ell$, it returns pairwise disjoint pieces
 $B_1, \ldots, B_u$ such that each $A_k$ is a union of some of the $B_l$.  The
-property passes from the pieces to any union of them, so applying it at line~11
+property passes from the pieces to any union of them, so applying it at line~14
 to the pieces making up $\mathbb{C}^n$ and the family
 $W_1, C_1, \ldots, W_s, C_s$ partitions the constant space and leaves every
 block $B$ either contained in or disjoint from each $W_i$ and each $C_i$, so
@@ -1693,7 +1761,7 @@ Nothing beyond the refinement is computed: the conditions are read off block by
 block, and the answer is irredundant because the blocks are disjoint, so no
 containment test is needed.  The $\exists\forall$ assembly gets off more lightly
 still.  Its condition mentions neither $\mathbb{C}^n$ nor the cells, so at
-line~14 it is enough to refine $W_1, \ldots, W_s$ alone --- $s$ sets rather than
+line~17 it is enough to refine $W_1, \ldots, W_s$ alone --- $s$ sets rather than
 $2s+1$ --- after which every block lies in some $W_i$ by construction and all of
 them are kept.  A component whose cell misses
 a block imposes nothing on it, and in this formulation that is exact rather than
@@ -1705,7 +1773,7 @@ This is what \cite{CTD} calls the set-theoretic version of the coprime
 factorization problem; $\mathrm{SMPD}$ is its Algorithm~3, built on an algorithm
 for the difference of two constructible sets presented by {\it regular systems}
 --- a regular chain together with an inequation, the same shape as the pairs
-line~8 produces.  The constructible sets themselves are available as a type, with
+line~11 produces.  The constructible sets themselves are available as a type, with
 the difference and union operations and the weaker $\mathrm{MPD}$ (which merely
 removes duplicated data from a single constructible set, preserving its union),
 in the \verb|ConstructibleSetTools| module of the \verb|RegularChains| library
@@ -1718,15 +1786,15 @@ intersections of solution sets as decompositions into simple systems.  Where a
 constructible sets of the parametric Gr\"obner literature (\cite{Montes} and its
 successors) carry one, computed in \cite{BrunatMontes}.
 
-Line~16 is a normalization.  A block of a refinement is a Boolean combination of
+Line~19 is a normalization.  A block of a refinement is a Boolean combination of
 the sets refined, and an intersection of irreducible sets need not be
-irreducible, so the blocks selected at line~12 or~14 need not arrive in the
+irreducible, so the blocks selected at line~15 or~17 need not arrive in the
 irreducible form the output calls for.  Applying to each of their pairs
-$(F, h)$ the same operation as line~8 restores it, and on a pair already of that
+$(F, h)$ the same operation as line~11 restores it, and on a pair already of that
 form the operation does nothing, $\langle F \rangle$ being prime and not
 containing $h$.
 
-Including $\mathbb{C}^n$ among the sets refined at line~11 costs one more
+Including $\mathbb{C}^n$ among the sets refined at line~14 costs one more
 argument and makes the consistency of the ansatz a by-product of the
 decomposition.  The
 components of a Thomas decomposition partition $\mathrm{Sol}(A(c))$ and the
@@ -1743,19 +1811,20 @@ where the equation becomes $-1_=$, and returns a single component whose cell is
 $\{\,c \ne 0\,\}$; the point $c = 0$ lies in no cell.
 
 A gap of this kind costs the $\forall$ assembly nothing.  Where $A(c^*)$ is
-inconsistent, $\sqrt{[A(c^*)]}$ is the unit ideal and contains $P$, so $c^*$
+inconsistent, $\sqrt{[A(c^*)]}$ is the unit ideal and contains all of
+$\mathcal{P}$, so $c^*$
 belongs to the membership locus --- and a block lying in no cell satisfies the
-condition of line~12 vacuously and is returned.  Under $\mu = \forall$ the
+condition of line~15 vacuously and is returned.  Under $\mu = \forall$ the
 algorithm therefore needs no consistency hypothesis at all.  The $\exists\forall$
 assembly drops such a block instead, so under $\mu = \exists\forall$ the chain
 $V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists$ does require the
 ansatz to be consistent, as its right-hand containment requires in any case: the
 proof in \S\ref{sec:constant-loci} carries the hypothesis $1 \notin [A(c^*)]$,
-and indeed at an inconsistent $c^*$ we have $1 \in [A(c^*), P]$, so that $c^*$
+and indeed at an inconsistent $c^*$ we have $1 \in [A(c^*), \mathcal{P}]$, so that $c^*$
 lies in $V_\forall$ but not in $V_\exists$.
 
 The $\forall$ assembly remains the more expensive of the two.  The
-$\exists\forall$ assembly can be read directly off the output of line~8, using
+$\exists\forall$ assembly can be read directly off the output of line~11, using
 the refinement only to tidy the result, whereas the $\forall$ assembly genuinely
 needs the complements $\mathbb{C}^n \setminus C_i$, and it is
 the splitting these force --- not the ideal arithmetic, which is elementary ---
@@ -1764,7 +1833,7 @@ that carries the cost.
 The $\exists\forall$ assembly is offered for the reader content with an
 approximation.  It replaces
 the intersection by a plain union of the $W_i$, and so never forms a
-complement --- the pieces come out of line~8 ready to be listed.  What it
+complement --- the pieces come out of line~11 ready to be listed.  What it
 computes is not the
 membership locus but an intermediate one.  Because the components of a Thomas
 decomposition partition the solution set of $A(c^*)$, the loci are distinguished
@@ -1774,7 +1843,7 @@ within a component:
 \begin{center}
 \begin{tabular}{llll}
 \hline
-locus & components & solutions & $P$ vanishes \ldots \\
+locus & components & solutions & all of $\mathcal{P}$ vanishes \ldots \\
 \hline
 $V_\forall$          & $\forall$ & $\forall$ & on every solution \\
 $V_{\exists\forall}$ & $\exists$ & $\forall$ & on some entire component \\
@@ -1796,9 +1865,13 @@ is consistent, so it has a solution, and that solution lies on some component
 --- and Corollary~\ref{cor:assembly} then places the point in that component's
 $\mathcal{V}_i$.  For the right inclusion, if $c^* \in \mathcal{V}_i \cap C_i$
 then component~$i$ carries at least one solution over $c^*$
-(Lemma~\ref{lem:specialization}) and, by Theorem~\ref{thm:completeness}, $P$
-vanishes on all of them; so $A(c^*)$ and $P$ have a common solution and
-$1 \notin [A(c^*), P]$.
+(Lemma~\ref{lem:specialization}) and, by Theorem~\ref{thm:completeness}, every
+element of $\mathcal{P}$
+vanishes on all of them; so $A(c^*)$ and $\mathcal{P}$ have a common solution and
+$1 \notin [A(c^*), \mathcal{P}]$.  Note that this is where the system must be
+taken as a whole: the witnessing solution has to satisfy every $P_j$ at once,
+and it does, because a single component's solutions are annihilated by all of
+them simultaneously.
 
 Three cautions attend the $\exists\forall$ assembly.  First, both inclusions in
 \eqref{eq:intermediate-sandwich} can be strict, and the second can be as wide as
@@ -1807,22 +1880,22 @@ decomposition has the single component $\{\Psi_{tt} - c\Psi\}$, the reduced PDE
 $\Psi_t - \Psi$ has coefficients $1$ and $-1$, and $\mathcal{V}_1 = \emptyset$ ---
 whence $V_{\exists\forall} = \emptyset$ against $V_\exists = \mathbb{C}$.  This
 is not a defect of the assembly step but of the projection step that precedes
-it, which asks the reduced PDE to vanish identically and so cannot see a single
-solution satisfying $P$; no rearrangement of the assembly recovers it.  Computing
-$V_\exists$ genuinely requires the PDE inside the decomposition, which is the
+it, which asks each reduced equation to vanish identically and so cannot see a single
+solution satisfying the system; no rearrangement of the assembly recovers it.  Computing
+$V_\exists$ genuinely requires the system inside the decomposition, which is the
 computation \S\ref{sec:constant-loci} set aside as infeasible.  Second, cutting
 each $\mathcal{V}_i$ down to its cell is not cosmetic: outside $C_i$ the
 component has no solutions at all, Theorem~\ref{thm:completeness} says nothing,
 and the right inclusion of \eqref{eq:intermediate-sandwich} fails.  Third,
-$V_{\exists\forall}$ is not intrinsic to the ansatz and the PDE the way
+$V_{\exists\forall}$ is not intrinsic to the ansatz and the system the way
 $V_\forall$ and $V_\exists$ are --- it depends on which decomposition was
 computed, since a finer stratification makes ``vanishes on an entire component''
 easier to satisfy.
 
-When $P$ is homogeneous with respect to $\Psi$, $V_\exists$ is all of
+When every element of $\mathcal{P}$ is homogeneous with respect to $\Psi$, $V_\exists$ is all of
 $\mathbb{C}^n$ and the upper bound in \eqref{eq:intermediate-sandwich} says
 nothing.  The useful statement is then obtained by discarding the components on
-which $\Psi$ itself reduces to zero: restricting the union in line~14 to those
+which $\Psi$ itself reduces to zero: restricting the union in line~17 to those
 $i$ with $\Psi \notin E^{(i)} : (q^{(i)})^\infty$ forces the witnessing solution
 to be non-trivial, and gives
 $V_{\exists\forall} \subseteq V_{\exists\backslash\Psi}$.  By
@@ -1839,7 +1912,7 @@ nor admitting spurious ones.  The next section proves this.
 \label{sec:completeness}
 
 Two questions arise.  If some particular selection of constants causes the
-ansatz to solve the PDE --- that is, if it lies in $V_\forall$, the membership
+ansatz to solve the system --- that is, if it lies in $V_\forall$, the membership
 locus --- will the algorithm always find it?  And conversely, is everything the
 algorithm returns genuinely in $V_\forall$?
 Theorem~\ref{thm:completeness} answers both at once for a single component of
@@ -1893,7 +1966,8 @@ by running the algorithm on every component.
 \medskip
 \begin{theorem}
 \label{thm:completeness}
-Let $P$ be a differential polynomial (the PDE) and let $A(c)$ be the ansatz, a
+Let $\mathcal{P} = \{P_1, \ldots, P_t\}$ be a finite system of differential
+polynomials and let $A(c)$ be the ansatz, a
 set of differential polynomials whose coefficients involve constant parameters
 $c = (c_1, \ldots, c_n) \in \mathbb{C}^n$.  Let $(S^=, S^{\ne})$ be one
 differentially simple component of a differential Thomas decomposition of the
@@ -1901,20 +1975,22 @@ ansatz, computed with the constants ranked below all other indeterminates, write
 $A = \{a_1, \ldots, a_k\}$ for its equations $S^=$, and let
 $H_A = I_A \cup S_A$ denote the set of initials and separants of~$A$.
 
-Apply Ritt's full reduction to $P$ modulo $A$, obtaining a remainder $r$
-and a power product $h$ of elements of $H_A$ such that
+Apply Ritt's full reduction to each $P_j$ modulo $A$, obtaining a remainder $r_j$
+and a power product $h_j$ of elements of $H_A$ such that
 %
 \begin{equation}
 \label{ritt reduction 1}
-h \cdot P - r \in [A]
+h_j \cdot P_j - r_j \in [A]
+\qquad (j = 1, \ldots, t)
 \end{equation}
 %
-with $r$ fully reduced with respect to $A$.
-Write $r = \sum_\alpha m_\alpha \cdot p_\alpha(c)$, where the $m_\alpha$
+with $r_j$ fully reduced with respect to $A$.
+Write $r_j = \sum_\alpha m_{j\alpha} \cdot p_{j\alpha}(c)$, where for each $j$
+the $m_{j\alpha}$
 are distinct power products in the non-constant indeterminates and the
-$p_\alpha$ are polynomials in the constants.  Let
-$\mathcal{V} = V(p_1, \ldots, p_N) \subseteq \mathbb{C}^n$ be the variety
-defined by setting all constant coefficients to zero.
+$p_{j\alpha}$ are polynomials in the constants.  Let
+$\mathcal{V} = V\bigl(\{ p_{j\alpha} \}_{j,\alpha}\bigr) \subseteq \mathbb{C}^n$ be the variety
+defined by setting all of these constant coefficients to zero.
 
 Let $q$ be the product of the initials and separants of $A$, and suppose $c^*$
 lies in the cell of the component --- the projection of its solution set onto
@@ -1923,22 +1999,24 @@ $\mathbb{C}^n$.  Then
 \[
 c^* \in \mathcal{V}
 \quad\Longleftrightarrow\quad
-P \in [A(c^*)] : q^\infty .
+\mathcal{P} \subseteq [A(c^*)] : q^\infty .
 \]
 %
-In particular, $P \in \sqrt{[A(c^*)]}$ implies $c^* \in \mathcal{V}$.
+In particular, $\mathcal{P} \subseteq \sqrt{[A(c^*)]}$ implies $c^* \in \mathcal{V}$.
 \end{theorem}
 
-Note that $h$ is in general a
+Note that each $h_j$ is in general a
 polynomial in the constants {\it and} in jet variables ranked below the leaders
-of~$A$, so the condition that matters is that $h(c^*)$ not be the zero
+of~$A$, so the condition that matters is that $h_j(c^*)$ not be the zero
 polynomial; that is what preserves the degrees of the leaders in $A(c^*)$, and
-hence what keeps $r(c^*)$ fully reduced.  Now every factor of $h$ is an initial
+hence what keeps $r_j(c^*)$ fully reduced.  Now every factor of $h_j$ is an initial
 or a separant of an equation of $A$; by (A2) the initials do not vanish at any
 solution of the corresponding lower subsystem, and by the consequence of (A3)
 noted above neither do the separants.  Since $c^*$ lies in the cell, some
-solution~$a$ of the component lies above it, and $h(a) \ne 0$; hence $h(c^*)$ is
-not identically zero.
+solution~$a$ of the component lies above it, and $h_j(a) \ne 0$; hence $h_j(c^*)$ is
+not identically zero.  The $h_j$ need not agree with one another --- each
+reduction clears whatever initials and separants it happens to meet --- but the
+argument is applied to one $j$ at a time and never compares them.
 
 The theorem needs no further hypothesis.  The whole of what the proof requires
 --- that reduction to zero decide membership, and that the relevant ideal be
@@ -1956,48 +2034,66 @@ also sufficient, in that no point of $\mathcal{V}$ is spurious.  The ideal
 characterized is the saturation $[A(c^*)] : q^\infty$, which by
 Proposition~\ref{prop:simple-membership} is radical and therefore contains
 $\sqrt{[A(c^*)]}$; the final clause of the theorem is that containment.  The two
-can differ, so $\mathcal{V}$ may contain constants at which $P$ lies in the
+can differ, so $\mathcal{V}$ may contain constants at which some $P_j$ lies in the
 saturation without lying in $\sqrt{[A(c^*)]}$ --- but the saturation is the
 vanishing ideal of the component's own solution set, so at such a point the
-ansatz does solve the PDE on that component.
+ansatz does solve the system on that component.
 
 {\it Proof.}
-Ritt's full reduction algorithm produces $h$ and $r$ satisfying \eqref{ritt reduction 1}, with
-$r$ fully reduced with respect to~$A$.
+Fix $j$.
+Ritt's full reduction algorithm produces $h_j$ and $r_j$ satisfying \eqref{ritt reduction 1}, with
+$r_j$ fully reduced with respect to~$A$.
 Evaluating the constants at $c = c^*$ gives
-$h(c^*) \cdot P - r(c^*) \in [A(c^*)]$.
+$h_j(c^*) \cdot P_j - r_j(c^*) \in [A(c^*)]$.
 Write $E = [A(c^*)]$.
 Since $c^*$ lies in the cell, Lemma~\ref{lem:specialization} makes
 $(S^=(c^*), S^{\ne}(c^*))$ a simple differential system, so
 Proposition~\ref{prop:simple-membership} applies to it.
 
-Now $r$ is fully reduced with respect to $A$, and as observed above $h(c^*)$ is
+Now $r_j$ is fully reduced with respect to $A$, and as observed above $h_j(c^*)$ is
 not identically zero, so no leader of $A$ drops in degree upon specialization
-and $r(c^*)$ is fully reduced with respect to $A(c^*)$; it is therefore its own
+and $r_j(c^*)$ is fully reduced with respect to $A(c^*)$; it is therefore its own
 pseudo-remainder.  Proposition~\ref{prop:simple-membership} then gives
 %
 \[
-r(c^*) = 0
+r_j(c^*) = 0
 \quad\Longleftrightarrow\quad
-r(c^*) \in E : q^\infty .
+r_j(c^*) \in E : q^\infty .
 \]
 %
-Since $h(c^*) \cdot P - r(c^*) \in E \subseteq E : q^\infty$, the right-hand
-side holds if and only if $h(c^*) \cdot P \in E : q^\infty$.  And $h$ is a power
-product of elements of $H_A$ while $q$ is the product of all of them, so $h$
+Since $h_j(c^*) \cdot P_j - r_j(c^*) \in E \subseteq E : q^\infty$, the right-hand
+side holds if and only if $h_j(c^*) \cdot P_j \in E : q^\infty$.  And $h_j$ is a power
+product of elements of $H_A$ while $q$ is the product of all of them, so $h_j$
 divides some power of $q$; as $E : q^\infty$ is unchanged by further saturation
-at $q$, we get $h(c^*) \cdot P \in E : q^\infty$ if and only if
-$P \in E : q^\infty$.  Chaining,
+at $q$, we get $h_j(c^*) \cdot P_j \in E : q^\infty$ if and only if
+$P_j \in E : q^\infty$.  Chaining,
 %
 \[
-r(c^*) = 0
+r_j(c^*) = 0
 \quad\Longleftrightarrow\quad
-P \in [A(c^*)] : q^\infty .
+P_j \in [A(c^*)] : q^\infty .
 \]
 %
-Finally, the power products $m_\alpha$ are distinct monomials in a polynomial
-ring, hence linearly independent over~$\mathbb{C}$, so $r(c^*) = 0$ if and only
-if every coefficient $p_\alpha(c^*) = 0$, which is to say $c^* \in \mathcal{V}$.
+Now the power products $m_{j\alpha}$, for this fixed $j$, are distinct monomials in a polynomial
+ring, hence linearly independent over~$\mathbb{C}$, so $r_j(c^*) = 0$ if and only
+if every coefficient $p_{j\alpha}(c^*) = 0$.
+
+Both sides of the equivalence just established are conjunctions over $j$ of
+statements each involving only that one $j$: the right-hand condition
+$\mathcal{P} \subseteq E : q^\infty$ holds if and only if $P_j \in E : q^\infty$
+for every $j$, and $c^* \in \mathcal{V}$ holds if and only if
+$p_{j\alpha}(c^*) = 0$ for every $j$ and $\alpha$.  Taking the conjunction over
+$j = 1, \ldots, t$ of the per-equation equivalence therefore gives
+%
+\[
+c^* \in \mathcal{V}
+\quad\Longleftrightarrow\quad
+\mathcal{P} \subseteq [A(c^*)] : q^\infty .
+\]
+%
+Note that the ideal $E : q^\infty$ is the same for all $j$ --- it depends on the
+component and on $c^*$, not on which equation is being reduced --- which is what
+lets the $t$ statements be conjoined without further ado.
 The last clause follows because $E : q^\infty$ is radical and contains $E$,
 hence contains $\sqrt{E}$. \hfill $\square$
 
@@ -2032,15 +2128,28 @@ that proposition reads
 \sqrt{[A(c^*)]} \;=\; \bigcap_i \bigl( E^{(i)} : (q^{(i)})^\infty \bigr),
 \]
 %
-the intersection running over those components.  By
-Theorem~\ref{thm:completeness}, $P \in E^{(i)} : (q^{(i)})^\infty$ if and only if
+the intersection running over those components.  Since $\mathcal{P}$ is contained
+in an intersection of ideals exactly when it is contained in each of them,
+$\mathcal{P} \subseteq \sqrt{[A(c^*)]}$ if and only if
+$\mathcal{P} \subseteq E^{(i)} : (q^{(i)})^\infty$ for every such $i$; and by
+Theorem~\ref{thm:completeness} that holds if and only if
 $c^* \in \mathcal{V}_i$.
 
 No hypothesis of consistency is needed.  If no cell contains $c^*$ then
 $A(c^*)$ has no solution, the intersection above is empty and so equals the whole
-ring, and both sides of the equivalence hold: $P$ lies in
+ring, and both sides of the equivalence hold: $\mathcal{P}$ lies in
 $\sqrt{[A(c^*)]} = (1)$, and the condition on the right is vacuous.
 \hfill $\square$
+
+\medskip
+\noindent
+The two quantifiers the corollary combines --- over the components of the
+decomposition and over the equations of the system --- are independent, and both
+are conjunctions, so the order in which they are discharged is immaterial.  The
+algorithm discharges the inner one first, pooling the coefficients of all $t$
+remainders into a single $J_i$ before the component's minimal primes are
+computed, which is why the cost of the assembly is unchanged by the size of the
+system.
 
 \medskip
 \noindent
@@ -2072,7 +2181,7 @@ rather than be handed it.
 
 This is a different operation from the projection step of
 \S\ref{sec:membership-locus}, and the two should not be confused.  There we ask
-the reduced PDE to vanish {\it identically}, and so set the coefficient of every
+each reduced equation to vanish {\it identically}, and so set the coefficient of every
 power product to zero; here the equations of the component are constraints
 cutting out its solution set, not identities holding on it, and their
 coefficients are not required to vanish at all.
@@ -2084,8 +2193,9 @@ that component, while intersecting over the decomposition decides membership in
 the {\it radical} differential ideal of the ansatz --- which is the membership
 locus as defined in \S\ref{sec:constant-loci}.  Note that this is an
 intersection of loci in the space of constants, not a union: a $c^*$ at which
-$P$ fails on even one component is not in $V_\forall$, since the ansatz there
-has solutions that do not satisfy the PDE.
+even one equation of $\mathcal{P}$ fails on even one component is not in
+$V_\forall$, since the ansatz there
+has solutions that do not satisfy the system.
 
 \vfill\eject
 
@@ -2105,6 +2215,11 @@ We seek to demonstrate the operation of the algorithm on the following Schr\"o\-
 where $\nabla$ is the Laplacian, $\Psi$ is a complex-valued wavefunction defined over real 3-dimensional space,
 and $r$ is the distance to the origin.  We choose to work in Cartesian coordinates, so $r^2=x^2+y^2+z^2$,
 and we use Hartree atomic units to render the equation dimensionless.
+This is the case $t = 1$ of \S\ref{sec:Solution Algorithm}: the system
+$\mathcal{P}$ has the single element obtained by clearing the denominator in
+\eqref{schrodinger hydrogen 2}, and we write $P$ for it throughout this section.
+The Navier--Stokes example of \S\ref{sec:NavierStokes} exercises the general
+case.
 %, though for our purposes we can
 %ignore any physical interpretation of the problem and treat it simply as an equation to be solved.
 
@@ -2900,11 +3015,11 @@ order to reach a flow whose nonlinearity is active.
 \section{Generalization of the Algorithm}
 \label{sec:Generalization of the Algorithm}
 
-The algorithm can search for solutions to arbitrary PDEs or systems of PDEs in more complex ans\"atze.
-A collection of sample ans\"atze was presented in Section \ref{sec:Ansatze}.  To handle
-systems of PDEs, multiple PDEs can be reduced modulo a single ansatz.  Each PDE will generate a
-system of equations in the constants.  Combining all of these equations together will produce
-a system of equations that, when satisfied, will solve all of the PDEs simultaneously.
+The algorithm of \S\ref{sec:Solution Algorithm} already accepts a system of any
+size --- that is what the loop of lines~4--7 is for --- so the generalizations
+that remain are on the other side of the computation, in the ansatz.  A
+collection of sample ans\"atze was presented in Section \ref{sec:Ansatze}; this
+section sketches how much further they can be pushed.
 
 Multiple ODE extensions can be introduced, either in parallel, allowing the ODE solutions to be combined together into a polynomial
 that solves the PDE, or in series (Figure \ref{ansatz 12 figure}), allowing either the independent variable of one ODE
