@@ -2736,6 +2736,101 @@ top-level polynomials $u,v,w,p$ were introduced precisely to serve as the
 dependent variables of a system --- against the incompressible Navier--Stokes
 equations.
 
+Where the derivation below lands is worth having in view from the start.  It
+lands on the {\it normalized truncation} of that ansatz drawn in Figure
+\ref{normalized ansatz figure}: the ODE has been truncated to its linear part,
+the six second-degree jet monomials dropped, and the symmetries of the problem
+have been used up to cut the twenty-eight constants of Figure
+\ref{nonlinear ansatz figure} (with the linear backgrounds of $u,v,w$ removed)
+down to nine.  Rotations of $(x,y,z)$ put the covector $\mathbf{s}$ along $x$
+and the amplitude $\mathbf{a}$ in the $x$--$y$ plane, so that $s_2 = s_3 = 0$
+and $w \equiv 0$; the three scalings the ansatz admits --- multiplying the ODE
+by a constant, scaling $\Psi$, scaling $s$ --- are pinned by $g_0 = 1$,
+$v_5 = 1$ and $s_1 = 1$; and the mean pressure gradient is set to zero,
+$p_1 = p_2 = p_3 = 0$.  What is left is
+
+\begin{equation}
+\label{ansatz 18 normalized}
+\begin{gathered}
+\Psi_c = \Psi' s_c , \qquad \Psi'_c = \Psi'' s_c \qquad (c = x,y,z,t) \\
+(1 + g_1 s)\,\Psi'' + (h_0 + h_1 s)\,\Psi' + (i_0 + i_1 s)\,\Psi = 0 \\
+s = x + s_4 t \\
+u = u_5 \Psi , \qquad v = \Psi , \qquad w = 0 , \qquad p = p_4 t + p_5 \Psi
+\end{gathered}
+\end{equation}
+
+\noindent
+in the nine constants $s_4$; $g_1, h_0, h_1, i_0, i_1$; $u_5$; $p_4, p_5$.
+Figure \ref{normalized ansatz figure} draws \eqref{ansatz 18 normalized} in the
+notation of Figure \ref{key}, with one convention added: a slot already fixed
+by one of the normalizations is written out literally instead of being drawn as
+a white box.  Seven boxes remain, carrying the nine constants --- two apiece
+for the two first-degree coefficients of the ODE --- and $v$ and $w$ carry no
+box at all, having nothing left free.
+
+None of these reductions is free, and each is earned below rather than
+assumed: the truncation to a linear ODE is the cell $a_0 = a_1 = 0$ that the
+degree mismatch of \S\ref{ns viscous block} forces on any viscous solution,
+and the vanishing of the mean pressure gradient is a conclusion of
+\S\ref{ns shear layer}, not a hypothesis.  Two cautions attach to the picture.
+The rotation used here differs from the one used by hand in
+\S\ref{ns shear layer}, which sends $\mathbf{s}$ along $z$ and $\mathbf{a}$
+along $x$; the two describe the same solution in different coordinates.  And
+truncating the ODE, unlike the rotation and the scalings, is not a change of
+chart but a change of family: Figure \ref{normalized ansatz figure} is a
+smaller ansatz, and what it finds is not automatically a result about Figure
+\ref{nonlinear ansatz figure} until the second-degree block is separately shown
+to be inert, which is what \S\ref{ns viscous block} does.
+
+\begin{figure}[H]
+\fbox{
+\begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
+\centering
+\scalebox{0.9}{
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+    \node (Psi) [poly, text width=240pt] {$(1 + \markedcoeff{ng}s)\,\Psi'' + \markedcoeff{nh}\Psi' + \markedcoeff{ni}\Psi$};
+    \node (Qs) [ring, below of=Psi, text width=100pt, node distance=50pt] {$\mathbb{Q}[s]$};
+    \node (s) [poly2, right=of Qs] {$s = x + \markedcoeff{ns}t$};
+    \coordinate (bwb) at ($(Psi.south)!0.5!(Qs.north)$);
+    \draw[degree] (ng.west) -- (ng.west|-bwb.north) node[right,near end] {0};
+    \draw[degree] (nh.west) -- (nh.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (ni.west) -- (ni.west|-bwb.north) node[right,near end] {1};
+    \draw[degree] (ng.west|-bwb.north) -- (ni.west|-bwb.north);
+    \coordinate (bwbA) at (ng.west|-bwb.north);
+    \draw[degree] (Qs.north|-bwbA) -- (Qs.north);
+    \begin{scope}[on background layer]
+        \node (Psi block)[fit=(Psi) (Qs) (s), inner sep=10pt, element] {};
+        \node (Psi block title) [node distance=20pt, above=of Psi block.north, anchor=center, text centered] {$\mathbb{Q}[x,y,z,t]\{\Psi,\Psi',\Psi''\}$};
+        \node (Psi block field) [ring, fill=none, fit=(Psi block) (Psi block title)] {};
+    \end{scope}
+    \node (base) [ring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}[x,y,z,t]$};
+    \draw[degree] (ns.south) -- (ns.south|-base.north) node[right,pos=0.7] {0};
+
+    \node (u) [poly2, node distance=20pt, above=of Psi block field.north west] {$u = \markedcoeff{nu}\Psi$};
+    \node (v) [poly2, node distance=20pt, right=of u] {$v = \Psi$};
+    \node (w) [poly2, node distance=20pt, right=of v] {$w = 0$};
+    \node (p) [poly2, node distance=20pt, right=of w] {$p = \markedcoeff{np}t + \markedcoeff{nq}\Psi$};
+    \coordinate (bwbB) at ($(u.south)!0.5!(Psi block field.north)$);
+    \draw[degree] (nu.south) -- (nu.south|-bwbB) node[right,pos=0.5] {0};
+    \draw[degree] (v.south) -- (v.south|-bwbB);
+    \draw[degree] (w.south) -- (w.south|-bwbB);
+    \draw[degree] (np.south) -- (np.south|-bwbB) node[right,pos=0.5] {0};
+    \draw[degree] (nq.south) -- (nq.south|-bwbB) node[right,pos=0.5] {0};
+    \draw[degree] (nu.south|-bwbB) -- (nq.south|-bwbB);
+    \coordinate (bwbC) at ($(nu.south|-bwbB)!0.5!(nq.south|-bwbB)$);
+    \draw[degree] (bwbC) -- (bwbC|-Psi block field.north);
+  \end{tikzpicture}
+}
+\end{minipage}%
+}
+\caption{The normalized truncation of Figure \ref{nonlinear ansatz figure}
+used in the computation: a linear ODE in place of the second-degree one, the
+rotation and scaling freedoms spent, and no mean pressure gradient.  Slots
+fixed by a normalization are written out; the seven remaining boxes carry the
+nine free constants.}
+\label{normalized ansatz figure}
+\end{figure}
+
 The purpose of the example is not to produce a new solution of Navier--Stokes.
 It is that this particular pairing of ansatz and PDE reduces in closed form,
 by hand, and that the closed form says something sharp about which solutions
@@ -2907,6 +3002,7 @@ $\Psi$, which is a different thing --- and as the next subsection shows, one of
 those six monomials actively costs us something.
 
 \subsection{How the viscous term is blocked}
+\label{ns viscous block}
 
 The Laplacian is the only source of $\Psi''$ in \eqref{ns reduced}.  It enters
 each momentum residual exactly once, through \eqref{ns laplacian}, and it enters
@@ -2977,6 +3073,7 @@ polynomial in a given leader should not exceed the degree in which that leader
 occurs in the PDE, or the ansatz cannot act on the PDE at all.
 
 \subsection{The traveling-wave shear layer}
+\label{ns shear layer}
 
 Work on the cell $a_0 = a_1 = 0$, and take the linear background to vanish,
 $\mathbf{L} = 0$, so that $u = u_5\Psi$, $v = v_5\Psi$, $w = w_5\Psi$ and
