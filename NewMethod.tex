@@ -1670,8 +1670,8 @@ reports, as described below.
 \item \algind\algind $r \leftarrow \mathrm{FullReduce}(P_j, S^=_i)$
 \item \algind\algind $J_i \leftarrow J_i \cup \{$ the coefficients of $r$, as polynomials in $\mathbb{Q}[c_1, \ldots, c_n]$, collected with respect to power products in $x_1, \ldots, x_m, u_1, \ldots, u_k \}$
 \item \algind {\bf end for}
-\item \algind $E_i \leftarrow$ the equations of $S^=_i$ lying in $\mathbb{Q}[c_1, \ldots, c_n]$
-\item \algind $h_i \leftarrow$ the product of the inequations of $S^{\ne}_i$ lying in $\mathbb{Q}[c_1, \ldots, c_n]$, or $1$ if there are none
+\item \algind $E_i \leftarrow S^=_i \cap \mathbb{Q}[c_1, \ldots, c_n]$
+\item \algind $h_i \leftarrow \prod \bigl( S^{\ne}_i \cap \mathbb{Q}[c_1, \ldots, c_n] \bigr)$
 \item \algind $C_i \leftarrow (E_i, h_i)$
 \item \algind $W_i \leftarrow \bigl\{\, (\mathfrak{p}, h_i) \;:\; \mathfrak{p} \in \mathrm{minAss}\bigl( \langle J_i \cup E_i \rangle : h_i^\infty \bigr) \,\bigr\}$
 \item {\bf end for}
@@ -1688,7 +1688,12 @@ reports, as described below.
 Line~5 is the differential elimination step and line~6 the $\forall$ projection
 step; the inner loop of lines~4--7 performs them once for each equation of the
 system and accumulates the results in a single $J_i$, which is the only respect
-in which a system differs from a single equation.  Writing
+in which a system differs from a single equation.  Lines~8 and~9 are set
+intersections with a subring, no computation being needed to recognize a
+polynomial in the constants alone; the empty product at line~9 is $1$, which is
+the case of a component carrying no constant inequation.  That these
+intersections are exactly the component's condition on the constants is the
+content of the discussion following Corollary~\ref{cor:assembly}.  Writing
 $\mathcal{V}_i := V(J_i)$ for the variety of the projection and
 $C_i = V(E_i) \setminus V(h_i)$ for the {\it cell} of the component, we have
 $W_i = \mathcal{V}_i \cap C_i$, and the assemblies of lines~15 and~17 are
