@@ -149,6 +149,13 @@ print("ansatz (%d eqs):" % len(ansatz0))
 for s in prob['ansatz_eqs_str']:
     print("   ", to_bracket(s))
 print("params:", ", ".join(PARAMS))
+# Excluded-locus header: ONLY for ansatz variants that record one (the
+# 25.3x normalization rungs).  Emitting it unconditionally would perturb
+# the byte-identity regression gate on hydrogen/5 and helium/9.
+if prob.get('excludes'):
+    print("excluded locus (results lift to the parent ansatz off this locus):")
+    for _x in prob['excludes']:
+        print("   ", _x)
 
 
 # ==========================================================================

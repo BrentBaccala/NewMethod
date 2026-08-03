@@ -873,41 +873,154 @@ def ansatz_spec(ansatz, coords, roots):
     # [label `ansatz 18`], sec:NavierStokes; oracle ns-reduction-check.py.
     # Code jet names: Ψ/Ψ′/Ψ″→Psi/DPsi/DDPsi; the ODE's independent variable
     # is the jet s.
+    #
+    # NORMALIZATION LADDER 25.31–25.34 — a cheapest-last ladder of
+    # progressively more normalized variants of the 25.3 corner
+    # (leader_deg = 1, background = no, 28 params), selected by a third
+    # dispatch field `norm`.  Levels are CUMULATIVE (level 3 includes
+    # everything in levels 1 and 2); each rung is a strictly smaller
+    # parameter space than the one before.  Normalization removes
+    # parameters, never equations: every rung keeps all 14 ansatz equations.
+    #
+    # norm ≥ 1 (25.31, 25 params) — ROTATION NORMAL FORM.  Incompressible
+    # Navier–Stokes is invariant under rotations of (x,y,z), with (u,v,w)
+    # rotating as a vector.  Two of the three rotations align the wave
+    # vector with the x-axis: s₂ = s₃ = 0, so s = s₁x + s₄t.  The residual
+    # rotation about that axis puts the amplitude vector in the x–y plane:
+    # w₅ = 0, so w ≡ 0.  The exclusion is NOT vacuous over an algebraically
+    # closed field: SO(3,ℂ) orbits on ℂ³ are classified by
+    # σ = s₁²+s₂²+s₃², and a nonzero isotropic vector (σ = 0, s ≠ 0) cannot
+    # be rotated to the form (s₁,0,0) — that would force s₁ = 0.  Task 471
+    # found exactly such a component (one of 25.2's eight primes contains
+    # s₁²+s₂²+s₃²).  Over ℝ it is vacuous; over ℚ̄ it is a real component
+    # that rungs 1–4 drop — the "punctured null cone" `excludes` entry.
+    #
+    # norm ≥ 2 (25.32, 22 params) — SCALING CHARTS.  Three commuting
+    # scalings act on the parameter space and must each be pinned by one
+    # normalization: κ (multiply the whole ODE by a constant), λ (Ψ → λΨ),
+    # ν (s → νs).  Pins: s₁ = 1 (s = x + s₄t), v₅ = 1 (v = Ψ), g₀ = 1
+    # (Ψ″ term becomes (1 + g₁s)Ψ″).  Their weights (κ,λ,ν) — the exponent
+    # triple in p ⟼ κᵃλᵇνᶜ·p — are (0,0,1), (0,−1,0) and (1,−1,2), whose
+    # 3×3 determinant is 1, so together they rigidify the torus with no
+    # residual finite stabilizer.  Do NOT normalize u₅ instead of v₅:
+    # continuity is (a·s)Ψ′ = u₅s₁Ψ′ once s₂ = s₃ = 0, so in the s₁ ≠ 0
+    # chart it forces u₅ = 0 (modulo the degenerate Ψ′ ≡ 0); normalizing
+    # u₅ = 1 would silently select the s₁ = 0 branch instead.  v₅ is the
+    # transverse amplitude — the Stokes-layer direction.  v_params is EMPTY
+    # from this rung on (see the code comment at the v_params assignment).
+    #
+    # norm ≥ 3 (25.33, 19 params) — PRESSURE TRIM: p₁ = p₂ = p₃ = 0, so
+    # p = p₄t + p₅Ψ.  The one rung that is NOT a symmetry quotient.  Task
+    # 471's generic-cell GTZ found p₁,p₂,p₃ in all 8 of 25.2's minimal
+    # primes and in 25.3's genuine prime — with background = no every
+    # inertial and viscous term carries a factor of Ψ, so p₁ is the sole
+    # jet-degree-0 term in momentum-x and must vanish on its own.  But that
+    # argument runs through the pseudo-division cofactor
+    # (b₀+b₁s)Ψ′ + (c₀+c₁s)Ψ + (g₀+g₁s), so it is a GENERIC-CELL result;
+    # special cells where the cofactor vanishes are not covered — hence the
+    # `excludes` entry.
+    #
+    # norm = 4 (25.34, 9 params) — ODE TRUNCATION: drop the Ψ-quadratic
+    # terms, leaving the linear ODE (1+g₁s)Ψ″ + (h₀+h₁s)Ψ′ + (i₀+i₁s)Ψ = 0
+    # (g₀ already normalized to 1 by level 2).  This is the family the
+    # Rayleigh–Stokes shear layer lives in: task 471's genuine prime
+    # contains f₀,f₁,i₀,i₁ and 2×2 minors locking (d,e,h) ∝ (b,c,g), so the
+    # quadratic block is inert there.  Do NOT additionally impose u₅ = 0
+    # even though continuity implies it in this chart — it is a derived
+    # consequence, not a normalization; folding it into the ansatz
+    # definition would add a second excluded branch (Ψ′ ≡ 0) and make the
+    # result harder to state.  Let the decomposition derive it.  Hence 9
+    # parameters, not 8.
+    #
+    # TYPE DISTINCTION (for the paper): rungs 1–3 are CHARTS of ansatz 25 —
+    # same equations, restricted parameter space — so their results lift
+    # back to 25.3 modulo the recorded excluded locus (the `excludes` key,
+    # carried as data and forwarded by build_problem).  Rung 4 is a
+    # DIFFERENT ANSATZ FAMILY and its results do NOT lift; its `excludes`
+    # is empty for that reason, not because nothing is given up.
+    #
+    #   25.31 = norm 1  25 params      25.32 = norm 2  22 params
+    #   25.33 = norm 3  19 params      25.34 = norm 4   9 params
 
     if int(ansatz) == 25:
         assert coords == ['x', 'y', 'z', 't'], \
             "ansatz 25 is the Navier-Stokes system ansatz: it requires " \
             "coords ['x','y','z','t'], got %r" % (coords,)
-        leader_deg, background = {25: (2, True), 25.1: (1, True),
-                                  25.2: (2, False), 25.3: (1, False)}[ansatz]
-        ode_terms = (['(a0 + a1*s)*DDPsi^2'] if leader_deg == 2 else [])
-        ode_terms += ['(b0 + b1*s)*DDPsi*DPsi', '(c0 + c1*s)*DDPsi*Psi',
-                      '(d0 + d1*s)*DPsi^2', '(e0 + e1*s)*DPsi*Psi',
-                      '(f0 + f1*s)*Psi^2',
-                      '(g0 + g1*s)*DDPsi', '(h0 + h1*s)*DPsi', '(i0 + i1*s)*Psi']
-        odep = ((['a0', 'a1'] if leader_deg == 2 else [])
-                + ['b0', 'b1', 'c0', 'c1', 'd0', 'd1', 'e0', 'e1', 'f0', 'f1',
-                   'g0', 'g1', 'h0', 'h1', 'i0', 'i1'])
-        sp_ = ['s1', 's2', 's3', 's4']
+        leader_deg, background, norm = {
+            25:    (2, True,  0), 25.1:  (1, True,  0),
+            25.2:  (2, False, 0), 25.3:  (1, False, 0),
+            25.31: (1, False, 1), 25.32: (1, False, 2),
+            25.33: (1, False, 3), 25.34: (1, False, 4),
+        }[ansatz]
+        if norm == 4:                       # linear ODE (quadratic block gone)
+            ode_terms = ['(1 + g1*s)*DDPsi', '(h0 + h1*s)*DPsi',
+                         '(i0 + i1*s)*Psi']
+            odep = ['g1', 'h0', 'h1', 'i0', 'i1']
+        else:
+            ode_terms = (['(a0 + a1*s)*DDPsi^2'] if leader_deg == 2 else [])
+            ode_terms += ['(b0 + b1*s)*DDPsi*DPsi', '(c0 + c1*s)*DDPsi*Psi',
+                          '(d0 + d1*s)*DPsi^2', '(e0 + e1*s)*DPsi*Psi',
+                          '(f0 + f1*s)*Psi^2',
+                          '(%s + g1*s)*DDPsi' % ('1' if norm >= 2 else 'g0'),
+                          '(h0 + h1*s)*DPsi', '(i0 + i1*s)*Psi']
+            odep = ((['a0', 'a1'] if leader_deg == 2 else [])
+                    + ['b0', 'b1', 'c0', 'c1', 'd0', 'd1', 'e0', 'e1',
+                       'f0', 'f1']
+                    + ([] if norm >= 2 else ['g0'])
+                    + ['g1', 'h0', 'h1', 'i0', 'i1'])
+        if norm >= 2:                       # s1 = 1 (ν-scaling chart)
+            s_def, sp_ = 's - (x + s4*t)', ['s4']
+        elif norm == 1:                     # s2 = s3 = 0 (rotation normal form)
+            s_def, sp_ = 's - (s1*x + s4*t)', ['s1', 's4']
+        else:
+            s_def, sp_ = 's - (s1*x + s2*y + s3*z + s4*t)', ['s1', 's2', 's3', 's4']
         field_eqs, fparams = [], []
         for f in ('u', 'v', 'w', 'p'):
-            if background or f == 'p':
+            if f == 'p' and norm >= 3:      # pressure trim: p1 = p2 = p3 = 0
+                field_eqs.append('p - (p4*t + p5*Psi)')
+                fparams += ['p4', 'p5']
+            elif background or f == 'p':
                 field_eqs.append('%s - (%s1*x + %s2*y + %s3*z + %s4*t + %s5*Psi)'
                                  % (f, f, f, f, f, f))
                 fparams += ['%s%d' % (f, i) for i in range(1, 6)]
+            elif f == 'w' and norm >= 1:    # w5 = 0 -> w ≡ 0
+                field_eqs.append('w')
+            elif f == 'v' and norm >= 2:    # v5 = 1 (λ-scaling chart)
+                field_eqs.append('v - Psi')
             else:
                 field_eqs.append('%s - %s5*Psi' % (f, f))
                 fparams.append('%s5' % f)
         eqs = (['Psi[%s] - DPsi*s[%s]' % (c, c) for c in coords]
                + ['DPsi[%s] - DDPsi*s[%s]' % (c, c) for c in coords]
                + [' + '.join(ode_terms)]
-               + ['s - (s1*x + s2*y + s3*z + s4*t)']
+               + [s_def]
                + field_eqs)
+        # v_params (a ≡ 0 -> DEGENERATE) shrink with the amplitude vector and
+        # are EMPTY from norm 2 on: with v5 = 1 the amplitude vector can never
+        # vanish, so the a ≡ 0 test is vacuous — leaving it in would silently
+        # change what a DEGENERATE verdict means.
+        v_params = ([] if norm >= 2
+                    else ['u5', 'v5'] if norm == 1
+                    else ['u5', 'v5', 'w5'])
+        # excluded locus, as data (forwarded by build_problem): what each
+        # chart rung gives up relative to 25.3.  Rung 4 records none — it is
+        # a different ansatz family, not a chart, so nothing "lifts" anyway.
+        excludes = []
+        if norm in (1, 2, 3):
+            excludes += ['sigma = s1^2+s2^2+s3^2 = 0, s != 0 '
+                         '(punctured null cone)']
+        if norm in (2, 3):
+            excludes += ['s1 = 0', 'v5 = 0', 'g0 = 0']
+        if norm == 3:
+            excludes += ['special cells where the 25.3 pseudo-division '
+                         'cofactor (b0+b1*s)*DPsi + (c0+c1*s)*Psi + (g0+g1*s) '
+                         'vanishes']
         return dict(kind='nssystem',
                     jets_dep=['u', 'v', 'w', 'p', 'DDPsi', 'DPsi', 'Psi', 's'],
                     equations=eqs, params=sp_ + fparams + odep,
-                    v_params=['u5', 'v5', 'w5'],
-                    amp_params=[])
+                    v_params=v_params,
+                    amp_params=[],
+                    excludes=excludes)
 
     raise NotImplementedError(
         "ansatz %s not yet in the differential-algebra library.\n"
@@ -1084,4 +1197,5 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
                 tower=tower, order=spec.get('order'), params=params,
                 v_params=v_params, amp_params=amp_params, ansatz_eqs=ansatz_eqs,
                 pconst=pconst, pdes=pdes, pde_params=pparams,
-                ansatz_eqs_str=ansatz_eqs_str)
+                ansatz_eqs_str=ansatz_eqs_str,
+                excludes=spec.get('excludes', []))
