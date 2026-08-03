@@ -1529,6 +1529,26 @@ r_j \;=\; \sum_{\alpha=1}^{N_j} m_{j\alpha} \, p_{j\alpha}(c),
 where the $m_{j\alpha}$ are the $N_j$ distinct power products occurring in $r_j$
 and each coefficient $p_{j\alpha}(c)$ is a polynomial in the constants.
 
+The expansion \eqref{eq:remainder-expansion}, and its uniqueness, amount to no
+more than the observation that $R$ is a polynomial ring in the non-constant
+indeterminates over $\mathbb{Q}[c_1, \ldots, c_n]$: the constants are sent to
+zero by every derivation, so they contribute no derivatives, while the $x_j$,
+the $u_l$ and every derivative of the $u_l$ are algebraically independent over
+them.  It will be convenient to name the set of coefficients the expansion
+produces.  For $r \in R$ written as $r = \sum_{\alpha=1}^{N} m_\alpha \,
+p_\alpha(c)$ in this way, put
+%
+\begin{equation}
+\label{eq:coeff-operator}
+\mathrm{Coeff}(r) \;=\; \{\, p_1(c), \ldots, p_N(c) \,\}
+   \;\subset\; \mathbb{Q}[c_1, \ldots, c_n].
+\end{equation}
+%
+This is a syntactic operation on a polynomial rather than a computation ---
+reading off coefficients from a presentation the ring already has --- and
+$\mathrm{Coeff}(0) = \emptyset$, the case of an equation that reduces to zero on
+the component and so imposes no condition there.
+
 Distinct monomials in a polynomial ring are linearly independent over
 $\mathbb{C}$, so $r_j$ vanishes identically at $c^*$ if and only if every one of
 its coefficients does.  The projection step therefore replaces the reduced
@@ -1536,8 +1556,8 @@ system $r_1, \ldots, r_t$ by the single system
 %
 \begin{equation}
 \label{eq:projection-system}
-p_{j\alpha}(c) = 0
-\qquad (1 \le j \le t, \; 1 \le \alpha \le N_j)
+p(c) = 0
+\qquad \text{for every } p \in \bigcup_{j=1}^{t} \mathrm{Coeff}(r_j)
 \end{equation}
 %
 of $N_1 + \cdots + N_t$ polynomial equations in the constants alone.  No elimination is required:
@@ -1573,7 +1593,7 @@ question moot.
 Finally, the remaining system defines an algebraic variety
 %
 \[
-\mathcal{V} \;=\; V\bigl(\, p_{j\alpha} \,:\, 1 \le j \le t, \; 1 \le \alpha \le N_j \,\bigr) \;\subseteq\; \mathbb{C}^n,
+\mathcal{V} \;=\; V\Bigl( \textstyle\bigcup_{j=1}^{t} \mathrm{Coeff}(r_j) \Bigr) \;\subseteq\; \mathbb{C}^n,
 \]
 %
 which need not be irreducible.  Because only the zero locus matters, the
@@ -1594,12 +1614,18 @@ $F \subset \mathbb{Q}[c_1, \ldots, c_n]$ and $V(F)$ for its zero set in
 $\mathbb{C}^n$.  A pair $(F, h)$ consisting of such a set and a polynomial
 $h \in \mathbb{Q}[c_1, \ldots, c_n]$ denotes the constructible set
 $V(F) \setminus V(h) \subseteq \mathbb{C}^n$, and a finite set of such pairs
-denotes the union of the sets its members denote.
+denotes the union of the sets its members denote.  $\mathrm{Coeff}$ is the
+coefficient set of \eqref{eq:coeff-operator}, and $S^=_i$, $S^{\ne}_i$ are the
+equations and inequations of the $i^{\rm th}$ component, treated as sets of
+differential polynomials so that they may be intersected with a subring.
 
 Nothing in the algorithm is new.  It calls four subroutines, each taken from the
 literature and used unmodified; the work is in what is handed to them and how
 their results are combined.  We name them as their sources do, and give the
 source's own numbering where the source numbers its algorithms.
+$\mathrm{Coeff}$, $\cap$ and $\prod$ are not among them: those steps are
+syntactic, and it is worth keeping them visibly distinct from the four that do
+real work.
 
 \begin{center}
 \small
@@ -1668,7 +1694,7 @@ reports, as described below.
 \item \algind $J_i \leftarrow \emptyset$
 \item \algind {\bf for} $j = 1, \ldots, t$ {\bf do}
 \item \algind\algind $r \leftarrow \mathrm{FullReduce}(P_j, S^=_i)$
-\item \algind\algind $J_i \leftarrow J_i \cup \{$ the coefficients of $r$, as polynomials in $\mathbb{Q}[c_1, \ldots, c_n]$, collected with respect to power products in $x_1, \ldots, x_m, u_1, \ldots, u_k \}$
+\item \algind\algind $J_i \leftarrow J_i \cup \mathrm{Coeff}(r)$
 \item \algind {\bf end for}
 \item \algind $E_i \leftarrow S^=_i \cap \mathbb{Q}[c_1, \ldots, c_n]$
 \item \algind $h_i \leftarrow \prod \bigl( S^{\ne}_i \cap \mathbb{Q}[c_1, \ldots, c_n] \bigr)$
@@ -1993,8 +2019,9 @@ with $r_j$ fully reduced with respect to $A$.
 Write $r_j = \sum_\alpha m_{j\alpha} \cdot p_{j\alpha}(c)$, where for each $j$
 the $m_{j\alpha}$
 are distinct power products in the non-constant indeterminates and the
-$p_{j\alpha}$ are polynomials in the constants.  Let
-$\mathcal{V} = V\bigl(\{ p_{j\alpha} \}_{j,\alpha}\bigr) \subseteq \mathbb{C}^n$ be the variety
+$p_{j\alpha}$ are polynomials in the constants, so that
+$\mathrm{Coeff}(r_j) = \{p_{j1}, \ldots, p_{jN_j}\}$.  Let
+$\mathcal{V} = V\bigl( \bigcup_j \mathrm{Coeff}(r_j) \bigr) \subseteq \mathbb{C}^n$ be the variety
 defined by setting all of these constant coefficients to zero.
 
 Let $q$ be the product of the initials and separants of $A$, and suppose $c^*$
