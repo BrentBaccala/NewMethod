@@ -594,6 +594,19 @@ separated by a slash denote a rational function.  For example, 2/2 denotes
 a rational function with a second degree numerator and a second degree
 denominator.
 
+Two refinements of this notation are used in Figure
+\ref{normalized ansatz figure}, where an ansatz has been normalized and its
+polynomials are consequently not free.  Where only some of a polynomial's
+coefficients remain free, the polynomial is written out in place of the single
+white box, with a white box standing for each coefficient that is still free:
+$(\coeff + \coeff s)$ is an arbitrary first degree polynomial in $s$, while
+$(1 + \coeff s)$ is one whose constant term has been fixed at $1$.  And the
+degree bound on a line is written only when every generator of the ring below
+may appear to that degree.  A polynomial confined to some of the generators
+--- an inner variable built from two of the four coordinates, say --- carries
+no number, because no degree bound describes it; the form written out in its
+box is the description.
+
 \vfill\eject
 
 \begin{figure}[H]
@@ -2762,11 +2775,14 @@ u = u_5 \Psi , \qquad v = \Psi , \qquad w = 0 , \qquad p = p_4 t + p_5 \Psi
 \noindent
 in the nine constants $s_4$; $g_1, h_0, h_1, i_0, i_1$; $u_5$; $p_4, p_5$.
 Figure \ref{normalized ansatz figure} draws \eqref{ansatz 18 normalized} in the
-notation of Figure \ref{key}, with one convention added: a slot already fixed
-by one of the normalizations is written out literally instead of being drawn as
-a white box.  Seven boxes remain, carrying the nine constants --- two apiece
-for the two first-degree coefficients of the ODE --- and $v$ and $w$ carry no
-box at all, having nothing left free.
+notation of Figure \ref{key}: there are nine white boxes, one for each of those
+constants.  The three coefficients of the ODE are first degree polynomials in
+$s$ and their lines are labelled accordingly, the leading one differing from
+the others only in having had its constant term normalized to $1$.  The
+remaining lines carry no degree bound, because the polynomials they belong to
+are confined to part of their ring --- $s$ to two of the four coordinates,
+$u,v,w,p$ to $\Psi$ and $t$ --- and are written out instead; $v$ and $w$, fixed
+outright, carry no box at all.
 
 None of these reductions is free, and each is earned below rather than
 assumed: the truncation to a linear ODE is the cell $a_0 = a_1 = 0$ that the
@@ -2788,15 +2804,18 @@ to be inert, which is what \S\ref{ns viscous block} does.
 \centering
 \scalebox{0.9}{
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
-    \node (Psi) [poly, text width=240pt] {$(1 + \markedcoeff{ng}s)\,\Psi'' + \markedcoeff{nh}\Psi' + \markedcoeff{ni}\Psi$};
+    \node (Psi) [poly, text width=300pt] {$(\tikzmark{ngA}1 + \coeff\tikzmark{ngB}s)\,\Psi'' + (\coeff\tikzmark{nhA} + \coeff\tikzmark{nhB}s)\,\Psi' + (\coeff\tikzmark{niA} + \coeff\tikzmark{niB}s)\,\Psi$};
     \node (Qs) [ring, below of=Psi, text width=100pt, node distance=50pt] {$\mathbb{Q}[s]$};
     \node (s) [poly2, right=of Qs] {$s = x + \markedcoeff{ns}t$};
     \coordinate (bwb) at ($(Psi.south)!0.5!(Qs.north)$);
-    \draw[degree] (ng.west) -- (ng.west|-bwb.north) node[right,near end] {0};
-    \draw[degree] (nh.west) -- (nh.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (ni.west) -- (ni.west|-bwb.north) node[right,near end] {1};
-    \draw[degree] (ng.west|-bwb.north) -- (ni.west|-bwb.north);
-    \coordinate (bwbA) at (ng.west|-bwb.north);
+    \coordinate (mg) at ($(ngA)!0.5!(ngB)$);
+    \coordinate (mh) at ($(nhA)!0.5!(nhB)$);
+    \coordinate (mi) at ($(niA)!0.5!(niB)$);
+    \draw[degree] (mg) -- (mg|-bwb.north) node[right,near end] {1};
+    \draw[degree] (mh) -- (mh|-bwb.north) node[right,near end] {1};
+    \draw[degree] (mi) -- (mi|-bwb.north) node[right,near end] {1};
+    \draw[degree] (mg|-bwb.north) -- (mi|-bwb.north);
+    \coordinate (bwbA) at (mg|-bwb.north);
     \draw[degree] (Qs.north|-bwbA) -- (Qs.north);
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qs) (s), inner sep=10pt, element] {};
@@ -2804,18 +2823,18 @@ to be inert, which is what \S\ref{ns viscous block} does.
         \node (Psi block field) [ring, fill=none, fit=(Psi block) (Psi block title)] {};
     \end{scope}
     \node (base) [ring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}[x,y,z,t]$};
-    \draw[degree] (ns.south) -- (ns.south|-base.north) node[right,pos=0.7] {0};
+    \draw[degree] (ns.south) -- (ns.south|-base.north);
 
     \node (u) [poly2, node distance=20pt, above=of Psi block field.north west] {$u = \markedcoeff{nu}\Psi$};
     \node (v) [poly2, node distance=20pt, right=of u] {$v = \Psi$};
     \node (w) [poly2, node distance=20pt, right=of v] {$w = 0$};
     \node (p) [poly2, node distance=20pt, right=of w] {$p = \markedcoeff{np}t + \markedcoeff{nq}\Psi$};
     \coordinate (bwbB) at ($(u.south)!0.5!(Psi block field.north)$);
-    \draw[degree] (nu.south) -- (nu.south|-bwbB) node[right,pos=0.5] {0};
+    \draw[degree] (nu.south) -- (nu.south|-bwbB);
     \draw[degree] (v.south) -- (v.south|-bwbB);
     \draw[degree] (w.south) -- (w.south|-bwbB);
-    \draw[degree] (np.south) -- (np.south|-bwbB) node[right,pos=0.5] {0};
-    \draw[degree] (nq.south) -- (nq.south|-bwbB) node[right,pos=0.5] {0};
+    \draw[degree] (np.south) -- (np.south|-bwbB);
+    \draw[degree] (nq.south) -- (nq.south|-bwbB);
     \draw[degree] (nu.south|-bwbB) -- (nq.south|-bwbB);
     \coordinate (bwbC) at ($(nu.south|-bwbB)!0.5!(nq.south|-bwbB)$);
     \draw[degree] (bwbC) -- (bwbC|-Psi block field.north);
@@ -2825,9 +2844,9 @@ to be inert, which is what \S\ref{ns viscous block} does.
 }
 \caption{The normalized truncation of Figure \ref{nonlinear ansatz figure}
 used in the computation: a linear ODE in place of the second-degree one, the
-rotation and scaling freedoms spent, and no mean pressure gradient.  Slots
-fixed by a normalization are written out; the seven remaining boxes carry the
-nine free constants.}
+rotation and scaling freedoms spent, and no mean pressure gradient.  Polynomials
+that a normalization has restricted are written out rather than drawn as a
+single box, and the nine white boxes are the nine free constants.}
 \label{normalized ansatz figure}
 \end{figure}
 
