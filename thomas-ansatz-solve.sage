@@ -28,6 +28,11 @@
 #   sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 [--decompose-only]
 #   sage thomas-ansatz-solve.sage --pde helium   --ansatz 5
 #   sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 --latex
+#   sage thomas-ansatz-solve.sage --pde navier-stokes --ansatz 25.3 --generic-cell
+#
+# --generic-cell skips step 2 entirely and runs steps 3-6 on a single cell built
+# by hand from the ansatz -- see GenericCell below for what that cell is and
+# what it is not.
 #
 # Author: Brent Baccala (AI assistant: Claude).  July 2026.
 
@@ -60,6 +65,12 @@ MAX_CELLS = int(_argval('--max-cells', '0'))
 # outranks all lower-jet derivatives).  The ranking changes the decomposition,
 # so the cells file name records which one was used.
 RANKING = _argval('--ranking', 'orderly')
+# Skip the differential Thomas decomposition and run the downstream pipeline on
+# the ansatz's own generic cell (see GenericCell).  For an ansatz whose
+# decomposition does not terminate, this is the only way to get a membership
+# locus at all; for one whose does, it computes the single cell the
+# decomposition would have called generic.
+GENERIC_CELL = '--generic-cell' in sys.argv
 # By default, prune GENUINE varieties whose zero-set is contained in another
 # genuine variety's, printing only the maximal (enclosing) ones.  Two "genuine"
 # primes coming out of different cells are often nested (e.g. the c1=0 wall of a
@@ -72,8 +83,9 @@ PRUNE_ENCLOSED = '--keep-enclosed' not in sys.argv
 # prints as `2 a_{1} - b_{0}`.
 LATEX_OUT = '--latex' in sys.argv
 CELLS_OUT = _argval('--cells-out',
-                    os.path.expanduser('~/thomas-experiments/%s_ansatz%s_%s.cells'
-                                       % (PDE_NAME, ANSATZ, RANKING)))
+                    os.path.expanduser('~/thomas-experiments/%s_ansatz%s_%s%s.cells'
+                                       % (PDE_NAME, ANSATZ, RANKING,
+                                          '_generic' if GENERIC_CELL else '')))
 os.makedirs(os.path.dirname(CELLS_OUT), exist_ok=True)
 
 
@@ -366,21 +378,129 @@ def build_system_of_equations(eqn, constants):
     return tuple(set(system.values()))
 
 
-# --- differential-Thomas decomposition of the ANSATZ ALONE ----------------
-print("\nComputing native DifferentialThomas decomposition of the ansatz "
-      "(%d ansatz + %d constancy eqs) ..." % (len(ansatz0), len(pconst)), flush=True)
-_t0 = time.time()
-cells_ds = dt.differential_thomas_decomposition(ansatz0 + pconst, [], prob['rk'])
-_wall = time.time() - _t0
-print("-> %d cells in %.1fs\n" % (len(cells_ds), _wall) + "=" * 72, flush=True)
+# --- cells ----------------------------------------------------------------
+# Everything downstream touches a cell only through these two functions, so a
+# cell can be anything that answers them -- a differential system from the
+# decomposition, or the hand-built GenericCell below.
+class GenericCell(object):
+    r"""
+    The ansatz's own generic cell, built without decomposing anything.
+
+    Its equations are the ansatz equations together with the parameter-constancy
+    relations, and its inequations are the nondegeneracy conditions that make
+    that system simple: the initial and the separant of every equation, plus the
+    discriminant of every equation of degree `\geq 2` in its leader.  That is the
+    stratum on which no initial, separant or discriminant vanishes -- the one
+    branch the Thomas decomposition never has to split, and the one it would
+    label generic.
+
+    The inequations are the point of building it this way.  Reducing the PDE
+    against the bare ansatz and taking minimal associated primes returns
+    varieties that are only there because some initial vanishes on them -- the
+    ODE degenerating to lower order, say -- and those are artifacts of ignoring
+    the case distinction, not solutions.  Carrying the inequations lets the
+    downstream pruning drop them, exactly as it does for a real cell.
+
+    Two things it is NOT:
+
+    - **Not the whole answer.**  The decomposition's other cells are where the
+      initials do vanish, and they can carry solutions of their own (that is how
+      ansatz 25 reaches its viscous solutions, on `a_0 = a_1 = 0`).  A
+      `--generic-cell` run says nothing about them.
+
+    - **Not necessarily the decomposition's own generic cell.**  The
+      decomposition completes each cell to a passive system, adjoining
+      integrability conditions that this one does not have, and triangularizes
+      the equations, which this one takes as given.  Where the ansatz is already
+      autoreduced with distinct leaders (all of this library's are -- the
+      repeated-leader check below reports otherwise) the two agree on the
+      equations; where prolongation would force a new equation, the real generic
+      cell is smaller than this one and this one can return a variety the real
+      one does not.
+    """
+    def __init__(self, eqs, ineqs):
+        self.eqs = list(eqs)
+        self.ineqs = list(ineqs)
 
 
 def cell_eqs(ds):
+    if isinstance(ds, GenericCell):
+        return list(ds.eqs)
     return list(dt.differential_system_equations(ds))
 
 
 def cell_ineqs(ds):
+    if isinstance(ds, GenericCell):
+        return list(ds.ineqs)
     return list(dt.differential_system_inequations(ds))
+
+
+def _discriminant_in_leader(e):
+    r"""
+    The discriminant of ``e`` with respect to its own leader, or ``None``.
+
+    ``None`` is returned when the discriminant is not a condition: a constant
+    equation, degree `1` in the leader (the discriminant is then a unit, and the
+    separant already says what the initial does not), or an equation carrying a
+    derivative jet, which has no image in ``PolyRing``.  The one place degree
+    `\geq 2` in the leader occurs in this library is the nonlinear ODE of ansatz
+    25, whose jets are all of order `0` -- so the restriction costs nothing
+    there.
+    """
+    L = e.leader()
+    if L is None or '[' in L:
+        return None
+    for _coeff, term in _blad.read_terms(e._h()):
+        if any('[' in nm for nm, _deg in term):
+            return None                  # a derivative jet: no PolyRing image
+    p = _elt_to_polyring(e)
+    g = PolyRing(L)
+    if p.degree(g) < 2:
+        return None
+    d = p.discriminant(g)
+    return None if d.is_zero() or d.is_unit() else R(str(d))
+
+
+def generic_cell(eqs):
+    """Build the :class:`GenericCell` of the equations ``eqs``."""
+    keep = [e for e in eqs if not e.is_zero()]
+    ineqs, seen = [], set()
+
+    def add(q):
+        # leader() is None for a rational constant: `1 != 0` says nothing.
+        if q is None or q.is_zero() or q.leader() is None:
+            return
+        if str(q) not in seen:
+            seen.add(str(q))
+            ineqs.append(q)
+
+    for e in keep:
+        add(e.initial())
+        add(e.separant())
+        add(_discriminant_in_leader(e))
+    return GenericCell(keep, ineqs)
+
+
+# --- differential-Thomas decomposition of the ANSATZ ALONE ----------------
+if GENERIC_CELL:
+    print("\n--generic-cell: skipping the differential Thomas decomposition; "
+          "building the ansatz's generic cell (%d ansatz + %d constancy eqs) ..."
+          % (len(ansatz0), len(pconst)), flush=True)
+    cells_ds = [generic_cell(list(ansatz0) + list(pconst))]
+    print("-> 1 generic cell, %d inequations:" % len(cell_ineqs(cells_ds[0])),
+          flush=True)
+    for _q in cell_ineqs(cells_ds[0]):
+        print("     ", to_bracket(_q), "!= 0", flush=True)
+    print("   (the other cells of the decomposition -- where these vanish -- "
+          "are NOT computed)\n" + "=" * 72, flush=True)
+else:
+    print("\nComputing native DifferentialThomas decomposition of the ansatz "
+          "(%d ansatz + %d constancy eqs) ..." % (len(ansatz0), len(pconst)),
+          flush=True)
+    _t0 = time.time()
+    cells_ds = dt.differential_thomas_decomposition(ansatz0 + pconst, [], prob['rk'])
+    _wall = time.time() - _t0
+    print("-> %d cells in %.1fs\n" % (len(cells_ds), _wall) + "=" * 72, flush=True)
 
 
 for i, ds in enumerate(cells_ds, 1):
@@ -411,20 +531,51 @@ if DECOMPOSE_ONLY:
     sys.exit(0)
 
 
+def ineq_coeff_set(q):
+    r"""
+    The constant coefficients of an inequation ``q``, as a tuple, or ``None``.
+
+    An inequation is a condition on *functions*: `q \neq 0` fails exactly where
+    `q` vanishes identically, which is where every coefficient of `q` on the jet
+    monomials vanishes.  Collecting those coefficients turns the inequation into
+    the condition on the constants that :func:`prune` can test -- so a jet-
+    carrying inequation such as `a_0 + a_1 s \neq 0` prunes the variety
+    `a_0 = a_1 = 0` instead of being ignored for having a jet in it.
+
+    An inequation in the constants alone collects to ``(q,)``, so the test
+    ``all(g in P for g in ineq_coeff_set(q))`` reduces on those to the plain
+    ``q in P`` it generalises.
+
+    ``None`` is returned when ``q`` has no image in ``PolyRing`` -- a derivative
+    jet survived in it -- and such an inequation prunes nothing, as before.
+    """
+    try:
+        qp = _elt_to_polyring(q)
+    except TypeError:
+        return None
+    if qp.is_zero():
+        return None
+    return tuple(build_system_of_equations(qp, PolyRing_constants))
+
+
 def adapt_cell(ds):
-    param_eqs, param_ineqs, jet_ineqs = [], [], []
+    param_eqs, param_ineqs, jet_ineqs, ineq_coeffs = [], [], [], []
     for e in cell_eqs(ds):
         if e.is_zero() or has_jet(e) or is_param_constancy(e):
             continue
         param_eqs.append(_elt_to_polyring(e))
     for q in cell_ineqs(ds):
+        if is_param_constancy(q):
+            continue
+        cs = ineq_coeff_set(q)
+        if cs is not None:
+            ineq_coeffs.append(cs)
         if has_jet(q):
             jet_ineqs.append(q)
-        elif is_param_constancy(q):
-            continue
         else:
             param_ineqs.append(_elt_to_polyring(q))
-    return dict(param_eqs=param_eqs, param_ineqs=param_ineqs, jet_ineqs=jet_ineqs)
+    return dict(param_eqs=param_eqs, param_ineqs=param_ineqs,
+                jet_ineqs=jet_ineqs, ineq_coeffs=ineq_coeffs)
 
 
 def specialize(param_eqs):
@@ -542,12 +693,15 @@ for num, ds in enumerate(_cells, 1):
                                        primes=primes, trivial=trivial)
 
     sc = strata_cache[cache_key]
-    ineq_polys = list(cp['param_ineqs'])
+    # A prime is dropped when some inequation of the cell vanishes identically
+    # on the whole of it -- every coefficient of the inequation lying in the
+    # prime.  See ineq_coeff_set: on inequations in the constants alone this is
+    # the `q in P` test it replaces.
     survivors = []
     for P in sc['primes']:
         if P.is_one():
             continue
-        if any(g in P for g in ineq_polys):
+        if any(all(g in P for g in cs) for cs in cp['ineq_coeffs']):
             continue
         survivors.append(P)
 
