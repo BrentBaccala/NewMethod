@@ -1,0 +1,3 @@
+# Build products: every PDF here is pdflatex output from the .tex beside it.
+# (Same convention as WhatIveLearned/, PolySystems/ and NewSol/.)
+*.pdf
