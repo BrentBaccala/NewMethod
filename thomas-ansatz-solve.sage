@@ -37,6 +37,75 @@
 # Author: Brent Baccala (AI assistant: Claude).  July 2026.
 
 import os, re, sys, time
+
+USAGE = r"""usage: sage thomas-ansatz-solve.sage [--pde NAME] [--ansatz N] [options]
+
+Solve an (ansatz, PDE) pair by the staged NewMethod pipeline: differential-
+Thomas-decompose the ansatz alone into disjoint cells, reduce each PDE of the
+system modulo each cell, project the remainders onto the constants, take
+minimal associated primes, prune by the cell's inequations, and print the union
+of the surviving solution varieties, classified GENUINE / DEGENERATE / TRIVIAL.
+
+Choosing the problem
+  --pde NAME         hydrogen | helium | navier-stokes | navier-stokes-nd
+                     (default: hydrogen).  navier-stokes-nd is the
+                     nondimensional rho = mu = 1 variant of navier-stokes,
+                     which carries both as free constants the locus may
+                     constrain.  coordinate_system() in ansatz-library.sage is
+                     the authority on this list.
+  --ansatz N         which ansatz (default: 5).  Integers and decimal variants
+                     both work: 5, 20.1, 25.3, 25.34.  The catalogue, with a
+                     comment block per family, is ansatz-library.sage.
+
+Choosing what to compute
+  --generic-cell     skip the Thomas decomposition and run the pipeline on the
+                     ansatz's own generic cell: the ansatz equations plus the
+                     constancy relations, with the initials, separants and
+                     discriminants carried as inequations.  This is the way to
+                     get a membership locus out of an ansatz whose
+                     decomposition does not terminate -- but it covers only the
+                     stratum where no initial vanishes, and the other cells can
+                     hold solutions of their own.  See the GenericCell
+                     docstring for what it does and does not entitle you to
+                     conclude.
+  --decompose-only   stop after the decomposition, before the prime pipeline.
+                     Cheap way to find out whether a decomposition terminates
+                     at all, and in what memory.
+  --ranking NAME     orderly (default) or elimination.  elimination is a block
+                     ranking -- each jet its own block, so a high jet like
+                     DDPsi outranks every lower-jet derivative.  It changes the
+                     decomposition, and is much the more expensive of the two.
+  --max-cells N      process only the first N cells (default 0 = all).
+
+Output
+  --verbose-remainder  print each PDE's remainder for every cell.
+  --keep-enclosed    keep GENUINE varieties contained in another genuine one.
+                     The default prints only the maximal (enclosing) ones,
+                     since a smaller prime surfacing from a second cell is
+                     usually the same solution family seen again.
+  --latex            re-print the genuine union as a LaTeX subequations block
+                     in the form the paper uses, denominators cleared.
+  --cells-out PATH   where to write the raw cells (default:
+                     ~/thomas-experiments/<pde>_ansatz<N>_<ranking>.cells, with
+                     _generic appended under --generic-cell).
+  --help, -h         this message.
+
+Examples
+  sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5
+  sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 --latex
+  sage thomas-ansatz-solve.sage --pde navier-stokes-nd --ansatz 25.34
+  sage thomas-ansatz-solve.sage --pde navier-stokes --ansatz 25.3 --generic-cell
+  sage thomas-ansatz-solve.sage --pde helium --ansatz 15 --decompose-only
+"""
+
+if '--help' in sys.argv or '-h' in sys.argv:
+    sys.stdout.write(USAGE)
+    sys.stdout.flush()
+    # os._exit, not sys.exit: the sage runner swallows SystemExit and returns 1
+    # regardless of its code (the same quirk --decompose-only exits 1 under), so
+    # a plain `sys.exit(0)` here would make `--help` look like a failure.
+    os._exit(0)
+
 import sympy
 
 _T_START = time.time()
