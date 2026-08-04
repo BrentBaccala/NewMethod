@@ -1207,8 +1207,7 @@ non-multiplicative for the leader of~$p$.
 A differential system $S = (S^=, S^{\ne})$ of equations $S^=$ and inequations
 $S^{\ne}$ is {\it involutive} (\cite{ThomasDecomp}, Definition~3.5) if
 every non-multiplicative prolongation of an element of $S^=$ reduces to zero
-modulo $S^=$.  An involutive system is coherent in the sense of \cite {blop}, Definition 22
-(cite Li–Wang 1999, Theorem 3), though we do not use this fact.
+modulo $S^=$.
 
 \smallskip
 A differential system $S$,
@@ -1285,6 +1284,25 @@ reduction to zero is a decision procedure and not merely a sufficient condition;
 and its hypothesis is simplicity alone, so no separate coherence, regularity or
 characteristic-set hypothesis is needed.  The same proposition is restated, with
 proof references, as Proposition~2.29 of \cite{LHRcontrol}.
+
+\smallskip
+One consequence is worth recording, though we do not use it: a differentially
+simple system is {\it coherent} in the sense of \cite{blop}, Definition~22.
+That condition asks that every critical pair of $S^=$ --- every pair of
+equations whose leaders have a common derivative --- be {\it solved}, meaning
+that its $\Delta$-polynomial lies in $(S^=_v) : (H \cap R_v)^\infty$ for some
+derivative $v$ ranking strictly below the least common derivative of the two
+leaders (\cite{blop}, Definitions~17--19).  A $\Delta$-polynomial is by
+construction a combination of derivatives of equations of $S^=$, so it lies
+in~$E$; by Proposition~\ref{prop:simple-membership} it therefore pseudo-reduces
+to zero, and a critical pair whose $\Delta$-polynomial reduces to zero is solved
+(\cite{blop}, Lemma~20, whose hypothesis that the two leaders be distinct is
+condition~(A1)).  Note that it is simplicity, not involutivity alone, that
+carries this argument: involutivity enters only through
+Proposition~\ref{prop:simple-membership}, whose hypothesis is~(S1)--(S4)
+together.  This is also how the corresponding remark in \cite{ThomasDecomp},
+\S\,1 should be read --- it is a statement about the simple systems that
+algorithm outputs, not about involutivity in isolation.
 
 \smallskip
 The companion statement assembles the components of a decomposition.  For a
