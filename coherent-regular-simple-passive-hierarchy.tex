@@ -1,5 +1,6 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath,amssymb}
+\usepackage{amsthm}
 \usepackage{mathtools}
 \usepackage[margin=1in]{geometry}
 \usepackage{booktabs}
@@ -52,7 +53,11 @@ source, quotes the defining conditions verbatim, and flags one correction to an
 earlier informal claim (that Seiler's monograph states a coherence
 $\Leftrightarrow$ involution \emph{equivalence}): the sourced statement is the
 \emph{implication} passive $\Rightarrow$ coherent (Li--Wang 1999, Thm.~3;
-Gerdt 1999, Thm.~16; B\"achler et al.\ 2012).
+Gerdt 1999, Thm.~16; B\"achler et al.\ 2012). It also proves, in
+\S\ref{sec:simple-coherent}, that a differentially simple system in
+B\"achler et al.'s sense (whose definition, unlike Li--Wang's, does
+\emph{not} assume coherence) is coherent --- the arrow a Thomas-based argument
+actually needs, and one that avoids importing Wu's notion of passivity.
 \end{abstract}
 
 \section{Why this note exists}
@@ -102,7 +107,7 @@ inner object an ordinary RG intersection of regular components (RG-like,
 \emph{on the differential fibre}, and possibly overlapping as varieties). It is
 a union \emph{of} intersections, never an intersection of unions: across
 disjoint parameter cells one can only case-split, never intersect. This is the
-precise sense of the ``hybrid'' character noted in \S6 --- disjoint on
+precise sense of the ``hybrid'' character noted in \S7 --- disjoint on
 parameters, overlapping-regular on the fibre.
 
 Underneath all of these sits a third notion, \emph{coherence} (the condition in
@@ -340,6 +345,157 @@ the right reference for \emph{why} Pommaret-involution --- unlike Janet-involuti
 and unlike coherence --- is coordinate-dependent, which is a second, independent
 reason the two notions cannot be identical.)
 
+\section{A second route to coherence: Thomas-simple $\Rightarrow$ coherent}
+\label{sec:simple-coherent}
+
+\S4 leaves the Janet-involutive arrow into coherence resting on an assertion
+(B\"achler et al.\ \S1) rather than a proof. This section supplies a proof of a
+\emph{weaker but sufficient} statement --- one whose antecedent is the full
+definition of a differentially simple system rather than involutivity alone ---
+which is what any argument starting from a differential Thomas decomposition
+actually has in hand.
+
+\paragraph{A terminological trap first.} Two different conditions are called
+``simple'' in this literature, and only one of them makes the implication
+non-trivial.
+
+\begin{itemize}
+  \item \textbf{Li--Wang d-sim} (Def.~8; \S3.3 above) is defined as a
+        \emph{coherent} d-tri system that is w-simple. Coherence sits
+        \emph{inside} the definition, so ``simple $\Rightarrow$ coherent'' is a
+        tautology for this notion and the arrow in the lattice below records
+        nothing mathematical.
+  \item \textbf{BGLR simple} (Def.~3.3) is (S1) algebraically simple ---
+        triangular, non-vanishing initials, square-free --- plus (S2)
+        Janet-involutive, (S3) $S^=$ minimal, (S4) no inequation reducible
+        modulo $S^=$. \textbf{Coherence is not among these conditions.} For this
+        notion ``simple $\Rightarrow$ coherent'' is a theorem.
+\end{itemize}
+
+\noindent
+The differential Thomas algorithm outputs BGLR-simple systems, so it is the
+second notion that is available downstream, and the second implication that has
+to be established.
+
+\paragraph{Coherence in BLOP's formulation.} Li--Wang Def.~5 (\S3.1 above) is
+stated for a set $\PP$; the equivalent system-level phrasing in
+Boulier--Lazard--Ollivier--Petitot is the one that meshes with the Thomas-side
+results, so we use it here. For a set $A$ of differential polynomials and a
+derivative $v$, write $A_v=\{\theta p \mid p\in A,\ \theta\in\Theta,\
+\ld\theta p\le v\}$ and $\R_v$ for the subring on derivatives of rank $\le v$.
+
+\begin{itemize}
+  \item \textbf{(Def.~17, critical pair.)} $\{p_1,p_2\}$ is a \emph{critical
+        pair} if $\ld p_1$ and $\ld p_2$ have a common derivative. If $\ld p_2$
+        is a derivative of $\ld p_1$ the pair is a \emph{reduction} critical
+        pair.
+  \item \textbf{(Def.~18, $\Delta$-polynomial.)} With
+        $\theta_iu=\ld p_i$, $\theta_{12}u=\mathrm{lcd}(\theta_1u,\theta_2u)$ and
+        $\operatorname{rank}p_1<\operatorname{rank}p_2$,
+        \[
+          \Delta(p_1,p_2)=\sep(p_1)\frac{\theta_{12}}{\theta_2}p_2
+                         -\sep(p_2)\frac{\theta_{12}}{\theta_1}p_1
+        \]
+        in the non-reduction case, and
+        $\Delta(p_1,p_2)=p_2\ \mathrm{full\text{-}rem}\ (\theta_2/\theta_1)p_1$
+        in the reduction case.
+  \item \textbf{(Def.~19, solved.)} The pair is \emph{solved by} $A=0$,
+        $S\ne 0$ if there is a derivative $v<\theta_{12}u$ with
+        $\Delta(p_1,p_2)\in\satalg{A_v}{(S\cap\R_v)}$.
+  \item \textbf{(Def.~22, condition C3.)} $A=0$, $S\ne0$ is \emph{coherent} if
+        every critical pair of $A$ is solved by it.
+\end{itemize}
+
+\paragraph{The imported ingredient.} One result does the work, and it is a
+Thomas-side result with no coherence in its hypothesis:
+
+\begin{quote}
+\textbf{Robertz, \emph{Formal Algorithmic Elimination for PDEs}, Prop.~2.2.50}
+(restated as Prop.~3.31 of the CIRM notes). \emph{Let $S$ be a simple
+differential system with equations $p_1=0,\dots,p_s=0$, let $E$ be the
+differential ideal generated by $p_1,\dots,p_s$, and let $q$ be the product of
+the initials and separants of $p_1,\dots,p_s$. Then $E:q^\infty$ is a radical
+differential ideal, and for $p\in\R$ we have $p\in E:q^\infty$ if and only if
+the pseudo-remainder of $p$ modulo $p_1,\dots,p_s$ and their derivatives is
+zero.}
+\end{quote}
+
+\begin{quote}
+\textbf{BLOP Lemma 20.} \emph{Let $\{p_1,p_2\}$ be a critical pair with
+$\ld p_1\ne\ld p_2$, and let $A=0$, $S\ne0$ be a differential system with
+$H_A\subset S$. If $\Delta(p_1,p_2)\ \mathrm{full\text{-}rem}\ A=0$ then
+$\{p_1,p_2\}$ is solved by $A=0$, $S\ne0$.}
+\end{quote}
+
+\paragraph{The statement.}
+
+\begin{quote}
+\textbf{Proposition.} Let $S=(S^=,S^{\ne})$ be a differentially simple system in
+the sense of BGLR Def.~3.3, with $A=S^==\{p_1,\dots,p_s\}$, and let
+$H=H_A=\si(A)$ be its initials and separants. Then every critical pair of $A$ is
+solved by $A=0$, $H\ne0$; that is, $A$ is coherent.
+\end{quote}
+
+\begin{proof}
+Let $\{p_1,p_2\}$ be a critical pair of $A$, with notation as in Def.~18, and
+let $E=[A]$, $q=\prod_{p\in A}\ini(p)\sep(p)$.
+
+\emph{Step 1: $\Delta(p_1,p_2)\in E$.} In the non-reduction case each
+$(\theta_{12}/\theta_i)p_i$ is a derivative of an element of $A$ and so lies in
+$E$; since $E$ is an ideal, the combination
+$\sep(p_1)(\theta_{12}/\theta_2)p_2-\sep(p_2)(\theta_{12}/\theta_1)p_1$ lies in
+$E$ as well. In the reduction case Ritt full reduction supplies an SI-product
+$h$ with $h\,p_2-\Delta(p_1,p_2)\in[p_1]$, so
+$\Delta(p_1,p_2)=h\,p_2-(\text{element of }[p_1])\in E$. Either way
+$\Delta(p_1,p_2)\in E\subseteq E:q^\infty$.
+
+\emph{Step 2: $\Delta(p_1,p_2)$ pseudo-reduces to zero modulo $A$.} $S$ is
+simple, so Robertz Prop.~2.2.50 applies; take its ``only if'' direction with
+$p=\Delta(p_1,p_2)$, which lies in $E:q^\infty$ by Step~1.
+
+\emph{Step 3: the pair is solved.} By (S1)/(A1) the elements of $A$ have
+pairwise distinct leaders, so $\ld p_1\ne\ld p_2$, and $H_A\subset H$ by
+construction; BLOP Lemma~20 applies. Explicitly, put $v=\ld\Delta(p_1,p_2)$,
+which is $<\theta_{12}u$, and $\bar A=\{p\in A\mid \operatorname{rank}p\le
+\operatorname{rank}\Delta(p_1,p_2)\}$. By the specification of Ritt reduction
+there are $h_1,\dots,h_n\in H_{\bar A}$ and exponents $\alpha_i$ with
+$h_1^{\alpha_1}\cdots h_n^{\alpha_n}\Delta(p_1,p_2)\in(\bar A_v)$. Since
+$H_{\bar A}\subseteq H\cap\R_v$ and $\bar A_v\subseteq A_v$ we get
+$\Delta(p_1,p_2)\in\satalg{A_v}{(H\cap\R_v)}$ with $v<\theta_{12}u$, which is
+Def.~19.
+\end{proof}
+
+\paragraph{On the non-canonicity of Ritt reduction.} Ritt full reduction is not
+canonical --- the remainder depends on which reducer is chosen at each step ---
+so ``the pseudo-remainder is zero'' needs justification as a well-posed
+condition. Robertz's proposition supplies it: it is an \emph{equivalence} with
+an ideal membership, so for a simple system the vanishing of the remainder is
+independent of the reduction strategy. Step~2 is therefore unambiguous.
+
+\paragraph{No circularity.} The obvious worry is that Robertz proves Prop.~2.2.50
+by way of Rosenfeld's Lemma, which takes coherence as a hypothesis --- in which
+case the argument above would be circular. It does not: ``coherent'' occurs
+nowhere in the body of the CIRM notes, and Rosenfeld appears only in the
+introduction (as a contrast to Thomas) and in the bibliography. The route to
+2.2.50 is the Thomas/Janet theory together with the Ritt--Raudenbush
+Nullstellensatz.
+
+\paragraph{What this settles, and what it does not.} It settles the practical
+question raised at the end of \S4: work that starts from a differential Thomas
+decomposition does \emph{not} need Li--Wang Thm.~3, and does not need to import
+Wu's definition of passivity or assume an unwritten identification of
+Wu-passivity with Janet-involutivity. It can derive coherence of the output
+systems from a Thomas-side result. It also explains B\"achler et al.\ \S1: read
+in context --- ``\emph{the output systems} are Janet-involutive $\dots$ and
+hence they are coherent'' --- their claim is about the simple systems their
+algorithm returns, not about involutivity in isolation, and in that reading it
+is correct.
+
+It does \emph{not} prove Janet-involutive $\Rightarrow$ coherent. Step~2 uses
+Prop.~2.2.50, whose hypothesis is (S1)--(S4) together; involutivity enters only
+as (S2). The bare implication, with involutivity as the sole antecedent, remains
+unlocated in the literature and unproved here.
+
 \section{The implication lattice}
 
 Collecting Definitions 5, 6, 8 and Theorems 2, 3 of Li--Wang with Gerdt's
@@ -359,9 +515,19 @@ Theorem 16:
   \underbrace{\text{regular}}_{\text{L--W Def.~6}}
   \;=\;\text{coherent}+\text{e-tri}
   \imp
+  \text{coherent}
+  \\[1.5ex]
+  \underbrace{\text{simple}}_{\text{BGLR Def.~3.3}}
+  \;\xRightarrow{\ \S\ref{sec:simple-coherent}\ }\;
   \text{coherent}.
 \end{gathered}
 \]
+
+\noindent
+The last two rows are not the same statement. Li--Wang's d-sim has coherence
+inside its definition, so its arrow is a tautology; BGLR's simple does not, so
+its arrow is the proposition of \S\ref{sec:simple-coherent}. The first row
+remains an assertion (B\"achler et al.\ \S1) rather than a proved implication.
 
 \begin{center}
 \begin{tabular}{@{}p{2.3cm}p{5.6cm}p{3.0cm}p{2.7cm}@{}}
@@ -373,6 +539,7 @@ Janet-involutive & non-mult.\ prolongations reduce to $0$ & (property) & Gerdt D
 Wu-passive & (not defined in L--W; see Wu 1989) & (property) & Wu 1989 \\
 regular & coherent $+$ e-tri (sep./init.\ invertible on the component) & intersection (RG weak form) & L--W Def.~6 \\
 simple (d-sim) & \emph{coherent} d-tri $+$ w-simple (triangular, non-vanishing init., square-free) & disjoint (Thomas) & L--W Def.~8 \\
+simple (BGLR) & alg.\ simple $+$ involutive $+$ minimal $+$ inequation-reduced; coherence \emph{not} assumed & disjoint (Thomas) & BGLR Def.~3.3; coherence proved \S\ref{sec:simple-coherent} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -392,6 +559,10 @@ Every arrow is \emph{strict} and \emph{one-directional}:
         square-freeness / the w-simple conditions, which is what buys
         \emph{disjointness} of the Thomas decomposition and the characteristic-set
         property (L--W Cor.~2).
+  \item \textbf{BGLR-simple $\Rightarrow$ coherent} is the one arrow here with a
+        proof written out rather than cited (\S\ref{sec:simple-coherent}), and
+        it is the one a Thomas-based argument needs, since BGLR's definition ---
+        unlike Li--Wang's --- does not assume coherence.
 \end{itemize}
 
 \section{Consequences for the RG-vs-Thomas comparison}
@@ -453,6 +624,24 @@ Every arrow is \emph{strict} and \emph{one-directional}:
         simple $+$ involutive $+$ minimal $+$ inequation-reduced); ``Janet-involutive
         $\dots$ hence coherent''; $\Delta$-poly $=$ $s$-poly analogue.] Local
         archives (published + preprint) in \nolinkurl{~/project/papers/}.
+  \item F.~Boulier, D.~Lazard, F.~Ollivier \& M.~Petitot, \emph{Computing
+        representations for radicals of finitely generated differential ideals},
+        AAECC \textbf{20} (2009), 73--121. [Def.~13 (differentially triangular),
+        Defs.~17--19 (critical pairs, $\Delta$-polynomials, solved pairs),
+        Lemma~20 ($\Delta$ reduces to $0$ $\Rightarrow$ pair solved), Def.~22
+        (regular differential system; C3 is coherence), Thm.~23 (Rosenfeld's
+        Lemma). The system-level phrasing of coherence used in
+        \S\ref{sec:simple-coherent}.] Local archive:
+        \nolinkurl{~/project/papers/boulier-lazard-ollivier-petitot-2009-radical-differential-ideal.pdf}.
+  \item D.~Robertz, \emph{Formal Algorithmic Elimination for PDEs}, Lecture
+        Notes in Mathematics \textbf{2121}, Springer, 2014. [Prop.~2.2.50:
+        pseudo-reduction modulo a simple differential system decides membership
+        in $E:q^\infty$ --- the ingredient of \S\ref{sec:simple-coherent}.
+        Restated as Prop.~3.31 of the CIRM notes, \emph{Formal Methods for
+        Systems of Partial Differential Equations} (2018), which is freely
+        available and contains no appeal to coherence or Rosenfeld's Lemma in
+        its development.] Local archives (book appendix~A + both CIRM versions)
+        in \nolinkurl{~/project/papers/}.
   \item W.~M.~Seiler, \emph{A Combinatorial Approach to Involution and
         $\delta$-Regularity, I \& II}, AAECC \textbf{20} (2009). [Involutive /
         Pommaret bases, $\delta$-regularity. \emph{Not} a source for a
