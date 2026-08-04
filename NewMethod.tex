@@ -273,8 +273,7 @@ Section \ref{sec:Future Work} discusses future work and section \ref{sec:Conclus
 \section{The Ansatz}
 \label{sec:Ansatze}
 
-The primary intent of the algorithm is find solutions to a PDE in the form
-of nested extensions, either ODE or algebraic.
+The primary intent of the algorithm is find solutions to a PDE that can be constructed using ODEs.
 
 We do this by introducing additional differential polynomials, parameterized with constants,
 forming what we term the ``ansatz''.
@@ -303,10 +302,10 @@ dx(ab) = (dx(a))b + a(dx(b))
 \end{gathered}
 \end{equation*}
 
-A differential ring (field) equipped with a single derivation
-is called an {\it ordinary} differential ring (field); one
+A differential ring (resp. field) equipped with a single derivation
+is called an {\it ordinary} differential ring; one
 equipped with multiple derivations is called a {\it partial}
-differential ring (field).
+differential ring.
 
 Various notations are in common use for the derivations;
 since we work mostly in partial differential rings where there are multiple
@@ -352,14 +351,11 @@ $\mathfrak{F}$ (\cite{Ritt}, \S3).  The braces do {\it not} list the derivations
 which are separate data; we write $\Delta = \{\delta_1, \ldots, \delta_m\}$ for
 them, and $\Theta$ for the free commutative monoid they generate, so that the
 elements $\theta y_i$ with $\theta \in \Theta$ are the {\it derivatives} of the
-indeterminates.  The independent variables belong to the coefficient ring, where
-they satisfy $\delta_i x_j = \delta_{ij}$ --- Ritt's own convention (\S29), and
-the one \cite{blop} and \cite{Fakouri2018} follow.  Thus
-$\mathbb{Q}[x,y,z]\{\Psi\}$ is the ring of differential polynomials in the single
+indeterminates.
+Thus $\mathbb{Q}[x,y,z]\{\Psi\}$ is the ring of differential polynomials in the single
 dependent variable $\Psi$, over coefficients involving the three independent
-variables $x,y,z$, with $\Delta = \{\delta_x, \delta_y, \delta_z\}$.  The
-derivations we often write as subscripts: $\Psi_x$ is $\delta_x$ applied
-to~$\Psi$.
+variables $x,y,z$, with $\Delta = \{\delta_x, \delta_y, \delta_z\}$.
+$\Psi_x$ is $\delta_x$ applied to~$\Psi$.
 
 In the present work, primes are reserved for a different purpose --- the derivatives
 internal to an ODE extension,
@@ -403,10 +399,11 @@ Thus, the coefficients of the ODE's defining differential polynomial are
 selected not from the existing field, but rather from ${\mathbb Q}(v)$, an auxiliary field
 constructed using the independent variable $v$.
 
-How do the existing derivations operate on the new indeterminates?  The independent variable needs
-no special attention; it is the operation of the derivations on the dependent variable and its derivatives that must be specified.
+How do the existing derivations operate on the new indeterminates?
+%The independent variable needs
+%no special attention; it is the operation of the derivations on the dependent variable and its derivatives that must be specified.
 % We can expess our previously existing derivatives in terms of the new one using the chain rule.
-All that required is the chain rule.  We need to specify how the new interderminates behave under the existing
+All that is required is the chain rule.  We need to specify how the new indeterminates behave under the existing
 derivations, and that relationship is analytically:
 
 \begin{equation}
@@ -419,8 +416,8 @@ Algebraically, we write:
 \Psi_x = \Psi' v_x
 \end{equation}
 
-We use apostrophes, and not the jet notation subscripts, when writing
-the differential polynomial in the ODE case to emphasize that we are not introducing a new derivation,
+We use primes, and not the jet notation subscripts, when writing
+the differential polynomial in the ODE case because we are not introducing a new derivation,
 nor is the ODE's derivative any of the existing derivatives.
 
 In short, to construct a new ODE extension:
@@ -441,7 +438,7 @@ extension specified by the dependent indeterminate $\Psi$, its derivative $\Psi'
 $\Psi' = \Psi$.  This differential polynomial
 maps to the analytic equation $\frac{d\Psi}{dv}=\Psi$ and is solved
 by the analytic functions $Ae^v$ ($A$ is an arbitrary constant).  If $v=x^2+y$, then
-the functions $Ae^{x^2+y}$ are solutions to this ODE; the differential polynomials required to model $Ae^{x^2+y}$ are:
+the functions $Ae^{x^2+y}$ are solutions to this ODE; the differential polynomials required to model $\Psi=Ae^{x^2+y}$ are:
 
 \begin{equation}
 \Psi_x = 2 \Psi' x \qquad
@@ -449,7 +446,7 @@ the functions $Ae^{x^2+y}$ are solutions to this ODE; the differential polynomia
 \Psi' = \Psi
 \end{equation}
 
-which, due to the equality of $e^v$ with its own derivative, simplify to:
+which simplify to:
 
 \begin{equation}
 \Psi_x = 2 \Psi x \qquad
@@ -507,13 +504,12 @@ $f$ to be the function required by the original problem.
 %to solve the corresponding analytic equation and conclude that $\Psi$ is a multiple of the exponential of $x$.
 
 Likewise, $g=\exp x$ can be expressed using $g' = g$ and $h=\ln x$ using $h' = x'/x$,
-and the roots of polynomials are solutions to polynomial equations,
 so most elementary and special functions can be expressed using
 differential polynomials.
 
 \subsection{Forming an Ansatz}
 
-My primary goal is to ``solve'' a PDE, or a system of them, by finding solutions described using ODEs.
+Our primary goal is to solve a PDE, or a system of them, by finding solutions described using ODEs.
 Therefore, all of my current ans\"atze attempt to express solutions to the system using
 a finite combination of ODEs.  They do not have to be linear, seperable or homogenous.
 They do require degree bounds on all of their constituent polynomials,
@@ -523,6 +519,7 @@ Algebraic extensions can also be included, but since
 they must be parameterized by a finite number of constants, they can not express
 an arbitrary algebraic extension of indefinite degree.
 
+\begin{comment}
 To form an ansatz, we construct a tower of ODE and/or algebraic extensions that build from the base differential ring
 (used to write our original PDE) and culminates in a newly introduced indeterminate
 that is used as the equation's dependent variable.  When the target is a system
@@ -531,11 +528,12 @@ each equated to a new indeterminate and used
 as one of the system's dependent variables (see Figure \ref{nonlinear ansatz figure});
 the algorithm of \S\ref{sec:Solution Algorithm} handles this case with no change
 beyond reducing each equation of the system in turn.
+\end{comment}
 
-The primary requirement for an ansatz is that it be expressed using differential polynomials,
-as this makes it ammenable to the techniques of differential algebra.  This excludes any
-kind of boundary conditions (which would require evaluating functions at some boundary)
-or Sobolov space restrictions (which would require evaluating integrals of the function),
+The primary requirement for an ansatz is that it be expressed using differential polynomials.
+% as this makes it ammenable to the techniques of differential algebra.
+This excludes any kind of boundary conditions (which would require evaluating functions at some boundary)
+or function space restrictions (which would require evaluating global integrals of the function),
 but admits almost almost any differential equation imaginable.
 
 A good ansatz will be flexible enough to match the solution sought, but require only a small number
@@ -648,8 +646,7 @@ and is described using differential polynomials as follows.
 %the element $\Psi$ must itself solve the PDE.
 
 
-First, a differential polynomial involving only $\Psi''$, $\Psi'$, $\Psi$, $v$, and constants,
-and using no non-constant indeterminates or derivatives.
+First, the ODE:
 
 \begin{equation}
 \label{ansatz 5b}
@@ -680,17 +677,16 @@ v = v_1 x + v_2 y + v_3 z + v_4 r
 Our differential ring is equipped with three derivations $dx$, $dy$, and $dz$.
 Our base ring
 is $\mathbb{Q}[x,y,z]$, and $r$ is a differential indeterminate carrying the
-relation $r^2 - x^2 - y^2 - z^2$ in the system rather than a quotient taken in
-the ring; from this we select a linear variable $v$ using equation
+relation $r^2 - (x^2 + y^2 + z^2)$;
+from this we select a linear variable $v$ using equation
 \eqref{ansatz 5a}.
 The $v_i$'s (and the $a_i$'s, $b_i$'s and $c_i$'s) are constants.
-Strictly speaking, a $v_0$ constant term
-should also be present, but we often drop the constant term from the
-independent variable of an ODE extension, because taking
+We drop the $v_0$ constant term from the
+independent variable, because taking
 the derivative with respect to $x+3$ is no different from taking
 the derivative with respect to $x$.
 
-The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE.
+The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE (not shown here; see section \ref{sec:Example}).
 
 \vfill\eject
 
@@ -759,10 +755,9 @@ r^2 = x^2 + y^2 + z^2
 \end{gather}
 \end{subequations}
 
-Again, we'll write the PDE (not shown) using the expected solution $\Psi$;
-that's the convention for the next several examples.
-We don't write the PDE explicitly because the ans\"atze can be applied to many PDEs.
-\eqref{ansatz 18} will shown a different way to construct PDEs.
+Note that \eqref{ansatz 12 plus:2} contains a $\Theta$ term, while \eqref{ansatz 12 plus:4} does not.
+
+We don't write the PDE explicitly here because the ans\"atze can be applied to many different PDEs.
 
 \vfill\eject
 
@@ -784,11 +779,11 @@ We don't write the PDE explicitly because the ans\"atze can be applied to many P
     \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\gamma^2 + \framebox(10,10){}\tikzmark{b}\,\gamma + \coeff\tikzmark{c}$};
     \begin{scope}[on background layer]
         \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
-        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}[x,y,z]\{r,\gamma\}$ with $r^2-x^2-y^2-z^2$ and $\framebox(10,10){}\,\gamma^2 + \framebox(10,10){}\,\gamma + \coeff$ in the system};
+        \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}[x,y,z]\{r,\gamma\}$};
         \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
     \end{scope}
     \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {1};
-    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
+    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
     \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {1};
     \draw[degree] (b.west) -- (b.west|-base.north) node[right,pos=0.8] {1};
     \draw[degree] (c.west) -- (c.west|-base.north) node[right,pos=0.8] {1};
@@ -799,8 +794,8 @@ We don't write the PDE explicitly because the ans\"atze can be applied to many P
 \label{ansatz 11 figure}
 \end{figure}
 
-Multiple extensions can be assembled together into a tower.  Both ODE and algebraic extensions can be specified.
-Figure \ref{ansatz 11 figure}'s ansatz allows a second-degree algebraic extension to be used in the formation of the distinguished variable.
+Figure \ref{ansatz 11 figure}'s ansatz shows how a second-degree algebraic extension with first-degree coefficients
+can be used in the formation of the distinguished variable, in addition to the pre-defined algebraic extension $r$.
 
 \begin{subequations}
 \label{ansatz 11 plus}
@@ -1030,17 +1025,16 @@ v = v_1 x + v_2 y + v_3 z
 \label{nonlinear ansatz figure}
 \end{figure}
 
-Non-linear ODEs can be constructed.  For a linear homogeneous second-order ODE, we have $\Psi''$, $\Psi'$, and $\Psi$,
-multiplied by polynomials in the ODE's independent variable, so our differential polynomial is first degree in $\Psi$ and its derivatives $\Psi'$ and $\Psi''$.
-For a non-linear ODE, we can introduce higher degrees.  For example, a second
-degree second order ODE would add $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$, and $\Psi^2$ to the ansatz.
+Non-linear ODEs can be constructed.
+% For a linear homogeneous second-order ODE, we have $\Psi''$, $\Psi'$, and $\Psi$,
+% multiplied by polynomials in the ODE's independent variable, so our differential polynomial is first degree in $\Psi$ and its derivatives $\Psi'$ and $\Psi''$.
+% For a non-linear ODE, we can introduce higher degrees.
+For example, a second-degree second-order ODE would add $\Psi''^2$, $\Psi''\Psi'$, $\Psi''\Psi$, $\Psi'^2$, $\Psi'\Psi$, and $\Psi^2$ to the ansatz.
 See Figure \ref{nonlinear ansatz figure}.
 
-This time, rather than use $\Psi$ to solve the PDE directly,
-we define linear polynomials $u,v,w,p$ that will be used to write a system of PDEs.
-The ODE's independent variable is called $s$ here, rather than $v$ as in the
-other ans\"atze, so as not to collide with the second of those four
-polynomials.  Section \ref{sec:NavierStokes} carries this ansatz through the
+This time, rather than use $\Psi$ to solve a single PDE,
+we define differential polynomials $u,v,w,p$ that will be used to write a system of PDEs.
+Section \ref{sec:NavierStokes} carries this ansatz through the
 incompressible Navier--Stokes equations.
 
 \begin{equation}
@@ -1068,9 +1062,9 @@ p = p_1 x + p_2 y + p_3 z + p_4 t + p_5 \Psi \\
 \section{Solution Algorithm}
 \label{sec:Solution Algorithm}
 
-For a given system of differential equations, having selected an ansatz, we now
-seek to find the constants that allow the ansatz to solve the system, in a sense
-made more specific below.
+Having selected an ansatz, we now
+seek to find the constants that allow the ansatz to solve a given system of differential equations, in a sense
+made more specific in \S\ref{sec:constant-loci}.
 
 \subsection{Differential Algebra Preliminaries}
 \label{sec:preliminaries}
@@ -1087,7 +1081,7 @@ derivation and multiplication by arbitrary ring elements.  Given a set of genera
 the differential ideal they generate is denoted $[g_1,...,g_n]$.
 We write $\sqrt{I}$ for the {\it radical} of a differential ideal $I$, the set of
 differential polynomials some power of which lies in~$I$; in characteristic zero
-it is again a differential ideal.
+it is again a differential ideal (check this claim, which we don't use).
 
 A differential ideal $I$ is {\it consistent} if $1 \notin I$; otherwise it is {\it inconsistent}.
 
@@ -1209,13 +1203,13 @@ non-multiplicative for the leader of~$p$.
 
 \smallskip
 A differential system $S = (S^=, S^{\ne})$ of equations $S^=$ and inequations
-$S^{\ne}$ is {\it (Janet-)involutive} (\cite{ThomasDecomp}, Definition~3.5) if
+$S^{\ne}$ is {\it involutive} (\cite{ThomasDecomp}, Definition~3.5) if
 every non-multiplicative prolongation of an element of $S^=$ reduces to zero
 modulo $S^=$.
 
 \smallskip
 Alongside this differential condition sit three algebraic ones.  A system $S$,
-regarded as a system in the finitely many differential variables that occur in
+regarded as a polynomial system in the finitely many differential variables that occur in
 it, is {\it algebraically simple} (\cite{ThomasDecomp}, Definition~2.2) if
 
 \begin{enumerate}
@@ -1232,7 +1226,8 @@ it, is {\it algebraically simple} (\cite{ThomasDecomp}, Definition~2.2) if
 
 \noindent
 Conditions (A2) and~(A3) are quantified over the solutions of the lower part of
-the system rather than imposed at a single point.  That is what makes them
+the system rather than imposed at a single point.  (expand on this)
+That is what makes them
 stable under specialization of lower-ranked variables, and it is the fact on
 which Lemma~\ref{lem:specialization} turns.  Condition~(A3) also has a
 consequence we use without further comment: a square-free polynomial and its
@@ -1245,8 +1240,7 @@ A system $S = (S^=, S^{\ne})$ is {\it differentially simple}
 (\cite{ThomasDecomp}, Definition~3.5) if
 
 \begin{enumerate}
-\item[\rm(S1)] $S$ is algebraically simple in the finitely many differential
-  variables that appear in it;
+\item[\rm(S1)] $S$ is algebraically simple;
 \item[\rm(S2)] $S$ is involutive;
 \item[\rm(S3)] $S^=$ is minimal; and
 \item[\rm(S4)] no inequation of $S^{\ne}$ is reducible modulo $S^=$.
@@ -1254,7 +1248,7 @@ A system $S = (S^=, S^{\ne})$ is {\it differentially simple}
 
 \noindent
 A decomposition of a system into finitely many differentially simple subsystems
-whose solution sets are pairwise {\it disjoint} is a {\it differential Thomas
+whose solution sets are pairwise disjoint is a {\it differential Thomas
 decomposition}.  \cite{ThomasDecomp} gives an algorithm computing one, and
 \cite{RobertzLNM} develops the theory at length; \cite{RobertzCIRM} is a shorter and freely available account.
 
