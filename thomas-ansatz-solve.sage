@@ -477,15 +477,25 @@ class GenericCell(object):
       ansatz 25 reaches its viscous solutions, on `a_0 = a_1 = 0`).  A
       `--generic-cell` run says nothing about them.
 
-    - **Not necessarily the decomposition's own generic cell.**  The
-      decomposition completes each cell to a passive system, adjoining
-      integrability conditions that this one does not have, and triangularizes
-      the equations, which this one takes as given.  Where the ansatz is already
-      autoreduced with distinct leaders (all of this library's are -- the
-      repeated-leader check below reports otherwise) the two agree on the
-      equations; where prolongation would force a new equation, the real generic
-      cell is smaller than this one and this one can return a variety the real
-      one does not.
+    - **Not checked for coherence, and possibly not passive.**  The
+      decomposition completes each cell to a passive system, adjoining the
+      integrability conditions between equations whose leaders are derivatives
+      of the same dependent variable.  This cell takes the ansatz as given and
+      adjoins nothing.  **Nothing here tests passivity**: the repeated-leader
+      check below establishes only that the system is triangular, which is a
+      weaker property entirely -- a triangular system can still have an
+      integrability condition that does not reduce to zero.
+
+      When the cell is not passive, `full_prem` against it is not a normal
+      form: a PDE that lies in the completed cell's differential ideal can
+      still leave a nonzero remainder here.  The projection then reads that
+      remainder's coefficients as constraints, so the membership locus comes
+      out too SMALL -- `--generic-cell` under-reports, and silently.
+
+      Verified passive so far: `navier-stokes` / 25.34 (66 integrability
+      conditions, all reducing to zero).  Not yet checked: 25, 25.2, 25.3 --
+      the check is itself expensive on those.  Until it is run, treat their
+      loci as lower bounds.
     """
     def __init__(self, eqs, ineqs):
         self.eqs = list(eqs)
