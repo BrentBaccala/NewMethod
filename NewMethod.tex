@@ -323,7 +323,8 @@ the differential ring by repeated application of the derivations.
 The identity element of $\Theta$ acts as the identity mapping on the differential ring.
 The {\it order} of a differential operator (${\rm ord}\ \delta$) is the number of derivations used to construct it.
 
-A derivative operator applied to an indeterminate is called a {\it derivative}.
+A derivative operator applied to an indeterminate is called a {\it derivative},
+and we refer to the indeterminates and their derivatives collectively as {\it differential variables}.
 We generally use ``jet notation'' for derivatives,
 where the applied derivations
 are denoted by subscripted letters on the indeterminates, i.e, $\Psi_x$
@@ -1071,32 +1072,33 @@ made more specific in \S\ref{sec:constant-loci}.
 
 We first recall the notions from differential algebra on which
 the hypotheses and theorems below rest.  For the Ritt-reduction apparatus ---
-rankings, leaders, initials and separants, reduction --- our terminology and
-numbering follow \cite{blop}, \S\S\,3--4.  For involutivity, simple systems and
+rankings, leaders, initials and separants, reduction ---
+a compact description of the relevant concepts can be found in \cite{blop}, \S 3.
+For involutivity, simple systems and
 the Thomas decomposition we follow \cite{ThomasDecomp}, \S\S\,2--3, and for the
 ideal-theoretic properties of simple systems, \cite{RobertzLNM}, \S\,2.2 (see also \cite{RobertzCIRM}, \S\,3).
 
-A differential ideal is a subring of a differential ring, closed under arbitrary
+A differential ideal $I$ is a subring of a differential ring $R$, closed under arbitrary
 derivation and multiplication by arbitrary ring elements.  Given a set of generators $g_1,...,g_n$,
 the differential ideal they generate is denoted $[g_1,...,g_n]$.
-We write $\sqrt{I}$ for the {\it radical} of a differential ideal $I$, the set of
-differential polynomials some power of which lies in~$I$; in characteristic zero
-it is again a differential ideal (check this claim, which we don't use).
+We write $\sqrt{I} = \{p:\exists n\in Z^+, p^n \in I\}$ for the {\it radical} of a differential ideal $I$, the set of
+differential polynomials some power of which lies in~$I$.
+We write the {\it saturation} of an differential ideal as $I:S^\infty = \{p: \exists q \in R, qp\in I\}$.
 
 A differential ideal $I$ is {\it consistent} if $1 \notin I$; otherwise it is {\it inconsistent}.
 
 Ritt defined two reduction algorithms: full and partial.
 We use Ritt's full reduction algorithm
 %% ; see \cite{Ritt} Chapter I, \S 6 or \cite{Kolchin}, Chapter I, \S 9.
-(\cite{Ritt}, Chapter~I, \S\,6; \cite{Kolchin}, Chapter~I, \S\,9)
-A compact description of the relevant concepts can be found in Section 3 of \cite{blop}.
+(\cite{Ritt}, \S\,I.6; \cite{Kolchin}, \S\,I.9)
+
 %% A comparison of various techniques used to solve systems of polynomial and differential polynomial equations can be found in \cite{aistleitner}.
 
-Ritt's reduction algorithms require a {\it ranking} to be specified on the indeterminates and their derivatives.
+Ritt's reduction algorithms require a {\it ranking} to be specified on the differential variables.
 This is a distinct concept from an ordering on the monomials, as used, for example, in defining a Gr\"obner basis,
 and is more in the spirit of triangular decomposition algorithms than Gr\"obner basis algorithms.
 
-A ranking on a differential ring $R$ is an ordering on the ring's indeterminates and their derivatives that meets two compatibility conditions:
+A ranking on a differential ring $R$ is an ordering on the ring's differential variables that meets two compatibility conditions:
 
 \begin{equation}
 \begin{aligned}
@@ -1205,11 +1207,12 @@ non-multiplicative for the leader of~$p$.
 A differential system $S = (S^=, S^{\ne})$ of equations $S^=$ and inequations
 $S^{\ne}$ is {\it involutive} (\cite{ThomasDecomp}, Definition~3.5) if
 every non-multiplicative prolongation of an element of $S^=$ reduces to zero
-modulo $S^=$.
+modulo $S^=$.  An involutive system is coherent in the sense of \cite {blop}, Definition 22
+(cite Li–Wang 1999, Theorem 3), though we do not use this fact.
 
 \smallskip
-Alongside this differential condition sit three algebraic ones.  A system $S$,
-regarded as a polynomial system in the finitely many differential variables that occur in
+A differential system $S$,
+regarded as a polynomial system in the differential variables that occur in
 it, is {\it algebraically simple} (\cite{ThomasDecomp}, Definition~2.2) if
 
 \begin{enumerate}
