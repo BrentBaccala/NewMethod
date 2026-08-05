@@ -1396,17 +1396,68 @@ restores the intended question: $V_\exists$ then asks for a common solution that
 is not identically zero.
 
 \begin{equation}
-V_{\forall} = \{ c^* \in {\mathbb C}^n : \mathcal{P}^= \subseteq \sqrt{[A(c^*)]} \}
+V_{\forall} = \{ c^* \in {\mathbb C}^n : \mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \}
 \end{equation}
 
-The {\it membership locus} is the set of constants for which every element of
-$\mathcal{P}^=$ is in the
-radical differential ideal defined by the ansatz, meaning that any function
-satisfying the ansatz will satisfy every equation of the system.  The radical is the right ideal to
-take here: it is the vanishing ideal of the ansatz's solution set, so membership
-in it says exactly what the words ``any function satisfying the ansatz'' say,
-whereas membership in $[A(c^*)]$ itself is a strictly stronger and less natural
-condition.
+The {\it membership locus} is the set of constants for which every equation of
+the system lies in the saturated radical differential ideal defined by the
+ansatz, meaning that any function satisfying the ansatz {\it and the
+inequations} will satisfy every equation of the system.  Two choices are made
+here and both do work.
+
+The radical is the right ideal to take: it is the vanishing ideal of the
+ansatz's solution set, so membership in it says exactly what the words ``any
+function satisfying the ansatz'' say, whereas membership in $[A(c^*)]$ itself is
+a strictly stronger and less natural condition.  Saturating by $Q$ is what makes
+the inequations restrict the functions being quantified over.  For a radical
+ideal, $I : Q^\infty$ is the vanishing ideal of the closure of the part of
+$V(I)$ on which $Q$ does not vanish; since vanishing is itself a closed
+condition, this gives
+%
+\begin{equation}
+\label{eq:saturated-membership-meaning}
+P \in \sqrt{[A(c^*)]} : Q^\infty
+\iff
+\text{$P$ vanishes at every solution $f$ of $A(c^*)$ with $Q(f) \ne 0$,}
+\end{equation}
+%
+which is the intended reading of the inequations: they guard the solutions
+quantified over rather than asserting anything themselves.  The saturated ideal
+is again radical, and again differential (\cite{Kolchin}, Chapter~I, \S\,2,
+Corollary to Lemma~1), so nothing in the preceding paragraph is given up by
+taking it.
+
+Saturation changes the ideal only when some irreducible component of the
+ansatz's solution set lies entirely inside the zero set of~$Q$.  If none does
+--- as happens when the ansatz is a homogeneous linear system and $Q = \Psi$,
+where the zero function is a limit of non-zero solutions rather than a component
+in its own right --- then $\sqrt{[A(c^*)]} : Q^\infty = \sqrt{[A(c^*)]}$ and the
+saturation is vacuous.  Where it is not vacuous it repairs a real defect: the
+unsaturated condition rejects a value of the constants whenever {\it any}
+solution of the ansatz violates the system, including one lying on a branch the
+inequations were written to exclude.
+
+The saturation costs nothing to compute, by the following observation, which is
+what allows every reduction below to be performed against the ansatz alone.
+
+\begin{lemma}
+\label{lem:saturation-by-one}
+Let $I$ be a radical ideal of a commutative ring and let $P$ and $Q$ be elements
+of that ring.  Then $P \in I : Q^\infty$ if and only if $QP \in I$.
+\end{lemma}
+
+{\it Proof.}
+If $QP \in I$ then $P \in I : Q^\infty$ by the definition of the saturation.
+Conversely, if $P \in I : Q^\infty$ then $Q^k P \in I$ for some $k \ge 1$, so
+$(QP)^k = (Q^k P) \, P^{k-1} \in I$, and $I$ being radical gives $QP \in I$.
+\hfill $\square$
+
+\medskip
+\noindent
+A single power of $Q$ suffices, so no saturation exponent need be searched for.
+Every membership test below is accordingly a test of $Q P_j$ against an
+unsaturated ideal, and the differential Thomas decomposition is still computed
+from the ansatz alone --- the inequations of the target system never enter it.
 
 The membership locus is the one place where the passage from a single equation
 to a system is entirely painless.  Membership in an ideal is a condition on one
@@ -1416,18 +1467,21 @@ studied, and
 %
 \begin{equation}
 \label{eq:membership-intersection}
-V_\forall \;=\; \bigcap_{j=1}^{t} \{\, c^* \in \mathbb{C}^n : P_j \in \sqrt{[A(c^*)]} \,\} .
+V_\forall \;=\; \bigcap_{j=1}^{t} \{\, c^* \in \mathbb{C}^n : P_j \in \sqrt{[A(c^*)]} : Q^\infty \,\} .
 \end{equation}
 %
 Everything below --- the reduction, the projection, the completeness theorem ---
-is applied to each $P_j$ separately, and the results are intersected.  The
+is applied to each $Q P_j$ separately, and the results are intersected.  The
 existence locus is not decomposable in this way, since consistency of
 $[A(c^*), \mathcal{P}^=] : Q^\infty$ is a property of the ideal the whole system generates and
 is not implied by the consistency of its parts; that asymmetry is another reason
 to prefer the membership locus.
 
-The membership locus is a condition on the equations alone.  The inequations
-enter through a companion locus,
+By \eqref{eq:saturated-membership-meaning} the membership locus constrains only
+those solutions of the ansatz that respect the inequations, so it is satisfied
+{\it vacuously} at constants for which there are none: where the ansatz forces
+$Q$ to vanish, $\sqrt{[A(c^*)]} : Q^\infty$ is the whole ring and every equation
+lies in it.  Ruling that case out is a second condition,
 %
 \begin{equation}
 \label{eq:nondegeneracy}
@@ -1435,19 +1489,18 @@ N_Q = \{ c^* \in {\mathbb C}^n : Q \notin \sqrt{[A(c^*)]} \},
 \end{equation}
 %
 the {\it non-degeneracy locus}: the constants for which the ansatz does not
-force $Q$ to vanish identically.  Since $\sqrt{[A(c^*)]}$ is the vanishing
-ideal of the ansatz's solution set, $N_Q$ is the set of constants for which
-{\it some} solution of the ansatz satisfies all of the inequations at once.
+force $Q$ to vanish identically or, equivalently, for which the ansatz has at
+least one solution satisfying all of the inequations.  So $V_\forall$ says that
+the system holds on the guarded solution set and $N_Q$ says that the guarded
+solution set is not empty; $V_\forall \supseteq \mathbb{C}^n \setminus N_Q$, and
+the locus one reports is $V_\forall \cap N_Q$.
 
-The quantifier there is worth dwelling on, because ``$Q \ne 0$'' admits two
-readings and only one of them is useful.  The other one --- that {\it every}
-solution of the ansatz has $Q \ne 0$ --- is the condition
-$1 \in [A(c^*), Q]$, and it is unsatisfiable in exactly the situation the
-inequations were introduced to handle: an ansatz that admits the zero function
-admits it for every value of the constants, so no $c^*$ would qualify.  It is
-the existential reading that carries the intended meaning, and $N_Q$ is
-correspondingly the complement of a membership locus rather than a membership
-locus itself --- indeed $\mathbb{C}^n \setminus N_Q$ is the membership locus of
+Note that neither locus asserts that {\it every} solution of the ansatz
+satisfies the inequations.  That reading --- the condition $1 \in [A(c^*), Q]$
+--- is unsatisfiable in exactly the situation the inequations were introduced to
+handle, since an ansatz admitting the zero function admits it for every value of
+the constants.  $N_Q$ is the complement of a membership locus rather than a
+membership locus itself: $\mathbb{C}^n \setminus N_Q$ is the membership locus of
 the single differential polynomial $Q$, computed by the same machinery as
 $V_\forall$ at the cost of one additional reduction.
 
@@ -1472,14 +1525,14 @@ The loci are interrelated as follows:
 V_\forall \cap N_Q \subseteq V_\exists
 \end{equation}
 
-Proof: if every element of $\mathcal{P}^=$ lies in $\sqrt{[A(c^*)]}$ then so does
-the whole ideal $[A(c^*), \mathcal{P}^=]$, since $\sqrt{[A(c^*)]}$ is a
-differential ideal containing both $A(c^*)$ and~$\mathcal{P}^=$; saturating that
-containment by~$Q^\infty$ gives
+Proof: $\sqrt{[A(c^*)]} : Q^\infty$ is a differential ideal, and if every element
+of $\mathcal{P}^=$ lies in it then it contains both $A(c^*)$ and $\mathcal{P}^=$,
+hence contains $[A(c^*), \mathcal{P}^=]$; saturating that containment
+by~$Q^\infty$ and using $(I : Q^\infty) : Q^\infty = I : Q^\infty$ gives
 
 \begin{equation}
 \begin{gathered}
-\mathcal{P}^= \subseteq \sqrt{[A(c^*)]} \implies [A(c^*),\mathcal{P}^=] : Q^\infty \subseteq \sqrt{[A(c^*)]} : Q^\infty \\
+\mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \implies [A(c^*),\mathcal{P}^=] : Q^\infty \subseteq \sqrt{[A(c^*)]} : Q^\infty \\
 Q \notin \sqrt{[A(c^*)]} \implies 1 \notin \sqrt{[A(c^*)]} : Q^\infty \\
 V_\forall \cap N_Q \subseteq V_\exists
 \end{gathered}
@@ -1529,12 +1582,21 @@ the set of constants where $1 \notin [A(c), P] : \Psi^\infty$; the analytic
 reading below identifies it as $\{1\}$.
 
 To compute $V_\forall$, we need to identify the constants where
-$P \in \sqrt{[A(c)]}$.  Since $A(c)$ has order 2 for all values of $c$, every
-element of $[A(c)]$ has order at least 2, while every power of $P$ has order 1.
-So no power of $P$ lies in $[A(c)]$, hence $P \notin \sqrt{[A(c)]}$ for any
-value of $c$, and $V_\forall = \emptyset$.  The same order argument applied
-to~$\Psi$, which has order~0, gives $\Psi \notin \sqrt{[A(c)]}$ for every $c$,
-so $N_\Psi = \mathbb{C}$: the ansatz never forces $\Psi$ to vanish.
+$P \in \sqrt{[A(c)]} : Q^\infty$, which by Lemma~\ref{lem:saturation-by-one} is
+where $Q P \in \sqrt{[A(c)]}$.  Since $A(c)$ has order 2 for all values of $c$,
+every element of $[A(c)]$ has order at least 2, while $P$ has order 1 and $\Psi$
+order 0, so $QP$ has order 1 under either choice of $\mathcal{P}^{\ne}$ and so
+does each of its powers.  No power of $QP$ lies in $[A(c)]$, hence
+$QP \notin \sqrt{[A(c)]}$ for any value of $c$, and $V_\forall = \emptyset$
+either way.  The same order argument applied to~$\Psi$ gives
+$\Psi \notin \sqrt{[A(c)]}$ for every $c$, so $N_\Psi = \mathbb{C}$: the ansatz
+never forces $\Psi$ to vanish.
+
+The saturation is vacuous here, as the criterion above predicts: the solutions
+of $A(c)$ form an irreducible two-parameter family and the zero function is a
+limit of non-zero members of it rather than a component of its own, so
+$\sqrt{[A(c)]} : \Psi^\infty = \sqrt{[A(c)]}$.  All of the work the inequation
+does in this example is done in $V_\exists$.
 
 \begin{equation*}
 V_\exists \big|_{\mathcal{P}^{\ne} = \emptyset} = \mathbb{C} \qquad
@@ -1586,10 +1648,13 @@ which produces a partition of the constant space into quasi-projective varieties
 by both equations and inequations), each equiped with a specialization of the ansatz in a differentially simple form.
 For each differentially simple subsystem in the decomposition, we then proceed as follows.
 
-We use Ritt's full reduction algorithm to reduce each element of the system
+We use Ritt's full reduction algorithm to reduce each $Q P_j$
 modulo the subsystem, obtaining remainders $r_1, \ldots, r_t$, and project them
 onto the space of the $n$ constant parameters
-$c = (c_1, \ldots, c_n)$.
+$c = (c_1, \ldots, c_n)$.  It is $Q P_j$ that is reduced rather than $P_j$
+because, by Lemma~\ref{lem:saturation-by-one}, that is how membership in the
+saturated ideal is tested; when the target system has no inequations $Q = 1$ and
+the two coincide.
 
 To perform the projection, it is useful to classify the indeterminates in our differential ring as follows:
 - constants
@@ -1597,7 +1662,7 @@ To perform the projection, it is useful to classify the indeterminates in our di
 - independent variables
 - algebraic functions of the independent variables
 
-Membership of $P_j$ in $\sqrt{[A(c^*)]}$ is a statement about $r_j$ as a
+Membership of $P_j$ in $\sqrt{[A(c^*)]} : Q^\infty$ is a statement about $r_j$ as a
 polynomial, not about its value at any particular point: it requires $r_j$ to
 vanish identically once the constants are fixed.  We therefore treat all of the
 non-constant indeterminates alike, making no distinction between the
@@ -1800,7 +1865,7 @@ and a flag $\mu \in \{\forall, \, \exists\forall\}$ selecting the assembly.
 set of pairs $(\mathfrak{p}, h)$ in which $\mathfrak{p}$ generates a prime
 ideal, and so as a finite union of irreducible locally closed sets.  For $\mu = \forall$ it is the
 membership locus
-$V_\forall = \{\, c^* \in \mathbb{C}^n : \mathcal{P}^= \subseteq \sqrt{[A(c^*)]} \,\}$.  For
+$V_\forall = \{\, c^* \in \mathbb{C}^n : \mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \,\}$.  For
 $\mu = \exists\forall$ it is the intermediate locus $V_{\exists\forall}$, which
 satisfies $V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists$ whenever
 the ansatz is consistent throughout $\mathbb{C}^n$ --- a condition the algorithm
@@ -1812,7 +1877,7 @@ reports, as described below.
 \item {\bf for} $i = 1, \ldots, s$ {\bf do}
 \item \algind $J_i \leftarrow \emptyset$
 \item \algind {\bf for} $j = 1, \ldots, t$ {\bf do}
-\item \algind\algind $r \leftarrow \mathrm{FullReduce}(P_j, S^=_i)$
+\item \algind\algind $r \leftarrow \mathrm{FullReduce}(Q \cdot P_j, S^=_i)$
 \item \algind\algind $J_i \leftarrow J_i \cup \mathrm{Coeffs}\bigl(r, \, \mathbb{Q}[c_1, \ldots, c_n]\bigr)$
 \item \algind {\bf end for}
 \item \algind $E_i \leftarrow S^=_i \cap \mathbb{Q}[c_1, \ldots, c_n]$
@@ -1961,7 +2026,8 @@ where the equation becomes $-1_=$, and returns a single component whose cell is
 $\{\,c \ne 0\,\}$; the point $c = 0$ lies in no cell.
 
 A gap of this kind costs the $\forall$ assembly nothing.  Where $A(c^*)$ is
-inconsistent, $\sqrt{[A(c^*)]}$ is the unit ideal and contains all of
+inconsistent, $\sqrt{[A(c^*)]}$ is the unit ideal, hence so is its saturation
+$\sqrt{[A(c^*)]} : Q^\infty$, which therefore contains all of
 $\mathcal{P}^=$, so $c^*$
 belongs to the membership locus --- and a block lying in no cell satisfies the
 condition of line~15 vacuously and is returned.  Under $\mu = \forall$ the
@@ -2129,12 +2195,13 @@ ansatz, computed with the constants ranked below all other indeterminates, write
 $A = \{a_1, \ldots, a_k\}$ for its equations $S^=$, and let
 $H_A = I_A \cup S_A$ denote the set of initials and separants of~$A$.
 
-Apply Ritt's full reduction to each $P_j$ modulo $A$, obtaining a remainder $r_j$
-and a power product $h_j$ of elements of $H_A$ such that
+Let $Q$ be the product of the inequations $\mathcal{P}^{\ne}$ of the target
+system.  Apply Ritt's full reduction to each $Q P_j$ modulo $A$, obtaining a
+remainder $r_j$ and a power product $h_j$ of elements of $H_A$ such that
 %
 \begin{equation}
 \label{ritt reduction 1}
-h_j \cdot P_j - r_j \in [A]
+h_j \cdot Q P_j - r_j \in [A]
 \qquad (j = 1, \ldots, t)
 \end{equation}
 %
@@ -2161,10 +2228,13 @@ $\mathbb{C}^n$.  Then
 \[
 c^* \in \mathcal{V}
 \quad\Longleftrightarrow\quad
-\mathcal{P}^= \subseteq [A(c^*)] : q^\infty .
+Q P_j \in [A(c^*)] : q^\infty \ \text{ for } j = 1, \ldots, t .
 \]
 %
-In particular, $\mathcal{P}^= \subseteq \sqrt{[A(c^*)]}$ implies $c^* \in \mathcal{V}$.
+In particular, $\mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty$ implies
+$c^* \in \mathcal{V}$: by Lemma~\ref{lem:saturation-by-one} that hypothesis gives
+$Q P_j \in \sqrt{[A(c^*)]}$, and $\sqrt{[A(c^*)]} \subseteq [A(c^*)] : q^\infty$
+because the latter is radical by Proposition~\ref{prop:simple-membership}.
 \end{theorem}
 
 Note that each $h_j$ is in general a
@@ -2196,7 +2266,7 @@ also sufficient, in that no point of $\mathcal{V}$ is spurious.  The ideal
 characterized is the saturation $[A(c^*)] : q^\infty$, which by
 Proposition~\ref{prop:simple-membership} is radical and therefore contains
 $\sqrt{[A(c^*)]}$; the final clause of the theorem is that containment.  The two
-can differ, so $\mathcal{V}$ may contain constants at which some $P_j$ lies in the
+can differ, so $\mathcal{V}$ may contain constants at which some $Q P_j$ lies in the
 saturation without lying in $\sqrt{[A(c^*)]}$ --- but the saturation is the
 vanishing ideal of the component's own solution set, so at such a point the
 ansatz does solve the system on that component.
@@ -2206,7 +2276,7 @@ Fix $j$.
 Ritt's full reduction algorithm produces $h_j$ and $r_j$ satisfying \eqref{ritt reduction 1}, with
 $r_j$ fully reduced with respect to~$A$.
 Evaluating the constants at $c = c^*$ gives
-$h_j(c^*) \cdot P_j - r_j(c^*) \in [A(c^*)]$.
+$h_j(c^*) \cdot Q P_j - r_j(c^*) \in [A(c^*)]$.
 Write $E = [A(c^*)]$.
 Since $c^*$ lies in the cell, Lemma~\ref{lem:specialization} makes
 $(S^=(c^*), S^{\ne}(c^*))$ a simple differential system, so
@@ -2223,17 +2293,17 @@ r_j(c^*) = 0
 r_j(c^*) \in E : q^\infty .
 \]
 %
-Since $h_j(c^*) \cdot P_j - r_j(c^*) \in E \subseteq E : q^\infty$, the right-hand
-side holds if and only if $h_j(c^*) \cdot P_j \in E : q^\infty$.  And $h_j$ is a power
+Since $h_j(c^*) \cdot Q P_j - r_j(c^*) \in E \subseteq E : q^\infty$, the right-hand
+side holds if and only if $h_j(c^*) \cdot Q P_j \in E : q^\infty$.  And $h_j$ is a power
 product of elements of $H_A$ while $q$ is the product of all of them, so $h_j$
 divides some power of $q$; as $E : q^\infty$ is unchanged by further saturation
-at $q$, we get $h_j(c^*) \cdot P_j \in E : q^\infty$ if and only if
-$P_j \in E : q^\infty$.  Chaining,
+at $q$, we get $h_j(c^*) \cdot Q P_j \in E : q^\infty$ if and only if
+$Q P_j \in E : q^\infty$.  Chaining,
 %
 \[
 r_j(c^*) = 0
 \quad\Longleftrightarrow\quad
-P_j \in [A(c^*)] : q^\infty .
+Q P_j \in [A(c^*)] : q^\infty .
 \]
 %
 Now the power products $m_{j\alpha}$, for this fixed $j$, are distinct monomials in a polynomial
@@ -2241,23 +2311,24 @@ ring, hence linearly independent over~$\mathbb{C}$, so $r_j(c^*) = 0$ if and onl
 if every coefficient $p_{j\alpha}(c^*) = 0$.
 
 Both sides of the equivalence just established are conjunctions over $j$ of
-statements each involving only that one $j$: the right-hand condition
-$\mathcal{P}^= \subseteq E : q^\infty$ holds if and only if $P_j \in E : q^\infty$
-for every $j$, and $c^* \in \mathcal{V}$ holds if and only if
+statements each involving only that one $j$: the right-hand condition holds if
+and only if $Q P_j \in E : q^\infty$ for every $j$, and $c^* \in \mathcal{V}$ holds if and only if
 $p_{j\alpha}(c^*) = 0$ for every $j$ and $\alpha$.  Taking the conjunction over
 $j = 1, \ldots, t$ of the per-equation equivalence therefore gives
 %
 \[
 c^* \in \mathcal{V}
 \quad\Longleftrightarrow\quad
-\mathcal{P}^= \subseteq [A(c^*)] : q^\infty .
+Q P_j \in [A(c^*)] : q^\infty \ \text{ for } j = 1, \ldots, t .
 \]
 %
 Note that the ideal $E : q^\infty$ is the same for all $j$ --- it depends on the
 component and on $c^*$, not on which equation is being reduced --- which is what
 lets the $t$ statements be conjoined without further ado.
 The last clause follows because $E : q^\infty$ is radical and contains $E$,
-hence contains $\sqrt{E}$. \hfill $\square$
+hence contains $\sqrt{E}$, together with Lemma~\ref{lem:saturation-by-one},
+which rewrites $\mathcal{P}^= \subseteq \sqrt{E} : Q^\infty$ as
+$Q P_j \in \sqrt{E}$ for every~$j$. \hfill $\square$
 
 \medskip
 Theorem~\ref{thm:completeness} concerns a single component.  The membership
@@ -2290,17 +2361,18 @@ that proposition reads
 \sqrt{[A(c^*)]} \;=\; \bigcap_i \bigl( E^{(i)} : (q^{(i)})^\infty \bigr),
 \]
 %
-the intersection running over those components.  Since $\mathcal{P}^=$ is contained
-in an intersection of ideals exactly when it is contained in each of them,
-$\mathcal{P}^= \subseteq \sqrt{[A(c^*)]}$ if and only if
-$\mathcal{P}^= \subseteq E^{(i)} : (q^{(i)})^\infty$ for every such $i$; and by
-Theorem~\ref{thm:completeness} that holds if and only if
-$c^* \in \mathcal{V}_i$.
+the intersection running over those components.  Since $\sqrt{[A(c^*)]}$ is
+radical, Lemma~\ref{lem:saturation-by-one} turns the membership condition into
+$Q P_j \in \sqrt{[A(c^*)]}$ for $j = 1, \ldots, t$.  A polynomial lies in an
+intersection of ideals exactly when it lies in each of them, so that holds if
+and only if $Q P_j \in E^{(i)} : (q^{(i)})^\infty$ for every such $i$ and
+every~$j$; and by Theorem~\ref{thm:completeness} that in turn holds if and only
+if $c^* \in \mathcal{V}_i$.
 
 No hypothesis of consistency is needed.  If no cell contains $c^*$ then
 $A(c^*)$ has no solution, the intersection above is empty and so equals the whole
-ring, and both sides of the equivalence hold: $\mathcal{P}^=$ lies in
-$\sqrt{[A(c^*)]} = (1)$, and the condition on the right is vacuous.
+ring, and both sides of the equivalence hold: $\sqrt{[A(c^*)]} : Q^\infty = (1)$
+contains $\mathcal{P}^=$, and the condition on the right is vacuous.
 \hfill $\square$
 
 \medskip
