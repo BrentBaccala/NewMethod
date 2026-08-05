@@ -2,7 +2,7 @@
 
 *Working record, kept so the required journal statement on generative-AI use
 can be written from fact rather than memory. Reconstructed from this
-repository's git history; covers contributions through 27 July 2026 and should
+repository's git history; covers contributions through 5 August 2026 and should
 be updated as work continues. Commit hashes are given for auditability.*
 
 The AI tool is **Anthropic's Claude**, used both interactively and through the
@@ -329,6 +329,117 @@ through the completeness proof and the algorithm.
   "RG is not a no-op" wording (`315ab7c`). See the computation scripts
   documented in `README.md`.
 
+The bullets that follow record a second connected arc, 4–5 August 2026 (model
+Claude Opus 5), carried out at the author's direction: admitting inequations
+into the target system, and following them through the loci, the completeness
+theorem and the algorithm.
+
+- **Traced the "involutive ⟹ coherent" citation to its end, and proved a usable
+  substitute** (`44d26e9`, `747002c`). The author left a placeholder, "cite
+  Li–Wang 1999, Theorem 3", against the claim that an involutive system is
+  coherent. The companion note had already established that Li–Wang Thm. 3 is
+  about *Wu*-passivity; checking the alternative showed that Bächler et al. §1
+  asserts the implication in its introduction with no proof and no forward
+  reference (three occurrences of "coheren" in the entire paper, two prose and
+  one a bibliography entry), and that Robertz's book appendix, both CIRM
+  versions, and Gerdt (2018) say nothing about coherence in their bodies at all.
+  Gerdt's own DARCA 2008 slides list the involutive/coherent relation as a
+  relation *to be found*, pointing at an unpublished "Minzlaff'06" that does not
+  resolve to anything citable. Rather than cite an assertion, supplied a proof of
+  the weaker statement a Thomas-based argument actually needs — a differentially
+  simple system is coherent — from **Prop. 2.2.50** (a Δ-polynomial lies in E,
+  hence pseudo-reduces to zero) and **BLOP Lemma 20** (a critical pair whose
+  Δ-polynomial reduces to zero is solved), with (A1) supplying Lemma 20's
+  distinct-leaders hypothesis; checked for circularity, Robertz's route to
+  2.2.50 not passing through Rosenfeld's Lemma. Recorded at length as a new §5 of
+  the companion note, which also flags a terminological trap the note's own
+  implication lattice had hidden: Li–Wang's d-sim is *defined* as a coherent
+  d-tri system, so "simple ⟹ coherent" is a tautology there, whereas Bächler
+  et al.'s Def. 3.3 does not assume coherence and needs the theorem. The author
+  kept a one-line remark in the paper and cut the proof (`155e716`).
+- **Made the decomposition identity a numbered proposition, and corrected it**
+  (`d0f6263`), at the author's request. Two defects surfaced in making the
+  statement self-contained: the q on the left of √(E:q^∞) = ⋂(E^(i):(q^(i))^∞)
+  is the product of the **inequations** of the undecomposed system, not of the
+  initials and separants, and the running-text version had inherited E and q
+  from the preceding paragraph — where q *is* the initials-and-separants product
+  — so the displayed identity saturated by the wrong thing; and the components
+  were indexed S_1…S_s while s already denoted the number of equations, leaving
+  E^(s) ambiguous (now S_1…S_r, as in Robertz).
+- **Put inequations into the target system and removed the homogeneous existence
+  locus** (`aa3015f`). The restructuring is the author's proposal; supplied the
+  analysis and the text. 𝒫 becomes a system (𝒫^=, 𝒫^≠) with Q the product of the
+  inequations; V_{∃∖Ψ} disappears, being the ordinary existence locus with Ψ
+  among the inequations, and three loci become two. Established that homogeneity
+  was never part of the old definition but a statement of when the locus is worth
+  computing — the formula makes sense without it — so it demotes to motivation;
+  and that this gate is what had been blocking Navier–Stokes, whose convective
+  term is quadratic in the unknown and so fails the paper's own homogeneity test,
+  leaving it with no homogeneous existence locus at all. Inequations enter the
+  membership side through a separate non-degeneracy locus N_Q, chosen over
+  folding them into V_∀ so that the completeness theorem and its corollary need
+  not be touched; the containment V_∀ ∩ N_Q ⊆ V_∃ is then unconditional, N_Q
+  implying the ansatz-consistency hypothesis the old proof carried separately.
+  Two points recorded because they are easy to get wrong: Q must be the *product*
+  rather than the inequations taken separately, since √[A(c\*)] is radical but in
+  general not prime, so the product demands a single solution satisfying all of
+  them at once; and an inequation on a constant works through the same formula,
+  via I:0^∞ = R.
+- **Reformulated the membership locus on the saturated radical ideal**
+  (`af0670c`). Proposed by the author; supplied the analysis, the enabling lemma
+  and the downstream changes. V_∀ becomes {c\* : 𝒫^= ⊆ √[A(c\*)]:Q^∞}, which by a
+  closure argument says exactly that each equation vanishes at every ansatz
+  solution f with Q(f) ≠ 0 — the *guard* reading of the inequations. This repairs
+  a real defect: the unsaturated condition rejects a value of the constants
+  whenever **any** ansatz solution violates the system, including one on a branch
+  the inequations were written to exclude. The saturation is free, by a two-line
+  lemma (**Lemma 3**): for radical I, P ∈ I:Q^∞ iff QP ∈ I, since
+  (QP)^k = (Q^k P)P^{k−1} and I is radical. A single power of Q suffices, so no
+  saturation exponent is searched for, every reduction becomes a reduction of
+  Q·P_j, and the Thomas decomposition is still computed from the ansatz alone —
+  the paper's cost claim survives intact. Theorem 7, its proof, Corollary 8 and
+  Algorithm 5 follow mechanically. Two cautions written into the text: the
+  saturation is vacuous unless some irreducible component of the ansatz's
+  solution set lies inside V(Q) — for a homogeneous linear ansatz with Q = Ψ the
+  zero function is a limit of non-zero solutions rather than a component, so
+  nothing moves, and Example 4 is now worked to show exactly that — and V_∀ is
+  satisfied **vacuously** off N_Q, so the locus to report is V_∀ ∩ N_Q and
+  omitting N_Q now over-reports where before it under-reported.
+- **Errors of mine during this arc.** Three, each caught by the author's
+  follow-up questions rather than by me. I claimed V_∀ was Zariski-closed and
+  that admitting inequations into it would push set differences through the
+  downstream apparatus; the algorithm's own Output specification already promises
+  a constructible set presented as (𝔭, h) pairs, and the assembly already
+  computes complements, so the objection was empty — found on re-reading the
+  specification that the author's request for elaboration sent me back to. I
+  framed "Q ≠ 0" as admitting exactly two readings, a universal assertion and an
+  existential one, and recommended the existential; the author's saturated-radical
+  proposal supplied a third, the guard reading, better than both and now the one
+  the paper uses. And I recommended folding the non-degeneracy condition into
+  V_∀'s definition before reading the completeness theorem, which is stated
+  per-component over 𝒫^= and would have carried the change into its proof;
+  retracted on reading it. A fourth, smaller: my first proof of Lemma 3 went
+  through a decomposition into primes, where radicality and two lines suffice.
+- **Flagged, not applied.** §5.2 describes the Thomas decomposition as
+  partitioning the constant space into "quasi-projective varieties"; the cells
+  are locally closed and in general reducible, so the term is wrong — they are
+  constructible, or locally closed, sets. Raised twice and left to the author.
+  On the author's question of where Chevalley's theorem on constructible sets is
+  to be found: the original is Cartan–Chevalley, *Géométrie Algébrique*,
+  Séminaire Cartan–Chevalley 1955/56, exposé 7 (Hartshorne's own attribution,
+  verified in his bibliography), with **Hartshorne Ex. II.3.19** the citable
+  statement and proof, **Matsumura Ch. 2 §6** the commutative-algebra treatment,
+  and **EGA IV₁ Thm. 1.8.4** the general form.
+- **A reference the author decided not to use.** For the parenthetical that in
+  characteristic zero the radical of a differential ideal is again a differential
+  ideal, located **Kaplansky, *An Introduction to Differential Algebra*
+  (Hermann, 1957), Ch. I §4, Lemma 1.8**, with his Lemma 1.7
+  (a^n ∈ I ⟹ (a′)^{2n−1} ∈ I, the division by n being where characteristic zero
+  enters) and his characteristic-2 counterexample showing the hypothesis is
+  needed. Kolchin Ch. I §2 Lemma 2 supplies the same machinery in his generality
+  but leaves the radical corollary to an exercise. Drafted and then reverted at
+  the author's request.
+
 **Editorial / typesetting assistance.** Reformatted the bibliography to
 Elsevier's numbered style (`2b71ff5`) and added/repaired citations (`02b57b8`
 and others); tightened and reconciled prose in the Projection and completeness
@@ -354,4 +465,4 @@ characterize these in the submitted statement, methods, and/or
 acknowledgements, and confirm the journal's current requirements.
 
 */Claude Opus 4.8 (this record drafted by the AI it documents); updated
-27 July 2026 and 30 July 2026 by /Claude Opus 5.*
+27 July 2026, 30 July 2026 and 5 August 2026 by /Claude Opus 5.*
