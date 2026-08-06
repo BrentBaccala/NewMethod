@@ -765,12 +765,43 @@ the paper *says*, that is recorded above as a paper contribution, not here.
 colloquium slide deck `NewMethod-talk.tex` (`289af84`), the twelve companion
 notes listed above, and this record itself are AI-produced.
 
-**Note for the formal declaration.** Elsevier's generative-AI policy is framed
-around assistance with *language and readability*. Several items above
-(theorem/proof drafting, restructuring, literature search, the graphical
-abstract) go beyond language polishing; the author should decide how to
-characterize these in the submitted statement, methods, and/or
-acknowledgements, and confirm the journal's current requirements.
+**Note for the formal declaration — an inventory, not a decision.** Elsevier's
+generative-AI policy for authors is framed around assistance with *language and
+readability*, and its declaration template is worded for that scope; AI use in
+the *research* process and AI-generated *images* fall under separate provisions.
+Drafting the submitted statement is a later step. What follows is the inventory
+that drafting will need, so the classification does not have to be redone from
+scratch; the journal's current requirements must be confirmed at that time,
+since these policies have been revised repeatedly. Items recorded above that
+fall outside "language and readability":
+
+- **Mathematical drafting.** The completeness theorem and its proof, drafted by
+  the AI and inserted by the author (`843f9ea`, inlined and edited `874a9c7`),
+  and the regularity counterexamples that entered with it and were later moved
+  out of the paper into a companion note (`933ef24`).
+- **Structural and expository work on the author's ideas.** The generalization
+  from a single PDE to a system (`93050df` and follow-ons), the formalization of
+  the algorithm together with the 30–31 July citation audit that corrected it
+  (`8de5053` and siblings), and the rewritten Organization paragraph
+  (`a59b8ae`).
+- **A section written outright.** The incompressible Navier–Stokes example
+  (`06a67dc`) — a negative result: the ansatz reaches exactly the parallel shear
+  flows.
+- **Literature search and prior-art assessment,** including the AI's negative
+  verdict on the novelty of a pipeline it had itself proposed (`5d56eb6`,
+  `bc7a8c4`), and citation suggestions from a second tool, OpenAI's GPT-5
+  (`55487de`).
+- **Results the paper states that came from AI-written computation.** The
+  scripts are separate artifacts (see above), but where a run changed what the
+  paper *says*, it is the research-process provision rather than the writing
+  provision that is the relevant one.
+- **An AI-generated image.** The Graphical Abstract (`6db3f5b`). Of the three
+  tracks this is the most restrictive, and it may bear on whether the artifact
+  can be submitted at all, not merely on how it is described.
+
+Items outside the submission itself — the twelve companion notes, the
+colloquium deck (`289af84`), and this record — are noted here for completeness;
+whether they require disclosure at all is part of the deferred decision.
 
 ---
 
