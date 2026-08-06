@@ -36,7 +36,7 @@
 #
 # Author: Brent Baccala (AI assistant: Claude).  July 2026.
 
-import os, re, sys, time
+import hashlib, os, re, shutil, signal, subprocess, sys, time
 
 USAGE = r"""usage: sage thomas-ansatz-solve.sage [--pde NAME] [--ansatz N] [options]
 
@@ -76,6 +76,28 @@ Choosing what to compute
                      DDPsi outranks every lower-jet derivative.  It changes the
                      decomposition, and is much the more expensive of the two.
   --max-cells N      process only the first N cells (default 0 = all).
+
+Running the prime step
+  --gtz-subprocess   run minimal_associated_primes in a standalone Singular
+                     subprocess with option(prot) instead of in-process
+                     libsingular.  The in-process call is silent -- primdec.lib's
+                     minAssGTZ carries no dbprint instrumentation, and
+                     option(prot) does not reach stdout through Sage's
+                     libsingular wrapper -- so a GTZ call that runs for hours
+                     prints nothing at all.  Under this flag you get: a protocol
+                     log per ideal (degrees, pair counts, sub-algorithm names,
+                     memory) you can tail while it runs; a killable child
+                     process, optionally bounded by --gtz-timeout; and the
+                     result cached on disk, so a re-run after an interruption
+                     skips every GTZ call that already finished.
+  --gtz-dir PATH     where the Singular input, protocol log and cached result
+                     go, one triple per ideal (default:
+                     ~/thomas-experiments/gtz/<pde>_ansatz<N>[_generic]/).
+  --gtz-timeout SECS abandon a GTZ call after SECS and abort with the log path
+                     (default 0 = no limit).  Only meaningful with
+                     --gtz-subprocess.
+  --singular-bin PATH  the Singular to run (default: the first on PATH, else
+                     <sys.prefix>/bin/Singular).
 
 Output
   --verbose-remainder  print each PDE's remainder for every cell.
@@ -151,11 +173,26 @@ PRUNE_ENCLOSED = '--keep-enclosed' not in sys.argv
 # `ideal:N`).  Coefficients are cleared of denominators first, so `a1 - 1/2*b0`
 # prints as `2 a_{1} - b_{0}`.
 LATEX_OUT = '--latex' in sys.argv
+# Run the minimal-associated-primes step in a standalone Singular subprocess
+# (option(prot), killable, cached) rather than in-process through libsingular.
+# See minimal_associated_primes_gtz for why the in-process call cannot be made
+# to talk.
+GTZ_SUBPROCESS = '--gtz-subprocess' in sys.argv
+GTZ_TIMEOUT = int(_argval('--gtz-timeout', '0'))
+GTZ_DIR = _argval('--gtz-dir',
+                  os.path.expanduser('~/thomas-experiments/gtz/%s_ansatz%s%s'
+                                     % (PDE_NAME, ANSATZ,
+                                        '_generic' if GENERIC_CELL else '')))
+SINGULAR_BIN = _argval('--singular-bin',
+                       shutil.which('Singular')
+                       or os.path.join(sys.prefix, 'bin', 'Singular'))
 CELLS_OUT = _argval('--cells-out',
                     os.path.expanduser('~/thomas-experiments/%s_ansatz%s_%s%s.cells'
                                        % (PDE_NAME, ANSATZ, RANKING,
                                           '_generic' if GENERIC_CELL else '')))
 os.makedirs(os.path.dirname(CELLS_OUT), exist_ok=True)
+if GTZ_SUBPROCESS:
+    os.makedirs(GTZ_DIR, exist_ok=True)
 
 
 def patch_latex_varify():
@@ -705,6 +742,149 @@ def prime_key(P):
     return tuple(sorted(str(g) for g in P.gens()))
 
 
+# --- the minimal-associated-primes step -----------------------------------
+#
+# I.minimal_associated_primes() calls primdec.lib's minAssGTZ through
+# libsingular, in this process.  Cheap to call, and completely opaque: the
+# minAssGTZ -> minAssGTZ_i chain carries no dbprint instrumentation (raising
+# printlevel adds nothing), and option(prot) does not reach stdout through
+# Sage's libsingular wrapper -- verified both ways, opt['prot'] = True and
+# opt_ctx(prot=True), on minAssGTZ and on a plain cyclic-6 std: no output
+# either way, while the same computation in a standalone Singular prints the
+# full protocol stream.  So an in-process GTZ call that runs for hours prints
+# nothing whatsoever.  That is how the 4 Aug navier-stokes / ansatz 25
+# --generic-cell run died: 32 hours of CPU, RSS flat at 10.34 GB, killed by a
+# power cut, and the only record in the log was "entering GTZ".
+#
+# --gtz-subprocess runs the same primdec.lib minAssGTZ in a standalone Singular
+# with option(prot) and option(mem), and buys three things the in-process call
+# cannot give: a live protocol log per ideal, a child process that is killable
+# and can be bounded by --gtz-timeout, and a result cached on disk so an
+# interrupted run resumes instead of recomputing.
+
+_GTZ_BEGIN, _GTZ_PRIME, _GTZ_END = '===PRIMES_BEGIN===', '===PRIME===', '===PRIMES_END==='
+
+
+def _gtz_key(I):
+    """Content hash of an ideal: its generators and its ring's variables."""
+    h = hashlib.sha1()
+    h.update(','.join(sorted(str(g) for g in I.gens())).encode())
+    h.update(('|' + ','.join(str(v) for v in I.ring().gens())).encode())
+    return h.hexdigest()[:16]
+
+
+def _gtz_script(I, primes_path):
+    """A standalone Singular program computing minAssGTZ(I) under option(prot).
+
+    The primes go to their own file rather than to stdout, so the protocol
+    stream and the result never have to be untangled from one another.
+    """
+    # Every name here is gtz-prefixed: primdec.lib and the libraries it pulls
+    # in occupy a lot of the top-level namespace (a plain `res` collides), and
+    # a collision is only reported as "identifier in use" after the expensive
+    # part has already run.
+    gens = [str(g) for g in I.gens() if not g.is_zero()] or ['0']
+    return '\n'.join([
+        'option(prot);',
+        'option(mem);',
+        'LIB "primdec.lib";',
+        'ring gtzring = 0,(%s),dp;' % ','.join(str(v) for v in I.ring().gens()),
+        'ideal gtzI =\n  %s;' % ',\n  '.join(gens),
+        'list gtzP = minAssGTZ(gtzI);',
+        'string gtzout = "%s";' % _GTZ_BEGIN,
+        'for (int gtzi = 1; gtzi <= size(gtzP); gtzi++)',
+        '{ gtzout = gtzout + newline + "%s" + newline + string(gtzP[gtzi]); }' % _GTZ_PRIME,
+        'gtzout = gtzout + newline + "%s";' % _GTZ_END,
+        'write(":w %s", gtzout);' % primes_path,
+        'quit;',
+        ''])
+
+
+def _gtz_errors(log_path):
+    """Singular's error lines, if any.  It exits 0 even after a hard error, so
+    the log is the only place a failed run announces itself."""
+    try:
+        with open(log_path, errors='replace') as fh:
+            return [ln.strip() for ln in fh if ln.lstrip().startswith('?')]
+    except OSError:
+        return []
+
+
+def _gtz_parse(path, R):
+    """Read back the primes file written by _gtz_script.
+
+    Singular may fold a long `string(ideal)` across several lines, so a prime's
+    body is rejoined before splitting on the generator commas (a polynomial
+    never contains one).  Absence of the closing marker means the file is a
+    torn write from an interrupted run -- treated as no result at all.
+    """
+    lines = open(path).read().splitlines()
+    if not lines or lines[0].strip() != _GTZ_BEGIN or lines[-1].strip() != _GTZ_END:
+        raise RuntimeError('%s: no %s marker (truncated?)' % (path, _GTZ_END))
+    blocks, cur = [], None
+    for line in lines[1:-1]:
+        if line.strip() == _GTZ_PRIME:
+            cur = []
+            blocks.append(cur)
+        elif cur is not None:
+            cur.append(line.strip())
+    return [R.ideal([R(g) for g in ''.join(b).split(',') if g.strip()]) for b in blocks]
+
+
+def minimal_associated_primes_gtz(I, tag):
+    """minAssGTZ(I), in-process by default or in a Singular subprocess.
+
+    `tag` labels this ideal's files in --gtz-dir; it only has to be unique
+    within a run, the cache key proper is the hash of the ideal itself.
+    """
+    if not GTZ_SUBPROCESS:
+        return I.minimal_associated_primes()
+
+    R = I.ring()
+    if all(g.is_zero() for g in I.gens()):
+        # The zero ideal of a domain is prime; minAssGTZ says so too, but
+        # spawning a Singular to be told that is silly.
+        return [R.ideal(R.zero())]
+
+    base = os.path.join(GTZ_DIR, '%s_%s' % (tag, _gtz_key(I)))
+    sing_path, log_path, primes_path = base + '.sing', base + '.log', base + '.primes'
+
+    if os.path.exists(primes_path):
+        try:
+            primes = _gtz_parse(primes_path, R)
+            print('  [%s] GTZ cached -> %d primes (%s)' % (tag, len(primes), primes_path),
+                  flush=True)
+            return primes
+        except Exception as exc:
+            print('  [%s] cached GTZ result unusable (%s); recomputing' % (tag, exc),
+                  flush=True)
+
+    with open(sing_path, 'w') as fh:
+        fh.write(_gtz_script(I, primes_path))
+    print('  [%s] GTZ in Singular subprocess; tail the protocol at %s' % (tag, log_path),
+          flush=True)
+
+    with open(log_path, 'wb') as log:
+        # start_new_session: the child leads its own process group, so a
+        # timeout can kill the whole group (Singular forks for factorization).
+        proc = subprocess.Popen([SINGULAR_BIN, '-q', sing_path],
+                                stdout=log, stderr=subprocess.STDOUT,
+                                start_new_session=True)
+        try:
+            rc = proc.wait(timeout=GTZ_TIMEOUT or None)
+        except subprocess.TimeoutExpired:
+            os.killpg(proc.pid, signal.SIGKILL)
+            proc.wait()
+            raise RuntimeError('[%s] GTZ exceeded --gtz-timeout %ds; protocol log: %s'
+                               % (tag, GTZ_TIMEOUT, log_path))
+    errors = _gtz_errors(log_path)
+    if rc != 0 or errors:
+        raise RuntimeError('[%s] Singular failed (exit %d)%s; protocol log: %s'
+                           % (tag, rc,
+                              ''.join('\n    ' + e for e in errors[:5]), log_path))
+    return _gtz_parse(primes_path, R)
+
+
 strata_cache = {}
 union_primes = {}          # GENUINE nontrivial (v != 0) solution varieties
 degenerate_primes = {}     # nontrivial but v == 0 (ansatz collapsed to a constant)
@@ -765,7 +945,7 @@ for num, ds in enumerate(_cells, 1):
         print("  [cell %d] full_prem %.1fs (%d eqns); entering GTZ minimal_associated_primes"
               " (%d gens) ..." % (num, t_prem, len(eqns), len(gens)), flush=True)
         _t = time.time()
-        primes = I.minimal_associated_primes()
+        primes = minimal_associated_primes_gtz(I, 'cell%d' % num)
         t_gtz = time.time() - _t
         print("  [cell %d] GTZ %.1fs -> %d primes" % (num, t_gtz, len(primes)), flush=True)
         strata_cache[cache_key] = dict(spec_len=len(reductors), rems=rems, eqns=eqns,
