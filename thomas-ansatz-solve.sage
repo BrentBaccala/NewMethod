@@ -127,9 +127,9 @@ Output
                      usually the same solution family seen again.
   --latex            re-print the genuine union as a LaTeX subequations block
                      in the form the paper uses, denominators cleared.
-  --cells-out PATH   where to write the raw cells (default:
-                     ~/thomas-experiments/<pde>_ansatz<N>_<ranking>.cells, with
-                     _generic appended under --generic-cell).
+  --cells-out PATH   write the raw cells to PATH.  Omitted, no cells file is
+                     written; nothing reads one back, so it is a debugging
+                     artifact rather than an output.
   --help, -h         this message.
 
 Examples
@@ -218,12 +218,14 @@ GTZ_DIR = _argval('--gtz-dir',
 SINGULAR_BIN = _argval('--singular-bin',
                        shutil.which('Singular')
                        or os.path.join(sys.prefix, 'bin', 'Singular'))
-CELLS_OUT = _argval('--cells-out',
-                    os.path.expanduser('~/thomas-experiments/%s_ansatz%s_%s%s%s.cells'
-                                       % (PDE_NAME, ANSATZ, RANKING,
-                                          '_generic' if GENERIC_CELL else '',
-                                          '_wineq' if DECOMPOSE_WITH_INEQS else '')))
-os.makedirs(os.path.dirname(CELLS_OUT), exist_ok=True)
+# The raw cells are a debugging artifact, not an output of the algorithm, and
+# nothing reads the file back.  Written only when asked for: no --cells-out, no
+# file.  (It used to default to a path built from the pde/ansatz/ranking, which
+# also meant the --decompose-with-inequations and plain runs of the same ansatz
+# collided on one filename.)
+CELLS_OUT = _argval('--cells-out')
+if CELLS_OUT:
+    os.makedirs(os.path.dirname(os.path.abspath(CELLS_OUT)), exist_ok=True)
 if GTZ_SUBPROCESS:
     os.makedirs(GTZ_DIR, exist_ok=True)
 
@@ -678,15 +680,16 @@ for i, ds in enumerate(cells_ds, 1):
     if len(jl) != len(set(jl)):
         print("  SOUNDNESS FAIL cell %d: repeated leader" % i, flush=True)
 
-try:
-    with open(CELLS_OUT, 'w') as fh:
-        for i, ds in enumerate(cells_ds, 1):
-            fh.write("--- cell %d ---\nEQS: %s\nINEQS: %s\n\n"
-                     % (i, [to_bracket(e) for e in cell_eqs(ds)],
-                        [to_bracket(q) for q in cell_ineqs(ds)]))
-    print("Wrote raw cells to", CELLS_OUT, flush=True)
-except Exception as ex:
-    print("(could not write cells file: %s)" % ex, flush=True)
+if CELLS_OUT:
+    try:
+        with open(CELLS_OUT, 'w') as fh:
+            for i, ds in enumerate(cells_ds, 1):
+                fh.write("--- cell %d ---\nEQS: %s\nINEQS: %s\n\n"
+                         % (i, [to_bracket(e) for e in cell_eqs(ds)],
+                            [to_bracket(q) for q in cell_ineqs(ds)]))
+        print("Wrote raw cells to", CELLS_OUT, flush=True)
+    except Exception as ex:
+        print("(could not write cells file: %s)" % ex, flush=True)
 
 def print_total_time():
     t = time.time() - _T_START
