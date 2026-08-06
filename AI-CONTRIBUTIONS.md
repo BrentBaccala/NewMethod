@@ -440,6 +440,48 @@ theorem and the algorithm.
   but leaves the radical corollary to an exercise. Drafted and then reverted at
   the author's request.
 
+**Computational infrastructure (no paper text).** The following is tooling and
+measurement on the directory's computation scripts, recorded here for
+completeness rather than because it produced prose; 5 August 2026, model
+Claude Opus 5.
+
+- **Added `--gtz-subprocess` to `thomas-ansatz-solve.sage`** (`7f3e1a6`). The
+  occasion was a lost run: the `navier-stokes` / ansatz-25 `--generic-cell`
+  computation ran 32 hours inside `minimal_associated_primes` on c200-1 and was
+  killed by a mains outage, leaving no trace past the line "entering GTZ". The
+  underlying finding is a negative one, and worth recording because it is not
+  obvious: the in-process call **cannot be made to report progress**.
+  primdec.lib's `minAssGTZ` → `minAssGTZ_i` chain carries no `dbprint`
+  instrumentation, so `printlevel` adds nothing, and `option(prot)` does not
+  reach stdout through Sage's libsingular wrapper — verified both ways,
+  `opt['prot'] = True` and `opt_ctx(prot=True)`, against `minAssGTZ` and
+  against a plain cyclic-6 `std`, with no output either way, while the
+  identical computation in a standalone Singular prints the full protocol
+  stream. The new mode therefore runs the same `minAssGTZ` in a standalone
+  Singular under `option(prot)` and `option(mem)`, writing the primes to their
+  own file so the protocol stream never has to be untangled from the result. It
+  buys a tailable log, a child process that `--gtz-timeout` can bound and kill,
+  and an on-disk cache keyed by the ideal's content hash so an interrupted run
+  resumes rather than restarts. Checked against the in-process path on
+  hydrogen/5 `--generic-cell`: identical five primes and two GENUINE varieties,
+  a cache hit on re-run, and the timeout firing with no orphaned children. Two
+  defects were found and fixed while testing — a generated identifier `res`
+  collides with one primdec.lib already owns, and **Singular exits 0 even after
+  a hard error**, so the exit status alone is not a success test and the log is
+  now scanned for error lines.
+- **Two diagnostic findings from the same run.** The stray line `ZERO` that had
+  been noted as unexplained output from `minAssGTZ` is a leftover debug print in
+  Singular's own `primdec.lib:9401`, inside `primdec`'s independent-set fast
+  path (`if (dim(j)!=d) {"ZERO"; return(0);}`) — it records only that the fast
+  path declined, and is not a result. Separately, the coherence checks for
+  `navier-stokes` ansatzes 25, 25.2 and 25.3, previously recorded as never
+  launched, in fact completed on 4 August: all three are **passive** (264, 192
+  and 180 integrability conditions respectively, every one reducing to zero).
+  With 25.34, that is four generic cells measured coherent, so for these the
+  pseudo-remainder against the hand-built generic cell is a genuine normal form
+  and the corresponding loci are not merely lower bounds. This is a statement
+  about four measured cells, not a theorem about generic cells in general.
+
 **Editorial / typesetting assistance.** Reformatted the bibliography to
 Elsevier's numbered style (`2b71ff5`) and added/repaired citations (`02b57b8`
 and others); tightened and reconciled prose in the Projection and completeness
