@@ -6,10 +6,15 @@
 # prolongation-projection-algorithm.tex (Phase III-forall / membership, run
 # per Thomas cell -- the "staged route" of section 7):
 #
-#   1. pick one ansatz + one PDE system             (ansatz-library.sage)
+#   1. pick one ansatz + one PDE system, with its inequations P^!= whose
+#      product is Q                                  (ansatz-library.sage)
 #   2. differential-Thomas-decompose the ANSATZ ALONE  -> disjoint cells
-#   3. reduce EACH PDE of the system modulo each cell  (differential
-#      pseudo-remainder against the same cell)
+#   3. reduce Q * EACH PDE of the system modulo each cell (differential
+#      pseudo-remainder against the same cell).  Multiplying by Q is what makes
+#      the locus the SATURATED one -- membership in sqrt([A(c*)]) : Q^infinity,
+#      which for a radical ideal is membership of Q*P_j -- so that the
+#      inequations guard the solutions quantified over.  A cell on which Q
+#      itself reduces to zero lies off N_Q and is dropped.
 #   4. forall-project each remainder onto the constants: collect like terms in
 #      the independents + parametric jets, zero the constant coefficients,
 #      combine the equations of all the remainders into ONE system, take
@@ -220,7 +225,18 @@ JETS = prob['jets']                          # all differential indeterminates
 ansatz0 = prob['ansatz_eqs']
 pconst = prob['pconst']
 PDES = prob['pdes']                          # the PDE system (list; often 1)
+PDE_INEQS = prob['pde_ineqs']                # its inequations (P^!=; ['Psi'] or [])
 PDE_PARAMS = prob['pde_params']              # the PDE's own constants (E; rho,mu)
+
+# Q = the product of the target system's inequations, the paper's Q.  The
+# membership locus is P^= contained in sqrt([A(c*)]) : Q^infinity, and since
+# each cell's ideal is radical (Robertz Prop 2.2.50) that test is, by the
+# saturation lemma, membership of Q*P_j in the unsaturated ideal -- so every
+# reduction below is a reduction of Q*P_j rather than of P_j.  Q = 1 when the
+# system declares no inequations, and everything reduces to the unguarded case.
+Q_INEQ = R(1)
+for _q in PDE_INEQS:
+    Q_INEQ = Q_INEQ * _q
 
 
 # --- consistent variable rendering ----------------------------------------
@@ -263,6 +279,11 @@ def to_bracket(s):
 
 for _P in PDES:
     print("PDE:", to_bracket(_P))
+if PDE_INEQS:
+    for _q in PDE_INEQS:
+        print("PDE inequation:", to_bracket(_q), "!= 0")
+else:
+    print("PDE inequations: none (Q = 1, membership locus unguarded)")
 print("ansatz (%d eqs):" % len(ansatz0))
 for s in prob['ansatz_eqs_str']:
     print("   ", to_bracket(s))
@@ -888,7 +909,7 @@ def minimal_associated_primes_gtz(I, tag):
 strata_cache = {}
 union_primes = {}          # GENUINE nontrivial (v != 0) solution varieties
 degenerate_primes = {}     # nontrivial but v == 0 (ansatz collapsed to a constant)
-trivial_primes = {}        # Psi == 0 forced
+trivial_primes = {}        # off N_Q: the inequations are forced to vanish
 
 _cells = cells_ds if MAX_CELLS <= 0 else cells_ds[:MAX_CELLS]
 
@@ -919,14 +940,20 @@ for num, ds in enumerate(_cells, 1):
         print("\n  [cell %d] entering full_prem: %d reductors ..." % (num, len(reductors)),
               flush=True)
         _t = time.time()
-        # Reduce EACH PDE of the system against the same cell.  For the
-        # membership locus every PDE must lie in the cell's differential ideal,
-        # so the constant-coefficient equations of all the remainders are
+        # Reduce Q * EACH PDE of the system against the same cell.  For the
+        # membership locus every PDE must lie in the cell's SATURATED ideal,
+        # and by the saturation lemma (the cell's ideal being radical) that is
+        # membership of Q*P_j in the unsaturated one -- so it is Q*P_j that is
+        # reduced.  The constant-coefficient equations of all the remainders are
         # combined into ONE system, solved once per cell.
-        rem_elts = [full_prem(P_, reductors)[0] for P_ in PDES]
-        psi_rem_elt, _ = full_prem(R('Psi'), reductors)
+        rem_elts = [full_prem(Q_INEQ * P_, reductors)[0] for P_ in PDES]
+        # Q itself reducing to zero means the cell forces Q == 0, so no solution
+        # on it respects the inequations: the cell lies off N_Q, the saturated
+        # ideal is the unit ideal, and the membership condition holds there
+        # vacuously.  Such a cell contributes nothing and is dropped.
+        q_rem_elt, _ = full_prem(Q_INEQ, reductors)
         t_prem = time.time() - _t
-        trivial = psi_rem_elt.is_zero()
+        trivial = q_rem_elt.is_zero()
         rems = [_elt_to_polyring(re_) for re_ in rem_elts]
         nonzero = [r_ for r_ in rems if not r_.is_zero()]
         if not nonzero:
@@ -964,7 +991,8 @@ for num, ds in enumerate(_cells, 1):
             continue
         survivors.append(P)
 
-    tag = "TRIVIAL (Psi==0 forced)" if sc['trivial'] else "nontrivial"
+    tag = ("TRIVIAL (Q==0 forced: cell lies off N_Q)" if sc['trivial']
+           else "nontrivial")
     print("\n--- cell %d: zero {%s}; ansatz %d eqs; %d param-ineqs, %d jet-ineqs; %s ---"
           % (num, ', '.join(Zkey) or '(none, generic)', sc['spec_len'],
              len(cp['param_ineqs']), len(cp['jet_ineqs']), tag), flush=True)
@@ -1151,7 +1179,7 @@ print("\n" + "-" * 72)
 dump_union("DEGENERATE strata (nontrivial but v == 0, ansatz collapsed)",
           degenerate_primes)
 print("\n" + "-" * 72)
-dump_union("TRIVIAL (Psi==0) strata over all cells", trivial_primes)
+dump_union("TRIVIAL strata over all cells (Q == 0 forced: off N_Q)", trivial_primes)
 
 print("\n" + "=" * 72)
 if genuine_primes:

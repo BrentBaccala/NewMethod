@@ -36,10 +36,12 @@
 #
 # build_problem(pde_name, ansatz) returns everything the solver needs:
 #   dict(R, rk, coords, roots, jets, params, ansatz_eqs, pconst,
-#        pdes, pde_params)
+#        pdes, pde_ineqs, pde_params)
 # where `pdes` is a LIST of differential polynomials (a PDE *system*; one
-# element for the single-PDE problems) and `pde_params` the PDE's own
-# constants (E for the Schroedinger problems, rho/mu for Navier-Stokes).
+# element for the single-PDE problems), `pde_ineqs` the system's INEQUATIONS
+# (the P^{!=} of the paper; ['Psi'] for the Schroedinger problems, empty for
+# Navier-Stokes), and `pde_params` the PDE's own constants (E for the
+# Schroedinger problems, rho/mu for Navier-Stokes).
 #
 # Author: Brent Baccala (AI assistant: Claude).  July 2026.
 
@@ -1099,6 +1101,33 @@ def pde_system(pde_name, coords):
     raise ValueError("unknown pde %r" % pde_name)
 
 
+def pde_inequations(pde_name, coords):
+    r"""The target system's INEQUATIONS, as a LIST of ring-parser strings.
+
+    Together with :func:`pde_system` these make up the target system
+    `\mathcal{P} = (\mathcal{P}^=, \mathcal{P}^{\neq})` of the paper: the
+    equations that must hold and the polynomials that must not vanish.  Their
+    product is the `Q` of the membership locus
+    `\mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty`, so an inequation here
+    guards the solutions quantified over -- the locus asks that every solution
+    of the ansatz *at which Q does not vanish* satisfy the system.
+
+    For the Schroedinger problems the inequation is `\Psi`, excluding the zero
+    wavefunction.  It was previously imposed by the driver as a special case
+    (reduce `\Psi` against each cell, label the cell TRIVIAL when it vanishes);
+    carrying it here instead makes it an ordinary part of the problem statement,
+    handled by the same machinery as everything else.
+
+    Navier-Stokes declares none.  A non-vanishing pressure or density would go
+    here if wanted; an empty list reproduces an unguarded membership locus.
+    """
+    if pde_name in ('hydrogen', 'helium'):
+        return ['Psi']
+    if pde_name in ('navier-stokes', 'navier-stokes-nd'):
+        return []
+    raise ValueError("unknown pde %r" % pde_name)
+
+
 def build_pde_string(pde_name, coords):
     """H(Psi)-E*Psi, jetified and denominator-cleared, as a ring-parser string."""
     PsiF, expr = _hamiltonian(pde_name)
@@ -1192,10 +1221,12 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
     ansatz_eqs = [R(s) for s in ansatz_eqs_str]
     pconst = [R('%s[%s]' % (p, c)) for p in params for c in coords]
     pdes = [R(s) for s in pde_system(pde_name, coords)]
+    pde_ineqs = [R(s) for s in pde_inequations(pde_name, coords)]
 
     return dict(R=R, rk=rk, coords=coords, roots=roots, jets=jets,
                 tower=tower, order=spec.get('order'), params=params,
                 v_params=v_params, amp_params=amp_params, ansatz_eqs=ansatz_eqs,
-                pconst=pconst, pdes=pdes, pde_params=pparams,
+                pconst=pconst, pdes=pdes, pde_ineqs=pde_ineqs,
+                pde_params=pparams,
                 ansatz_eqs_str=ansatz_eqs_str,
                 excludes=spec.get('excludes', []))
