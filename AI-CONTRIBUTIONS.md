@@ -1,9 +1,18 @@
 # A.I. use — record of AI contributions to the *NewMethod* paper
 
 *Working record, kept so the required journal statement on generative-AI use
-can be written from fact rather than memory. Reconstructed from this
-repository's git history; covers contributions through 5 August 2026 and should
-be updated as work continues. Commit hashes are given for auditability.*
+can be written from fact rather than memory. Reconstructed from two sources:
+this repository's git history, which says what changed and when, and the
+session transcripts, task reports and compactions kept alongside it, which say
+whose idea it was. The git history alone cannot settle the second question, and
+it is not sufficient even for the first — the author committed AI-drafted
+material under his own name at least six times, and the AI committed the
+author's proposals under its name many more. Every claim below of the form
+"proposed by the author" or "drafted by the AI" rests on the transcripts, not
+on the commit's author field. Covers contributions through 5 August 2026 and
+should be updated as work continues. Commit hashes are given for auditability,
+and the appendix tabulates every commit to the paper or its companion notes
+that the AI touched.*
 
 The AI tool is **Anthropic's Claude**, used both interactively and through the
 **Claude Code** CLI (which authors the `Claude Code` git commits; sessions
@@ -59,7 +68,7 @@ January 2026).
   (one verified sibling, Acosta-Humánez–Venegas-Gómez 2018; zero verified forward
   citations). Draft pending the author's review.
 - **Repaired the containment proofs in "The Constant Loci"** (author's commit
-  `92e77e5`, 27 July 2026; model Claude Opus 5). Found that the claimed
+  `53c4eba`, 27 July 2026; model Claude Opus 5). Found that the claimed
   containment V_∀ ⊆ V_{∃\Ψ} is **false** as stated — consistency of the ansatz
   is too weak a hypothesis. Supplied the missing condition (that the ansatz not
   force Ψ to vanish, 1 ∉ [A(c*)]:Ψ^∞), the two-line proof (equal ideals have
@@ -95,6 +104,128 @@ January 2026).
   and flagged that the hypothesis "if P is homogenous (and the ansatz too)" is
   false under the paper's own definition of homogeneity, since the generator
   defining the independent variable is Ψ-free.
+
+**Companion notes and working documents.** Twelve `.tex`/`.md` documents sit
+beside `NewMethod.tex` in this directory. **All twelve were drafted by the AI**;
+none is part of the submitted paper, and their status ranges from checked and
+absorbed into the paper to unreviewed draft. They are recorded here because
+material has repeatedly moved from a note into the paper, and because several of
+them are the source of statements the paper now makes. Two are already described
+above (`gcrd-closure-partial-strata.tex` and `ansatz-method-provenance.md`); the
+remaining ten are:
+
+- **`rg-saturation-and-the-bad-locus.tex`** (`59ccab9`, `b659ce8`, 5 June 2026;
+  model Claude Opus 4.8). Found that `joca-rg.sage` was computing a *wrong*
+  decomposition — 4 primes with a spurious `(a₀,a₁)` — not merely a coarse one:
+  a regular differential chain represents the *saturated* ideal [Ā]:H̄^∞, and
+  the script was reducing against the chain's bare equations, dropping the
+  saturation and re-admitting the bad locus as a component. The note writes up
+  the mechanism, including that `normal_form` returns the reduction as a
+  fraction whose denominator (a₀+a₁v)² vanishes exactly on the bad locus, so
+  the bad locus is a *pole* of the saturated reduction — which is why the
+  regularized chain cannot see the two genuine strata living there. This note's
+  identification of (a₀,a₁) as "the bad locus B where an initial vanishes" is
+  what later exposed a false claim in the paper itself (below).
+- **`ck-direct-method-examples.tex`** (`243b96d`, 8 June 2026 — swept into the
+  repository by an unrelated commit, hence the misleading message). A worked
+  Clarkson–Kruskal direct-method companion (heat kernel and the hydrogen J₀),
+  written because the 1989 original is paywalled and Clarkson–Mansfield 1994
+  was substituted as the citable source (`cc09d29`).
+- **`method-comparison.md`** (`3d39b0a`, `65fe337`, 11–12 June 2026). A 525-line
+  comparison of the method against the constructible-set / comprehensive-Gröbner
+  / GTZ toolchain, parametric Rosenfeld–Gröbner, and the differential Thomas
+  decomposition, later extended with a worked Δ(Ψₓ,Ψ_y) critical-pair split as a
+  concrete atlas-versus-image example. Not cited by the paper, but the survey it
+  contains is upstream of the paper's eventual decision to lead with the Thomas
+  decomposition.
+- **`membership-vs-variety-partial-strata.tex`** (`901ce6a`, 18 June 2026;
+  extended `72fe9f9`, 9 July, and `f3ba3f5`, 23 July). The note that names the
+  **partial-solution strata** — the gap between the membership locus V_∀ and the
+  projection of the joint variety — and so supplies the vocabulary the paper's
+  three-loci discussion now uses. It grew out of an interactive session in which
+  the distinction was worked out jointly with the author. Later additions: a PDE
+  counterexample showing that autoreducedness does not preclude strata, and an
+  explicit GCRD/Gröbner verification that ansatz 5 on the hydrogen equation has
+  no genuine (h ≠ 0) partial strata at all — its whole V_∀-versus-V_{∃∖Ψ} gap
+  lies on the ODE-degeneration loci the decomposition already isolates.
+- **`bounded-prolongation-theorem.md`** (`5d56eb6`, 2 July 2026, 871 lines;
+  corrected `bc7a8c4`, 5 July). Proposes replacing reduce-then-project by
+  prolong to a finite involutive order, algebraize the jets, never saturate,
+  eliminate to the constants. A verified deep-research pass (23 of 25 claims
+  confirmed by adversarial re-checking) returned a **negative verdict on
+  novelty**, and the note says so: the core pipeline is essentially
+  Lange-Hegermann 2014 over the differential Thomas decomposition, and the
+  prolong-then-algebraize construction appears verbatim in
+  Golubitsky–Kondratieva–Ovchinnikov 2009. What survives as contribution is the
+  explicit N₀ = 2 for the finite-type hydrogen ansatz, the saturation-free
+  reading, and the algorithm-agnostic packaging. Two errors of the AI's were
+  caught afterwards, both prompted by the author's questions: the elimination
+  J ∩ K[c] is identically (0), because the trivial solution Ψ ≡ 0 lies over
+  every c, and the correct form is (J : Ψ^∞) ∩ K[c] (`bc7a8c4`); and the N₀ = 2
+  claim is false for the *combined* system A ∪ {P}, being the involutive order
+  of the ansatz alone. This note is unreviewed and its route was not adopted by
+  the paper.
+- **`riquier-parametric-data.tex`** (`6f2d20a` as markdown, converted `c9f682a`,
+  7 July 2026). Cauchy–Kovalevskaya, the Riquier existence theorem, and the
+  ansatz-5 parametric data — written as background during a tutorial thread with
+  the author that later converged on the GCRD-closure construction.
+- **`prolongation-projection-algorithm.tex`** (`b8e2cec`, 10 July 2026, 995
+  lines; extended `95d687c`, 13 July, 553 lines). **The algorithm developed here
+  is the author's proposal** — prolong, track, split, project; the AI supplied
+  the development, the semantics and the resolution of the puzzle the author had
+  posed about the ansatz element v = v₁x + v₂y + v₃z. The resolution is that the
+  quantifier discipline (independents universal, dependents and constants
+  existential) is semantically right but must be implemented by two operations
+  that do not commute: universal quantification is coefficient collection,
+  existential quantification is Gröbner elimination, and the latter is sound only
+  after prolongation to passivity. The naive ordering computes a locus
+  **incomparable to both targets** — over-constraining on the v-equation, and
+  under-constraining on a two-line toy example where it returns ℂ against the
+  correct {c = 1}. The later extension locates precisely what the paper's staged
+  route (decompose the ansatz alone, reduce, project) loses: a cell hides a
+  stratum iff its reduced remainder carries a parametric jet. Delivered as a
+  task-runner report; not incorporated into the paper.
+- **`coherent-regular-simple-passive-hierarchy.tex`** (`4063c0c`, `fd8f64d`,
+  20 July 2026). Pins *coherent*, *regular*, *simple* and *passive/involutive*
+  to primary sources and establishes that they are **not** synonyms but a
+  one-directional hierarchy. Written after an earlier informal claim of the
+  AI's — that Seiler's AAECC 2009 papers state a coherence ⟺ involution
+  *equivalence* — was checked and **found false**: those papers never mention
+  coherence or Rosenfeld at all, and the sourced statement is a one-way
+  implication. The note is the one companion document the paper leans on
+  hardest; its two later corrections (`41a7102`) and its new §5 (`747002c`) are
+  narrated in the arcs below.
+- **`membership-existence-equivalence.tex`** (`f3fda04`, `50cf452`, 23 July
+  2026). Proves V_∀ = V_{∃∖Ψ} ⟺ no partial strata ⟺, for linear-ODE ansätze,
+  ord GCRD(L, {R_β}) ∈ {0, n} everywhere; coincidence proved for one-dimensional
+  ansätze, with a follow-on remark on which hypotheses are actually necessary.
+- **`regularity-counterexamples.tex`** (author's commit `933ef24`, 23 July
+  2026). This file is **entirely AI-drafted material**, and it is the one case in
+  the repository where the author preserved AI text by moving it *out* of the
+  paper rather than by keeping it in. The counterexamples came into the paper
+  with the completeness proof (`874a9c7`): a demonstration that hypothesis (4)
+  needs squarefreeness and not merely a regular chain — A = {u³ − u²}, whose
+  separant shares the factor u, so that u − 1 is fully reduced, nonzero, and
+  still lies in (A) : S_A^∞. The author removed these subsections from
+  \S*Algorithm* as too detailed for a journal paper and copied them here. The
+  material is not in the submitted paper; it is recorded because the commit that
+  moved it is one of the six in which the author committed AI prose under his
+  own name.
+
+**A correction to the paper arising from the notes** (12 June 2026; model
+Claude Opus 4.8).
+
+- **The bad locus is not empty** (`18ddc11`, `d965dbb`). The paper asserted in
+  three places that the hydrogen ansatz has an empty bad locus B, resting on the
+  claim that an element linear in its leader satisfies hypothesis (4)
+  automatically. That conflates *linear-in-leader* with *monic*: the ODE element
+  (a₀+a₁v)Ψ″ + (b₀+b₁v)Ψ′ + (c₀+c₁v)Ψ is linear in Ψ″ but non-monic, its initial
+  equals its separant a₀+a₁v, and that vanishes identically on {a₀ = a₁ = 0},
+  dropping the leader. So B is the codimension-2 subspace {a₀ = a₁ = 0} ⊆ ℂ¹¹ —
+  and it *contains genuine decomposition strata*. This matched what the
+  rg-saturation note had independently called the bad locus, which is how it was
+  caught. Three passages corrected and a vague Hubert citation sharpened to
+  Theorem 5.13 / Definition 5.5.
 
 The bullets that follow record a single connected arc, 28–30 July 2026 (model
 Claude Opus 5), carried out at the author's direction: shifting the paper's
@@ -294,6 +425,47 @@ through the completeness proof and the algorithm.
   the coefficient ring, where they are inert, when the algorithm needs them
   ranked in the lowest block so that the decomposition splits on them — which is
   the entire source of the cells.
+- **Audited the algorithm's own citations, and found six defects — five of them
+  mine** (30–31 July 2026). Each was caught by the author asking whether a claim
+  was actually true, not by any verification pass of mine, and they are recorded
+  individually because the pattern matters: the newly-formalized algorithm cited
+  more precisely than it had checked. (i) `DisjointRefinement` was a subroutine
+  name **I invented** and attributed to the already-cited CTD paper; renamed to
+  `SMPD`, the paper's actual Algorithm 3 (`8de5053`). (ii) The prose credited
+  `MakePairwiseDisjoint`, which is the *weaker* operation and does not appear in
+  the ICCSA paper cited for it; rewritten to cite each source for what it
+  documents. (iii) `Reduce` was cited as Bächler et al. Alg. 2.6 — the
+  *algebraic* Reduce; the differential one is Alg. 3.3 (`260d919`). (iv) That
+  correction was then superseded on the author's question of whether Ritt's
+  reduction could simply be used throughout: the paper's introduction,
+  preliminaries, projection section, hydrogen example and the completeness
+  proof all use **Ritt full reduction**, and Proposition 1's criterion is a
+  pseudo-remainder rather than Janet-reducibility, so line 3 became
+  `FullReduce`, cited to Ritt §6 (`2553068`, `631e6e9`). (v) `minAss` was cited
+  to GTZ as a whole; narrowed to Cor. 3.2(v) and §9 (`d35e9cd`). (vi) Numbered
+  subroutine citations and the Example 2 notation were reconciled with the
+  algorithm's lines 4–6 (`dd996e2`). A seventh defect was **not** mine and
+  predates the arc: the cell-reading paragraph rested on the premise that the
+  constants are ranked below every other indeterminate, whereas the paper's own
+  hydrogen ranking display has read "… > constants > x,y,z" all along, so prose
+  and ranking had disagreed for some time; the algorithm's lines 5–6 now select
+  membership in ℚ[c₁,…,cₙ] directly rather than relying on the leader.
+- **Notation and exposition follow-ons** (30–31 July 2026). Reserved primes for
+  the derivatives internal to an ODE extension and wrote Δ-derivatives as
+  subscripts throughout, the two having been used interchangeably (`0e34162`);
+  showed r in the base ring of the first two ansatz diagrams, which had omitted
+  it (`47e9360`); **rewrote the Organization paragraph** (`a59b8ae`), stale in
+  three ways, the serious one being that it promised a general algorithm built
+  on Rosenfeld–Gröbner that the paper does not contain — the one surviving live
+  mention of Rosenfeld–Gröbner names it as computationally infeasible and
+  therefore not taken; moved the constants-as-a-block rationale from §1 to sit
+  beside the cells it explains, where it is load-bearing rather than
+  unmotivated (`0b3c482`, `e953bc8`); and **reordered the bibliography by first
+  citation** per Elsevier style (`125b8ae`), with the order computed from the
+  *typeset* text only — `\begin{comment}` blocks and `%`-comments stripped,
+  since citations invisible in the PDF must not influence numbering — and
+  verified entry by entry for all 25 cited entries. Flagged and left to the
+  author: six bibliography entries are uncited, which Elsevier will not accept.
 - **Errors of mine during this arc, and how they were caught.** Twice I
   over-claimed and had to withdraw. First, that moving to the radical made the
   per-component test exact — the author's question about the Thomas
@@ -328,6 +500,51 @@ through the completeness proof and the algorithm.
   the base-field fix), grounding the efficiency discussion and the corrected
   "RG is not a no-op" wording (`315ab7c`). See the computation scripts
   documented in `README.md`.
+
+**A new worked example, and the generalization to systems** (2–3 August 2026;
+model Claude Opus 5).
+
+- **Wrote the Navier–Stokes example section** (`06a67dc`). Figure 8 of the paper
+  had drawn a nonlinear ansatz whose four top-level polynomials were declared to
+  be the dependent variables of a system aimed at Navier–Stokes, and the paper
+  promised the resulting system twice without ever writing it down. It was
+  written down, reduced in closed form by hand, and the closed form turned out
+  to be informative: **the ansatz reaches exactly the parallel shear flows and
+  nothing else**, for two structurally distinct reasons — incompressibility
+  annihilates the convective nonlinearity, the only nonlinear jet monomial's
+  coefficient carrying the same factor as the continuity residual; and the
+  residual is degree 1 in the leader while the ansatz's ODE is degree 2, so
+  pseudo-division returns it unchanged and the projection forces μ·a·σ = 0
+  outright, leaving no viscous solution with spatial structure. Written up as a
+  new section presenting a **negative** result, which is what makes it worth
+  including. The algebra was verified by an independently written sympy script
+  committed alongside; the paper's Figure 8 notation collision (v used both for
+  a velocity component and for the ODE's independent variable) was caught and
+  renamed in the same commit.
+- **Generalized the whole development from a single PDE to a system**
+  (`93050df`, plus `0e5e5d7`, `0d77891`, `a10e350`, `3cc000f`). The
+  restructuring is the author's, and his assessment of it was right and is worth
+  recording as the reason it was safe: **theoretically this is a conjunction over
+  j and nothing more**, because membership in an ideal is a condition on one
+  differential polynomial at a time. The work was therefore mostly notational,
+  but it touched abstract, introduction, algorithm, completeness theorem and
+  corollary, since "the PDE" was woven through the prose. Four places needed
+  more than substitution, and they are the substance: the *existence* loci do
+  not decompose the way the membership locus does; power products must be
+  collected within each remainder and never across them; the proof's conjunction
+  over j works only because E:q^∞ is independent of j; and the coarse-splitting
+  variant acquires a second defect that appears only once t > 1. Algorithm 3 was
+  compacted so that every line is a one-line formula, which required naming the
+  coefficient set — `Coeffs`, with a second argument naming the coefficient
+  ring, renamed from `Coeff` and given its precedents in the literature after
+  a short survey (`~/project/reports/newmethod-coefficient-set-notation-survey.md`).
+- **Diagrammed the normalized ansatz and repaired the figure key** (`9500166`,
+  `2583a62`). Introduced a diagram convention for normalized ansätze — a slot
+  pinned by a normalization is written out literally, and the degree bound is
+  written only when every generator of the ring may appear to that degree — and
+  documented it in the key rather than leaving the new figure silently
+  inconsistent with Figure 1. Also `a27858c`, a two-line alignment fix to
+  Proposition 1.
 
 The bullets that follow record a second connected arc, 4–5 August 2026 (model
 Claude Opus 5), carried out at the author's direction: admitting inequations
@@ -440,6 +657,41 @@ theorem and the algorithm.
   but leaves the radical corollary to an exercise. Drafted and then reverted at
   the author's request.
 
+- **Renamed the existence locus to the consistency locus** (`d3dd938`, 5 August
+  2026). The rename is the author's proposal, on the grounds that the paper has
+  no analytic existence proof and the algebraic term is that the ideal is
+  consistent; supplied the supporting check and the downstream changes. The
+  check strengthened his case: **the paper never mentions a Nullstellensatz
+  anywhere** — zero occurrences of "Nullstellensatz" or "Raudenbush" — so
+  "existence locus" was not a name that slightly overreached a proved result but
+  one for which the paper offered no warrant at all, while "consistent" was
+  already a defined term in it. Three things travelled with the rename. The
+  symbol V_∃ was **kept**, the subscript being load-bearing for the quantifier
+  table and for V_{∃∀}, with a sentence noting that it records the quantifier
+  pattern rather than a proved theorem. The quantifier table, not the name, is
+  where the existence claim actually lived — its last column reads "vanishes at
+  some one solution", whose use as a *characterization* needs consistency ⟹ a
+  solution exists, the direction requiring a Nullstellensatz; the column is now
+  marked as a reading rather than a definition, at no cost, since the paper's
+  proofs only ever use the free direction. And the defining sentence was made
+  explicit that the condition is on the ansatz *together with* the system, since
+  "consistent" is separately used in the paper for the ansatz alone. Also
+  recommended **against** the alternative of keeping the name and buying it with
+  a citation — Robertz states the Ritt–Raudenbush analytic Nullstellensatz
+  beside a proposition the paper already cites — because even then "existence"
+  would mean an analytic solution on some domain rather than in a prescribed
+  function space, and the hydrogen section turns on exactly that gap. Flagged in
+  passing, and confirmed deliberate by the author: 92 lines of the *Physical
+  Interpretation* subsection sit inside a `\begin{comment}` block and are not
+  typeset.
+- **Drafted the colloquium slide deck** (`289af84`, 5 August 2026), at the
+  author's request, from the paper: `NewMethod-talk.tex`, 33 slides in Beamer,
+  for a 50–60 minute general audience, with the optional frames marked so a
+  ~25-minute version can be cut. Two choices were made on the author's behalf
+  and flagged as easily reversed: making the completeness certificate the spine
+  of the talk, and stating the non-physicality of the J₀ solution outright
+  rather than eliding it. The deck is not part of the submitted paper.
+
 **Computational infrastructure (no paper text).** The following is tooling and
 measurement on the directory's computation scripts, recorded here for
 completeness rather than because it produced prose; 5 August 2026, model
@@ -495,9 +747,23 @@ author query left in the body text, a locus asserted in the summary line whose
 announced computation is never carried out, and the paper-wide
 "homogenous"/"homogeneous" spelling split.
 
-**Artifacts.** The **Graphical Abstract** is AI-generated (`6db3f5b`); the
-supporting computation scripts (`joca-rg.sage`, `rg_basefield.py`), the
-directory's `README.md`, and this record itself are AI-produced.
+**The computation scripts.** This directory also holds the Sage and Python
+scripts that run the method — `joca.sage` and its variants, `joca-thomas.sage`,
+`joca-rg.sage`, `joca-rg-combined.sage`, `thomas-ansatz-solve.sage`,
+`ansatz-library.sage`, `rg_basefield.py`, the coherence and comparison probes,
+and the directory's `README.md` documenting them. **Treat all of it as
+AI-written**, from the author's specifications and mathematics and reviewed by
+him. Some sixty further commits, not itemized here, do nothing but develop these
+scripts. They are given a blanket attribution rather than a per-commit one for
+two reasons: essentially the whole of `thomas-ansatz-solve.sage` and
+`ansatz-library.sage` was written by the AI, so there is nothing to
+disambiguate; and the scripts are separate artifacts from the paper, to which
+the journal's disclosure requirement attaches. Where a computation changed what
+the paper *says*, that is recorded above as a paper contribution, not here.
+
+**Artifacts.** The **Graphical Abstract** is AI-generated (`6db3f5b`). The
+colloquium slide deck `NewMethod-talk.tex` (`289af84`), the twelve companion
+notes listed above, and this record itself are AI-produced.
 
 **Note for the formal declaration.** Elsevier's generative-AI policy is framed
 around assistance with *language and readability*. Several items above
@@ -506,5 +772,131 @@ abstract) go beyond language polishing; the author should decide how to
 characterize these in the submitted statement, methods, and/or
 acknowledgements, and confirm the journal's current requirements.
 
+---
+
+## Appendix — commit index
+
+Every commit to the paper or to a companion note that the AI wrote or that
+landed AI-drafted material, in date order. The narrative above is selective;
+this is not. **Scope and its limits:** the table covers `NewMethod.tex`,
+`NewMethod-talk.tex` and the companion `.tex`/`.md` notes. It deliberately
+excludes three classes — the computation scripts and their `README.md` (blanket
+attribution above; roughly sixty further commits), commits that only rebuild the
+PDF or only maintain this record (about twenty), and the author's own prose
+commits, of which there are some two hundred and which are his work. So the
+table is complete for what it covers and says nothing about what it does not.
+
+*Whose idea* distinguishes **author** (his proposal, question or objection; the
+AI supplied the execution), **AI** (the AI's own finding or initiative,
+reviewed by the author), and **joint** (developed in discussion, neither party's
+alone). It is taken from the session transcripts, not from the commit's author
+field. The seven rows in *italics* are the author's own commits that carried AI
+material, listed here because the author field alone would hide them.
+
+To update this record: run `git log --author='Claude Code'` over `NewMethod/`,
+diff it against the Commit column, and only the new rows need thought.
+
+| Commit | Date | Artifact | What changed | Whose idea |
+|---|---|---|---|---|
+| *`226a2a5`* | 2025-12-31 | NewMethod.tex | AI's fixes for the overfull-hbox warnings | AI |
+| *`55487de`* | 2026-02-27 | NewMethod.tex | citation suggestions from **GPT-5** | GPT-5 |
+| *`6db3f5b`* | 2026-04-22 | GraphicalAbstract | AI-generated graphical abstract | AI |
+| *`843f9ea`* | 2026-05-28 | NewMethod.tex | inserted the AI-drafted completeness theorem and proof | joint |
+| `02b57b8` | 2026-05-28 | NewMethod.tex | bibitem for the squarefree-regular-chain definition | AI |
+| `874a9c7` | 2026-05-29 | NewMethod.tex | inlined the theorem, proof and regularity counterexamples | joint |
+| `57ce904` | 2026-05-29 | NewMethod.tex | specialization result promoted to Lemma 1; amsthm numbering | AI |
+| `67aeb0f` | 2026-05-29 | NewMethod.tex | hypothesis (3) stated generically on the parametric ansatz | AI |
+| `cc6ee77` | 2026-05-29 | NewMethod.tex | all four hypotheses verified in the ODE-ansatz example | AI |
+| `7c18e49` | 2026-05-29 | NewMethod.tex | hypothesis check moved into §3 as a capstone | AI |
+| `52664d7` | 2026-05-29 | NewMethod.tex | stale motivation of the [A]∩R₀=(A) conjecture fixed | AI |
+| `6e1ee75` | 2026-05-29 | NewMethod.tex | stopped re-defining leader / reduction in the completeness §| AI |
+| `aba1b6e` | 2026-05-29 | NewMethod.tex | Projection subsection tightened, reconciled with Theorem 1 | AI |
+| `0aee721` | 2026-05-29 | NewMethod.tex | system of equations displayed rather than run in-line | AI |
+| `2b71ff5` | 2026-05-29 | NewMethod.tex | bibliography reformatted to Elsevier numbered style | author |
+| `e2a7449` | 2026-06-04 | NewMethod.tex | restructured into core + general algorithm | author |
+| `c05c04a` | 2026-06-04 | NewMethod.tex | §2 folded into §1; "Why not Rosenfeld–Gröbner alone?" added | author |
+| `ff291ad` | 2026-06-04 | NewMethod.tex | comprehensive step recast as cited prior art (Fakouri; Thomas) | AI |
+| `102fd6a` | 2026-06-04 | NewMethod.tex | positioned against the symmetry-reduction tradition | AI |
+| `806b526` | 2026-06-04 | NewMethod.tex | **corrected** the separability claim (parabolic / Runge–Lenz) | AI |
+| `3c0818c` | 2026-06-04 | NewMethod.tex | one shared counter for all theorem-like environments | AI |
+| `315ab7c` | 2026-06-05 | NewMethod.tex | **corrected** "RG returns the ansatz unchanged" | AI |
+| `cc09d29` | 2026-06-05 | NewMethod.tex | Clarkson–Mansfield 1994 cited beside the direct method | AI |
+| `59ccab9` | 2026-06-05 | rg-saturation note | **new note**: the dropped-saturation bug and the bad locus as a pole | AI |
+| `b659ce8` | 2026-06-05 | rg-saturation note | layout fix (P2/P3 bled off the page) | AI |
+| `243b96d` | 2026-06-08 | ck-direct-method-examples | **new note**: worked CK examples (heat kernel, hydrogen J₀) | AI |
+| `3d39b0a` | 2026-06-11 | method-comparison.md | **new note**: 525-line comparison against CTD/CGS/GTZ, P-RG, Thomas | AI |
+| `18ddc11` | 2026-06-12 | NewMethod.tex | **corrected** "the bad locus is empty" — B is {a₀=a₁=0} | AI |
+| `d965dbb` | 2026-06-12 | NewMethod.tex | **corrected** the general hypothesis-(4) linear-leader claim | AI |
+| `65fe337` | 2026-06-12 | method-comparison.md | worked Δ(Ψₓ,Ψ_y) split as an atlas-vs-image example | AI |
+| `901ce6a` | 2026-06-18 | partial-strata note | **new note**: names the partial-solution strata | joint |
+| `5d56eb6` | 2026-07-02 | bounded-prolongation | algorithm exposition + prior-art survey (negative novelty verdict) | joint |
+| `bc7a8c4` | 2026-07-05 | bounded-prolongation | **corrected**: elimination must be (J:Ψ^∞)∩K[c], not J∩K[c] | joint |
+| `3bd3828` | 2026-07-07 | gcrd-closure note | **new note**: GCRD construction recovering partial strata | joint |
+| `7d083b0` | 2026-07-07 | gcrd-closure note | wrote out "equation (2)" in algorithm step 1 | AI |
+| `6f2d20a` | 2026-07-07 | riquier note | **new note**: Cauchy–Kovalevskaya, Riquier, ansatz-5 data | AI |
+| `c9f682a` | 2026-07-07 | riquier note | converted from markdown to LaTeX | author |
+| `72fe9f9` | 2026-07-09 | partial-strata note | PDE counterexample: autoreducedness does not preclude strata | AI |
+| `b8e2cec` | 2026-07-10 | prolongation-projection | **new note**: the author's algorithm developed; quantifier discipline | author |
+| `95d687c` | 2026-07-13 | prolongation-projection | the staged route's loss located; fixed-chain prolongation | AI |
+| `97f718c` | 2026-07-18 | ansatz-method-provenance | **new note**: four-layer provenance of the "ansatz method" term | AI |
+| `4063c0c` | 2026-07-20 | hierarchy note | **new note**: coherent/regular/simple/passive pinned to sources | AI |
+| `fd8f64d` | 2026-07-20 | hierarchy note | duality caveat; parametric RG as a union of intersections | AI |
+| *`933ef24`* | 2026-07-23 | regularity-counterexamples | AI subsections cut from the paper, preserved in a new note | author |
+| `f3fda04` | 2026-07-23 | equivalence note | **new note**: membership ↔ homogeneous existence | AI |
+| `50cf452` | 2026-07-23 | equivalence note | "hypotheses and their necessity" remark | AI |
+| `f3ba3f5` | 2026-07-23 | partial-strata note | order-matching counterexample; ansatz-5 has no genuine strata | AI |
+| *`53c4eba`* | 2026-07-27 | NewMethod.tex | author's rewrite incorporating the AI's repaired containment proofs | joint |
+| `7532ee5` | 2026-07-28 | NewMethod.tex | preliminaries rewritten onto simple systems | author |
+| `68af580` | 2026-07-28 | NewMethod.tex | Rosenfeld's Lemma stated inline, fixing a bug the AI had just introduced | AI |
+| `41a7102` | 2026-07-28 | hierarchy note | **corrected**: Wu-passive separated from Janet-involutive | AI |
+| `d015a61` | 2026-07-28 | NewMethod.tex | completeness rebuilt on Robertz Prop. 2.2.50 (−54 lines) | AI |
+| `3d92072` | 2026-07-29 | NewMethod.tex | denominator hypothesis dropped; algebraic simplicity as (A1)–(A3) | AI |
+| `93a031b` | 2026-07-29 | NewMethod.tex | **corrected** the Robertz citation and proposition numbers | AI |
+| `6617bdd` | 2026-07-29 | NewMethod.tex | Robertz proposition numbered into the paper's sequence | author |
+| `d9c4c8d` | 2026-07-30 | NewMethod.tex | membership locus on the radical; theorem becomes an equivalence | author |
+| `83a4465` | 2026-07-30 | NewMethod.tex | how a component's cell is obtained | AI |
+| `26ff25e` | 2026-07-30 | NewMethod.tex | assembly by intersection, not union (after author's pushback) | joint |
+| `1380cf6` | 2026-07-30 | NewMethod.tex | second, cheaper assembly branch; the intermediate locus | author |
+| `232cec8` | 2026-07-30 | NewMethod.tex | prime decomposition hoisted into the algorithm's loop | author |
+| `07ab265` | 2026-07-30 | NewMethod.tex | a computational recipe for step 7a | AI |
+| `ab1166c` | 2026-07-30 | NewMethod.tex | hand-rolled recipe **replaced** by the published disjoint refinement | AI |
+| `4afff4d` | 2026-07-30 | NewMethod.tex | Algorithm 3 reformatted to the cited papers' house style | AI |
+| `b585d77` | 2026-07-30 | NewMethod.tex | ansatz consistency becomes a computed by-product | author |
+| `f4996bb` | 2026-07-30 | NewMethod.tex | per-branch refinement; **corrected** the AI's own Output spec | AI |
+| `3670235` | 2026-07-30 | NewMethod.tex | algorithm carries finite generating sets, not ideals | author |
+| `8de5053` | 2026-07-30 | NewMethod.tex | **corrected**: SMPD, replacing a subroutine name the AI invented | author |
+| `bf45291` | 2026-07-30 | NewMethod.tex | table of the algorithm's four subroutines | AI |
+| `3efd8bd` | 2026-07-30 | NewMethod.tex | ring notation migrated to Ritt/Kolchin, 17 sites | AI |
+| `dd996e2` | 2026-07-30 | NewMethod.tex | Example 2 notation; numbered subroutine citations; lines 4–6 | AI |
+| `2553068` | 2026-07-30 | NewMethod.tex | **corrected**: line 3 is Ritt full reduction | author |
+| `631e6e9` | 2026-07-30 | NewMethod.tex | FullReduce cited to Ritt §6 | author |
+| `260d919` | 2026-07-30 | NewMethod.tex | **corrected** the Reduce row — Alg. 3.3, and what it returns | author |
+| `d35e9cd` | 2026-07-30 | NewMethod.tex | minAss cited to GTZ Cor. 3.2(v), §9 | AI |
+| `47e9360` | 2026-07-30 | NewMethod.tex | r shown in the base ring of the first two ansatz diagrams | AI |
+| `0e34162` | 2026-07-30 | NewMethod.tex | subscripts for Δ-derivatives; primes only inside ODE extensions | AI |
+| `a59b8ae` | 2026-07-31 | NewMethod.tex | organization paragraph rewritten (it promised a missing algorithm) | AI |
+| `0b3c482` | 2026-07-31 | NewMethod.tex | forward reference from §1 dropped | AI |
+| `e953bc8` | 2026-07-31 | NewMethod.tex | constants-as-a-block rationale restated beside the cells | AI |
+| `125b8ae` | 2026-07-31 | NewMethod.tex | bibliography ordered by first citation, per Elsevier | author |
+| `06a67dc` | 2026-08-02 | NewMethod.tex | **new section**: incompressible Navier–Stokes, a negative result | AI |
+| `93050df` | 2026-08-03 | NewMethod.tex | whole development generalized from a PDE to a system | author |
+| `0e5e5d7` | 2026-08-03 | NewMethod.tex | Algorithm 3 lines 8–9 as subring intersections | AI |
+| `0d77891` | 2026-08-03 | NewMethod.tex | coefficient set named, collapsing line 6 | AI |
+| `a10e350` | 2026-08-03 | NewMethod.tex | Coeff given a second argument naming the coefficient ring | author |
+| `3cc000f` | 2026-08-03 | NewMethod.tex | renamed Coeffs; precedents cited after a notation survey | AI |
+| `9500166` | 2026-08-03 | NewMethod.tex | normalized ansatz 25.34 diagrammed at the head of §4 | AI |
+| `2583a62` | 2026-08-03 | NewMethod.tex | Figure 9 degree labelling fixed; diagram key extended | AI |
+| `a27858c` | 2026-08-03 | NewMethod.tex | two text lines of Proposition 1 left-aligned | AI |
+| `44d26e9` | 2026-08-04 | NewMethod.tex | coherence of simple systems proved, replacing an uncitable claim | author |
+| `747002c` | 2026-08-04 | hierarchy note | new §5: BGLR-simple ⟹ coherent, with the terminological trap | AI |
+| `d0f6263` | 2026-08-04 | NewMethod.tex | decomposition identity made a Proposition; two defects **corrected** | author |
+| *`155e716`* | 2026-08-04 | NewMethod.tex | author kept a one-line remark and cut the AI's coherence proof | author |
+| `aa3015f` | 2026-08-05 | NewMethod.tex | inequations into the target system; V_{∃∖Ψ} removed | author |
+| `af0670c` | 2026-08-05 | NewMethod.tex | membership locus on the saturated radical ideal; Lemma 3 | author |
+| `289af84` | 2026-08-05 | NewMethod-talk.tex | **new artifact**: 33-slide colloquium deck | author |
+| `d3dd938` | 2026-08-05 | NewMethod.tex | existence locus renamed the consistency locus | author |
+
 */Claude Opus 4.8 (this record drafted by the AI it documents); updated
-27 July 2026, 30 July 2026 and 5 August 2026 by /Claude Opus 5.*
+27 July 2026, 30 July 2026 and 5 August 2026 by /Claude Opus 5, and audited
+against the full git history and the session transcripts on 5 August 2026 by
+/Claude Opus 5.*
