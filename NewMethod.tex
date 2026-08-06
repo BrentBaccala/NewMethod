@@ -1850,7 +1850,13 @@ $\mathrm{SMPD}$
   & {\it strongly make pairwise disjoint}: replaces a family of pieces by
     pairwise disjoint pieces, each member of the family being a union of some
     of them
-  & \cite{CTD}, Alg.~3 \\
+  & \cite{CTD}, Alg.~3 \\[3pt]
+$\mathrm{DropContained}$
+  & discards each piece contained in another piece of the same family, one
+    representative being kept from any set of pieces that are equal.  A piece
+    $(\mathfrak{p}_1, h_1)$ is contained in $(\mathfrak{p}_2, h_2)$ exactly when
+    the difference of the two constructible sets is empty
+  & \cite{CTD}, Algs.~1--2 \\
 \hline
 \end{tabularx}
 \end{center}
@@ -1903,10 +1909,10 @@ reports, as described below.
 \item {\bf if} $\mu = \forall$ {\bf then}
 \item \algind $\mathcal{B} \leftarrow \mathrm{SMPD}(\mathbb{C}^n, W_1, C_1, \ldots, W_s, C_s)$
 \item \algind $D \leftarrow \bigcup \bigl\{\, B \in \mathcal{B} \;:\; B \subseteq W_i \text{ for every $i$ with } B \subseteq C_i \,\bigr\}$
+\item \algind {\bf return} $\bigl\{\, (\mathfrak{p}, h) \;:\; (F, h) \in D, \; \mathfrak{p} \in \mathrm{minAss}(\langle F \rangle : h^\infty) \,\bigr\}$
 \item {\bf else}
-\item \algind $D \leftarrow \bigcup \mathrm{SMPD}(W_1, \ldots, W_s)$
+\item \algind {\bf return} $\mathrm{DropContained}\bigl( \textstyle\bigcup_{i=1}^{s} W_i \bigr)$
 \item {\bf end if}
-\item {\bf return} $\bigl\{\, (\mathfrak{p}, h) \;:\; (F, h) \in D, \; \mathfrak{p} \in \mathrm{minAss}(\langle F \rangle : h^\infty) \,\bigr\}$
 \end{pseudocode}
 \end{algorithm}
 
@@ -1921,7 +1927,7 @@ intersections are exactly the component's condition on the constants is the
 content of the discussion following Corollary~\ref{cor:assembly}.  Writing
 $\mathcal{V}_i := V(J_i)$ for the variety of the projection and
 $C_i = V(E_i) \setminus V(h_i)$ for the {\it cell} of the component, we have
-$W_i = \mathcal{V}_i \cap C_i$, and the assemblies of lines~15 and~17 are
+$W_i = \mathcal{V}_i \cap C_i$, and the assemblies of lines~15 and~18 are
 %
 \[
 V_\forall \;=\; \bigcap_{i=1}^{s} \bigl( W_i \cup (\mathbb{C}^n \setminus C_i) \bigr),
@@ -1934,8 +1940,7 @@ for {\it every} component whose cell contains it, and under
 $\mu = \exists\forall$ as soon as it lies in $\mathcal{V}_i$ for {\it some} such
 component.
 
-Lines~1--12 are common to both assemblies, as is the normalization in line~19;
-only lines~13--18 differ.  The reason
+Lines~1--12 are common to both assemblies; only lines~13--19 differ.  The reason
 is that
 $\mathcal{V}_i \cup (\mathbb{C}^n \setminus C_i) = W_i \cup (\mathbb{C}^n
 \setminus C_i)$: outside its own cell a component imposes no condition at all,
@@ -1961,7 +1966,7 @@ on the second, then $A(c^*)$ has solutions that do not satisfy every element of
 $\mathcal{P}^=$, and $c^*$ is
 not in the membership locus.  Since the cells need not be disjoint
 (Corollary~\ref{cor:assembly}), the result is in general constructible rather
-than a variety.  Only lines~1 and~5 involve differential algebra; lines~6--19 are
+than a variety.  Only lines~1 and~5 involve differential algebra; lines~6--18 are
 ordinary commutative algebra and algebraic geometry in the $n$ constants.
 
 Carrying out either assembly is a set-theoretic computation on constructible
@@ -1989,25 +1994,36 @@ B \subseteq W_i \ \text{ for some $i$.}
 %
 Nothing beyond the refinement is computed: the conditions are read off block by
 block, and the answer is irredundant because the blocks are disjoint, so no
-containment test is needed.  The $\exists\forall$ assembly gets off more lightly
-still.  Its condition mentions neither $\mathbb{C}^n$ nor the cells, so at
-line~17 it is enough to refine $W_1, \ldots, W_s$ alone --- $s$ sets rather than
-$2s+1$ --- after which every block lies in some $W_i$ by construction and all of
-them are kept.  A component whose cell misses
-a block imposes nothing on it, and in this formulation that is exact rather than
-a heuristic --- only the components whose cells contain a block are ever
-consulted for it, which is the computational form of the remark that a component
-contributes a condition only where its cell lies.
+containment test is needed.  A component whose cell misses a block imposes
+nothing on it, and in this formulation that is exact rather than a heuristic ---
+only the components whose cells contain a block are ever consulted for it, which
+is the computational form of the remark that a component contributes a condition
+only where its cell lies.
+
+The second line of the display is the reason the $\exists\forall$ assembly needs
+no refinement at all.  Its condition mentions neither $\mathbb{C}^n$ nor the
+cells, and a block lies in $V_{\exists\forall}$ exactly when it lies in some
+$W_i$, so the union of the blocks is the union of the $W_i$ and the refinement
+cancels out of the answer.  Line~18 accordingly takes that union directly, on
+pieces line~11 already produced in the form the output calls for.
 
 This is what \cite{CTD} calls the set-theoretic version of the coprime
 factorization problem; $\mathrm{SMPD}$ is its Algorithm~3, built on an algorithm
 for the difference of two constructible sets presented by {\it regular systems}
 --- a regular chain together with an inequation, the same shape as the pairs
-line~11 produces.  The constructible sets themselves are available as a type, with
-the difference and union operations and the weaker $\mathrm{MPD}$ (which merely
-removes duplicated data from a single constructible set, preserving its union),
-in the \verb|ConstructibleSetTools| module of the \verb|RegularChains| library
-\cite{CSTools}.  There is a second route that is more economical here, being the
+line~11 produces.  The constructible sets themselves are available as a type in
+the \verb|ConstructibleSetTools| module of the \verb|RegularChains| library
+\cite{CSTools}, and so are all three operations the algorithm asks for:
+$\mathrm{SMPD}$ is exported as \verb|RefiningPartition|, described there as the
+set-theoretic coprime factorization of a list of constructible sets and
+returning, with each block, the indices of the inputs it came from --- so the
+selection at line~15 is a lookup rather than a family of containment tests.  The
+containment test of \eqref{eq:containment-test} is exported as
+\verb|IsContained|, implemented as the emptiness of a difference, and the
+difference itself is \cite{CTD}, Algorithms~1--2.  What that module calls
+\verb|MakePairwiseDisjoint| is {\it not} $\mathrm{SMPD}$ but the weaker
+$\mathrm{MPD}$, which removes duplicated data from a single constructible set
+while preserving its union.  There is a second route that is more economical here, being the
 algorithm of line~1 in its non-differential case: an algebraic Thomas
 decomposition returns a disjoint decomposition to begin with, and the
 implementation accompanying \cite{ThomasDecomp} represents complements and
@@ -2016,13 +2032,46 @@ intersections of solution sets as decompositions into simple systems.  Where a
 constructible sets of the parametric Gr\"obner literature (\cite{Montes} and its
 successors) carry one, computed in \cite{BrunatMontes}.
 
-Line~19 is a normalization.  A block of a refinement is a Boolean combination of
-the sets refined, and an intersection of irreducible sets need not be
-irreducible, so the blocks selected at line~15 or~17 need not arrive in the
-irreducible form the output calls for.  Applying to each of their pairs
-$(F, h)$ the same operation as line~11 restores it, and on a pair already of that
-form the operation does nothing, $\langle F \rangle$ being prime and not
-containing $h$.
+Line~16 is a normalization, and it belongs to the $\forall$ branch alone.  A
+block of a refinement is a Boolean combination of the sets refined, and an
+intersection of irreducible sets need not be irreducible, so the blocks selected
+at line~15 need not arrive in the irreducible form the output calls for;
+applying to each of their pairs $(F, h)$ the same operation as line~11 restores
+it.  The $\exists\forall$ branch needs no such step, because its pieces are the
+pairs line~11 produced: $\mathfrak{p}$ is already prime, and $h_i$ is already
+absent from it, the saturation at line~11 having removed every component that
+contained it, so $\mathfrak{p} : h_i^\infty = \mathfrak{p}$ and the
+normalization would return the pair unchanged.
+
+That is the whole of the asymmetry between the two branches, and it is worth
+being explicit about where the cost sits.  The $\exists\forall$ answer is the
+union of data line~11 has already computed --- no refinement, no normalization
+--- while the $\forall$ answer needs both.  What line~18 does add is
+$\mathrm{DropContained}$, and that is a tidying step rather than a step of the
+computation: since the cells may overlap, one solution family can surface as a
+piece of two different $W_i$, and the smaller of two nested pieces is then
+redundant.  Two cautions attend it.  It removes {\it pairwise} containment only,
+so a piece contained in the union of two others survives; making the
+presentation irredundant in that stronger sense is exactly the work
+$\mathrm{SMPD}$ does, which is what this branch declines to do.  And the test is
+not containment of the primes: $V(\mathfrak{p}_1) \subseteq V(\mathfrak{p}_2)$
+does {\it not} give
+$V(\mathfrak{p}_1) \setminus V(h_1) \subseteq V(\mathfrak{p}_2) \setminus V(h_2)$,
+since points of the smaller piece may lie in $V(h_2)$ and so outside the larger
+one.  The correct test is that the difference of the two constructible sets be
+empty; unfolded, it is
+%
+\begin{equation}
+\label{eq:containment-test}
+\mathfrak{p}_2 \subseteq \mathfrak{p}_1
+\qquad\text{and}\qquad
+h_1 \in \sqrt{\mathfrak{p}_1 + \langle h_2 \rangle},
+\end{equation}
+%
+the first because $V(\mathfrak{p}_1) \setminus V(h_1)$ is dense in
+$V(\mathfrak{p}_1)$ and $V(\mathfrak{p}_2)$ is closed, the second because the
+smaller piece must avoid $V(h_2)$ altogether.  The first condition is cheap and
+necessary, so it serves as a filter before the radical membership is attempted.
 
 Including $\mathbb{C}^n$ among the sets refined at line~14 costs one more
 argument and makes the consistency of the ansatz a by-product of the
@@ -2138,7 +2187,7 @@ respect to $\Psi$ and no inequations are imposed, $V_\exists$ is all of
 $\mathbb{C}^n$ and the upper bound in \eqref{eq:intermediate-sandwich} says
 nothing.  The useful statement is then obtained by discarding the components on
 which the inequations themselves reduce to zero: restricting the union in
-line~17 to those $i$ with $Q \notin E^{(i)} : (q^{(i)})^\infty$ forces the
+line~18 to those $i$ with $Q \notin E^{(i)} : (q^{(i)})^\infty$ forces the
 witnessing solution to respect the inequations --- for the homogeneous case
 above, with $\Psi \in \mathcal{P}^{\ne}$, to be non-trivial --- and gives
 $V_{\exists\forall} \subseteq V_\exists$ for the system carrying those
