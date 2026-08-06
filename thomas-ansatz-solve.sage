@@ -909,6 +909,40 @@ def minimal_associated_primes_gtz(I, tag):
 strata_cache = {}
 union_primes = {}          # GENUINE nontrivial (v != 0) solution varieties
 degenerate_primes = {}     # nontrivial but v == 0 (ansatz collapsed to a constant)
+
+# The cell inequations restricting each reported piece, keyed as the buckets are.
+#
+# A piece is not the variety V(P): the cell it came from carries inequations, and
+# saturating by them at the GTZ step deleted only the primes lying WHOLLY inside
+# their zero locus -- each surviving prime still carries the inequations as a
+# residual condition cutting a proper closed subset out of it.  Writing
+# U_c = union_j V(cs_j) for the locus cell c's inequations exclude (cs_j being
+# the coefficient set of the j-th inequation, see ineq_coeff_set), the piece
+# reported for prime P out of cells c1, c2, ... is
+#
+#     V(P) \ ( U_{c1} INTERSECT U_{c2} INTERSECT ... ) ,
+#
+# an intersection because the same prime surfacing from several cells contributes
+# the UNION of their pieces.  piece_excl[key] records those U_c, one per
+# contributing cell, each as its tuple of coefficient sets; an empty tuple means
+# that cell excluded nothing and the piece is all of V(P).
+piece_excl = {}
+
+
+def _piece_unrestricted(key):
+    r"""
+    True when the piece reported for ``key`` is the whole variety `V(P)`.
+
+    That happens when some contributing cell excluded nothing, since the removed
+    locus is the intersection over contributing cells.  Keys absent from
+    ``piece_excl`` -- as in the doctest of :func:`prune_enclosed`, which builds a
+    bucket by hand -- count as unrestricted; every path that fills a bucket fills
+    this alongside it.
+    """
+    excl = piece_excl.get(key)
+    if not excl:
+        return True
+    return any(len(u) == 0 for u in excl)
 trivial_primes = {}        # off N_Q: the inequations are forced to vanish
 
 _cells = cells_ds if MAX_CELLS <= 0 else cells_ds[:MAX_CELLS]
@@ -1012,20 +1046,35 @@ for num, ds in enumerate(_cells, 1):
         bucket = (trivial_primes if triv
                   else degenerate_primes if deg else union_primes)
         bucket.setdefault(prime_key(P), (P, []))[1].append(num)
+        piece_excl.setdefault(prime_key(P), []).append(tuple(cp['ineq_coeffs']))
 
 
 def prune_enclosed(d):
     r"""
     Keep only the maximal (enclosing) varieties in a bucket of solution primes.
 
-    A prime `P_i` is dropped when some other prime `P_j` defines a larger
-    variety, `V(P_i) \subseteq V(P_j)`.  For the radical (prime) ideals here
-    that containment is exactly the reverse ideal containment
-    `P_j \subseteq P_i`, tested with Sage's native ``P_j <= P_i``.  Equal ideals
-    -- mutual containment, e.g. the same variety surfacing from two different
-    cells -- are a tie, broken by keeping the lowest-indexed entry so duplicates
-    collapse to a single one.  Each dropped variety's source-cell list is folded
-    into the entry that encloses it, so no cell provenance is lost.
+    A piece is dropped when another piece of the bucket contains it.  The
+    pieces are NOT the varieties `V(P)`: each is `V(P)` less the locus its cell's
+    inequations exclude (see :data:`piece_excl`), so it is locally closed, and
+    reverse ideal containment `P_j \subseteq P_i` is NOT by itself the test.  It
+    gives `V(P_i) \subseteq V(P_j)`, but a point of the smaller piece may lie in
+    the locus the LARGER one excludes, and then it is not in the larger piece at
+    all.  Pruning on the prime alone therefore discards real solution families.
+
+    The exact condition for `X_i \subseteq X_j` is `P_j \subseteq P_i` together
+    with `X_i \cap D_j = \emptyset`, where `D_j` is the locus excluded from
+    `X_j`.  We test the sound special case `D_j = \emptyset` --
+    :func:`_piece_unrestricted` -- which holds whenever some cell contributing
+    `P_j` carried no constant-space inequation, and which is the case in which
+    the naive test was right all along.  When `D_j` is non-empty we keep both
+    pieces.  That is incomplete, not unsound: it prunes less than it might, never
+    more, and an unpruned piece is redundant output rather than a wrong answer.
+
+    Equal primes are already merged by :func:`prime_key` before we get here, so
+    the mutual-containment tie of the older version cannot arise; the guard
+    against it is kept for the hand-built buckets of the doctest.  Each dropped
+    piece's source-cell list is folded into the entry that encloses it, so no
+    cell provenance is lost.
 
     INPUT:
 
@@ -1066,7 +1115,9 @@ def prune_enclosed(d):
             if i == j:
                 continue
             Pj = entries[j][1]
-            if Pj <= Pi:                        # ideal Pj ⊆ Pi ⟺ V(Pi) ⊆ V(Pj)
+            # Pj <= Pi is ideal containment, i.e. V(Pi) subset V(Pj) -- necessary
+            # but not sufficient; _piece_unrestricted(j) supplies the rest.
+            if Pj <= Pi and _piece_unrestricted(entries[j][0]):
                 if not (Pi <= Pj) or j < i:      # strict, else tie -> low index
                     encloser[i] = j
                     break
