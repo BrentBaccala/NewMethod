@@ -6,15 +6,18 @@
 # prolongation-projection-algorithm.tex (Phase III-forall / membership, run
 # per Thomas cell -- the "staged route" of section 7):
 #
-#   1. pick one ansatz + one PDE system, with its inequations P^!= whose
-#      product is Q                                  (ansatz-library.sage)
+#   1. pick one ansatz + one PDE system.  BOTH may declare inequations -- the
+#      ansatz its non-degeneracy forms, the system its P^!= -- and Q is the
+#      product of all of them                        (ansatz-library.sage)
 #   2. differential-Thomas-decompose the ANSATZ ALONE  -> disjoint cells
 #   3. reduce Q * EACH PDE of the system modulo each cell (differential
 #      pseudo-remainder against the same cell).  Multiplying by Q is what makes
 #      the locus the SATURATED one -- membership in sqrt([A(c*)]) : Q^infinity,
 #      which for a radical ideal is membership of Q*P_j -- so that the
 #      inequations guard the solutions quantified over.  A cell on which Q
-#      itself reduces to zero lies off N_Q and is dropped.
+#      itself reduces to zero lies off N_Q and is dropped.  Q's own remainder
+#      is projected too, giving the locus off N_Q exactly rather than by the
+#      hand-declared v_params / amp_params tests this replaces.
 #   4. forall-project each remainder onto the constants: collect like terms in
 #      the independents + parametric jets, zero the constant coefficients,
 #      combine the equations of all the remainders into ONE system, take
@@ -49,7 +52,7 @@ Solve an (ansatz, PDE) pair by the staged NewMethod pipeline: differential-
 Thomas-decompose the ansatz alone into disjoint cells, reduce each PDE of the
 system modulo each cell, project the remainders onto the constants, take
 minimal associated primes, prune by the cell's inequations, and print the union
-of the surviving solution varieties, classified GENUINE / DEGENERATE / TRIVIAL.
+of the surviving solution varieties, classified GENUINE or off N_Q.
 
 Choosing the problem
   --pde NAME         hydrogen | helium | navier-stokes | navier-stokes-nd
@@ -81,6 +84,12 @@ Choosing what to compute
                      DDPsi outranks every lower-jet derivative.  It changes the
                      decomposition, and is much the more expensive of the two.
   --max-cells N      process only the first N cells (default 0 = all).
+  --decompose-with-inequations
+                     hand the inequations to the Thomas decomposition too, so
+                     it splits off and discards the branches on which they
+                     vanish.  Off by default: the decomposition then depends on
+                     the inequations rather than seeing the ansatz equations
+                     alone, and the cell count moves (hydrogen/5: 29 -> 16).
 
 Running the prime step
   --gtz-subprocess   run minimal_associated_primes in a standalone Singular
@@ -105,7 +114,13 @@ Running the prime step
                      <sys.prefix>/bin/Singular).
 
 Output
-  --verbose-remainder  print each PDE's remainder for every cell.
+  --verbose-remainder  print each PDE's remainder for every cell, and the
+                     locus off N_Q that Q's own remainder projects to.
+  --split-inequations  report the off-N_Q strata split by which inequation the
+                     stratum forces to vanish, rather than pooled.  Costs one
+                     extra reduction and projection per inequation per cell.
+                     The pooled locus is what excludes either way: Q's locus can
+                     be strictly larger than the union of the individual ones.
   --keep-enclosed    keep GENUINE varieties contained in another genuine one.
                      The default prints only the maximal (enclosing) ones,
                      since a smaller prime surfacing from a second cell is
@@ -182,6 +197,18 @@ LATEX_OUT = '--latex' in sys.argv
 # (option(prot), killable, cached) rather than in-process through libsingular.
 # See minimal_associated_primes_gtz for why the in-process call cannot be made
 # to talk.
+# Report the off-N_Q strata split by WHICH inequation the stratum forces to
+# vanish, rather than pooled into one bucket.  Costs one extra reduction and
+# projection per inequation per cell; the pooled locus is the one used to
+# exclude either way, since Q's locus can be strictly larger than the union of
+# the individual ones (the cell ideal is radical, not prime, so a cell can force
+# q1*q2 == 0 without forcing either factor).
+SPLIT_INEQS = '--split-inequations' in sys.argv
+# Hand the inequations to the differential Thomas decomposition as well, so it
+# splits off and discards the branches on which they vanish.  Off by default:
+# the decomposition then depends on the inequations, where otherwise it sees the
+# ansatz equations alone, and the cell count moves.
+DECOMPOSE_WITH_INEQS = '--decompose-with-inequations' in sys.argv
 GTZ_SUBPROCESS = '--gtz-subprocess' in sys.argv
 GTZ_TIMEOUT = int(_argval('--gtz-timeout', '0'))
 GTZ_DIR = _argval('--gtz-dir',
@@ -234,8 +261,10 @@ PDE_PARAMS = prob['pde_params']              # the PDE's own constants (E; rho,m
 # saturation lemma, membership of Q*P_j in the unsaturated ideal -- so every
 # reduction below is a reduction of Q*P_j rather than of P_j.  Q = 1 when the
 # system declares no inequations, and everything reduces to the unguarded case.
+ANSATZ_INEQS = prob['ansatz_ineqs']          # the ansatz's own non-degeneracy forms
+ALL_INEQS = list(ANSATZ_INEQS) + list(PDE_INEQS)
 Q_INEQ = R(1)
-for _q in PDE_INEQS:
+for _q in ALL_INEQS:
     Q_INEQ = Q_INEQ * _q
 
 
@@ -279,11 +308,12 @@ def to_bracket(s):
 
 for _P in PDES:
     print("PDE:", to_bracket(_P))
-if PDE_INEQS:
-    for _q in PDE_INEQS:
-        print("PDE inequation:", to_bracket(_q), "!= 0")
-else:
-    print("PDE inequations: none (Q = 1, membership locus unguarded)")
+for _q in ANSATZ_INEQS:
+    print("ansatz inequation:", to_bracket(_q), "!= 0")
+for _q in PDE_INEQS:
+    print("PDE inequation:", to_bracket(_q), "!= 0")
+if not ALL_INEQS:
+    print("inequations: none (Q = 1, membership locus unguarded)")
 print("ansatz (%d eqs):" % len(ansatz0))
 for s in prob['ansatz_eqs_str']:
     print("   ", to_bracket(s))
@@ -378,8 +408,6 @@ PolyRing = PolynomialRing(QQ, names=(COORDS + prob['jets']
                                      + [m for _b, m in EXTRA_JET_PAIRS]
                                      + PDE_PARAMS + PARAMS))
 PolyRing_constants = list(map(PolyRing, [str(c) for c in constants]))
-V_PARAM_GENS = [PolyRing(p) for p in prob['v_params']]
-AMP_PARAM_GENS = [PolyRing(p) for p in prob.get('amp_params', [])]
 
 # sympy images of PolyRing's generators, in generator order.  _elt_to_sympy maps
 # coords -> Symbol, bare jets -> IndexedBase, E/params -> Symbol, so this list is
@@ -471,23 +499,22 @@ def _elt_to_polyring(e):
     return PolyRing(d)
 
 
-def forces_v_zero(P):
-    """True iff the prime forces the inner variable v == 0 identically (every
-    inner-variable coefficient lies in P) -- i.e. the ansatz has collapsed to a
-    constant and the 'solution' is degenerate.  When the ansatz declares NO
-    v_params (e.g. the normalization rungs 25.32+ pin v5 = 1, so the amplitude
-    vector cannot vanish), the test does not apply and nothing is degenerate --
-    without the bool() guard, all() on the empty list is vacuously True and
-    every nontrivial prime would be mislabeled DEGENERATE."""
-    return bool(V_PARAM_GENS) and all(g in P for g in V_PARAM_GENS)
+def _coeff_ideal(rem_elt):
+    r"""
+    The ideal in the constants cut out by a remainder vanishing identically.
 
-
-def forces_psi_zero(P):
-    """True iff the prime forces Psi == 0 via the amplitude collapsing (product
-    ansatz Psi = A*F with every A-coefficient in P).  This is a trivial solution
-    the per-cell Psi-reduction check misses, because A==0 is imposed by the
-    variety, not by the cell."""
-    return bool(AMP_PARAM_GENS) and all(g in P for g in AMP_PARAM_GENS)
+    Projects ``rem_elt`` the way the PDE remainders are projected -- split each
+    term into a power product in the non-constant indeterminates and a
+    coefficient in the constants, and require every coefficient to vanish.  A
+    zero remainder yields no coefficients and so the ZERO ideal, whose variety
+    is all of `\CC^n`; a remainder with a constant term yields the UNIT ideal,
+    whose variety is empty.  Both extremes are wanted and both come out right.
+    """
+    r_ = _elt_to_polyring(rem_elt)
+    if r_.is_zero():
+        return ideal(PolyRing.zero())
+    gens = list(build_system_of_equations(r_, PolyRing_constants))
+    return ideal(gens) if gens else ideal(PolyRing.zero())
 
 
 def build_system_of_equations(eqn, constants):
@@ -632,10 +659,14 @@ if GENERIC_CELL:
           "are NOT computed)\n" + "=" * 72, flush=True)
 else:
     print("\nComputing native DifferentialThomas decomposition of the ansatz "
-          "(%d ansatz + %d constancy eqs) ..." % (len(ansatz0), len(pconst)),
-          flush=True)
+          "(%d ansatz + %d constancy eqs%s) ..."
+          % (len(ansatz0), len(pconst),
+             ", %d inequations" % len(ALL_INEQS) if DECOMPOSE_WITH_INEQS
+             else ""), flush=True)
     _t0 = time.time()
-    cells_ds = dt.differential_thomas_decomposition(ansatz0 + pconst, [], prob['rk'])
+    cells_ds = dt.differential_thomas_decomposition(
+        ansatz0 + pconst, list(ALL_INEQS) if DECOMPOSE_WITH_INEQS else [],
+        prob['rk'])
     _wall = time.time() - _t0
     print("-> %d cells in %.1fs\n" % (len(cells_ds), _wall) + "=" * 72, flush=True)
 
@@ -908,7 +939,8 @@ def minimal_associated_primes_gtz(I, tag):
 
 strata_cache = {}
 union_primes = {}          # GENUINE nontrivial (v != 0) solution varieties
-degenerate_primes = {}     # nontrivial but v == 0 (ansatz collapsed to a constant)
+offnq_primes = {}          # off N_Q: the ansatz forces the inequations to vanish
+offnq_split = {}           # --split-inequations: the same, keyed by inequation
 
 # The cell inequations restricting each reported piece, keyed as the buckets are.
 #
@@ -943,7 +975,6 @@ def _piece_unrestricted(key):
     if not excl:
         return True
     return any(len(u) == 0 for u in excl)
-trivial_primes = {}        # off N_Q: the inequations are forced to vanish
 
 _cells = cells_ds if MAX_CELLS <= 0 else cells_ds[:MAX_CELLS]
 
@@ -986,8 +1017,19 @@ for num, ds in enumerate(_cells, 1):
         # ideal is the unit ideal, and the membership condition holds there
         # vacuously.  Such a cell contributes nothing and is dropped.
         q_rem_elt, _ = full_prem(Q_INEQ, reductors)
+        # The complement of N_Q, computed rather than declared.  Projecting Q's
+        # remainder the same way the PDEs' remainders are projected gives the
+        # locus on which THIS cell forces Q == 0: those constants admit no
+        # solution of the ansatz respecting the inequations, the saturated ideal
+        # is the unit ideal there, and the membership condition holds vacuously.
+        # A remainder of zero projects to no coefficients at all, hence to the
+        # zero ideal, whose variety is everything -- the whole cell lies off
+        # N_Q, which is the case the old boolean test caught.
+        Jq = _coeff_ideal(q_rem_elt)
+        Jq_split = ([( _q, _coeff_ideal(full_prem(_q, reductors)[0]))
+                     for _q in ALL_INEQS] if SPLIT_INEQS and len(ALL_INEQS) > 1
+                    else [])
         t_prem = time.time() - _t
-        trivial = q_rem_elt.is_zero()
         rems = [_elt_to_polyring(re_) for re_ in rem_elts]
         nonzero = [r_ for r_ in rems if not r_.is_zero()]
         if not nonzero:
@@ -1010,7 +1052,7 @@ for num, ds in enumerate(_cells, 1):
         t_gtz = time.time() - _t
         print("  [cell %d] GTZ %.1fs -> %d primes" % (num, t_gtz, len(primes)), flush=True)
         strata_cache[cache_key] = dict(spec_len=len(reductors), rems=rems, eqns=eqns,
-                                       primes=primes, trivial=trivial)
+                                       primes=primes, Jq=Jq, Jq_split=Jq_split)
 
     sc = strata_cache[cache_key]
     # A prime is dropped when some inequation of the cell vanishes identically
@@ -1025,7 +1067,9 @@ for num, ds in enumerate(_cells, 1):
             continue
         survivors.append(P)
 
-    tag = ("TRIVIAL (Q==0 forced: cell lies off N_Q)" if sc['trivial']
+    # The zero ideal means Q reduced to zero: the WHOLE cell lies off N_Q.
+    cell_off_nq = sc['Jq'].is_zero()
+    tag = ("off N_Q (Q == 0 forced on the whole cell)" if cell_off_nq
            else "nontrivial")
     print("\n--- cell %d: zero {%s}; ansatz %d eqs; %d param-ineqs, %d jet-ineqs; %s ---"
           % (num, ', '.join(Zkey) or '(none, generic)', sc['spec_len'],
@@ -1033,18 +1077,27 @@ for num, ds in enumerate(_cells, 1):
     if VERBOSE_REM:
         for _i, _r in enumerate(sc['rems'], 1):
             print("  remainder[pde %d]:" % _i, to_bracket(_r), flush=True)
-    if all(r_.is_zero() for r_ in sc['rems']) and not sc['trivial']:
+        print("  Q-locus (off N_Q where this vanishes):", sc['Jq'], flush=True)
+    if all(r_.is_zero() for r_ in sc['rems']) and not cell_off_nq:
         print("  PDE reduces to 0: the whole stratum solves the PDE (nontrivially)", flush=True)
     if not survivors:
         print("  surviving solution varieties: NONE (all pruned / empty)", flush=True)
     for P in survivors:
-        triv = sc['trivial'] or forces_psi_zero(P)
-        deg = forces_v_zero(P)
-        label = ("  [TRIVIAL: Psi=0]" if triv else
-                 "  [DEGENERATE: v=0]" if deg else "  [GENUINE: v!=0]")
+        # V(P) subset V(Jq) -- every solution over these constants has Q == 0,
+        # so the membership condition is satisfied vacuously and the stratum is
+        # not a solution family.  The whole-cell case falls out: Jq is then the
+        # zero ideal, which is contained in every prime.
+        off = sc['Jq'] <= P
+        which = [str(_q) for _q, _J in sc['Jq_split'] if _J <= P] if off else []
+        label = ("  [off N_Q: %s == 0]" % ', '.join(which) if which
+                 else "  [off N_Q: Q == 0]" if off
+                 else "  [GENUINE]")
         print("   V:", P, label, flush=True)
-        bucket = (trivial_primes if triv
-                  else degenerate_primes if deg else union_primes)
+        if off and which:
+            for _w in which:
+                offnq_split.setdefault(_w, {}).setdefault(
+                    prime_key(P), (P, []))[1].append(num)
+        bucket = offnq_primes if off else union_primes
         bucket.setdefault(prime_key(P), (P, []))[1].append(num)
         piece_excl.setdefault(prime_key(P), []).append(tuple(cp['ineq_coeffs']))
 
@@ -1224,13 +1277,15 @@ def latex_union(d, label='ideal'):
 
 print("\n" + "=" * 72)
 genuine_primes = dump_union(
-          "GENUINE solution varieties over all cells (v != 0 -- the real union)",
+          "GENUINE solution varieties over all cells (the real union)",
           union_primes, prune=True)
 print("\n" + "-" * 72)
-dump_union("DEGENERATE strata (nontrivial but v == 0, ansatz collapsed)",
-          degenerate_primes)
-print("\n" + "-" * 72)
-dump_union("TRIVIAL strata over all cells (Q == 0 forced: off N_Q)", trivial_primes)
+dump_union("OFF N_Q strata (the ansatz forces Q == 0: no solution respects "
+           "the inequations)", offnq_primes)
+for _w in sorted(offnq_split):
+    print("\n" + "-" * 72)
+    dump_union("  ... of which %s == 0 is forced" % to_bracket(_w),
+               offnq_split[_w])
 
 print("\n" + "=" * 72)
 if genuine_primes:
@@ -1238,7 +1293,7 @@ if genuine_primes:
           % (len(genuine_primes), PDE_NAME, ANSATZ))
 else:
     print("VERDICT: NO genuine solution for %s / ansatz %s "
-          "(every stratum is degenerate v=0 or trivial Psi=0)."
+          "(every stratum lies off N_Q)."
           % (PDE_NAME, ANSATZ))
 
 if LATEX_OUT and genuine_primes:

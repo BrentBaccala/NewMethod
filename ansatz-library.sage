@@ -35,13 +35,17 @@
 # excluded.
 #
 # build_problem(pde_name, ansatz) returns everything the solver needs:
-#   dict(R, rk, coords, roots, jets, params, ansatz_eqs, pconst,
+#   dict(R, rk, coords, roots, jets, params, ansatz_eqs, ansatz_ineqs, pconst,
 #        pdes, pde_ineqs, pde_params)
 # where `pdes` is a LIST of differential polynomials (a PDE *system*; one
 # element for the single-PDE problems), `pde_ineqs` the system's INEQUATIONS
 # (the P^{!=} of the paper; ['Psi'] for the Schroedinger problems, empty for
-# Navier-Stokes), and `pde_params` the PDE's own constants (E for the
-# Schroedinger problems, rho/mu for Navier-Stokes).
+# Navier-Stokes), `ansatz_ineqs` the ANSATZ's own non-degeneracy inequations
+# (the inner variable `v`, or whichever form's vanishing collapses the family),
+# and `pde_params` the PDE's own constants (E for the Schroedinger problems,
+# rho/mu for Navier-Stokes).  The driver's Q is the product of BOTH inequation
+# lists: provenance is all that distinguishes them, both being conditions the
+# solutions quantified over must satisfy.
 #
 # Author: Brent Baccala (AI assistant: Claude).  July 2026.
 
@@ -185,7 +189,7 @@ def ansatz_spec(ansatz, coords, roots):
                + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
                + ['B - (%s)' % B])
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
-                    equations=eqs, params=ap + bp, v_params=bp, amp_params=ap)
+                    equations=eqs, params=ap + bp, ineqs=[B], v_params=bp, amp_params=ap)
 
     # ----- QUADRATIC-AMPLITUDE CUSP template: Ψ = A(deg 2)·exp(B) ------------
     # Ansatz 1 with a Hylleraas-type quadratic amplitude — no new template, one
@@ -209,7 +213,7 @@ def ansatz_spec(ansatz, coords, roots):
                + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
                + ['B - (%s)' % B])
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
-                    equations=eqs, params=ap + bp, v_params=bp, amp_params=ap)
+                    equations=eqs, params=ap + bp, ineqs=[B], v_params=bp, amp_params=ap)
 
     # ----- LOGARITHM template: Ψ = A·log(C) ----------------------------------
     # A polynomial amplitude times the logarithm of a linear form.  Ξ = log(C) has
@@ -235,7 +239,7 @@ def ansatz_spec(ansatz, coords, roots):
                + ['C*Xi[%s] - C[%s]' % (c, c) for c in coords]
                + ['C - (%s)' % C])
         return dict(kind='product', jets_dep=['Psi', 'Xi', 'C'],
-                    equations=eqs, params=ap + cp, v_params=cp, amp_params=ap)
+                    equations=eqs, params=ap + cp, ineqs=[C], v_params=cp, amp_params=ap)
 
     # ----- COORDINATE-COEFFICIENT ODE template: Ψ = A·X(B) -------------------
     # helium.sage's "weird second-order mess": a polynomial amplitude times an
@@ -272,7 +276,7 @@ def ansatz_spec(ansatz, coords, roots):
                + ['B - (%s)' % B])
         return dict(kind='product', jets_dep=['Psi', 'DDChi', 'DChi', 'Chi', 'B'],
                     equations=eqs, params=ap + bp + cp + dp + fp + gp,
-                    v_params=bp, amp_params=ap)
+                    ineqs=[B], v_params=bp, amp_params=ap)
 
     # ----- ZETA template: Ψ = Z(v), one ODE function of one inner variable ---
     # The flagship of the library and the base case of the whole Zeta family: one
@@ -362,7 +366,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='rational',
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 'w'],
                     equations=eqs, params=bp + cp + dp + mp + np_,
-                    v_params=bp)                         # B==0 -> w=0 -> degenerate
+                    ineqs=[B], v_params=bp)                         # B==0 -> w=0 -> degenerate
 
     # ----- FIRST-ORDER ZETA template: Ψ = Z(v), M·Z′ = N·Z -------------------
     # The 1st-order face of the Zeta family: one chain rule instead of two, one
@@ -448,7 +452,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='product2',
                     jets_dep=['Psi', 'DDF', 'DF', 'F', 'DDG', 'DG', 'G', 'xi', 'eta'],
                     equations=eqs, params=pp + qq + odep,
-                    v_params=pp + qq, amp_params=[])
+                    ineqs=[XI, ETA], v_params=pp + qq, amp_params=[])
 
     # ----- NESTED-ODE template: Ψ = Z(V), V = V(coords, Θ), Θ = Θ(U) ---------
     # Two coupled ODE functions, one inside the other.  The inner Θ solves its own
@@ -497,7 +501,7 @@ def ansatz_spec(ansatz, coords, roots):
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 'V',
                               'DDTheta', 'DTheta', 'Theta', 'U'],
                     equations=eqs, params=up + ap + bp + cp + vp + dp + mp + np_,
-                    v_params=vp)
+                    ineqs=[V], v_params=vp)
 
     # ----- ALGEBRAIC-EXTENSION template: Ψ = Z(V), ODE coeffs over Q(V)[g] ---
     # (helium.sage calls this one 13.)  The Zeta family with the ODE coefficients
@@ -543,7 +547,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='algext',
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 'g', 'V'],
                     equations=eqs, params=vp + dp + mp + np_ + ap + bp + cp,
-                    v_params=vp)
+                    ineqs=[V], v_params=vp)
 
     # ----- EXPONENTIAL COEFFICIENT-RING template: coeffs over Q(v)[exp(e₀v)] -
     # The first of the three COEFFICIENT-RING entries (14, 15, 16): Ψ = Z(v) with
@@ -580,7 +584,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='expext',
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 't', 'v'],
                     equations=eqs, params=vp + ['e0'] + dp + mp + np_,
-                    v_params=vp, amp_params=[])
+                    ineqs=[V], v_params=vp, amp_params=[])
 
     # ----- HOLONOMIC COEFFICIENT-RING template: coeffs over Q(v)[t, t′] ------
     # NewSol.tex's 2nd-order HOLONOMIC coefficient-ring case.  A holonomic element
@@ -618,7 +622,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='holoext',
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 'DDt', 'Dt', 't', 'v'],
                     equations=eqs, params=vp + pp + qp + sp + dp + mp + np_,
-                    v_params=vp, amp_params=[])
+                    ineqs=[V], v_params=vp, amp_params=[])
 
     # ----- ALGEBRAIC-BASE template: Ψ = Z(v), v over the coordinates AND g ---
     # NewSol.tex / helium.sage's coded ansatz 16: an algebraic root nested BELOW
@@ -663,7 +667,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='algbase',
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 'v', 'g'],
                     equations=eqs, params=vp + kp + ap + bp + cp,
-                    v_params=vp, amp_params=[])
+                    ineqs=[V], v_params=vp, amp_params=[])
 
     # ----- LOG-HYPERRADIUS LINEAR template: Ψ = A + B·L ----------------------
     # The first of the LOG-HYPERRADIUS entries (17, 17.1, 18, 19), which carry the
@@ -695,7 +699,7 @@ def ansatz_spec(ansatz, coords, roots):
                    + _log_relations(coords))            # leaders L[c]
             return dict(kind='loglin', jets_dep=['Psi', 'L'],
                         equations=eqs, params=ap + bp,
-                        v_params=bp,            # B == 0  -> log gone -> DEGENERATE
+                        ineqs=[B], v_params=bp,            # B == 0  -> log gone -> DEGENERATE
                         amp_params=ap + bp)     # A==B==0 -> Psi == 0 -> TRIVIAL
         else:                                           # ansatz 17.1
             ap, A = trial('a', gens, 2, roots=rset)
@@ -703,7 +707,7 @@ def ansatz_spec(ansatz, coords, roots):
                    + _log_relations(coords))
             return dict(kind='loglin', jets_dep=['Psi', 'L'],
                         equations=eqs, params=ap + ['b0'],
-                        v_params=['b0'], amp_params=ap + ['b0'])
+                        ineqs=['b0'], v_params=['b0'], amp_params=ap + ['b0'])
 
     # ----- KATO × FOCK template: Ψ = exp(B)·(A₀ + A₁·L) ----------------------
     # The cusp exponential times the first Fock log — ansatz 1's product template
@@ -733,7 +737,7 @@ def ansatz_spec(ansatz, coords, roots):
                + _log_relations(coords))
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B', 'L'],
                     equations=eqs, params=bp + a0p + a1p,
-                    v_params=a1p,             # A1 == 0 -> log gone (ansatz-1 land)
+                    ineqs=[A1], v_params=a1p,             # A1 == 0 -> log gone (ansatz-1 land)
                     amp_params=a0p + a1p)     # A0==A1==0 -> Psi == 0
 
     # ----- LOG-EXTENDED ZETA template: Ψ = Z(v), v over coordinates AND L ----
@@ -799,7 +803,7 @@ def ansatz_spec(ansatz, coords, roots):
                + _log_relations(coords))               # leaders L[c]
         return dict(kind='product', jets_dep=['Psi', 'B', 'C', 'L'],
                     equations=eqs, params=bp + cp,
-                    v_params=cp,        # C == 0 -> log gone -> Kato-only (DEGENERATE)
+                    ineqs=[Cx], v_params=cp,        # C == 0 -> log gone -> Kato-only (DEGENERATE)
                     amp_params=[])      # exp is never 0: no Psi==0 (TRIVIAL) mode
 
     # ----- EXPONENTIATED FOCK + AMPLITUDE: Ψ = A·exp(B + C·L) ----------------
@@ -831,7 +835,7 @@ def ansatz_spec(ansatz, coords, roots):
                + _log_relations(coords))
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B', 'C', 'L'],
                     equations=eqs, params=ap + bp + cp,
-                    v_params=cp,        # C == 0 -> log gone -> DEGENERATE
+                    ineqs=[Cx], v_params=cp,        # C == 0 -> log gone -> DEGENERATE
                     amp_params=ap)      # A == 0 -> Psi == 0 -> TRIVIAL
 
     # ----- NONLINEAR SECOND-DEGREE SYSTEM template: (u,v,w,p) over Ψ = Z(s) --
@@ -1182,6 +1186,12 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
         ansatz_eqs_str = list(spec['equations']) + root_eqs
         v_params = spec['v_params']
         amp_params = spec.get('amp_params', [])
+        # Each such family declares the form whose identical vanishing collapses
+        # it -- the exponent B, the log coefficient C, and so on.  A family with
+        # no single such form (the Navier-Stokes system, whose degeneracy is the
+        # whole amplitude vector vanishing) declares none, and contributes
+        # nothing to Q.
+        ansatz_ineqs_str = list(spec.get('ineqs', []))
         tower = None
     else:
         # Zeta(V) single-ODE-function family.
@@ -1200,6 +1210,11 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
         v_toks = set(re.findall(r'[A-Za-z]\w*', spec['V']))
         v_params = [p for p in params if p in v_toks]
         amp_params = []          # Zeta family: Psi is the free jet (no amplitude)
+        # The inner variable is carried as the jet `v`, tied to the coordinates
+        # by the ansatz equation `v - (V)`, so `v` itself is the family's
+        # non-degeneracy inequation: v == 0 identically is exactly the collapse
+        # of every v_param.
+        ansatz_ineqs_str = ['v']
 
     # jets high->low: dependent jets, then roots.
     jets = list(jets_dep) + [rn for rn, _ in roots]
@@ -1219,6 +1234,7 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
     R = rk.ring
 
     ansatz_eqs = [R(s) for s in ansatz_eqs_str]
+    ansatz_ineqs = [R(s) for s in ansatz_ineqs_str]
     pconst = [R('%s[%s]' % (p, c)) for p in params for c in coords]
     pdes = [R(s) for s in pde_system(pde_name, coords)]
     pde_ineqs = [R(s) for s in pde_inequations(pde_name, coords)]
@@ -1227,6 +1243,7 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
                 tower=tower, order=spec.get('order'), params=params,
                 v_params=v_params, amp_params=amp_params, ansatz_eqs=ansatz_eqs,
                 pconst=pconst, pdes=pdes, pde_ineqs=pde_ineqs,
+                ansatz_ineqs=ansatz_ineqs,
                 pde_params=pparams,
                 ansatz_eqs_str=ansatz_eqs_str,
                 excludes=spec.get('excludes', []))
