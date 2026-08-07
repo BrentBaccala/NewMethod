@@ -960,8 +960,14 @@ offnq_split = {}           # --split-inequations: the same, keyed by inequation
 #
 # an intersection because the same prime surfacing from several cells contributes
 # the UNION of their pieces.  piece_excl[key] records those U_c, one per
-# contributing cell, each as its tuple of coefficient sets; an empty tuple means
-# that cell excluded nothing and the piece is all of V(P).
+# contributing cell, as a pair (cell number, tuple of coefficient sets); an empty
+# tuple of coefficient sets means that cell excluded nothing and the piece is all
+# of V(P).  The cell number is carried so :func:`piece_conditions` can label each
+# clause with the cell it came from -- the bucket's own cell list cannot supply
+# it, since :func:`prune_enclosed` merges an absorbed piece's cells into the
+# encloser's list without merging piece_excl (correctly: absorption happens only
+# when the absorbed piece is contained, so the encloser's own conditions already
+# describe the union).
 piece_excl = {}
 
 
@@ -978,7 +984,7 @@ def _piece_unrestricted(key):
     excl = piece_excl.get(key)
     if not excl:
         return True
-    return any(len(u) == 0 for u in excl)
+    return any(len(u) == 0 for _num, u in excl)
 
 
 def _excluded_components(key, R):
@@ -1008,7 +1014,7 @@ def _excluded_components(key, R):
     if not excl:
         return []
     per_cell = []
-    for u in excl:
+    for _num, u in excl:
         if len(u) == 0:
             return []                    # this cell excluded nothing -> D empty
         per_cell.append(list(u))
@@ -1017,6 +1023,110 @@ def _excluded_components(key, R):
         gens = [g for cs in choice for g in cs]
         comps.append(R.ideal(gens) if gens else R.ideal(R.zero()))
     return comps
+
+
+def _tidy_cond(g):
+    r"""
+    Normalize a condition polynomial for printing: squarefree, integral, positive.
+
+    Only `V(g)` matters for a condition `g \neq 0`, so `g` may be replaced by its
+    squarefree part -- the product of its distinct irreducible factors -- which
+    turns the `-v_4^2 b_1^2` that a reduction naturally produces into `v_4 b_1`.
+    Denominators are then cleared and the sign normalized, neither of which
+    changes the locus either.
+    """
+    if g.is_constant():
+        return g
+    try:
+        g = prod(f for f, _ in g.factor())
+    except (ArithmeticError, NotImplementedError, TypeError):
+        pass                             # factorization is an optimization only
+    g = clear_denominators(g)
+    try:
+        if g.lc() < 0:
+            g = -g
+    except (AttributeError, TypeError):
+        pass
+    return g
+
+
+def piece_conditions(P, key):
+    r"""
+    The residual inequations cutting the reported piece out of `V(P)`.
+
+    The algorithm's output is a pair `(\mathfrak{p}, h)` -- an irreducible
+    locally closed set, not the variety `V(\mathfrak{p})`.  This returns the
+    `h` half, in the form the coefficient-set representation calls for.
+
+    A point lies in the piece when it lies in `V(P)` and, **for at least one**
+    contributing cell, **every** inequation of that cell is non-vanishing:
+    `V(P) \setminus \bigcap_c U_c = V(P) \cap \bigcup_c U_c^{\,c}`.  So the
+    return value is a disjunction over cells of a conjunction over that cell's
+    inequations -- ``[(cell number, [coefficient set, ...]), ...]``, read as
+    "some cell's clauses all hold", each coefficient set read as "these do not
+    all vanish".
+
+    Each coefficient is reduced modulo `P` first, which is what makes the
+    conditions readable: on `V(P)` an inequation vanishes exactly when its
+    normal forms do, so the reduction loses nothing and typically collapses a
+    dozen coefficients to one or two.  Two cases fall out of the reduction and
+    are handled rather than printed:
+
+    - a coefficient set reducing to a non-zero constant is satisfied everywhere
+      on `V(P)`, so its clause is dropped;
+    - a coefficient set reducing to all zeros vanishes identically on `V(P)`,
+      so that cell contributes nothing to the piece and its whole disjunct is
+      dropped.  (:func:`prune` diverts such primes to the off-`N_Q` bucket, so
+      this should not arise for a genuine prime; it is handled for safety.)
+
+    ``None`` is returned when the piece is all of `V(P)` -- no contributing
+    cell restricts it -- which is the case in which the variety and the piece
+    coincide and nothing need be printed.
+    """
+    excl = piece_excl.get(key)
+    if not excl:
+        return None
+    clauses = []
+    for num, u in excl:
+        if len(u) == 0:
+            return None                  # this cell excluded nothing
+        cell_clause = []
+        for cs in u:
+            red = [_tidy_cond(r) for r in (P.reduce(g) for g in cs)
+                   if not r.is_zero()]
+            if not red:
+                cell_clause = None       # vanishes identically on V(P)
+                break
+            if any(r.is_constant() for r in red):
+                continue                 # non-vanishing everywhere on V(P)
+            clause = tuple(sorted(set(red), key=str))
+            if clause not in cell_clause:
+                cell_clause.append(clause)
+        if cell_clause is None:
+            continue
+        if not cell_clause:
+            return None                  # every clause vacuous: piece is V(P)
+        clauses.append((num, cell_clause))
+    return clauses or None
+
+
+def _fmt_conditions(clauses):
+    r"""
+    Render :func:`piece_conditions` output as one line of plain text.
+
+    A single-polynomial coefficient set prints as ``g != 0``; a larger one as
+    ``(g1, g2) not all 0``, that being what a jet-carrying inequation's
+    coefficient set means.  Disjuncts are separated by ``OR``, and the cell
+    number is shown when more than one cell contributes.
+    """
+    def one(cs):
+        return ("%s != 0" % cs[0] if len(cs) == 1
+                else "(%s) not all 0" % ", ".join(map(str, cs)))
+    parts = []
+    for num, cell_clause in clauses:
+        body = " and ".join(one(cs) for cs in cell_clause)
+        parts.append(body if len(clauses) == 1 else "[cell %d] %s" % (num, body))
+    return "   OR   ".join(parts)
 
 
 def _piece_contained(Pi, ki, Pj, kj):
@@ -1185,7 +1295,8 @@ for num, ds in enumerate(_cells, 1):
                     prime_key(P), (P, []))[1].append(num)
         bucket = offnq_primes if off else union_primes
         bucket.setdefault(prime_key(P), (P, []))[1].append(num)
-        piece_excl.setdefault(prime_key(P), []).append(tuple(cp['ineq_coeffs']))
+        piece_excl.setdefault(prime_key(P), []).append(
+            (num, tuple(cp['ineq_coeffs'])))
 
 
 def prune_enclosed(d):
@@ -1311,6 +1422,14 @@ def dump_union(title, d, prune=False):
     for key, (P, cells_for) in sorted(d.items(), key=lambda kv: str(kv[0])):
         print("  V:", P, "  (from cells:",
               ", ".join(map(str, sorted(set(cells_for)))) + ")")
+        # The piece is V(P) less what its cells exclude; printing the variety
+        # alone overstates the answer on a proper closed subset of it, and
+        # invites the reader to compare varieties where the objects are locally
+        # closed (two pieces can be disjoint while one variety sits inside the
+        # other).  So print the h half of the (p, h) pair alongside it.
+        conds = piece_conditions(P, key)
+        if conds:
+            print("       where", _fmt_conditions(conds))
     return d
 
 
@@ -1355,9 +1474,22 @@ def latex_union(d, label='ideal'):
     """
     items = sorted(d.items(), key=lambda kv: str(kv[0]))
     rows = []
-    for i, (_key, (P, _cells)) in enumerate(items, 1):
+    for i, (key, (P, _cells)) in enumerate(items, 1):
         gens = ", ".join(latex(clear_denominators(g)) for g in P.gens())
-        rows.append(r"& \left(%s\right)\label{%s:%d}" % (gens, label, i))
+        # The (p, h) pair, not p alone -- see the comment in dump_union.
+        conds = piece_conditions(P, key)
+        tail = ""
+        if conds:
+            def _one(cs):
+                if len(cs) == 1:
+                    return r"%s \neq 0" % latex(clear_denominators(cs[0]))
+                return (r"\left(%s\right) \neq 0"
+                        % ", ".join(latex(clear_denominators(g)) for g in cs))
+            disj = r" \;\text{ or }\; ".join(
+                r" ,\; ".join(_one(cs) for cs in cell_clause)
+                for _num, cell_clause in conds)
+            tail = r" \quad\text{with}\quad %s" % disj
+        rows.append(r"& \left(%s\right)%s\label{%s:%d}" % (gens, tail, label, i))
     print(r"\begin{subequations}")
     print(r"\label{%s}" % label)
     print(r"\begin{align}")
