@@ -163,6 +163,28 @@ load(os.path.join(_HERE, 'ansatz-library.sage'))
 
 # --- command-line options -------------------------------------------------
 def _argval(flag, default=None):
+    r"""
+    The command-line argument following ``flag``, or ``default``.
+
+    A deliberately minimal stand-in for :mod:`argparse`: every option of this
+    script is either a bare flag, tested directly with ``in sys.argv``, or a
+    flag followed by exactly one value.  An unrecognized argument is ignored
+    rather than rejected, so the script can be given extra flags by a wrapper.
+
+    INPUT:
+
+    - ``flag`` -- string; the option to look for, leading dashes included
+
+    - ``default`` -- value returned when ``flag`` does not appear (default:
+      ``None``)
+
+    OUTPUT: the argument following ``flag`` as a string, or ``default``
+
+    EXAMPLES::
+
+        sage: _argval('--pde', 'hydrogen')       # not tested (reads sys.argv)
+        'hydrogen'
+    """
     return sys.argv[sys.argv.index(flag) + 1] if flag in sys.argv else default
 
 PDE_NAME = _argval('--pde', 'hydrogen')
@@ -231,10 +253,26 @@ if GTZ_SUBPROCESS:
 
 
 def patch_latex_varify():
+    r"""
+    Make Sage's LaTeX printer render the jet ``DPsi`` as `\Psi'`.
+
+    Sage would otherwise typeset it as `\mathit{DPsi}`, which is how a variable
+    named ``DPsi`` should print but not how the paper writes the first
+    derivative of `\Psi`.  The patch is monkeyed onto
+    :func:`sage.misc.latex.latex_varify` because that is the single point every
+    ``latex()`` call routes variable names through; there is no per-ring hook.
+
+    OUTPUT: ``None`` (the module is patched in place)
+
+    EXAMPLES::
+
+        sage: patch_latex_varify()               # not tested (global side effect)
+    """
     from sage.misc.latex import latex_varify
     import sage.misc.latex
     original = latex_varify
     def custom(a, is_fname=False):
+        r"""The patched :func:`latex_varify`: ``DPsi`` specially, else as before."""
         return r"\Psi'" if a == "DPsi" else original(a, is_fname=is_fname)
     sage.misc.latex.latex_varify = custom
 patch_latex_varify()
@@ -302,6 +340,7 @@ def to_bracket(s):
         '-Psi[x,x]*r - 2*Psi*r*E'
     """
     def repl(m):
+        r"""Rewrite one matched name to bracket form, or leave it alone."""
         head, *idx = m.group(0).split('_')
         if idx and head and all(p in _COORD_SET for p in idx):
             return '%s[%s]' % (head, ','.join(idx))
@@ -343,6 +382,30 @@ _JET_HEADS = set(_IB)
 
 
 def _elt_to_sympy(e):
+    r"""
+    The sympy image of a BLAD differential polynomial.
+
+    Walks the term list rather than the printed form, so no parsing is
+    involved.  Each BLAD name is mapped by its kind: a bracketed derivative
+    ``Psi[x,y]`` to the ``IndexedBase`` element ``_IB['Psi'][x, y]``, a bare jet
+    to its ``IndexedBase``, a coordinate to its ``Symbol`` in ``_DERIV``, and a
+    parameter to its ``Symbol`` in ``_PARAM``.
+
+    INPUT:
+
+    - ``e`` -- a BLAD differential polynomial (an element of ``R``)
+
+    OUTPUT: the expanded sympy expression equal to ``e``
+
+    A :class:`KeyError` is raised for a BLAD name of none of those kinds, which
+    would mean the problem was built with an indeterminate this module never
+    learned about.
+
+    EXAMPLES::
+
+        sage: _elt_to_sympy(R('Psi[x]'))         # not tested (needs R, _IB)
+        Psi[x]
+    """
     out = sympy.Integer(0)
     for coeff, term in _blad.read_terms(e._h()):
         mon = sympy.Integer(int(coeff))
@@ -365,6 +428,27 @@ def _elt_to_sympy(e):
 
 
 def _sympy_to_blad_str(expr):
+    r"""
+    A sympy expression rendered in BLAD's input syntax.
+
+    Two differences from :func:`sympy.sstr` have to be repaired: sympy prints an
+    ``Indexed`` with spaces after the index commas (``Psi[x, y]``) where BLAD
+    accepts none, and it writes powers as ``**`` where BLAD wants ``^``.
+
+    INPUT:
+
+    - ``expr`` -- a sympy expression
+
+    OUTPUT: a string parseable by ``R(...)``
+
+    EXAMPLES::
+
+        sage: _sympy_to_blad_str(sympy.Symbol('a')**2)
+        'a^2'
+        sage: _sympy_to_blad_str(sympy.IndexedBase('Psi')[sympy.Symbol('x'),
+        ....:                                             sympy.Symbol('y')])
+        'Psi[x,y]'
+    """
     s = sympy.sstr(expr)
     s = re.sub(r'\[([^\]]*)\]',
                lambda m: '[' + m.group(1).replace(' ', '') + ']', s)
@@ -372,6 +456,27 @@ def _sympy_to_blad_str(expr):
 
 
 def has_jet(p):
+    r"""
+    Whether ``p`` involves any jet indeterminate.
+
+    A name counts as a jet when its head -- the part before any ``[`` -- is one
+    of the problem's jets, so both the bare ``Psi`` and the derivative
+    ``Psi[x,y]`` answer ``True``.  Used to separate a cell's conditions on the
+    constants alone from those that still carry an unknown function.
+
+    INPUT:
+
+    - ``p`` -- a BLAD differential polynomial
+
+    OUTPUT: boolean
+
+    EXAMPLES::
+
+        sage: has_jet(R('Psi[x] - DPsi*v[x]'))    # not tested (needs R)
+        True
+        sage: has_jet(R('a0 + a1'))               # not tested (needs R)
+        False
+    """
     for _coeff, term in _blad.read_terms(p._h()):
         for nm, _deg in term:
             if nm.split('[', 1)[0] in _JET_HEADS:
@@ -380,6 +485,26 @@ def has_jet(p):
 
 
 def is_param_constancy(p):
+    r"""
+    Whether ``p`` is a constancy equation for a parameter.
+
+    The decomposition is handed `\delta_i c = 0` for every constant `c`, and
+    those equations come back inside the cells as terms in a *derivative of a
+    parameter* -- a bracketed name whose head is in ``_PARAM``.  They carry no
+    information about the cell (they hold identically) and so are filtered out
+    wherever a cell's real content is read.
+
+    INPUT:
+
+    - ``p`` -- a BLAD differential polynomial
+
+    OUTPUT: boolean
+
+    EXAMPLES::
+
+        sage: is_param_constancy(R('a0[x]'))      # not tested (needs R)
+        True
+    """
     for _coeff, term in _blad.read_terms(p._h()):
         for nm, _deg in term:
             if '[' in nm and nm.split('[', 1)[0] in _PARAM:
@@ -416,6 +541,24 @@ PolyRing_constants = list(map(PolyRing, [str(c) for c in constants]))
 # coords -> Symbol, bare jets -> IndexedBase, E/params -> Symbol, so this list is
 # the exact mirror of PolyRing.gens().
 def _blad_jet_to_sympy(blad_name):
+    r"""
+    The sympy image of a BLAD derivative-jet *name*.
+
+    The string form of :func:`_elt_to_sympy`'s jet case, needed while building
+    ``_SYMPY_GENS`` -- at that point there is a name but no BLAD element to
+    read terms from.
+
+    INPUT:
+
+    - ``blad_name`` -- string; a bracketed derivative jet such as ``'Psi[x,y]'``
+
+    OUTPUT: the corresponding ``sympy.Indexed``
+
+    EXAMPLES::
+
+        sage: _blad_jet_to_sympy('Psi[x,y]')     # not tested (needs _IB, _DERIV)
+        Psi[x, y]
+    """
     head, rest = blad_name.split('[', 1)
     return _IB[head][tuple(_DERIV[d] for d in rest.rstrip(']').split(','))]
 
@@ -429,19 +572,48 @@ assert len(_SYMPY_GENS) == PolyRing.ngens()
 
 
 def _sympy_to_polyring(expr):
-    """Convert a sympy expression to PolyRing WITHOUT a string round-trip.
+    r"""
+    Convert a sympy expression to ``PolyRing`` without a string round-trip.
 
-    Sage has no sympy -> libsingular conversion, so `PolyRing(expr)` falls
-    through to `self(str(expr))` and hands the result to `eval`.  CPython parses
-    a sum as a left-nested tree of binary ops and its *compiler* recurses once
-    per term, so that path dies with
+    .. WARNING::
+
+        Unused.  The pipeline reaches ``PolyRing`` from BLAD directly, through
+        :func:`_elt_to_polyring`, which never builds a sympy expression at all
+        (see the comment above ``_GEN_IDX``); this is the older sympy detour,
+        kept because it documents the failure it was written to avoid and
+        because it is the only converter that accepts a sympy input.
+
+    Sage has no sympy `\to` libsingular conversion, so ``PolyRing(expr)`` falls
+    through to ``self(str(expr))`` and hands the result to :func:`eval`.
+    CPython parses a sum as a left-nested tree of binary operations and its
+    *compiler* recurses once per term, so that path dies with
+
+    .. CODE-BLOCK:: text
 
         RecursionError: maximum recursion depth exceeded during compilation
 
-    at ~2995 additive terms (python 3.11, recursionlimit 1000) -- regardless of
-    how simple the polynomial is.  helium/ansatz 20.1 crossed that ceiling.
-    Building from an exponent->coefficient dict never invokes the parser, so it
-    has no such limit (measured: 4000 monomials in 0.04s).
+    at about 2995 additive terms (python 3.11, recursion limit 1000) --
+    regardless of how simple the polynomial is.  ``helium`` / ansatz 20.1
+    crossed that ceiling.  Building from an exponent-to-coefficient dictionary
+    never invokes the parser, so it has no such limit (measured: 4000 monomials
+    in 0.04s).
+
+    INPUT:
+
+    - ``expr`` -- a sympy expression in the images of ``PolyRing``'s generators
+
+    OUTPUT: the corresponding element of ``PolyRing``
+
+    A :class:`TypeError` naming the offenders is raised when ``expr`` involves
+    a symbol with no ``PolyRing`` generator -- typically a derivative jet that
+    survived a reduction meant to eliminate every one of them.  The old string
+    path masked such a leftover behind the ``RecursionError`` above, since
+    compilation fails before name resolution.
+
+    EXAMPLES::
+
+        sage: _sympy_to_polyring(sympy.Integer(0))   # not tested (needs PolyRing)
+        0
     """
     expr = sympy.expand(expr)
     if expr == 0:
@@ -487,6 +659,32 @@ for _b, _m in EXTRA_JET_PAIRS:
 
 
 def _elt_to_polyring(e):
+    r"""
+    The ``PolyRing`` image of a BLAD differential polynomial.
+
+    The direct BLAD `\to` libsingular path: each term's exponent vector is
+    accumulated into a dictionary keyed by exponent tuple, which is handed to
+    ``PolyRing`` in one call.  No sympy expression and no string are built on
+    the way, so neither the quadratic ``out += mon`` of the sympy detour nor
+    the parser ceiling described in :func:`_sympy_to_polyring` applies.
+
+    INPUT:
+
+    - ``e`` -- a BLAD differential polynomial
+
+    OUTPUT: the corresponding element of ``PolyRing``
+
+    A :class:`TypeError` is raised when a BLAD name has no ``PolyRing``
+    generator.  Under the orderly ranking that means a derivative jet survived
+    a reduction that should have eliminated it; under the elimination ranking
+    the parametric derivative jets legitimately survive and are given
+    generators of their own, so only an unexpectedly high order reaches this.
+
+    EXAMPLES::
+
+        sage: _elt_to_polyring(R('a0'))          # not tested (needs R, PolyRing)
+        a0
+    """
     n = PolyRing.ngens()
     d = {}
     for coeff, term in _blad.read_terms(e._h()):
@@ -512,6 +710,18 @@ def _coeff_ideal(rem_elt):
     zero remainder yields no coefficients and so the ZERO ideal, whose variety
     is all of `\CC^n`; a remainder with a constant term yields the UNIT ideal,
     whose variety is empty.  Both extremes are wanted and both come out right.
+
+    INPUT:
+
+    - ``rem_elt`` -- a BLAD differential polynomial; a remainder from
+      :func:`full_prem`
+
+    OUTPUT: an ideal of ``PolyRing``
+
+    EXAMPLES::
+
+        sage: _coeff_ideal(R.zero())             # not tested (needs R, PolyRing)
+        Ideal (0) of ...
     """
     r_ = _elt_to_polyring(rem_elt)
     if r_.is_zero():
@@ -521,6 +731,36 @@ def _coeff_ideal(rem_elt):
 
 
 def build_system_of_equations(eqn, constants):
+    r"""
+    The coefficients of ``eqn`` regarded as a polynomial in the non-constants.
+
+    Requiring a differential polynomial to vanish *identically* in the unknown
+    functions is requiring each of its coefficients on the jet monomials to
+    vanish, and those coefficients are polynomials in the constants alone.
+    This performs that split: each term is divided into a power product in the
+    indeterminates outside ``constants`` and a coefficient inside them, and the
+    coefficients of equal power products are summed.
+
+    INPUT:
+
+    - ``eqn`` -- a multivariate polynomial
+
+    - ``constants`` -- the generators to treat as constants; anything not in
+      this collection is a non-constant the coefficients are taken over
+
+    OUTPUT: a tuple of the distinct coefficients, deduplicated
+
+    EXAMPLES::
+
+        sage: R4.<x,a,b> = PolynomialRing(QQ)
+        sage: sorted(build_system_of_equations(a*x + b*x + a, [a, b]), key=str)
+        [a, a + b]
+
+    A polynomial already free of non-constants is its own only coefficient::
+
+        sage: build_system_of_equations(a + b, [a, b])
+        (a + b,)
+    """
     ring = eqn.parent()
     system = dict()
     non_constant_sub = tuple(1 if ring.gen(n) in constants else ring.gen(n)
@@ -586,17 +826,68 @@ class GenericCell(object):
       loci as lower bounds.
     """
     def __init__(self, eqs, ineqs):
+        r"""
+        Initialize the cell from its equations and inequations.
+
+        INPUT:
+
+        - ``eqs`` -- the cell's equations
+
+        - ``ineqs`` -- the cell's inequations, each read as `\neq 0`
+
+        EXAMPLES::
+
+            sage: c = GenericCell([1, 2], [3])
+            sage: c.eqs, c.ineqs
+            ([1, 2], [3])
+        """
         self.eqs = list(eqs)
         self.ineqs = list(ineqs)
 
 
 def cell_eqs(ds):
+    r"""
+    The equations of a cell.
+
+    One of the two accessors everything downstream uses, so that a cell can be
+    either a differential system from the decomposition or a hand-built
+    :class:`GenericCell`.
+
+    INPUT:
+
+    - ``ds`` -- a cell: a ``differentialthomas`` system or a
+      :class:`GenericCell`
+
+    OUTPUT: a list of the cell's equations
+
+    EXAMPLES::
+
+        sage: cell_eqs(GenericCell([1, 2], [3]))
+        [1, 2]
+    """
     if isinstance(ds, GenericCell):
         return list(ds.eqs)
     return list(dt.differential_system_equations(ds))
 
 
 def cell_ineqs(ds):
+    r"""
+    The inequations of a cell, each read as `\neq 0`.
+
+    The companion of :func:`cell_eqs`; see there.
+
+    INPUT:
+
+    - ``ds`` -- a cell: a ``differentialthomas`` system or a
+      :class:`GenericCell`
+
+    OUTPUT: a list of the cell's inequations
+
+    EXAMPLES::
+
+        sage: cell_ineqs(GenericCell([1, 2], [3]))
+        [3]
+    """
     if isinstance(ds, GenericCell):
         return list(ds.ineqs)
     return list(dt.differential_system_inequations(ds))
@@ -613,6 +904,19 @@ def _discriminant_in_leader(e):
     `\geq 2` in the leader occurs in this library is the nonlinear ODE of ansatz
     25, whose jets are all of order `0` -- so the restriction costs nothing
     there.
+
+    INPUT:
+
+    - ``e`` -- a BLAD differential polynomial
+
+    OUTPUT:
+
+    the discriminant as a BLAD element, or ``None`` when it is not a condition
+
+    EXAMPLES::
+
+        sage: _discriminant_in_leader(R('DDPsi^2 - a0'))   # not tested (needs R)
+        4*a0
     """
     L = e.leader()
     if L is None or '[' in L:
@@ -629,11 +933,32 @@ def _discriminant_in_leader(e):
 
 
 def generic_cell(eqs):
-    """Build the :class:`GenericCell` of the equations ``eqs``."""
+    r"""
+    The :class:`GenericCell` of the equations ``eqs``.
+
+    The cell a Thomas decomposition would call generic, built directly: the
+    equations unchanged, and as inequations the conditions under which they are
+    a regular triangular system -- each equation's initial and separant, plus
+    its discriminant in its own leader where that is a condition at all (see
+    :func:`_discriminant_in_leader`).  Duplicates are dropped by printed form,
+    and a rational constant is skipped since `1 \neq 0` says nothing.
+
+    INPUT:
+
+    - ``eqs`` -- the ansatz equations, as BLAD differential polynomials
+
+    OUTPUT: a :class:`GenericCell`
+
+    EXAMPLES::
+
+        sage: generic_cell([R('Psi[x] - DPsi*v[x]')])   # not tested (needs R)
+        <GenericCell ...>
+    """
     keep = [e for e in eqs if not e.is_zero()]
     ineqs, seen = [], set()
 
     def add(q):
+        r"""Record ``q`` as an inequation, skipping zeros, constants, repeats."""
         # leader() is None for a rational constant: `1 != 0` says nothing.
         if q is None or q.is_zero() or q.leader() is None:
             return
@@ -692,6 +1017,20 @@ if CELLS_OUT:
         print("(could not write cells file: %s)" % ex, flush=True)
 
 def print_total_time():
+    r"""
+    Print the elapsed wall time since the script started.
+
+    Called from each of the exit paths -- the ``--decompose-only`` early
+    return, the normal end, and the error path -- so that a run always reports
+    its cost even when it stops short.
+
+    OUTPUT: ``None`` (the line is printed)
+
+    EXAMPLES::
+
+        sage: print_total_time()                 # not tested (needs _T_START)
+        Total time: 4457.3s (1:14:17.29)
+    """
     t = time.time() - _T_START
     print("Total time: %.1fs (%d:%02d:%05.2f)"
           % (t, int(t) // 3600, (int(t) % 3600) // 60, t % 60), flush=True)
@@ -720,6 +1059,21 @@ def ineq_coeff_set(q):
 
     ``None`` is returned when ``q`` has no image in ``PolyRing`` -- a derivative
     jet survived in it -- and such an inequation prunes nothing, as before.
+
+    INPUT:
+
+    - ``q`` -- a BLAD differential polynomial, read as the inequation
+      `q \neq 0`
+
+    OUTPUT:
+
+    a tuple of elements of ``PolyRing``, read as "these do not all vanish", or
+    ``None``
+
+    EXAMPLES::
+
+        sage: ineq_coeff_set(R('a0 + a1*v'))     # not tested (needs R, PolyRing)
+        (a0, a1)
     """
     try:
         qp = _elt_to_polyring(q)
@@ -731,6 +1085,42 @@ def ineq_coeff_set(q):
 
 
 def adapt_cell(ds):
+    r"""
+    A cell's conditions on the constants, sorted into the four kinds used later.
+
+    The cell's equations and inequations arrive as differential polynomials
+    mixing jets, coordinates and constants; downstream only their content in
+    the constants matters, in three different ways.  Parameter-constancy
+    equations are dropped throughout, holding identically (see
+    :func:`is_param_constancy`).
+
+    INPUT:
+
+    - ``ds`` -- a cell: a ``differentialthomas`` system or a
+      :class:`GenericCell`
+
+    OUTPUT:
+
+    a dictionary with four keys:
+
+    - ``'param_eqs'`` -- the equations free of jets, in ``PolyRing``; the
+      stratum of constant space the cell sits over
+
+    - ``'param_ineqs'`` -- the inequations free of jets, in ``PolyRing``
+
+    - ``'jet_ineqs'`` -- the inequations that do carry a jet, left as BLAD
+      elements
+
+    - ``'ineq_coeffs'`` -- every inequation's coefficient set (see
+      :func:`ineq_coeff_set`), jet-carrying or not, which is the form the
+      pruning and the piece conditions consume.  An inequation with no
+      ``PolyRing`` image contributes nothing.
+
+    EXAMPLES::
+
+        sage: sorted(adapt_cell(GenericCell([], [])))
+        ['ineq_coeffs', 'jet_ineqs', 'param_eqs', 'param_ineqs']
+    """
     param_eqs, param_ineqs, jet_ineqs, ineq_coeffs = [], [], [], []
     for e in cell_eqs(ds):
         if e.is_zero() or has_jet(e) or is_param_constancy(e):
@@ -751,6 +1141,32 @@ def adapt_cell(ds):
 
 
 def specialize(param_eqs):
+    r"""
+    The ansatz with a cell's parametric equations solved and substituted in.
+
+    .. WARNING::
+
+        Unused.  The pipeline reduces against the cell's own differential
+        triangular equations instead, which avoids everything this function has
+        to cope with: :func:`sympy.solve` introduces radicals, ``RootOf``
+        objects and injected denominators, picks an arbitrary branch when the
+        system has several solutions, and falls back to substituting zero when
+        it cannot solve at all.  Kept as the record of the earlier approach.
+
+    INPUT:
+
+    - ``param_eqs`` -- the cell's equations in the constants
+
+    OUTPUT:
+
+    a pair ``(sub, spec)`` -- the substitution as a sympy dictionary, and the
+    ansatz equations under it as BLAD elements, identically-zero ones dropped
+
+    EXAMPLES::
+
+        sage: specialize([])                     # not tested (needs the ansatz)
+        ({}, [...])
+    """
     sub = {}
     if param_eqs:
         try:
@@ -771,18 +1187,67 @@ def specialize(param_eqs):
 
 
 def reductors_for(spec):
+    r"""
+    The reductor list for a specialized ansatz: its equations plus ``pconst``.
+
+    .. WARNING::
+
+        Unused, along with :func:`specialize` whose output it was written to
+        consume.  The pipeline builds its reductors from the cell's own
+        equations; appending ``pconst`` there proved to be redundant reductors
+        at an extra cost per pass, the cell already carrying the constancy
+        relations.
+
+    INPUT:
+
+    - ``spec`` -- the specialized ansatz equations
+
+    OUTPUT: a list of BLAD differential polynomials to reduce against
+
+    EXAMPLES::
+
+        sage: reductors_for([])                  # not tested (needs pconst)
+        [...]
+    """
     return list(spec) + list(pconst)
 
 
 def full_prem(p, reductors, max_passes=64):
-    """Reduce to a FIXPOINT.  R.differential_prem makes a single pass over the
-    reductor list; reducing a high derivative by one reductor can re-expose a
-    lower derivative reducible by an EARLIER reductor (e.g. Psi[R1,R1] -> ... ->
-    DPsi[R1] -> n0*Psi[R1], and Psi[R1] is the leader of an earlier chain rule
-    already passed).  A single pass therefore leaves first-order jets un-reduced
-    whenever the PDE has first-derivative terms -- invisible for hydrogen's pure
-    Laplacian, wrong for helium's 2/Ri d/dRi terms.  Looping to a fixpoint gives
-    the true normal form (and is a no-op once the remainder is fully reduced)."""
+    r"""
+    Ritt's full reduction of ``p`` against ``reductors``, iterated to a fixpoint.
+
+    ``R.differential_prem`` makes a single pass over the reductor list, and one
+    pass is not enough: reducing a high derivative by one reductor can re-expose
+    a lower derivative that an *earlier* reductor handles -- for instance
+    ``Psi[R1,R1]`` reduces down to ``DPsi[R1]`` and then to ``n0*Psi[R1]``,
+    whose leader belongs to a chain rule the pass has already gone by.  A single
+    pass therefore leaves first-order jets unreduced whenever the system has
+    first-derivative terms: invisible for ``hydrogen``'s pure Laplacian, wrong
+    for ``helium``'s `2/R_i \, \partial/\partial R_i` terms.  Looping to a
+    fixpoint gives the true normal form, and costs one extra no-op pass once the
+    remainder is fully reduced.
+
+    INPUT:
+
+    - ``p`` -- the differential polynomial to reduce; coerced into ``R`` if it
+      is not already an element
+
+    - ``reductors`` -- the differential polynomials to reduce against
+
+    - ``max_passes`` -- integer (default: 64); the iteration cap, a backstop
+      against a non-terminating reduction rather than a limit ever reached in
+      practice
+
+    OUTPUT:
+
+    a pair ``(r, h)`` -- the remainder, and the product of the initials the
+    reduction multiplied through by, so that `h \cdot p \equiv r`
+
+    EXAMPLES::
+
+        sage: full_prem(R('Psi[x]'), [])         # not tested (needs R)
+        (Psi[x], 1)
+    """
     r = p if isinstance(p, type(R.one())) else R(p)
     h = R.one()
     for _ in range(max_passes):
@@ -795,6 +1260,34 @@ def full_prem(p, reductors, max_passes=64):
 
 
 def prime_key(P):
+    r"""
+    A hashable identity for an ideal: its generators as a sorted string tuple.
+
+    The buckets are keyed on this, so a prime surfacing from several cells is
+    merged into one entry rather than reported once per cell.  Sorting makes the
+    key independent of the order minAss returned the generators in.
+
+    .. NOTE::
+
+        This identifies ideals by *presentation*, not mathematically: two
+        different generating sets of the same ideal get different keys.  Nothing
+        here depends on that, since every key comes from minAss, which returns a
+        canonical basis.
+
+    INPUT:
+
+    - ``P`` -- an ideal
+
+    OUTPUT: a tuple of strings
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: prime_key(R4.ideal(y, x))
+        ('x', 'y')
+        sage: prime_key(R4.ideal(x, y)) == prime_key(R4.ideal(y, x))
+        True
+    """
     return tuple(sorted(str(g) for g in P.gens()))
 
 
@@ -806,6 +1299,20 @@ def fmt_ideal(P):
     over Rational Field``, the same 150-character tail on every ideal printed.
     Every ideal here lives in :data:`PolyRing`, so the tail carries no
     information and buries the generators, which are the part that differs.
+
+    INPUT:
+
+    - ``P`` -- an ideal
+
+    OUTPUT: a string
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: fmt_ideal(R4.ideal(x, y))
+        'Ideal (x, y)'
+        sage: fmt_ideal(R4.ideal(R4.zero()))
+        'Ideal (0)'
     """
     return "Ideal (%s)" % ", ".join(str(g) for g in P.gens())
 
@@ -834,7 +1341,31 @@ _GTZ_BEGIN, _GTZ_PRIME, _GTZ_END = '===PRIMES_BEGIN===', '===PRIME===', '===PRIM
 
 
 def _gtz_key(I):
-    """Content hash of an ideal: its generators and its ring's variables."""
+    r"""
+    A content hash of an ideal: its generators and its ring's variables.
+
+    The cache key for the subprocess GTZ results.  The ring's variables are
+    hashed alongside the generators because the same generator strings in a
+    different variable order are a different computation; the tag the caller
+    supplies only has to be unique within a run, and it is this hash that makes
+    a cached result safe to reuse across runs.
+
+    INPUT:
+
+    - ``I`` -- an ideal
+
+    OUTPUT: a 16-character hexadecimal string
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: len(_gtz_key(R4.ideal(x, y)))
+        16
+        sage: _gtz_key(R4.ideal(x, y)) == _gtz_key(R4.ideal(y, x))
+        True
+        sage: _gtz_key(R4.ideal(x, y)) == _gtz_key(R4.ideal(x))
+        False
+    """
     h = hashlib.sha1()
     h.update(','.join(sorted(str(g) for g in I.gens())).encode())
     h.update(('|' + ','.join(str(v) for v in I.ring().gens())).encode())
@@ -842,10 +1373,36 @@ def _gtz_key(I):
 
 
 def _gtz_script(I, primes_path):
-    """A standalone Singular program computing minAssGTZ(I) under option(prot).
+    r"""
+    A standalone Singular program computing ``minAssGTZ(I)`` under ``option(prot)``.
 
-    The primes go to their own file rather than to stdout, so the protocol
-    stream and the result never have to be untangled from one another.
+    The primes are written to their own file rather than to stdout, so the
+    protocol stream and the result never have to be untangled from one another:
+    the log stays tailable while the computation runs, and the result parses
+    without having to skip past megabytes of protocol.
+
+    INPUT:
+
+    - ``I`` -- the ideal to decompose
+
+    - ``primes_path`` -- string; where the Singular program should write its
+      result, in the format :func:`_gtz_parse` reads
+
+    OUTPUT: the Singular program, as a string
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: s = _gtz_script(R4.ideal(x*y), '/tmp/p')
+        sage: 'ring gtzring = 0,(x,y),dp;' in s
+        True
+        sage: 'list gtzP = minAssGTZ(gtzI);' in s
+        True
+
+    The zero ideal still has to generate a syntactically valid program::
+
+        sage: 'ideal gtzI =\n  0;' in _gtz_script(R4.ideal(R4.zero()), '/tmp/p')
+        True
     """
     # Every name here is gtz-prefixed: primdec.lib and the libraries it pulls
     # in occupy a lot of the top-level namespace (a plain `res` collides), and
@@ -869,8 +1426,32 @@ def _gtz_script(I, primes_path):
 
 
 def _gtz_errors(log_path):
-    """Singular's error lines, if any.  It exits 0 even after a hard error, so
-    the log is the only place a failed run announces itself."""
+    r"""
+    Singular's error lines from a protocol log, if any.
+
+    Singular exits 0 even after a hard error, so the exit status says nothing
+    and the log is the only place a failed run announces itself.  Its errors
+    are the lines beginning ``?``.
+
+    INPUT:
+
+    - ``log_path`` -- string; path to the protocol log
+
+    OUTPUT:
+
+    a list of the stripped error lines; empty when there are none, and also
+    when the log cannot be read at all, an unreadable log being the caller's
+    problem to report rather than this function's
+
+    EXAMPLES::
+
+        sage: p = tmp_filename()
+        sage: _ = open(p, 'w').write('std in ...\n? ideal not zero-dimensional\n')
+        sage: _gtz_errors(p)
+        ['? ideal not zero-dimensional']
+        sage: _gtz_errors('/nonexistent/path')
+        []
+    """
     try:
         with open(log_path, errors='replace') as fh:
             return [ln.strip() for ln in fh if ln.lstrip().startswith('?')]
@@ -879,12 +1460,42 @@ def _gtz_errors(log_path):
 
 
 def _gtz_parse(path, R):
-    """Read back the primes file written by _gtz_script.
+    r"""
+    Read back the primes file written by :func:`_gtz_script`.
 
-    Singular may fold a long `string(ideal)` across several lines, so a prime's
-    body is rejoined before splitting on the generator commas (a polynomial
-    never contains one).  Absence of the closing marker means the file is a
-    torn write from an interrupted run -- treated as no result at all.
+    Singular may fold a long ``string(ideal)`` across several lines, so each
+    prime's body is rejoined before being split on the generator commas -- safe
+    because a polynomial never contains one.
+
+    INPUT:
+
+    - ``path`` -- string; the primes file to read
+
+    - ``R`` -- the ring to build the ideals in
+
+    OUTPUT: a list of ideals of ``R``, one per prime
+
+    A :class:`RuntimeError` is raised when the closing marker is missing, which
+    means a torn write from an interrupted run.  That is treated as no result at
+    all rather than as a short one, so a half-written cache file causes a
+    recomputation instead of silently dropping primes.
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: p = tmp_filename()
+        sage: _ = open(p, 'w').write('\n'.join(
+        ....:     ['===PRIMES_BEGIN===', '===PRIME===', 'x,y', '===PRIMES_END===']))
+        sage: _gtz_parse(p, R4)
+        [Ideal (x, y) of Multivariate Polynomial Ring in x, y over Rational Field]
+
+    A truncated file is rejected rather than parsed::
+
+        sage: _ = open(p, 'w').write('===PRIMES_BEGIN===\n===PRIME===\nx,y\n')
+        sage: _gtz_parse(p, R4)
+        Traceback (most recent call last):
+        ...
+        RuntimeError: ...no ===PRIMES_END=== marker (truncated?)
     """
     lines = open(path).read().splitlines()
     if not lines or lines[0].strip() != _GTZ_BEGIN or lines[-1].strip() != _GTZ_END:
@@ -900,10 +1511,35 @@ def _gtz_parse(path, R):
 
 
 def minimal_associated_primes_gtz(I, tag):
-    """minAssGTZ(I), in-process by default or in a Singular subprocess.
+    r"""
+    The minimal associated primes of ``I``, in-process or in a subprocess.
 
-    `tag` labels this ideal's files in --gtz-dir; it only has to be unique
-    within a run, the cache key proper is the hash of the ideal itself.
+    By default this is Sage's ``I.minimal_associated_primes()``, which reaches
+    the same ``primdec.lib`` ``minAssGTZ`` through libsingular.  Under
+    ``--gtz-subprocess`` it instead writes a standalone Singular program and
+    runs it, which buys three things the in-process call cannot give: a
+    tailable ``option(prot)`` protocol stream (libsingular swallows it -- see
+    the comment above), a wall-clock bound via ``--gtz-timeout``, and a result
+    cached on disk so an interrupted run resumes instead of recomputing.
+
+    INPUT:
+
+    - ``I`` -- the ideal to decompose
+
+    - ``tag`` -- string labelling this ideal's files in ``--gtz-dir``; it need
+      only be unique within a run, the cache key proper being
+      :func:`_gtz_key` of the ideal
+
+    OUTPUT: a list of the minimal associated primes of ``I``
+
+    A :class:`RuntimeError` is raised when Singular fails, when it exceeds
+    ``--gtz-timeout``, or when its log carries error lines; an unusable cached
+    result is reported and recomputed rather than raising.
+
+    EXAMPLES::
+
+        sage: minimal_associated_primes_gtz(I, 'cell1')   # not tested (needs the flags)
+        [...]
     """
     if not GTZ_SUBPROCESS:
         return I.minimal_associated_primes()
@@ -992,6 +1628,25 @@ def _piece_unrestricted(key):
     ``piece_excl`` -- as in the doctest of :func:`prune_enclosed`, which builds a
     bucket by hand -- count as unrestricted; every path that fills a bucket fills
     this alongside it.
+
+    INPUT:
+
+    - ``key`` -- a :func:`prime_key`, indexing :data:`piece_excl`
+
+    OUTPUT: boolean
+
+    EXAMPLES::
+
+        sage: piece_excl.clear()
+        sage: _piece_unrestricted(('x',))            # absent: counts as whole
+        True
+        sage: piece_excl[('x',)] = [(7, ())]         # cell 7 excluded nothing
+        sage: _piece_unrestricted(('x',))
+        True
+        sage: piece_excl[('x',)] = [(7, ((1,),))]    # cell 7 excluded something
+        sage: _piece_unrestricted(('x',))
+        False
+        sage: piece_excl.clear()
     """
     excl = piece_excl.get(key)
     if not excl:
@@ -1021,6 +1676,33 @@ def _excluded_components(key, R):
     jet-carrying inequation collects to a coefficient *set* rather than one
     polynomial (see :func:`ineq_coeff_set`), so each `U_c` is a union of
     varieties of ideals instead of one hypersurface.
+
+    INPUT:
+
+    - ``key`` -- a :func:`prime_key`, indexing :data:`piece_excl`
+
+    - ``R`` -- the ring to build the ideals in
+
+    OUTPUT:
+
+    a list of ideals whose varieties union to `D`; empty when `D = \emptyset`
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: piece_excl.clear()
+        sage: _excluded_components(('nothing',), R4)         # no entry: D empty
+        []
+        sage: piece_excl[('k',)] = [(7, ((x,), (y,)))]        # one cell, two ineqs
+        sage: _excluded_components(('k',), R4)
+        [Ideal (x) of ..., Ideal (y) of ...]
+
+    Two contributing cells give the pairwise sums, one per selection::
+
+        sage: piece_excl[('k',)] = [(7, ((x,),)), (8, ((y,),))]
+        sage: _excluded_components(('k',), R4)
+        [Ideal (x, y) of ...]
+        sage: piece_excl.clear()
     """
     excl = piece_excl.get(key)
     if not excl:
@@ -1046,6 +1728,22 @@ def _tidy_cond(g):
     turns the `-v_4^2 b_1^2` that a reduction naturally produces into `v_4 b_1`.
     Denominators are then cleared and the sign normalized, neither of which
     changes the locus either.
+
+    INPUT:
+
+    - ``g`` -- a polynomial, read as the condition `g \neq 0`
+
+    OUTPUT: a polynomial with the same vanishing locus
+
+    EXAMPLES::
+
+        sage: R4.<u,v> = PolynomialRing(QQ)
+        sage: _tidy_cond(-u^2*v^2)
+        u*v
+        sage: _tidy_cond(-1/2*u)
+        u
+        sage: _tidy_cond(R4(3))                  # constants pass through
+        3
     """
     if g.is_constant():
         return g
@@ -1094,6 +1792,36 @@ def piece_conditions(P, key):
     ``None`` is returned when the piece is all of `V(P)` -- no contributing
     cell restricts it -- which is the case in which the variety and the piece
     coincide and nothing need be printed.
+
+    INPUT:
+
+    - ``P`` -- the prime whose piece is being described
+
+    - ``key`` -- its :func:`prime_key`, indexing :data:`piece_excl`
+
+    OUTPUT:
+
+    a list of pairs ``(cell number, [coefficient set, ...])``, or ``None``
+
+    EXAMPLES::
+
+        sage: R4.<u,v> = PolynomialRing(QQ)
+        sage: P = R4.ideal(u)
+        sage: piece_excl.clear()
+        sage: piece_excl[prime_key(P)] = [(7, ((v,), (-v^2,)))]
+        sage: piece_conditions(P, prime_key(P))     # the two clauses coincide
+        [(7, [(v,)])]
+
+    A condition vanishing on all of `V(P)` empties that cell's disjunct, and a
+    condition holding everywhere on `V(P)` is dropped as vacuous::
+
+        sage: piece_excl[prime_key(P)] = [(7, ((u,),))]
+        sage: piece_conditions(P, prime_key(P)) is None
+        True
+        sage: piece_excl[prime_key(P)] = [(7, ((R4(2),),))]
+        sage: piece_conditions(P, prime_key(P)) is None
+        True
+        sage: piece_excl.clear()
     """
     excl = piece_excl.get(key)
     if not excl:
@@ -1130,8 +1858,26 @@ def _fmt_conditions(clauses):
     ``(g1, g2) not all 0``, that being what a jet-carrying inequation's
     coefficient set means.  Disjuncts are separated by ``OR``, and the cell
     number is shown when more than one cell contributes.
+
+    INPUT:
+
+    - ``clauses`` -- the output of :func:`piece_conditions`
+
+    OUTPUT: a string
+
+    EXAMPLES::
+
+        sage: R4.<u,v> = PolynomialRing(QQ)
+        sage: _fmt_conditions([(7, [(u,), (u, v)])])
+        'u != 0 and (u, v) not all 0'
+
+    With more than one disjunct the cells are named::
+
+        sage: _fmt_conditions([(7, [(u,)]), (8, [(v,)])])
+        '[cell 7] u != 0   OR   [cell 8] v != 0'
     """
     def one(cs):
+        r"""Render one coefficient set as a non-vanishing condition."""
         return ("%s != 0" % cs[0] if len(cs) == 1
                 else "(%s) not all 0" % ", ".join(map(str, cs)))
     parts = []
@@ -1165,6 +1911,36 @@ def _piece_contained(Pi, ki, Pj, kj):
 
     `D_j = \emptyset` short-circuits to ``True`` -- the sound special case the
     older :func:`_piece_unrestricted` test was restricted to.
+
+    INPUT:
+
+    - ``Pi`` -- the prime of the candidate contained piece
+
+    - ``ki`` -- its :func:`prime_key`
+
+    - ``Pj`` -- the prime of the candidate containing piece
+
+    - ``kj`` -- its :func:`prime_key`
+
+    OUTPUT: boolean
+
+    EXAMPLES::
+
+        sage: R4.<u,v> = PolynomialRing(QQ)
+        sage: Pi, Pj = R4.ideal(u, v), R4.ideal(u)
+        sage: piece_excl.clear()
+        sage: _piece_contained(Pi, ('i',), Pj, ('j',))    # nothing excluded
+        True
+        sage: _piece_contained(Pj, ('j',), Pi, ('i',))    # the other way round
+        False
+
+    When the encloser excludes a locus the smaller piece lies in, containment
+    fails -- the case the old test could not see::
+
+        sage: piece_excl[('j',)] = [(8, ((v,),))]         # V(Pi) is inside V(v)
+        sage: _piece_contained(Pi, ('i',), Pj, ('j',))
+        False
+        sage: piece_excl.clear()
     """
     if not (Pj <= Pi):                   # V(Pi) subset V(Pj); necessary
         return False
@@ -1484,6 +2260,31 @@ def latex_union(d, label='ideal'):
       used as the block's own ``\label``
 
     OUTPUT: ``None`` (the block is printed)
+
+    EXAMPLES::
+
+        sage: R4.<u,v> = PolynomialRing(QQ)
+        sage: piece_excl.clear()
+        sage: latex_union({('u',): (R4.ideal(u), [1])}, label='ex')
+        \begin{subequations}
+        \label{ex}
+        \begin{align}
+        & \left(u\right)\label{ex:1}
+        \end{align}
+        \end{subequations}
+
+    A restricted piece carries its conditions alongside the generators::
+
+        sage: P = R4.ideal(u)
+        sage: piece_excl[prime_key(P)] = [(7, ((v,),))]
+        sage: latex_union({prime_key(P): (P, [7])}, label='ex')  # abbreviated
+        \begin{subequations}
+        \label{ex}
+        \begin{align}
+        & \left(u\right) \quad\text{with}\quad v \neq 0\label{ex:1}
+        \end{align}
+        \end{subequations}
+        sage: piece_excl.clear()
     """
     items = sorted(d.items(), key=lambda kv: str(kv[0]))
     rows = []
@@ -1494,6 +2295,7 @@ def latex_union(d, label='ideal'):
         tail = ""
         if conds:
             def _one(cs):
+                r"""Render one coefficient set as a LaTeX non-vanishing condition."""
                 if len(cs) == 1:
                     return r"%s \neq 0" % latex(clear_denominators(cs[0]))
                 return (r"\left(%s\right) \neq 0"
