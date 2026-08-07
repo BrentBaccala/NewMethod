@@ -1346,111 +1346,79 @@ that a wave function is not identically zero, that a pressure or a density does
 not vanish, that some constant appearing in the ansatz is non-zero.  Without
 them the loci defined below are frequently satisfied by a degenerate solution of
 no interest --- most often the zero function --- and it is the inequations that
-rule those out.  An inequation on a constant is allowed and behaves as one would
-expect: for $c^*$ with $Q(c^*) \ne 0$ the saturation below is by a non-zero
-scalar and does nothing, while for $Q(c^*) = 0$ it saturates by zero and returns
-the whole ring, so those $c^*$ drop out of the locus.
+rule those out.
 
-Nothing in what follows requires the elements of $\mathcal{P}^=$ to be
-partial differential equations.  An ordinary differential equation, or a purely
-algebraic relation among the dependent variables, is a differential polynomial
-like any other, and the development never asks which kind it is; all that is
-used is that $\mathcal{P}^=$ and $\mathcal{P}^{\ne}$ are finite subsets of $R$.
-The case $t = 1$, $w = 0$ recovers
-the single-PDE problem treated in \S\ref{sec:Example}; the Navier--Stokes
-example of \S\ref{sec:NavierStokes} has $t = 4$.
+%% It is convenient to define two loci in constant space.
 
-It is convenient to define two constant loci:
+{\bf The Non-degenercy Locus}
 
 \begin{equation}
-V_\exists = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty \}
+\label{eq:nondegeneracy}
+N_Q = \{ c^* \in {\mathbb C}^n : 1 \notin \sqrt{[A(c^*)]}:Q^\infty \},
 \end{equation}
 
-The {\it consistency locus} is the set of constants for which the ansatz
-{\it together with} the system is consistent in the sense of
-\S\ref{sec:preliminaries}, after saturation by the inequations.  The condition
-is on the differential ideal $[A(c^*), \mathcal{P}^=]$ that the two generate
-jointly; the standing assumption that the ansatz {\it by itself} is consistent
-for every $c^*$ is a separate and far weaker statement.  When
-$\mathcal{P}^{\ne}$ is empty, $Q = 1$, the saturation does nothing, and the
-condition is plain consistency of $[A(c^*), \mathcal{P}^=]$.
+The {\it non-degeneracy locus} $N_Q$ is the set of constants for which the ansatz
+alone is consistent in the sense of
+\S\ref{sec:preliminaries}, after saturation by the inequations.
+
+{\bf The Consistency Locus}
+
+\begin{equation}
+V_\exists = \{ c^* \in {\mathbb C}^n : 1 \notin \sqrt{[A(c^*), \mathcal{P}^=]} : Q^\infty \}
+\end{equation}
+
+The {\it consistency locus} $V_\exists$ is the set of constants for which the ansatz
+{\it together with} the system is consistent.
+
+% The condition
+% is on the differential ideal $[A(c^*), \mathcal{P}^=]$ that the two generate
+% jointly; the standing assumption that the ansatz {\it by itself} is consistent
+% for every $c^*$ is a separate and far weaker statement.
+
+Taking the radical of the ideal is justified when we will ultimately map the differential indeterminates
+into a function space whose range has no nilpotent elements.  Since neither the real nor the complex numbers
+have nilpotents, and we are ultimately looking for either real- or complex-valued functions, we
+take the radical to simplify both the theory and the implementation.
 
 Informally, consistency says that the ansatz and the system have a common
 solution respecting the inequations, and we use that language below where it
-aids intuition.  The implication from such a solution to consistency of the
-ideal is immediate, and it is the only direction any argument here uses; the
-converse requires a differential Nullstellensatz, which we neither state nor
-need.  The subscript $\exists$ is kept because it records the quantifier pattern
-of the table in \S\ref{sec:membership-locus}, not a proved existence theorem.
-Naming the locus for consistency rather than for existence also avoids a second
-confusion: existence in the analytic category is not existence in a prescribed
-function space.  A differential polynomial can have a perfectly good analytic
-solution that is, for instance, not square-integrable, and so not admissible as
-a wavefunction.
+aids intuition.  Existence of a solution in some function space, however,
+is an analytic statement that is not asserted here.
 
-Saturation is the right way to impose an inequation because
-$1 \notin I : Q^\infty$ says exactly that some component of the solution set of
-$I$ is not contained in the zero set of~$Q$ --- that a solution exists at which
-$Q$ does not vanish identically.  Because saturating successively by
-$Q_1, \ldots, Q_w$ is the same as saturating by their product, this is a single
-solution at which all of the inequations hold at once.
-
-Adding inequations shrinks the consistency locus.  If $Q$ divides $Q'$ then
-$[A(c^*), \mathcal{P}^=] : Q^\infty \subseteq [A(c^*), \mathcal{P}^=] : Q'^\infty$,
-so a system with more inequations has the smaller locus.
-
-The inequations are also what make the consistency locus a non-vacuous question in
-the homogeneous case.  A differential polynomial $p$ is {\it homogenous} w.r.t.
-an element $\Psi$ if every term of $p$ contains exactly one derivative (not
-necessarily proper) of $\Psi$ to first degree.  If the ansatz and every element
-of $\mathcal{P}^=$ are homogenous w.r.t. $\Psi$, then the zero function solves
-everything for every value of the constants, so $1 \notin [A(c^*),
-\mathcal{P}^=]$ always and the consistency locus with no inequations is all of
-${\mathbb C}^n$, which says nothing.  Putting $\Psi$ into $\mathcal{P}^{\ne}$
-restores the intended question: $V_\exists$ then asks for a common solution that
-is not identically zero.
+{\bf The Membership Locus}
 
 \begin{equation}
-V_{\forall} = \{ c^* \in {\mathbb C}^n : \mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \}
+V_{\forall} = \{ c^* \in {\mathbb C}^n : \mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \wedge 1 \notin \sqrt{[A(c^*)]} : Q^\infty \}
 \end{equation}
 
-The {\it membership locus} is the set of constants for which every equation of
+The {\it membership locus} is the set of constants for which the ansatz is consistent and every equation of
 the system lies in the saturated radical differential ideal defined by the
 ansatz, meaning that any function satisfying the ansatz {\it and the
-inequations} will satisfy every equation of the system.  Two choices are made
-here and both do work.
+inequations} will satisfy every equation of the system.
 
-The radical is the right ideal to take: it is the vanishing ideal of the
-ansatz's solution set, so membership in it says exactly what the words ``any
-function satisfying the ansatz'' say, whereas membership in $[A(c^*)]$ itself is
-a strictly stronger and less natural condition.  Saturating by $Q$ is what makes
-the inequations restrict the functions being quantified over.  For a radical
-ideal, $I : Q^\infty$ is the vanishing ideal of the closure of the part of
-$V(I)$ on which $Q$ does not vanish; since vanishing is itself a closed
-condition, this gives
-%
+% \begin{equation}
+% V_{\forall} = \{ c^* \in {\mathbb C}^n : P \in [A(c^*)] \}
+% \end{equation}
+
+Theorem: The membership locus is a subset of the consistency locus.
+
 \begin{equation}
-\label{eq:saturated-membership-meaning}
-P \in \sqrt{[A(c^*)]} : Q^\infty
-\iff
-\text{$P$ vanishes at every solution $f$ of $A(c^*)$ with $Q(f) \ne 0$,}
+\label{eq:locus-containment}
+V_\forall \subseteq V_\exists
 \end{equation}
-%
-which is the intended reading of the inequations: they guard the solutions
-quantified over rather than asserting anything themselves.  The saturated ideal
-is again radical, and again differential (\cite{Kolchin}, Chapter~I, \S\,2,
-Corollary to Lemma~1), so nothing in the preceding paragraph is given up by
-taking it.
 
-Saturation changes the ideal only when some irreducible component of the
-ansatz's solution set lies entirely inside the zero set of~$Q$.  If none does
---- as happens when the ansatz is a homogeneous linear system and $Q = \Psi$,
-where the zero function is a limit of non-zero solutions rather than a component
-in its own right --- then $\sqrt{[A(c^*)]} : Q^\infty = \sqrt{[A(c^*)]}$ and the
-saturation is vacuous.  Where it is not vacuous it repairs a real defect: the
-unsaturated condition rejects a value of the constants whenever {\it any}
-solution of the ansatz violates the system, including one lying on a branch the
-inequations were written to exclude.
+Proof: $\sqrt{[A(c^*)]} : Q^\infty$ is a differential ideal, and if every element
+of $\mathcal{P}^=$ lies in it then it contains both $A(c^*)$ and $\mathcal{P}^=$,
+hence contains $[A(c^*), \mathcal{P}^=]$; saturating that containment
+by~$Q^\infty$ and using $(I : Q^\infty) : Q^\infty = I : Q^\infty$ gives
+
+\begin{equation}
+\begin{gathered}
+\mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \implies [A(c^*),\mathcal{P}^=] : Q^\infty = \sqrt{[A(c^*)]} : Q^\infty \\
+Q \notin \sqrt{[A(c^*)]} \implies 1 \notin \sqrt{[A(c^*)]} : Q^\infty \implies 1 \notin \sqrt{[A(c^*), \mathcal{P}^=]} : Q^\infty \\
+V_\forall \subseteq V_\exists
+\end{gathered}
+\end{equation}
 
 The saturation costs nothing to compute, by the following observation, which is
 what allows every reduction below to be performed against the ansatz alone.
@@ -1474,105 +1442,12 @@ Every membership test below is accordingly a test of $Q P_j$ against an
 unsaturated ideal, and the differential Thomas decomposition is still computed
 from the ansatz alone --- the inequations of the target system never enter it.
 
-The membership locus is the one place where the passage from a single equation
-to a system is entirely painless.  Membership in an ideal is a condition on one
-differential polynomial at a time, so requiring it of every element of
-$\mathcal{P}^=$ is a conjunction of $t$ conditions of exactly the form already
-studied, and
-%
-\begin{equation}
-\label{eq:membership-intersection}
-V_\forall \;=\; \bigcap_{j=1}^{t} \{\, c^* \in \mathbb{C}^n : P_j \in \sqrt{[A(c^*)]} : Q^\infty \,\} .
-\end{equation}
-%
-Everything below --- the reduction, the projection, the completeness theorem ---
-is applied to each $Q P_j$ separately, and the results are intersected.  The
-consistency locus is not decomposable in this way, since consistency of
-$[A(c^*), \mathcal{P}^=] : Q^\infty$ is a property of the ideal the whole system generates and
-is not implied by the consistency of its parts; that asymmetry is another reason
-to prefer the membership locus.
-
-By \eqref{eq:saturated-membership-meaning} the membership locus constrains only
-those solutions of the ansatz that respect the inequations, so it is satisfied
-{\it vacuously} at constants for which there are none: where the ansatz forces
-$Q$ to vanish, $\sqrt{[A(c^*)]} : Q^\infty$ is the whole ring and every equation
-lies in it.  Ruling that case out is a second condition,
-%
-\begin{equation}
-\label{eq:nondegeneracy}
-N_Q = \{ c^* \in {\mathbb C}^n : Q \notin \sqrt{[A(c^*)]} \},
-\end{equation}
-%
-the {\it non-degeneracy locus}: the constants for which the ansatz does not
-force $Q$ to vanish identically or, equivalently, for which the ansatz has at
-least one solution satisfying all of the inequations.  So $V_\forall$ says that
-the system holds on the guarded solution set and $N_Q$ says that the guarded
-solution set is not empty; $V_\forall \supseteq \mathbb{C}^n \setminus N_Q$, and
-the locus one reports is $V_\forall \cap N_Q$.
-
-Note that neither locus asserts that {\it every} solution of the ansatz
-satisfies the inequations.  That reading --- the condition $1 \in [A(c^*), Q]$
---- is unsatisfiable in exactly the situation the inequations were introduced to
-handle, since an ansatz admitting the zero function admits it for every value of
-the constants.  $N_Q$ is the complement of a membership locus rather than a
-membership locus itself: $\mathbb{C}^n \setminus N_Q$ is the membership locus of
-the single differential polynomial $Q$, computed by the same machinery as
-$V_\forall$ at the cost of one additional reduction.
-
-Taking $Q$ to be the product $Q_1 \cdots Q_w$, rather than asking
-$Q_i \notin \sqrt{[A(c^*)]}$ for each $i$ separately, is deliberate and is
-strictly stronger.  Because $\sqrt{[A(c^*)]}$ is radical but in general not
-prime, the product condition demands a single solution of the ansatz at which
-all of the inequations hold simultaneously, whereas the separate conditions
-would permit a different witness for each.
-
-Computing $V_\exists$ can present serious computational challenges, so for practical reasons
-it is often useful to work with the membership locus, which keeps the system out of the ideal's generators.
-
-% \begin{equation}
-% V_{\forall} = \{ c^* \in {\mathbb C}^n : P \in [A(c^*)] \}
-% \end{equation}
-
-The loci are interrelated as follows:
-
-\begin{equation}
-\label{eq:locus-containment}
-V_\forall \cap N_Q \subseteq V_\exists
-\end{equation}
-
-Proof: $\sqrt{[A(c^*)]} : Q^\infty$ is a differential ideal, and if every element
-of $\mathcal{P}^=$ lies in it then it contains both $A(c^*)$ and $\mathcal{P}^=$,
-hence contains $[A(c^*), \mathcal{P}^=]$; saturating that containment
-by~$Q^\infty$ and using $(I : Q^\infty) : Q^\infty = I : Q^\infty$ gives
-
-\begin{equation}
-\begin{gathered}
-\mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \implies [A(c^*),\mathcal{P}^=] : Q^\infty \subseteq \sqrt{[A(c^*)]} : Q^\infty \\
-Q \notin \sqrt{[A(c^*)]} \implies 1 \notin \sqrt{[A(c^*)]} : Q^\infty \\
-V_\forall \cap N_Q \subseteq V_\exists
-\end{gathered}
-\end{equation}
-
-\noindent
-the middle line because $1 \in \sqrt{[A(c^*)]} : Q^\infty$ means
-$Q^k \in \sqrt{[A(c^*)]}$ for some~$k$, and a radical ideal containing
-$Q^k$ contains~$Q$.  This is the one place where the radical formulation
-pays a visible dividend: the non-degeneracy condition, which for the
-non-radical ideal had to be written $1 \notin [A(c^*)] : Q^\infty$, becomes
-the transparent statement that the ansatz does not force $Q \equiv 0$.
-
-Note that no separate hypothesis of consistency of the ansatz is needed here.
-Membership in $N_Q$ already gives $\sqrt{[A(c^*)]} \ne R$, since a ring
-containing everything contains~$Q$.  (Elsewhere we do assume the ansatz
-consistent for all values of $c^*$; it is a condition the algorithm of
-\S\ref{sec:membership-locus} reports.)
-
 These relationships are illustrated by the following example.
 
 \begin{example}
 \label{ex:three-loci}
 In the differential ring $\mathbb{C}[t]\{\Psi, c\}$, with the single derivation
-$\delta_t$ and $\delta_t c = 0$, consider the ansatz
+$\delta_t$ and $c$ constant ($c_t = 0$), consider the ansatz
 \begin{equation}
 A(c) = \{ \Psi_{tt} - c \Psi \}
 \end{equation}
@@ -1622,36 +1497,28 @@ V_\forall = \emptyset \qquad N_\Psi = \mathbb{C}
 \end{example}
 
 It is perhaps easiest to understand this example analytically.
-For any constant $c$, we can set $\Psi=0$ and get a solution to both the ansatz and the PDE, so without the inequation $V_\exists = \mathbb{C}$.
+For any constant $c$, $\Psi=0$ is a solution to both the ansatz and the PDE, so without the inequation $V_\exists = \mathbb{C}$.
 If $c=1$, then $ae^t$ is a solution to both $A(1)$ and $P$, and 1 is the only value of $c$ for which they have a common non-zero solution,
 so imposing $\Psi \ne 0$ cuts the consistency locus down to $\{ 1 \}$.
 However, although both $ae^t$ and $ae^{-t}$ solve $A(1)$, only $ae^t$ solves $P$,
 so a solution to the ansatz does not necessarily solve the PDE and $V_\forall = \emptyset$.
 The containment \eqref{eq:locus-containment} reads
-$\emptyset \cap \mathbb{C} \subseteq \{1\}$, as it must.
+$\emptyset \subseteq \{1\}$, as it must.
 
 The most straightforward way to compute the consistency locus $V_\exists$ is to proceed
 as its definition suggests: combine the system and the ansatz together as the generators of a singular differential
 ideal.  We do not wish to treat the constants as indeterminates (as they would always be non-zero), but rather
-as parameters in the base field, and seek conditions on those parameters that would yield a non-trivial
+as parameters, and seek conditions on those parameters that would yield a non-trivial
 differential ideal where $1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty$.  This suggests the
 use of a parametric algorithm, such as parametric Rosenfeld-Gr\"obner \cite{Fakouri2018} or a
 differential Thomas decomposition \cite{ThomasDecomp, RobertzLNM}.  The author's practical experience,
-however, is that this approach tends to be computationally infeasible.
+however, is that this approach is often computationally infeasible.
 
 Therefore, for the remainder of this paper, we will focus our attention on the membership locus $V_\forall$.  This restriction allows
 us to develop an algorithm that, while still using a parametric decomposition, only does so on a differential
-ideal formed from the ansatz, with the system treated separately.  It is also
-what makes the size of the system almost costless: the expensive step, the
-decomposition, is performed on the ansatz alone and is therefore independent of
-$t$, and each additional equation adds only a Ritt reduction and its
-coefficients.
-This tends to be far more computationally feasible than trying to compute
-the consistency locus $V_\exists$.  The inequations are not lost in this
-restriction: by \eqref{eq:nondegeneracy} the non-degeneracy locus $N_Q$ is the
-complement of the membership locus of the single differential polynomial $Q$,
-so the same algorithm delivers it, and the answer to the constrained problem is
-$V_\forall \cap N_Q$.
+ideal formed from the ansatz, with the system treated separately.
+This tends to be more computationally feasible than trying to compute
+the consistency locus $V_\exists$.
 
 % We see that $h=0$ could lead to extraneous solutions, so we require $h\ne 0$.
 
