@@ -798,6 +798,18 @@ def prime_key(P):
     return tuple(sorted(str(g) for g in P.gens()))
 
 
+def fmt_ideal(P):
+    r"""
+    An ideal as its generators alone -- ``Ideal (g1, ..., gk)``.
+
+    Sage's own repr appends ``of Multivariate Polynomial Ring in x, y, z, ...
+    over Rational Field``, the same 150-character tail on every ideal printed.
+    Every ideal here lives in :data:`PolyRing`, so the tail carries no
+    information and buries the generators, which are the part that differs.
+    """
+    return "Ideal (%s)" % ", ".join(str(g) for g in P.gens())
+
+
 # --- the minimal-associated-primes step -----------------------------------
 #
 # I.minimal_associated_primes() calls primdec.lib's minAssGTZ through
@@ -1273,7 +1285,8 @@ for num, ds in enumerate(_cells, 1):
     if VERBOSE_REM:
         for _i, _r in enumerate(sc['rems'], 1):
             print("  remainder[pde %d]:" % _i, to_bracket(_r), flush=True)
-        print("  Q-locus (off N_Q where this vanishes):", sc['Jq'], flush=True)
+        print("  Q-locus (off N_Q where this vanishes):", fmt_ideal(sc['Jq']),
+              flush=True)
     if all(r_.is_zero() for r_ in sc['rems']) and not cell_off_nq:
         print("  PDE reduces to 0: the whole stratum solves the PDE (nontrivially)", flush=True)
     if not survivors:
@@ -1288,7 +1301,7 @@ for num, ds in enumerate(_cells, 1):
         label = ("  [off N_Q: %s == 0]" % ', '.join(which) if which
                  else "  [off N_Q: Q == 0]" if off
                  else "  [GENUINE]")
-        print("   V:", P, label, flush=True)
+        print("   V:", fmt_ideal(P), label, flush=True)
         if off and which:
             for _w in which:
                 offnq_split.setdefault(_w, {}).setdefault(
@@ -1420,7 +1433,7 @@ def dump_union(title, d, prune=False):
             else ", %d enclosed sub-variety(ies) pruned" % len(dropped))
     print("\n%s (%d distinct primes%s):\n" % (title, len(d), note))
     for key, (P, cells_for) in sorted(d.items(), key=lambda kv: str(kv[0])):
-        print("  V:", P, "  (from cells:",
+        print("  V:", fmt_ideal(P), "  (from cells:",
               ", ".join(map(str, sorted(set(cells_for)))) + ")")
         # The piece is V(P) less what its cells exclude; printing the variety
         # alone overstates the answer on a proper closed subset of it, and
