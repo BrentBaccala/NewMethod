@@ -1442,8 +1442,6 @@ Every membership test below is accordingly a test of $Q P_j$ against an
 unsaturated ideal, and the differential Thomas decomposition is still computed
 from the ansatz alone --- the inequations of the target system never enter it.
 
-These relationships are illustrated by the following example.
-
 \begin{example}
 \label{ex:three-loci}
 In the differential ring $\mathbb{C}[t]\{\Psi, c\}$, with the single derivation
@@ -1451,23 +1449,16 @@ $\delta_t$ and $c$ constant ($c_t = 0$), consider the ansatz
 \begin{equation}
 A(c) = \{ \Psi_{tt} - c \Psi \}
 \end{equation}
-and the system $\mathcal{P}$ whose single equation is
+and the system $\mathcal{P}$:
 \begin{equation}
-P = \Psi_t - \Psi
+\mathcal{P}^= = \{ \Psi_t - \Psi \} \qquad \mathcal{P}^{\ne} = \emptyset
 \end{equation}
-We compute the loci twice, first with $\mathcal{P}^{\ne} = \emptyset$ and then
-with $\mathcal{P}^{\ne} = \{\Psi\}$, so that the effect of the inequation is
-visible.
 
 With no inequations, $Q = 1$ and $V_\exists$ is the set of constants where
 $1 \notin \sqrt{[A(c), P]}$.
 There are no constant terms in $A(c)$ or $P$, so no constant can be formed by
 any differential ideal operation, and
 in particular, $1 \notin \sqrt{[A(c), P]}$, so $V_\exists = \mathbb{C}$.
-
-With $\mathcal{P}^{\ne} = \{\Psi\}$ we have $Q = \Psi$, and $V_\exists$, by Lemma~\ref{lem:saturation-by-one},
-becomes the set of constants where $\Psi \notin [A(c), P]$.  $P_t + P - A(c) = (c-1)\Psi$,
-so $\Psi \in [A(c), P]$ for all $c \ne 1$, and $V_\exists = \{1\}$ (proof this).
 
 To compute $V_\forall$, we need to identify the constants where
 $P \in \sqrt{[A(c)]} : Q^\infty$, which by Lemma~\ref{lem:saturation-by-one} is
@@ -1487,14 +1478,56 @@ $\sqrt{[A(c)]} : \Psi^\infty = \sqrt{[A(c)]}$.  All of the work the inequation
 does in this example is done in $V_\exists$.
 
 \begin{equation*}
-V_\exists \big|_{\mathcal{P}^{\ne} = \emptyset} = \mathbb{C} \qquad
-V_\exists \big|_{\mathcal{P}^{\ne} = \{\Psi\}} = \{ 1 \} \qquad
-V_\forall = \emptyset \qquad N_\Psi = \mathbb{C}
+V_\exists  = \mathbb{C} \qquad
+V_\forall = \emptyset
 \end{equation*}
 \qed
 \end{example}
 
-It is perhaps easiest to understand this example analytically.
+\begin{example}
+\label{ex:three-loci-2}
+In example \ref{ex:three-loci-2}, we saw how the zero function dominates
+the constant loci when homogenous equations are used in the ansatz.
+Continuing the example, we now address this problem by using an inequation
+to strip out the zero solution.  The ansatz remains the same:
+
+\begin{equation}
+A(c) = \{ \Psi_{tt} - c \Psi \}
+\end{equation}
+We add an inequality to the system $\mathcal{P}$:
+\begin{equation}
+\mathcal{P}^= = \{ \Psi_t - \Psi \} \qquad \mathcal{P}^{\ne} = \{\Psi\}
+\end{equation}
+
+With $\mathcal{P}^{\ne} = \{\Psi\}$ we have $Q = \Psi$, and $V_\exists$, by Lemma~\ref{lem:saturation-by-one},
+becomes the set of constants where $\Psi \notin [A(c), P]$.  $P_t + P - A(c) = (c-1)\Psi$,
+so $\Psi \in [A(c), P]$ for all $c \ne 1$, and $V_\exists = \{1\}$ (proof this).
+
+To compute $V_\forall$, we identify the constants where
+$P \in \sqrt{[A(c)]} : Q^\infty$, which by Lemma~\ref{lem:saturation-by-one} is
+where $Q P \in \sqrt{[A(c)]}$.  Since $A(c)$ has order 2 for all values of $c$,
+every element of $[A(c)]$ has order at least 2, while $P$ has order 1 and $\Psi$
+order 0, so $QP$ has order 1 under either choice of $\mathcal{P}^{\ne}$ and so
+does each of its powers.  No power of $QP$ lies in $[A(c)]$, hence
+$QP \notin \sqrt{[A(c)]}$ for any value of $c$, and $V_\forall = \emptyset$
+either way.  The same order argument applied to~$\Psi$ gives
+$\Psi \notin \sqrt{[A(c)]}$ for every $c$, so $N_\Psi = \mathbb{C}$: the ansatz
+never forces $\Psi$ to vanish.
+
+The saturation is vacuous here, as the criterion above predicts: the solutions
+of $A(c)$ form an irreducible two-parameter family and the zero function is a
+limit of non-zero members of it rather than a component of its own, so
+$\sqrt{[A(c)]} : \Psi^\infty = \sqrt{[A(c)]}$.  All of the work the inequation
+does in this example is done in $V_\exists$.
+
+\begin{equation*}
+V_\exists  = \{ 1 \} \qquad
+V_\forall = \emptyset
+\end{equation*}
+
+\end{example}
+
+It is perhaps easiest to understand these examples analytically.
 For any constant $c$, $\Psi=0$ is a solution to both the ansatz and the PDE, so without the inequation $V_\exists = \mathbb{C}$.
 If $c=1$, then $ae^t$ is a solution to both $A(1)$ and $P$, and 1 is the only value of $c$ for which they have a common non-zero solution,
 so imposing $\Psi \ne 0$ cuts the consistency locus down to $\{ 1 \}$.
