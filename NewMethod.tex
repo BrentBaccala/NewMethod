@@ -1445,37 +1445,32 @@ from the ansatz alone --- the inequations of the target system never enter it.
 \begin{example}
 \label{ex:three-loci}
 In the differential ring $\mathbb{C}[t]\{\Psi, c\}$, with the single derivation
-$\delta_t$ and $c$ constant ($c_t = 0$), consider the ansatz
+$\delta_t$ and $c$ constant, consider the ansatz
 \begin{equation}
-A(c) = \{ \Psi_{tt} - c \Psi \}
+A(c) = \{ \Psi_{tt} - c \Psi , c_t\}
 \end{equation}
 and the system $\mathcal{P}$:
 \begin{equation}
 \mathcal{P}^= = \{ \Psi_t - \Psi \} \qquad \mathcal{P}^{\ne} = \emptyset
 \end{equation}
 
-With no inequations, $Q = 1$ and $V_\exists$ is the set of constants where
-$1 \notin \sqrt{[A(c), P]}$.
-There are no constant terms in $A(c)$ or $P$, so no constant can be formed by
-any differential ideal operation, and
-in particular, $1 \notin \sqrt{[A(c), P]}$, so $V_\exists = \mathbb{C}$.
+$\{A(c) \cup P\}$ is not differentially simple,
+but splits into two differentially simple subsystems:
+\begin{equation}
+\label{ex:three-loci two systems}
+\begin{gathered}
+\mathcal{S}_1^= = \{ \Psi, c_t \} \qquad \mathcal{S}_1^{\ne} = \emptyset \\
+\mathcal{S}_2^= = \{ \Psi_t - \Psi,  c - 1 \} \qquad \mathcal{S}_2^{\ne} = \{ \Psi \}
+\end{gathered}
+\end{equation}
+$\mathcal{S}_1$, in particular, has no restriction on $c$ (other than it be constant)
+and no terms in $\mathbb{C}$, so $1 \notin \sqrt{[\mathcal{S}_1^=]}$ and $V_\exists = \mathbb{C}$.
 
 To compute $V_\forall$, we need to identify the constants where
-$P \in \sqrt{[A(c)]} : Q^\infty$, which by Lemma~\ref{lem:saturation-by-one} is
-where $Q P \in \sqrt{[A(c)]}$.  Since $A(c)$ has order 2 for all values of $c$,
-every element of $[A(c)]$ has order at least 2, while $P$ has order 1 and $\Psi$
-order 0, so $QP$ has order 1 under either choice of $\mathcal{P}^{\ne}$ and so
-does each of its powers.  No power of $QP$ lies in $[A(c)]$, hence
-$QP \notin \sqrt{[A(c)]}$ for any value of $c$, and $V_\forall = \emptyset$
-either way.  The same order argument applied to~$\Psi$ gives
-$\Psi \notin \sqrt{[A(c)]}$ for every $c$, so $N_\Psi = \mathbb{C}$: the ansatz
-never forces $\Psi$ to vanish.
-
-The saturation is vacuous here, as the criterion above predicts: the solutions
-of $A(c)$ form an irreducible two-parameter family and the zero function is a
-limit of non-zero members of it rather than a component of its own, so
-$\sqrt{[A(c)]} : \Psi^\infty = \sqrt{[A(c)]}$.  All of the work the inequation
-does in this example is done in $V_\exists$.
+$\mathcal{P} \subseteq \sqrt{[A(c)]}$.  $A(c)$ is a simple differential
+system, and $\Psi_t-\Psi$ remains unchanged after pseudo-reduction by $A(c)$,
+so by Proposition \ref{prop:simple-membership}, $\Psi_t-\Psi$ is not in $[A(c)]$
+for any value of $c$, and $V_\forall$ is empty.
 
 \begin{equation*}
 V_\exists  = \mathbb{C} \qquad
@@ -1487,7 +1482,7 @@ V_\forall = \emptyset
 \begin{example}
 \label{ex:three-loci-2}
 In example \ref{ex:three-loci-2}, we saw how the zero function dominates
-the constant loci when homogenous equations are used in the ansatz.
+the constant loci when homogenous equations are used.
 Continuing the example, we now address this problem by using an inequation
 to strip out the zero solution.  The ansatz remains the same:
 
@@ -1499,32 +1494,21 @@ We add an inequality to the system $\mathcal{P}$:
 \mathcal{P}^= = \{ \Psi_t - \Psi \} \qquad \mathcal{P}^{\ne} = \{\Psi\}
 \end{equation}
 
-With $\mathcal{P}^{\ne} = \{\Psi\}$ we have $Q = \Psi$, and $V_\exists$, by Lemma~\ref{lem:saturation-by-one},
-becomes the set of constants where $\Psi \notin [A(c), P]$.  $P_t + P - A(c) = (c-1)\Psi$,
-so $\Psi \in [A(c), P]$ for all $c \ne 1$, and $V_\exists = \{1\}$ (proof this).
+The inequality kills the first system in \eqref{ex:three-loci two systems}, so we are left with only $\mathcal{S}_2$:
 
-To compute $V_\forall$, we identify the constants where
-$P \in \sqrt{[A(c)]} : Q^\infty$, which by Lemma~\ref{lem:saturation-by-one} is
-where $Q P \in \sqrt{[A(c)]}$.  Since $A(c)$ has order 2 for all values of $c$,
-every element of $[A(c)]$ has order at least 2, while $P$ has order 1 and $\Psi$
-order 0, so $QP$ has order 1 under either choice of $\mathcal{P}^{\ne}$ and so
-does each of its powers.  No power of $QP$ lies in $[A(c)]$, hence
-$QP \notin \sqrt{[A(c)]}$ for any value of $c$, and $V_\forall = \emptyset$
-either way.  The same order argument applied to~$\Psi$ gives
-$\Psi \notin \sqrt{[A(c)]}$ for every $c$, so $N_\Psi = \mathbb{C}$: the ansatz
-never forces $\Psi$ to vanish.
+\begin{equation}
+\begin{gathered}
+\mathcal{S}_2^= = \{ \Psi_t - \Psi,  c - 1 \} \qquad \mathcal{S}_2^{\ne} = \{ \Psi \}
+\end{gathered}
+\end{equation}
 
-The saturation is vacuous here, as the criterion above predicts: the solutions
-of $A(c)$ form an irreducible two-parameter family and the zero function is a
-limit of non-zero members of it rather than a component of its own, so
-$\sqrt{[A(c)]} : \Psi^\infty = \sqrt{[A(c)]}$.  All of the work the inequation
-does in this example is done in $V_\exists$.
+Only $c=1$ solves this system, so $V_\exists = \{1\}$, and $V_\forall$ remains vacuous:
 
 \begin{equation*}
 V_\exists  = \{ 1 \} \qquad
 V_\forall = \emptyset
 \end{equation*}
-
+\qed
 \end{example}
 
 It is perhaps easiest to understand these examples analytically.
@@ -1542,14 +1526,13 @@ ideal.  We do not wish to treat the constants as indeterminates (as they would a
 as parameters, and seek conditions on those parameters that would yield a non-trivial
 differential ideal where $1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty$.  This suggests the
 use of a parametric algorithm, such as parametric Rosenfeld-Gr\"obner \cite{Fakouri2018} or a
-differential Thomas decomposition \cite{ThomasDecomp, RobertzLNM}.  The author's practical experience,
+differential Thomas decomposition \cite{ThomasDecomp, RobertzLNM}.  The author's experience,
 however, is that this approach is often computationally infeasible.
 
-Therefore, for the remainder of this paper, we will focus our attention on the membership locus $V_\forall$.  This restriction allows
-us to develop an algorithm that, while still using a parametric decomposition, only does so on a differential
+Therefore, for the remainder of this paper, we will focus our attention on the membership locus $V_\forall$.
+We will develop an algorithm to compute $V_\forall$ that, while still using a parametric decomposition, only does so on the differential
 ideal formed from the ansatz, with the system treated separately.
-This tends to be more computationally feasible than trying to compute
-the consistency locus $V_\exists$.
+This tends to be more computationally feasible than a parametric decomposition of the combined system.
 
 % We see that $h=0$ could lead to extraneous solutions, so we require $h\ne 0$.
 
