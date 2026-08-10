@@ -1400,18 +1400,22 @@ inequations} will satisfy every equation of the system.
 % V_{\forall} = \{ c^* \in {\mathbb C}^n : P \in [A(c^*)] \}
 % \end{equation}
 
-Theorem: The membership locus is a subset of the consistency locus.
-
+\begin{theorem}
+\label{thm:locus-containment}
+The membership locus is a subset of the consistency locus:
+%
 \begin{equation}
 \label{eq:locus-containment}
 V_\forall \subseteq V_\exists
 \end{equation}
+\end{theorem}
 
-Proof: $\sqrt{[A(c^*)]} : Q^\infty$ is a differential ideal, and if every element
+{\it Proof.}
+$\sqrt{[A(c^*)]} : Q^\infty$ is a differential ideal, and if every element
 of $\mathcal{P}^=$ lies in it then it contains both $A(c^*)$ and $\mathcal{P}^=$,
 hence contains $[A(c^*), \mathcal{P}^=]$; saturating that containment
 by~$Q^\infty$ and using $(I : Q^\infty) : Q^\infty = I : Q^\infty$ gives
-
+%
 \begin{equation}
 \begin{gathered}
 \mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \implies [A(c^*),\mathcal{P}^=] : Q^\infty = \sqrt{[A(c^*)]} : Q^\infty \\
@@ -1419,7 +1423,11 @@ Q \notin \sqrt{[A(c^*)]} \implies 1 \notin \sqrt{[A(c^*)]} : Q^\infty \implies 1
 V_\forall \subseteq V_\exists
 \end{gathered}
 \end{equation}
+%
+\hfill $\square$
 
+\medskip
+\noindent
 The saturation costs nothing to compute, by the following observation, which is
 what allows every reduction below to be performed against the ansatz alone.
 
