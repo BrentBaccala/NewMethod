@@ -1813,7 +1813,7 @@ reports, as described below.
 \item \algind $W_i \leftarrow \bigl\{\, (\mathfrak{p}, h_i) \;:\; \mathfrak{p} \in \mathrm{minAss}\bigl( \langle J_i \cup E_i \rangle : h_i^\infty \bigr) \,\bigr\}$
 \item {\bf end for}
 \item {\bf if} $\mu = \forall$ {\bf then}
-\item \algind $\mathcal{B} \leftarrow \mathrm{SMPD}(\mathbb{C}^n, W_1, C_1, \ldots, W_s, C_s)$
+\item \algind $\mathcal{B} \leftarrow \mathrm{SMPD}((\mathbb{C}^n, 1), W_1, C_1, \ldots, W_s, C_s)$
 \item \algind $D \leftarrow \bigcup \bigl\{\, B \in \mathcal{B} \;:\; B \subseteq W_i \text{ for every $i$ with } B \subseteq C_i \,\bigr\}$
 \item \algind {\bf return} $\bigl\{\, (\mathfrak{p}, h) \;:\; (F, h) \in D, \; \mathfrak{p} \in \mathrm{minAss}(\langle F \rangle : h^\infty) \,\bigr\}$
 \item {\bf else}
