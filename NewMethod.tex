@@ -1520,11 +1520,67 @@ This tends to be more computationally feasible than a parametric decomposition o
 
 % We see that $h=0$ could lead to extraneous solutions, so we require $h\ne 0$.
 
+\vfill\eject
+
 \subsection{Computing the Membership Locus}
 \label{sec:membership-locus}
 
-Given an ansatz and a system of equations, Algorithm~\ref{alg:core}, with $\mu = \forall$,
-computes the membership locus.  We now summarize the algorithm.
+The following algorithm computes the membership locus.
+
+\begin{algorithm}[MembershipLocus]
+\label{alg:core}
+\mbox{}
+
+{\bf Input:} A differential polynomial ring
+$R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$ with
+derivations $\Delta = \{\delta_1, \ldots, \delta_m\}$ satisfying
+$\delta_i x_j = \delta_{ij}$ and $\delta_i c_l = 0$; the equations
+$\mathcal{P}^= = \{P_1, \ldots, P_t\} \subset R$ of the target system; an
+ansatz $A(c) \subset R$, a finite set of differential polynomials
+parameterized by the constants $c = (c_1, \ldots, c_n)$; a block ranking $\prec$
+with
+%
+\[
+\{u_1, \ldots, u_k\} \;\gg\; \{c_1, \ldots, c_n\} \;\gg\; \{x_1, \ldots, x_m\};
+\]
+%
+and a flag $\mu \in \{\forall, \, \exists\forall\}$ selecting the assembly.
+
+{\bf Output:} A constructible subset of $\mathbb{C}^n$, presented as a finite
+set of pairs $(\mathfrak{p}, h)$ in which $\mathfrak{p}$ generates a prime
+ideal, and so as a finite union of irreducible locally closed sets.  For $\mu = \forall$ it is the
+membership locus
+$V_\forall = \{\, c^* \in \mathbb{C}^n : \mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \,\}$.  For
+$\mu = \exists\forall$ it is the intermediate locus $V_{\exists\forall}$, which
+satisfies $V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists$ whenever
+the ansatz is consistent throughout $\mathbb{C}^n$ --- a condition the algorithm
+reports, as described below.
+
+{\bf Algorithm:}
+\begin{pseudocode}
+\item $(S_1, \ldots, S_s) \leftarrow \mathrm{DifferentialDecompose}(A(c), \prec)$
+\item {\bf for} $i = 1, \ldots, s$ {\bf do}
+\item \algind $J_i \leftarrow \emptyset$
+\item \algind {\bf for} $j = 1, \ldots, t$ {\bf do}
+\item \algind\algind $r \leftarrow \mathrm{FullReduce}(Q \cdot P_j, S^=_i)$
+\item \algind\algind $J_i \leftarrow J_i \cup \mathrm{Coeffs}\bigl(r, \, \mathbb{Q}[c_1, \ldots, c_n]\bigr)$
+\item \algind {\bf end for}
+\item \algind $E_i \leftarrow S^=_i \cap \mathbb{Q}[c_1, \ldots, c_n]$
+\item \algind $h_i \leftarrow \prod \bigl( S^{\ne}_i \cap \mathbb{Q}[c_1, \ldots, c_n] \bigr)$
+\item \algind $C_i \leftarrow (E_i, h_i)$
+\item \algind $W_i \leftarrow \bigl\{\, (\mathfrak{p}, h_i) \;:\; \mathfrak{p} \in \mathrm{minAss}\bigl( \langle J_i \cup E_i \rangle : h_i^\infty \bigr) \,\bigr\}$
+\item {\bf end for}
+\item {\bf if} $\mu = \forall$ {\bf then}
+\item \algind $\mathcal{B} \leftarrow \mathrm{SMPD}((\mathbb{C}^n, 1), W_1, C_1, \ldots, W_s, C_s)$
+\item \algind $D \leftarrow \bigcup \bigl\{\, B \in \mathcal{B} \;:\; B \subseteq W_i \text{ for every $i$ with } B \subseteq C_i \,\bigr\}$
+\item \algind {\bf return} $\bigl\{\, (\mathfrak{p}, h) \;:\; (F, h) \in D, \; \mathfrak{p} \in \mathrm{minAss}(\langle F \rangle : h^\infty) \,\bigr\}$
+\item {\bf else}
+\item \algind {\bf return} $\textstyle\bigcup_{i=1}^{s} W_i$
+\item {\bf end if}
+\end{pseudocode}
+\end{algorithm}
+
+We now summarize and explain the algorithm.
 
 First, we compute a differential Thomas decomposition of the ansatz,
 which produces a partition of the jet space into quasi-affine sets (i.e, defined
@@ -1684,61 +1740,6 @@ $\mathrm{SMPD}$
 \hline
 \end{tabularx}
 \end{center}
-
-\vfill\eject
-
-\begin{algorithm}[MembershipLocus]
-\label{alg:core}
-\mbox{}
-
-{\bf Input:} A differential polynomial ring
-$R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$ with
-derivations $\Delta = \{\delta_1, \ldots, \delta_m\}$ satisfying
-$\delta_i x_j = \delta_{ij}$ and $\delta_i c_l = 0$; the equations
-$\mathcal{P}^= = \{P_1, \ldots, P_t\} \subset R$ of the target system; an
-ansatz $A(c) \subset R$, a finite set of differential polynomials
-parameterized by the constants $c = (c_1, \ldots, c_n)$; a block ranking $\prec$
-with
-%
-\[
-\{u_1, \ldots, u_k\} \;\gg\; \{c_1, \ldots, c_n\} \;\gg\; \{x_1, \ldots, x_m\};
-\]
-%
-and a flag $\mu \in \{\forall, \, \exists\forall\}$ selecting the assembly.
-
-{\bf Output:} A constructible subset of $\mathbb{C}^n$, presented as a finite
-set of pairs $(\mathfrak{p}, h)$ in which $\mathfrak{p}$ generates a prime
-ideal, and so as a finite union of irreducible locally closed sets.  For $\mu = \forall$ it is the
-membership locus
-$V_\forall = \{\, c^* \in \mathbb{C}^n : \mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \,\}$.  For
-$\mu = \exists\forall$ it is the intermediate locus $V_{\exists\forall}$, which
-satisfies $V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists$ whenever
-the ansatz is consistent throughout $\mathbb{C}^n$ --- a condition the algorithm
-reports, as described below.
-
-{\bf Algorithm:}
-\begin{pseudocode}
-\item $(S_1, \ldots, S_s) \leftarrow \mathrm{DifferentialDecompose}(A(c), \prec)$
-\item {\bf for} $i = 1, \ldots, s$ {\bf do}
-\item \algind $J_i \leftarrow \emptyset$
-\item \algind {\bf for} $j = 1, \ldots, t$ {\bf do}
-\item \algind\algind $r \leftarrow \mathrm{FullReduce}(Q \cdot P_j, S^=_i)$
-\item \algind\algind $J_i \leftarrow J_i \cup \mathrm{Coeffs}\bigl(r, \, \mathbb{Q}[c_1, \ldots, c_n]\bigr)$
-\item \algind {\bf end for}
-\item \algind $E_i \leftarrow S^=_i \cap \mathbb{Q}[c_1, \ldots, c_n]$
-\item \algind $h_i \leftarrow \prod \bigl( S^{\ne}_i \cap \mathbb{Q}[c_1, \ldots, c_n] \bigr)$
-\item \algind $C_i \leftarrow (E_i, h_i)$
-\item \algind $W_i \leftarrow \bigl\{\, (\mathfrak{p}, h_i) \;:\; \mathfrak{p} \in \mathrm{minAss}\bigl( \langle J_i \cup E_i \rangle : h_i^\infty \bigr) \,\bigr\}$
-\item {\bf end for}
-\item {\bf if} $\mu = \forall$ {\bf then}
-\item \algind $\mathcal{B} \leftarrow \mathrm{SMPD}((\mathbb{C}^n, 1), W_1, C_1, \ldots, W_s, C_s)$
-\item \algind $D \leftarrow \bigcup \bigl\{\, B \in \mathcal{B} \;:\; B \subseteq W_i \text{ for every $i$ with } B \subseteq C_i \,\bigr\}$
-\item \algind {\bf return} $\bigl\{\, (\mathfrak{p}, h) \;:\; (F, h) \in D, \; \mathfrak{p} \in \mathrm{minAss}(\langle F \rangle : h^\infty) \,\bigr\}$
-\item {\bf else}
-\item \algind {\bf return} $\textstyle\bigcup_{i=1}^{s} W_i$
-\item {\bf end if}
-\end{pseudocode}
-\end{algorithm}
 
 \vfill\eject
 \subsection{Completeness of the Algorithm}
