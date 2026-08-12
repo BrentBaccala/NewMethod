@@ -1646,7 +1646,7 @@ $S^=_i$ and $S^{\ne}_i$ are the
 equations and inequations of the $i^{\rm th}$ component, treated as sets of
 differential polynomials so that they may be intersected with a subring.
 
-The algorithm calls five subroutines, each taken from the
+The algorithm calls four subroutines, each taken from the
 literature and used unmodified; the work is in what is handed to them and how
 their results are combined.  We name them as their sources do, and give the
 source's own numbering where the source numbers its algorithms.
@@ -1676,12 +1676,6 @@ $\mathrm{SMPD}$
     pairwise disjoint pieces, each member of the family being a union of some
     of them
   & \cite{CTD}, Alg.~3 \\[3pt]
-$\mathrm{DropContained}$
-  & discards each piece contained in another piece of the same family, one
-    representative being kept from any set of pieces that are equal.  A piece
-    $(\mathfrak{p}_1, h_1)$ is contained in $(\mathfrak{p}_2, h_2)$ exactly when
-    the difference of the two constructible sets is empty
-  & \cite{CTD}, Algs.~1--2 \\
 \hline
 \end{tabularx}
 \end{center}
@@ -1734,12 +1728,6 @@ if it lies in $\mathcal{V}_i$ for {\it some} such component.
 \label{eq:intermediate-sandwich}
 V_\forall \;\subseteq\; V_{\exists\forall} \;\subseteq\; V_\exists .
 \end{equation}
-
-When asked to compute the membership locus, the algorithm 
-calls $\mathrm{DropContained}$, and that is a tidying step rather than a step of the
-computation: since the cells may overlap, one solution family can surface as a
-piece of two different $W_i$, and the smaller of two nested pieces is then
-redundant. 
 
 Including $\mathbb{C}^n$ among the sets refined at line~14 costs one more
 argument and makes the consistency of the ansatz a by-product of the
@@ -1817,7 +1805,7 @@ reports, as described below.
 \item \algind $D \leftarrow \bigcup \bigl\{\, B \in \mathcal{B} \;:\; B \subseteq W_i \text{ for every $i$ with } B \subseteq C_i \,\bigr\}$
 \item \algind {\bf return} $\bigl\{\, (\mathfrak{p}, h) \;:\; (F, h) \in D, \; \mathfrak{p} \in \mathrm{minAss}(\langle F \rangle : h^\infty) \,\bigr\}$
 \item {\bf else}
-\item \algind {\bf return} $\mathrm{DropContained}\bigl( \textstyle\bigcup_{i=1}^{s} W_i \bigr)$
+\item \algind {\bf return} $\textstyle\bigcup_{i=1}^{s} W_i$
 \item {\bf end if}
 \end{pseudocode}
 \end{algorithm}
