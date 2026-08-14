@@ -1875,20 +1875,34 @@ Ritt's full reduction algorithm produces $h_j$ and $r_j$ satisfying \eqref{ritt 
 $r_j$ fully reduced with respect to~$A$.
 Evaluating the constants at $c = c^*$ gives
 $h_j(c^*) \cdot Q P_j - r_j(c^*) \in [A(c^*)]$.
-Write $E = [A(c^*)]$.
-Since $c^*$ lies in the cell, Lemma~\ref{lem:specialization} makes
-$(S^=(c^*), S^{\ne}(c^*))$ a simple differential system, so
-Proposition~\ref{prop:simple-membership} applies to it.
+Since $c^*$ lies in the cell, Lemma~\ref{lem:specialization} ensures that
+$(S^=(c^*), S^{\ne}(c^*))$ a simple differential system, and this
+implies that $h_j(c^*)$ is not zero, since initials and separants (maybe a lemma for this)
+are not zero on simple differential systems.  Therefore
+%
+\[
+r_j(c^*) \in [A(c^*)]
+\quad\Longleftrightarrow\quad
+Q P_j \in [A(c^*)]
+\]
+%
 
-Now $r_j$ is fully reduced with respect to $A$, and as observed above $h_j(c^*)$ is
-not identically zero, so no leader of $A$ drops in degree upon specialization
-and $r_j(c^*)$ is fully reduced with respect to $A(c^*)$; it is therefore its own
-pseudo-remainder.  Proposition~\ref{prop:simple-membership} then gives
+By Lemma~\ref{lem:saturation-by-one},
+%
+\[
+Q P_j \in \sqrt{[A(c^*)]}
+\quad\Longleftrightarrow\quad
+P_j \in \sqrt{[A(c^*)]}:Q^\infty
+\]
+%
+
+% Writing $E = [A(c^*)]$, Proposition~\ref{prop:simple-membership} gives
+Since $r_j$ is fully reduced w.r.t. $A(c^*)$, Proposition~\ref{prop:simple-membership} gives
 %
 \[
 r_j(c^*) = 0
 \quad\Longleftrightarrow\quad
-r_j(c^*) \in E : q^\infty .
+r_j(c^*) \in [A(c^*)] : q^\infty .
 \]
 %
 Since $h_j(c^*) \cdot Q P_j - r_j(c^*) \in E \subseteq E : q^\infty$, the right-hand
