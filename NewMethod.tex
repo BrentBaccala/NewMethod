@@ -1793,13 +1793,12 @@ ansatz, computed with the constants ranked below all other indeterminates, write
 $A = \{a_1, \ldots, a_k\}$ for its equations $S^=$, and let
 $H_A = I_A \cup S_A$ denote the set of initials and separants of~$A$.
 
-Let $Q$ be the product of the inequations $\mathcal{P}^{\ne}$ of the target
-system.  Apply Ritt's full reduction to each $Q P_j$ modulo $A$, obtaining a
+Apply Ritt's full reduction to each $P_j$ modulo $A$, obtaining a
 remainder $r_j$ and a power product $h_j$ of elements of $H_A$ such that
 %
 \begin{equation}
 \label{ritt reduction 1}
-h_j \cdot Q P_j - r_j \in [A]
+h_j \cdot P_j - r_j \in [A]
 \qquad (j = 1, \ldots, t)
 \end{equation}
 %
@@ -1826,55 +1825,17 @@ $\mathbb{C}^n$.  Then
 \[
 c^* \in \mathcal{V}
 \quad\Longleftrightarrow\quad
-Q P_j \in [A(c^*)] : q^\infty \ \text{ for } j = 1, \ldots, t .
+P_j \in [A(c^*)] : q^\infty \ \text{ for } j = 1, \ldots, t .
 \]
-%
-In particular, $\mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty$ implies
-$c^* \in \mathcal{V}$: by Lemma~\ref{lem:saturation-by-one} that hypothesis gives
-$Q P_j \in \sqrt{[A(c^*)]}$, and $\sqrt{[A(c^*)]} \subseteq [A(c^*)] : q^\infty$
-because the latter is radical by Proposition~\ref{prop:simple-membership}.
+
 \end{theorem}
-
-Note that each $h_j$ is in general a
-polynomial in the constants {\it and} in jet variables ranked below the leaders
-of~$A$, so the condition that matters is that $h_j(c^*)$ not be the zero
-polynomial; that is what preserves the degrees of the leaders in $A(c^*)$, and
-hence what keeps $r_j(c^*)$ fully reduced.  Now every factor of $h_j$ is an initial
-or a separant of an equation of $A$; by (A2) the initials do not vanish at any
-solution of the corresponding lower subsystem, and by the consequence of (A3)
-noted above neither do the separants.  Since $c^*$ lies in the cell, some
-solution~$a$ of the component lies above it, and $h_j(a) \ne 0$; hence $h_j(c^*)$ is
-not identically zero.  The $h_j$ need not agree with one another --- each
-reduction clears whatever initials and separants it happens to meet --- but the
-argument is applied to one $j$ at a time and never compares them.
-
-The theorem needs no further hypothesis.  The whole of what the proof requires
---- that reduction to zero decide membership, and that the relevant ideal be
-radical --- is delivered by Proposition~\ref{prop:simple-membership}, whose only
-hypothesis is that the system be simple.  That is exactly what the components of
-a differential Thomas decomposition are, and Lemma~\ref{lem:specialization}
-carries the property to the point $c^*$.  This is the structural reason for
-decomposing the ansatz with a differential Thomas decomposition: its output
-satisfies the theorem's hypotheses by construction, so nothing remains to be
-verified component by component.
-
-Because the theorem is an equivalence, it settles both directions at once: the
-algorithm is complete, in that every valid choice of constants is found, and
-also sufficient, in that no point of $\mathcal{V}$ is spurious.  The ideal
-characterized is the saturation $[A(c^*)] : q^\infty$, which by
-Proposition~\ref{prop:simple-membership} is radical and therefore contains
-$\sqrt{[A(c^*)]}$; the final clause of the theorem is that containment.  The two
-can differ, so $\mathcal{V}$ may contain constants at which some $Q P_j$ lies in the
-saturation without lying in $\sqrt{[A(c^*)]}$ --- but the saturation is the
-vanishing ideal of the component's own solution set, so at such a point the
-ansatz does solve the system on that component.
 
 {\it Proof.}
 Fix $j$.
 Ritt's full reduction algorithm produces $h_j$ and $r_j$ satisfying \eqref{ritt reduction 1}, with
 $r_j$ fully reduced with respect to~$A$.
 Evaluating the constants at $c = c^*$ gives
-$h_j(c^*) \cdot Q P_j - r_j(c^*) \in [A(c^*)]$.
+$h_j(c^*) \cdot P_j - r_j(c^*) \in [A(c^*)]$.
 Since $c^*$ lies in the cell, Lemma~\ref{lem:specialization} ensures that
 $(S^=(c^*), S^{\ne}(c^*))$ a simple differential system, and this
 implies that $h_j(c^*)$ is not zero, since initials and separants (maybe a lemma for this)
@@ -1883,64 +1844,46 @@ are not zero on simple differential systems.  Therefore
 \[
 r_j(c^*) \in [A(c^*)]
 \quad\Longleftrightarrow\quad
-Q P_j \in [A(c^*)]
+P_j \in [A(c^*)]
 \]
 %
 
-By Lemma~\ref{lem:saturation-by-one},
-%
-\[
-Q P_j \in \sqrt{[A(c^*)]}
-\quad\Longleftrightarrow\quad
-P_j \in \sqrt{[A(c^*)]}:Q^\infty
-\]
-%
-
-% Writing $E = [A(c^*)]$, Proposition~\ref{prop:simple-membership} gives
 Since $r_j$ is fully reduced w.r.t. $A(c^*)$, Proposition~\ref{prop:simple-membership} gives
 %
 \[
 r_j(c^*) = 0
 \quad\Longleftrightarrow\quad
-r_j(c^*) \in [A(c^*)] : q^\infty .
+r_j(c^*) \in [A(c^*)] : q(c^*)^\infty .
 \]
 %
-Since $h_j(c^*) \cdot Q P_j - r_j(c^*) \in E \subseteq E : q^\infty$, the right-hand
-side holds if and only if $h_j(c^*) \cdot Q P_j \in E : q^\infty$.  And $h_j$ is a power
-product of elements of $H_A$ while $q$ is the product of all of them, so $h_j$
-divides some power of $q$; as $E : q^\infty$ is unchanged by further saturation
-at $q$, we get $h_j(c^*) \cdot Q P_j \in E : q^\infty$ if and only if
-$Q P_j \in E : q^\infty$.  Chaining,
+
+We get the following equivalence:
 %
 \[
+P_j \in [A(c^*)]:q(c^*)^\infty
+\quad\underset{h_j(c^*)\ne0}\Longleftrightarrow\quad
+r_j(c^*) \in [A(c^*)] : q(c^*)^\infty
+\quad\underset{\textrm{Prop 1}}\Longleftrightarrow\quad
 r_j(c^*) = 0
-\quad\Longleftrightarrow\quad
-Q P_j \in [A(c^*)] : q^\infty .
 \]
-%
+
 Now the power products $m_{j\alpha}$, for this fixed $j$, are distinct monomials in a polynomial
 ring, hence linearly independent over~$\mathbb{C}$, so $r_j(c^*) = 0$ if and only
 if every coefficient $p_{j\alpha}(c^*) = 0$.
 
 Both sides of the equivalence just established are conjunctions over $j$ of
 statements each involving only that one $j$: the right-hand condition holds if
-and only if $Q P_j \in E : q^\infty$ for every $j$, and $c^* \in \mathcal{V}$ holds if and only if
+and only if $P_j \in E : q^\infty$ for every $j$, and $c^* \in \mathcal{V}$ holds if and only if
 $p_{j\alpha}(c^*) = 0$ for every $j$ and $\alpha$.  Taking the conjunction over
 $j = 1, \ldots, t$ of the per-equation equivalence therefore gives
 %
 \[
 c^* \in \mathcal{V}
 \quad\Longleftrightarrow\quad
-Q P_j \in [A(c^*)] : q^\infty \ \text{ for } j = 1, \ldots, t .
+P_j \in [A(c^*)] : q(c^*)^\infty \ \text{ for } j = 1, \ldots, t .
 \]
 %
-Note that the ideal $E : q^\infty$ is the same for all $j$ --- it depends on the
-component and on $c^*$, not on which equation is being reduced --- which is what
-lets the $t$ statements be conjoined without further ado.
-The last clause follows because $E : q^\infty$ is radical and contains $E$,
-hence contains $\sqrt{E}$, together with Lemma~\ref{lem:saturation-by-one},
-which rewrites $\mathcal{P}^= \subseteq \sqrt{E} : Q^\infty$ as
-$Q P_j \in \sqrt{E}$ for every~$j$. \hfill $\square$
+\hfill $\square$
 
 \medskip
 Theorem~\ref{thm:completeness} concerns a single component.  The membership
