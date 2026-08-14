@@ -1763,36 +1763,23 @@ is again differentially simple.
 \end{lemma}
 
 {\it Proof.}
-Because the constants are ranked below every other indeterminate, the two
-conditions of algebraic simplicity are quantified over solution sets that
-contain the whole cell: by \cite{ThomasDecomp}, Definition~2.2, the initial of
-each equation is non-zero, and each equation square-free in its leader, at every
-solution of the subsystem in the strictly lower-ranked variables, and for the
-equations carrying differential indeterminates that subsystem is the constant
-part of the component.  Both therefore hold at $c^*$, and (S1) persists.
+Because the constants are ranked below every other indeterminate and conditions
+(A2) and (A3) of algebraic simplicity are quantified over solution sets that
+contain the whole cell, they are preserved over constants that solve the system.
+Since the initial of each equation is non-zero, the leaders do not change
+under specialization, and (A1) is preserved as well.  Therefore (S1) persists.
 
-Specialization evaluates coefficients and introduces no new derivative; since no
-initial vanishes at $c^*$, every leader stays in place.  Janet's division is
-computed from the leaders alone, so the multiplicative/non-multiplicative split
-is unchanged, and each reduction to zero witnessing (S2) remains a valid
-reduction after its coefficients are evaluated at~$c^*$.  Conditions (S3)
-and~(S4) concern which equations and inequations are present and reducible, and
-no equation or inequation degenerates at a point of the cell.  Hence
-$(S^=(c^*), S^{\ne}(c^*))$ satisfies (S1)--(S4). \hfill $\square$
-
-\medskip
-\noindent
-Lemma~\ref{lem:specialization} plays the role that the ``specializes well''
-property of algebraic regular chains plays in the triangular-set literature,
-where it holds off the zero set of the iterated resultants of the initials and
-separants (\cite{CTD}, Definition~11 and Proposition~4; the Gr\"obner-basis
-precedent is \cite{gianni}).  The difference is where the exceptional locus
-goes.  For a regular differential system it must be carved out afterwards, and
-the square-free conditions need not survive the specialization at all.  A Thomas
-component instead carries its own conditions on the constants: the parameter
-values at which the system would degenerate are not in the cell, having been
-split off into other components of the decomposition.  Completeness is recovered
-by running the algorithm on every component.
+(A2) ensures that initials are non-zero at any $c^*$ in the cell,
+so the leaders of the system's equations remain unchanged.
+Janet's division's multiplicative/non-multiplicative split is computed from
+the leaders alone, so this also remains unchanged.  The reductions
+required by (S2) remain unchanged, and if they are zero for generic
+constants $c$, they are zero for any specialization $c^*$.
+The minimality required by (S3) is computed based on leaders
+and reductive derivations, which remain unchanged,
+and the reductions prohibited by (S4) are also based on
+leaders and remain unchanged.
+\hfill $\square$
 
 \medskip
 \begin{theorem}
