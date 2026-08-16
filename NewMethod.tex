@@ -1825,7 +1825,7 @@ $\mathbb{C}^n$.  Then
 \[
 c^* \in \mathcal{V}
 \quad\Longleftrightarrow\quad
-P_j \in [A(c^*)] : q^\infty \ \text{ for } j = 1, \ldots, t .
+P_j \in [A(c^*)] : q(c^*)^\infty \ \text{ for } j = 1, \ldots, t .
 \]
 
 \end{theorem}
@@ -1835,16 +1835,20 @@ Fix $j$.
 Ritt's full reduction algorithm produces $h_j$ and $r_j$ satisfying \eqref{ritt reduction 1}, with
 $r_j$ fully reduced with respect to~$A$.
 Evaluating the constants at $c = c^*$ gives
-$h_j(c^*) \cdot P_j - r_j(c^*) \in [A(c^*)]$.
+%
+\[
+h_j(c^*) \cdot P_j - r_j(c^*) \in [A(c^*)] \subseteq [A(c^*)]:q(c^*)^\infty
+\]
+%
 Since $c^*$ lies in the cell, Lemma~\ref{lem:specialization} ensures that
 $(S^=(c^*), S^{\ne}(c^*))$ a simple differential system, and this
 implies that $h_j(c^*)$ is not zero, since initials and separants (maybe a lemma for this)
 are not zero on simple differential systems.  Therefore
 %
 \[
-r_j(c^*) \in [A(c^*)]
+r_j(c^*) \in [A(c^*)]:q(c^*)^\infty
 \quad\Longleftrightarrow\quad
-P_j \in [A(c^*)]
+P_j \in [A(c^*)]:q(c^*)^\infty
 \]
 %
 
@@ -1861,9 +1865,7 @@ We get the following equivalence:
 %
 \[
 P_j \in [A(c^*)]:q(c^*)^\infty
-\quad\underset{h_j(c^*)\ne0}\Longleftrightarrow\quad
-r_j(c^*) \in [A(c^*)] : q(c^*)^\infty
-\quad\underset{\textrm{Prop 1}}\Longleftrightarrow\quad
+\quad\Longleftrightarrow\quad
 r_j(c^*) = 0
 \]
 
@@ -1883,6 +1885,10 @@ c^* \in \mathcal{V}
 P_j \in [A(c^*)] : q(c^*)^\infty \ \text{ for } j = 1, \ldots, t .
 \]
 %
+
+The ansatz $A=S^=$ and, since $(S^=, S^{\ne})$ is differentially simple,
+its initials and separants are listed in the inequations $S^{\ne}$.
+
 \hfill $\square$
 
 \medskip
