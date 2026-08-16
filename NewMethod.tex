@@ -1562,7 +1562,7 @@ reports, as described below.
 \item {\bf for} $i = 1, \ldots, s$ {\bf do}
 \item \algind $J_i \leftarrow \emptyset$
 \item \algind {\bf for} $j = 1, \ldots, t$ {\bf do}
-\item \algind\algind $r \leftarrow \mathrm{FullReduce}(Q \cdot P_j, S^=_i)$
+\item \algind\algind $r \leftarrow \mathrm{FullReduce}(\cdot P_j, S^=_i)$
 \item \algind\algind $J_i \leftarrow J_i \cup \mathrm{Coeffs}\bigl(r, \, \mathbb{Q}[c_1, \ldots, c_n]\bigr)$
 \item \algind {\bf end for}
 \item \algind $E_i \leftarrow S^=_i \cap \mathbb{Q}[c_1, \ldots, c_n]$
@@ -1586,7 +1586,7 @@ First, we compute a differential Thomas decomposition of the ansatz,
 which produces a partition of the jet space into quasi-affine sets (i.e, defined
 by both equations and inequations), each equiped with a specialization of the ansatz in a differentially simple form.
 For each differentially simple subsystem in the decomposition,
-we use Ritt's full reduction algorithm to reduce each $Q P_j$
+we use Ritt's full reduction algorithm to reduce each $P_j$
 modulo the subsystem, obtaining remainders $r_1, \ldots, r_t$, and project them
 onto the space of the $n$ constant parameters
 $c = (c_1, \ldots, c_n)$.
@@ -1890,27 +1890,6 @@ Theorem~\ref{thm:completeness} concerns a single component.  The membership
 locus of the ansatz as a whole is recovered by intersecting over the
 decomposition.
 
-It is $Q P_j$ that is reduced rather than $P_j$
-because, by the following lemma, that is how membership in the
-saturated ideal is tested.
-
-\begin{lemma}
-\label{lem:saturation-by-one}
-Let $I$ be a radical ideal of a commutative ring and let $P$ and $Q$ be elements
-of that ring.  Then $P \in I : Q^\infty$ if and only if $QP \in I$.
-\end{lemma}
-
-{\it Proof.}
-If $QP \in I$ then $P \in I : Q^\infty$ by the definition of the saturation.
-Conversely, if $P \in I : Q^\infty$ then $Q^k P \in I$ for some $k \ge 1$, so
-$(QP)^k = (Q^k P) \, P^{k-1} \in I$, and $I$ being radical gives $QP \in I$.
-\hfill $\square$
-
-A single power of $Q$ suffices, so no saturation exponent need be searched for.
-Every membership test below is accordingly a test of $Q P_j$ against an
-unsaturated ideal, and the differential Thomas decomposition is still computed
-from the ansatz alone --- the inequations of the target system never enter it.
-
 \begin{corollary}
 \label{cor:assembly}
 Let $\mathcal{V}_1, \ldots, \mathcal{V}_s$ be the varieties produced by
@@ -1937,11 +1916,9 @@ that proposition reads
 \sqrt{[A(c^*)]} \;=\; \bigcap_i \bigl( E^{(i)} : (q^{(i)})^\infty \bigr),
 \]
 %
-the intersection running over those components.  Since $\sqrt{[A(c^*)]}$ is
-radical, Lemma~\ref{lem:saturation-by-one} turns the membership condition into
-$Q P_j \in \sqrt{[A(c^*)]}$ for $j = 1, \ldots, t$.  A polynomial lies in an
+the intersection running over those components.  A polynomial lies in an
 intersection of ideals exactly when it lies in each of them, so that holds if
-and only if $Q P_j \in E^{(i)} : (q^{(i)})^\infty$ for every such $i$ and
+and only if $P_j \in E^{(i)} : (q^{(i)})^\infty$ for every such $i$ and
 every~$j$; and by Theorem~\ref{thm:completeness} that in turn holds if and only
 if $c^* \in \mathcal{V}_i$.
 
