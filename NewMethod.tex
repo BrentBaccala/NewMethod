@@ -1562,7 +1562,7 @@ reports, as described below.
 \item {\bf for} $i = 1, \ldots, s$ {\bf do}
 \item \algind $J_i \leftarrow \emptyset$
 \item \algind {\bf for} $j = 1, \ldots, t$ {\bf do}
-\item \algind\algind $r \leftarrow \mathrm{FullReduce}(\cdot P_j, S^=_i)$
+\item \algind\algind $r \leftarrow \mathrm{FullReduce}(P_j, S^=_i)$
 \item \algind\algind $J_i \leftarrow J_i \cup \mathrm{Coeffs}\bigl(r, \, \mathbb{Q}[c_1, \ldots, c_n]\bigr)$
 \item \algind {\bf end for}
 \item \algind $E_i \leftarrow S^=_i \cap \mathbb{Q}[c_1, \ldots, c_n]$
@@ -1894,9 +1894,14 @@ P_j \in [A(c^*)] : q(c^*)^\infty \ \text{ for } j = 1, \ldots, t .
 The ansatz $A=S^=$ and, since $(S^=, S^{\ne})$ is differentially simple,
 its initials and separants are listed in the inequations $S^{\ne}$, so $q\in S^{\ne}$.
 However, there may be additional inequalities in $S^{\ne}$ not in $q$.
-For the inequalities in $\mathbb{Q}[c_1, \ldots, c_n]$, we simply exclude
-them from consideration by using a constructable set.
-What about other inequalities? (like $\Psi$)
+Furthermore, the saturation ideal corresponds to the Zariski closure
+of the set-theoretic difference between $[A(c^*)]$ and $q(c^*)$,
+which may still include points that violate the inequations.
+We deal with all of this by using Proposition~\ref{prop:simple-membership}
+again.  We reduce the inequations modulo the $A$, collect like terms in the constants,
+and obtain a system of equations in $\mathbb{Q}[c_1, \ldots, c_n]$ for the constants that
+place the inequations in $[A(c^*)] : q(c^*)^\infty$ and must be excluded.  These constants
+are now excluded from consideration by using a constructable set.
 
 \hfill $\square$
 
