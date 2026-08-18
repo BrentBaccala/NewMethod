@@ -1534,8 +1534,11 @@ The following algorithm computes the membership locus.
 {\bf Input:} A differential polynomial ring
 $R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$ with
 derivations $\Delta = \{\delta_1, \ldots, \delta_m\}$ satisfying
-$\delta_i x_j = \delta_{ij}$ and $\delta_i c_l = 0$; the equations
-$\mathcal{P}^= = \{P_1, \ldots, P_t\} \subset R$ of the target system; an
+$\delta_i x_j = \delta_{ij}$ and $\delta_i c_l = 0$; the target system
+$\mathcal{P} = (\mathcal{P}^=, \mathcal{P}^{\ne})$, with equations
+$\mathcal{P}^= = \{P_1, \ldots, P_t\} \subset R$ and inequations
+$\mathcal{P}^{\ne} = \{Q_1, \ldots, Q_w\} \subset R$, abbreviated $Q = Q_1
+\cdots Q_w$ as in \S\ref{sec:constant-loci}; an
 ansatz $A(c) \subset R$, a finite set of differential polynomials
 parameterized by the constants $c = (c_1, \ldots, c_n)$; a block ranking $\prec$
 with
@@ -1558,7 +1561,7 @@ reports, as described below.
 
 {\bf Algorithm:}
 \begin{pseudocode}
-\item $(S_1, \ldots, S_s) \leftarrow \mathrm{DifferentialDecompose}(A(c), \prec)$
+\item $(S_1, \ldots, S_s) \leftarrow \mathrm{DifferentialDecompose}\bigl( (A(c), \{Q\}), \, \prec \bigr)$
 \item {\bf for} $i = 1, \ldots, s$ {\bf do}
 \item \algind $J_i \leftarrow \emptyset$
 \item \algind {\bf for} $j = 1, \ldots, t$ {\bf do}
@@ -1568,7 +1571,9 @@ reports, as described below.
 \item \algind $E_i \leftarrow S^=_i \cap \mathbb{Q}[c_1, \ldots, c_n]$
 \item \algind $h_i \leftarrow \prod \bigl( S^{\ne}_i \cap \mathbb{Q}[c_1, \ldots, c_n] \bigr)$
 \item \algind $C_i \leftarrow (E_i, h_i)$
-\item \algind $W_i \leftarrow \bigl\{\, (\mathfrak{p}, h_i) \;:\; \mathfrak{p} \in \mathrm{minAss}\bigl( \langle J_i \cup E_i \rangle : h_i^\infty \bigr) \,\bigr\}$
+\item \algind $\rho_i \leftarrow \mathrm{FullReduce}\bigl( \textstyle\prod(S^{\ne}_i), \, S^=_i \bigr)$
+\item \algind $g_i \leftarrow \prod \mathrm{Coeffs}\bigl(\rho_i, \, \mathbb{Q}[c_1, \ldots, c_n]\bigr)$
+\item \algind $W_i \leftarrow \bigl\{\, (\mathfrak{p}, g_i) \;:\; \mathfrak{p} \in \mathrm{minAss}\bigl( \langle J_i \cup E_i \rangle : g_i^\infty \bigr) \,\bigr\}$
 \item {\bf end for}
 \item {\bf if} $\mu = \forall$ {\bf then}
 \item \algind $\mathcal{B} \leftarrow \mathrm{SMPD}((\mathbb{C}^n, 1), W_1, C_1, \ldots, W_s, C_s)$
@@ -1582,14 +1587,28 @@ reports, as described below.
 
 We now summarize and explain the algorithm.
 
-First, we compute a differential Thomas decomposition of the ansatz,
-which produces a partition of the jet space into quasi-affine sets (i.e, defined
-by both equations and inequations), each equiped with a specialization of the ansatz in a differentially simple form.
+First, we compute a differential Thomas decomposition of the system
+$(A(c), \{Q\})$ --- the ansatz together with the target's inequations,
+carried along as the single inequation $Q$ --- which produces a partition of
+the jet space into quasi-affine sets (i.e, defined by both equations and
+inequations), each equiped with a specialization of the ansatz in a
+differentially simple form.  Feeding $Q$ into the decomposition itself, rather
+than checking it afterward, lets $Q$ participate in the case-splitting: each
+component's inequations $S^{\ne}_i$ then already carry whatever of $Q$'s
+non-degeneracy survives on that component.
 For each differentially simple subsystem in the decomposition,
 we use Ritt's full reduction algorithm to reduce each $P_j$
 modulo the subsystem, obtaining remainders $r_1, \ldots, r_t$, and project them
 onto the space of the $n$ constant parameters
 $c = (c_1, \ldots, c_n)$.
+The subsystem's own inequations $S^{\ne}_i$ --- which, by construction, now
+carry $Q$'s contribution along with the rest --- are reduced the same way,
+taken together as the single product $\prod S^{\ne}_i$.  This subsumes
+$h_i$: each already-constant inequation of $S^{\ne}_i$ reduces to itself and
+passes through the product unchanged, so $g_i$ needs no separate
+multiplication by $h_i$.  The resulting $g_i$ vanishes exactly where some
+inequation of $S^{\ne}_i$ --- constant or not --- degenerates to the
+identically-zero polynomial on this component.
 
 Membership of $P_j$ in $\sqrt{[A(c^*)]} : Q^\infty$ is a statement about $P_j$ as a
 polynomial, not about its value at any particular point.
@@ -1693,9 +1712,12 @@ V_\forall \;\subseteq\; V_{\exists\forall} \;\subseteq\; V_\exists .
 \end{equation}
 
 Writing
-$\mathcal{V}_i := V(J_i)$ for the variety of the projection and
-$C_i = V(E_i) \setminus V(h_i)$ for the {\it cell} of the component, we have
-$W_i = \mathcal{V}_i \cap C_i$, and the two loci are constructed as follows:
+$\mathcal{V}_i := V(J_i)$ for the variety of the projection,
+$C_i = V(E_i) \setminus V(h_i)$ for the {\it cell} of the component, and
+$N_i = \mathbb{C}^n \setminus V\bigl(\mathrm{Coeffs}(\rho_i, \, \mathbb{Q}[c_1,
+\ldots, c_n])\bigr)$ for the locus where the subsystem's own inequations do not
+degenerate on this component, we have
+$W_i = \mathcal{V}_i \cap C_i \cap N_i$, and the two loci are constructed as follows:
 %
 \[
 V_\forall \;=\; \bigcap_{i=1}^{s} \bigl( W_i \cup (\mathbb{C}^n \setminus C_i) \bigr)
@@ -1703,9 +1725,9 @@ V_\forall \;=\; \bigcap_{i=1}^{s} \bigl( W_i \cup (\mathbb{C}^n \setminus C_i) \
 V_{\exists\forall} \;=\; \bigcup_{i=1}^{s} W_i
 \]
 %
-A point lies in the membership locus when it lies in $\mathcal{V}_i$
+A point lies in the membership locus when it lies in $\mathcal{V}_i \cap N_i$
 for {\it every} component whose cell contains it, and lies in the intermediate locus
-if it lies in $\mathcal{V}_i$ for {\it some} such component.
+if it lies in $\mathcal{V}_i \cap N_i$ for {\it some} such component.
 
 The algorithm calls four subroutines, each taken from the
 literature and used unmodified; the work is in what is handed to them and how
