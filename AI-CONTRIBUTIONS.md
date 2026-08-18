@@ -771,11 +771,60 @@ consistency-locus algorithm ahead of it at his request.
   previously described the direct approach only to declare it infeasible
   and drop it, and added a one-sentence transition into MembershipLocus
   tying the two algorithms together.
+- **Typed ideals as ideals throughout both algorithms, after a research
+  dispatch and one self-caught wrong fix** (`4491431`). The author pushed
+  on `K_i`/`H_i`'s precision across several exchanges — first asking for
+  the exact `(T,h)`-regular-system representation the CTD paper's
+  Difference algorithm builds, then, on being told `H_i` (a product of
+  several possibly-non-principal primes) couldn't honestly be forced into
+  a single polynomial without either an approximation or a combinatorial
+  blow-up, saying plainly "I don't want an approximation... let's just
+  write it that way in the paper" ($V(\mathfrak p)\setminus V(\mathfrak
+  q)$, literally) — and then noticed the deeper issue himself: the
+  pseudocode's own convention (bare symbols are finite generator lists,
+  per `minAss`'s stated signature) made `𝔮⊆𝔭` and `∏𝔮` ill-typed as
+  written, and asked whether treating ideals as a primitive type is
+  standard practice in a professional journal article. Rather than settle
+  that by assertion, dispatched a **Claude Opus** subagent with the two
+  algorithms' full text and instructions to read the actual cited sources
+  (the CTD paper, its 2008 ConstructibleSetTools companion, and — found
+  independently by the subagent — Kurata–Nabeshima 2024, a directly
+  analogous comprehensive-primary-decomposition algorithm that is fully
+  ideal-typed with no bracketing at all) and come back with a concrete,
+  worked recommendation rather than a principle. Verdict: type the ideals
+  as ideals. Applied in full: `minAss` restated as `ideal → set of
+  ideals` (`minAss((1))=∅`), which alone makes `K_i`, `H_i` and the
+  containment test correct exactly as already written; ideals of
+  $\mathbb Q[c]$ set in fraktur; a new $\mathrm Z(\cdot)$ operator (citing
+  CTD's own §2 notation) separating a pair's representation from the
+  point set it denotes, closing several places (`C_i`, `W_i`, `D`) where
+  the same symbol had been doing both jobs at once; `H_i` renamed to the
+  ideal $\mathfrak h_i$, letting the ad hoc "product of finite sets"
+  definition be deleted outright; the now-redundant `𝔭≠(1)` test dropped.
+  The subagent also caught two defects unprompted: a mathematical slip in
+  my own prose from the `K_i`/`H_i` pass ("$\langle q\rangle$ is prime" —
+  false whenever $q$ is reducible; corrected to go through $q$'s
+  irreducible factors), and that `SMPD`'s citation was wrong for what it
+  was actually being fed — CTD's own Algorithm 3 works only on *regular
+  systems* (a chain plus a single inequation), not the general
+  `(ideal, ideal)` pairs this algorithm produces. **My first pass at that
+  second fix was itself wrong**: I re-cited the operation to the 2008
+  ConstructibleSetTools paper (which does handle general constructible
+  sets) but left the name `SMPD` — CTD's own name for its own narrower
+  algorithm — unchanged, so the name and citation no longer agreed. The
+  author caught it directly ("didn't the report say that SMPD doesn't
+  work on pairs of ideals and suggests using some other algorithms from
+  the Chen paper?"). Corrected by renaming to `RefiningPartition`
+  (ConstructibleSetTools's actual name) and using its real return shape —
+  pieces tagged with which family members they came from — to simplify
+  the assembly step's containment test into a direct provenance lookup,
+  which is what the subagent's report had recommended and my first pass
+  had dropped.
 
 **Computational infrastructure (no paper text).** The following is tooling and
 measurement on the directory's computation scripts, recorded here for
-completeness rather than because it produced prose; 5 August 2026, model
-Claude Opus 5.
+completeness rather than because it produced prose; 5 August 2026 (model
+Claude Opus 5) and 17–18 August 2026 (model Claude Sonnet 5).
 
 - **Added `--gtz-subprocess` to `thomas-ansatz-solve.sage`** (`7f3e1a6`). The
   occasion was a lost run: the `navier-stokes` / ansatz-25 `--generic-cell`
@@ -813,6 +862,35 @@ Claude Opus 5.
   pseudo-remainder against the hand-built generic cell is a genuine normal form
   and the corresponding loci are not merely lower bounds. This is a statement
   about four measured cells, not a theorem about generic cells in general.
+- **Conformed `thomas-ansatz-solve.sage` to the paper's updated Algorithm
+  MembershipLocus** (`51d748f`, 17–18 August 2026), at the author's
+  direction ("the script should conform to the paper's algorithm").
+  Dropped the script's older "Lemma 3" mechanism — reduce $Q\cdot P_j$
+  for each target equation against the ansatz-alone decomposition,
+  relying on the cell's ideal being radical to fold the saturation in —
+  since the paper no longer works that way: $Q$ is now fed into
+  `DifferentialDecompose` itself as the system's inequation, so every
+  component's own inequations already carry $Q$'s non-degeneracy, and
+  each $P_j$ is reduced plain. Removed the script's separate `Jq`/
+  `cell_off_nq`/"off N\_Q" bookkeeping and `--split-inequations` flag,
+  since Q-derived inequations are now ordinary members of a cell's
+  $S^{\ne}$ and the script's pre-existing `ineq_coeffs` per-inequation
+  pruning already catches them for free — net $-69$ lines. Net change
+  84 insertions / 153 deletions. Validated on hydrogen/5: `16` cells
+  (down from the stale `29`-cell baseline the header comment had
+  asserted, expected once $Q$ enters the decomposition), full run
+  26m38s, 6 distinct genuine solution varieties recovered including
+  recognizable hydrogen eigenvalues ($E=-1/8$, $E=-1/2$), no errors.
+  Two operational mishaps along the way, neither affecting the result:
+  a background fork stalled with zero tool calls on its first attempt
+  and had to be explicitly resumed to actually do the work, and the
+  resumed fork accidentally launched the same 26-minute validation run
+  twice in parallel (caught and the duplicate process killed). The
+  commit itself landed under the wrong message — an unrelated
+  concurrent task-runner auto-commit sweep picked up the uncommitted
+  script change and stamped it with an unrelated task's commit message
+  ("task-runner: conf-audio-autojoin-start-limit") — caught by the
+  author, and amended to describe what actually changed.
 
 **Editorial / typesetting assistance.** Reformatted the bibliography to
 Elsevier's numbered style (`2b71ff5`) and added/repaired citations (`02b57b8`
@@ -1009,6 +1087,7 @@ diff it against the Commit column, and only the new rows need thought.
 | `b981e50` | 2026-08-17 | NewMethod.tex | A/S^= notation **corrected**; typos fixed; Corollary 12 formalized | joint |
 | `f99f416` | 2026-08-17 | NewMethod.tex | **corrected** Algorithm 7's saturation bug, after two wrong AI attempts | joint |
 | `62a9f8e` | 2026-08-18 | NewMethod.tex | **new algorithm**: ConsistencyLocus, ahead of MembershipLocus | author |
+| `4491431` | 2026-08-18 | NewMethod.tex | ideals typed as ideals throughout; **corrected** RefiningPartition naming | joint |
 
 */Claude Opus 4.8 (this record drafted by the AI it documents); updated
 27 July 2026, 30 July 2026 and 5 August 2026 by /Claude Opus 5, and audited
