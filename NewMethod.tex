@@ -1749,21 +1749,45 @@ algorithm returns genuinely in $V_\forall$?
 Theorem~\ref{thm:completeness} answers both at once for a single component of
 the decomposition, and Corollary~\ref{cor:assembly} assembles the components.
 
+\begin{definition}[\cite{CTD}, Definition 6]
+A {\it constructible subset} of $K^n$ is any finite union
+\[
+(A_1 \setminus B_1 ) \cup \ldots \cup (A_e \setminus B_e )
+\]
+where $A_1, \ldots , A_e , B_1 , \ldots , B_e$ are algebraic varieties in $K^n$.
+\end{definition}
+
 \begin{definition}
 The {\it cell} of a differentially simple system $(S^=, S^{\ne})$,
 computed with the constant parameters $c = (c_1, \ldots, c_n)$ ranked below all other indeterminates,
-is the constant locus that solves the equations and inequations that lie in $\mathbb{Q}[c_1, \ldots, c_n]$.
+is the constant locus in $\mathbb{C}^n$ that solves the equations and inequations that lie in $\mathbb{Q}[c_1, \ldots, c_n]$.
 \end{definition}
+
+\medskip
+\noindent
+By \cite{ThomasDecomp}, Remark~2.3, every solution of the
+subsystem in the strictly lower-ranked variables extends to a solution of the
+next level of a simple system, and conversely every solution restricts; so,
+inductively, the projection of $\mathrm{Sol}(S^=, S^{\ne})$ onto $\mathbb{C}^n$
+is exactly the solution set of the constant-only part of $(S^=, S^{\ne})$.
+Deciding whether $c^*$ lies in the cell is therefore a matter of substituting
+$c^*$ into finitely many polynomials in the constants and checking that the
+equations vanish and the inequations do not.
+The cell is thus quasi-affine ---
+cut out by equations {\it and} inequations --- and is represented as a constructable set.
+
+The constant-only equations and inequations need only be a subset of $(S^=, S^{\ne})$,
+so cells belonging to different
+components may overlap, even though the components themselves are disjoint,
+since the case distinction may be made at the level of non-constant indeterminates.
 
 \medskip
 \begin{lemma}
 \label{lem:specialization}
-Let $(S^=, S^{\ne})$ be a differentially simple system arising as a component of
-a differential Thomas decomposition of the ansatz, computed with the constant
-parameters $c = (c_1, \ldots, c_n)$ ranked below all other indeterminates, and
-let its {\it cell} be the projection of its solution set onto $\mathbb{C}^n$, so
-that every point of the cell carries at least one solution of the component.  If
-$c^*$ lies in the cell, then the specialized system $(S^=(c^*), S^{\ne}(c^*))$
+Let $(S^=, S^{\ne})$ be a differentially simple system,
+computed with the constant
+parameters $c = (c_1, \ldots, c_n)$ ranked below all other indeterminates.
+If $c^* \in \mathbb{C}^n$ lies in the system's cell, then the specialized system $(S^=(c^*), S^{\ne}(c^*))$
 is again differentially simple.
 \end{lemma}
 
@@ -1789,130 +1813,107 @@ leaders and remain unchanged.
 \medskip
 \begin{theorem}
 \label{thm:completeness}
-Let $\mathcal{P}^= = \{P_1, \ldots, P_t\}$ be the equations of the target
-system and let $A(c)$ be the ansatz, a
-set of differential polynomials whose coefficients involve constant parameters
-$c = (c_1, \ldots, c_n) \in \mathbb{C}^n$.  Let $(S^=, S^{\ne})$ be one
-differentially simple component of a differential Thomas decomposition of the
-ansatz, computed with the constants ranked below all other indeterminates, write
-$A = \{a_1, \ldots, a_k\}$ for its equations $S^=$, and let
-$H_A = I_A \cup S_A$ denote the set of initials and separants of~$A$.
+Let $(S^=, S^{\ne})$ be a differentially simple system,
+computed with the constant
+parameters $c = (c_1, \ldots, c_n)$ ranked below all other indeterminates,
+let $H_A = I_A \cup S_A$ denote the set of initials and separants of~$S^=$,
+and let $P$ be a differential polynomial in the same ring.
 
-Apply Ritt's full reduction to each $P_j$ modulo $A$, obtaining a
-remainder $r_j$ and a power product $h_j$ of elements of $H_A$ such that
+Apply Ritt's full reduction to $P$ modulo $S^=$, obtaining a
+remainder $r$ and a power product $h$ of elements of $H_A$ such that
 %
 \begin{equation}
 \label{ritt reduction 1}
-h_j \cdot P_j - r_j \in [A]
-\qquad (j = 1, \ldots, t)
+h \cdot P - r \in [S^=]
 \end{equation}
 %
-with $r_j$ fully reduced with respect to $A$.
-Write $r_j = \sum_\alpha m_{j\alpha} \cdot p_{j\alpha}(c)$, where for each $j$
-the $m_{j\alpha}$
+with $r$ fully reduced with respect to $S^=$.
+Write $r = \sum_\alpha m_{\alpha} \cdot p_{\alpha}(c)$, where
+the $m_{\alpha}$
 are distinct power products in the non-constant indeterminates and the
-$p_{j\alpha}$ are polynomials in the constants, so that
-$\mathrm{Coeffs}\bigl(r_j, \mathbb{Q}[c_1, \ldots, c_n]\bigr) = \{p_{j1}, \ldots, p_{jN_j}\}$.  Let
+$p_{\alpha}$ are polynomials in the constants, so that
+$\mathrm{Coeffs}\bigl(r, \mathbb{Q}[c_1, \ldots, c_n]\bigr) = \{p_{1}, \ldots, p_{N}\}$.  Let
 %
 \[
-\mathcal{V} \;=\; V\Bigl( \textstyle\bigcup_{j=1}^{t}
-   \mathrm{Coeffs}\bigl(r_j, \, \mathbb{Q}[c_1, \ldots, c_n]\bigr) \Bigr)
+\mathcal{V} \;=\; V\Bigl(
+   \mathrm{Coeffs}\bigl(r, \, \mathbb{Q}[c_1, \ldots, c_n]\bigr) \Bigr)
    \;\subseteq\; \mathbb{C}^n
 \]
 %
 be the variety
 defined by setting all of these constant coefficients to zero.
 
-Let $q$ be the product of the initials and separants of $A$, and suppose $c^*$
-lies in the cell of the component --- the projection of its solution set onto
-$\mathbb{C}^n$.  Then
+Let $q$ be the product of the initials and separants of $S^=$, and suppose $c^*$
+lies in the cell of the system.  Then
 %
 \[
 c^* \in \mathcal{V}
 \quad\Longleftrightarrow\quad
-P_j \in [A(c^*)] : q(c^*)^\infty \ \text{ for } j = 1, \ldots, t .
+P \in [S^=(c^*)] : q(c^*)^\infty
 \]
 
 \end{theorem}
 
 {\it Proof.}
-Fix $j$.
-Ritt's full reduction algorithm produces $h_j$ and $r_j$ satisfying \eqref{ritt reduction 1}, with
-$r_j$ fully reduced with respect to~$A$.
+Ritt's full reduction algorithm produces $h$ and $r$ satisfying \eqref{ritt reduction 1}, with
+$r$ fully reduced with respect to~$A$.
 Evaluating the constants at $c = c^*$ gives
 %
 \[
-h_j(c^*) \cdot P_j - r_j(c^*) \in [A(c^*)] \subseteq [A(c^*)]:q(c^*)^\infty
+h(c^*) \cdot P - r(c^*) \in [A(c^*)] \subseteq [A(c^*)]:q(c^*)^\infty
 \]
 %
 Since $c^*$ lies in the cell, Lemma~\ref{lem:specialization} ensures that
-$(S^=(c^*), S^{\ne}(c^*))$ a simple differential system, and this
-implies that $h_j(c^*)$ is not zero, since initials and separants (maybe a lemma for this)
+$(S^=(c^*), S^{\ne}(c^*))$ is a simple differential system, and this
+implies that $h(c^*)$ is not zero, since initials and separants (maybe a lemma for this)
 are not zero on simple differential systems.  Therefore
 %
 \[
-r_j(c^*) \in [A(c^*)]:q(c^*)^\infty
+r(c^*) \in [A(c^*)]:q(c^*)^\infty
 \quad\Longleftrightarrow\quad
-P_j \in [A(c^*)]:q(c^*)^\infty
+P \in [A(c^*)]:q(c^*)^\infty
 \]
 %
 
-Since $r_j$ is fully reduced w.r.t. $A(c^*)$, Proposition~\ref{prop:simple-membership} gives
+Since $r$ is fully reduced w.r.t. $A(c^*)$, Proposition~\ref{prop:simple-membership} gives
 %
 \[
-r_j(c^*) = 0
+r(c^*) = 0
 \quad\Longleftrightarrow\quad
-r_j(c^*) \in [A(c^*)] : q(c^*)^\infty .
+r(c^*) \in [A(c^*)] : q(c^*)^\infty .
 \]
 %
 
 We get the following equivalence:
 %
 \[
-P_j \in [A(c^*)]:q(c^*)^\infty
+P \in [A(c^*)]:q(c^*)^\infty
 \quad\Longleftrightarrow\quad
-r_j(c^*) = 0
+r(c^*) = 0
 \]
 
-Now the power products $m_{j\alpha}$, for this fixed $j$, are distinct monomials in a polynomial
-ring, hence linearly independent over~$\mathbb{C}$, so $r_j(c^*) = 0$ if and only
-if every coefficient $p_{j\alpha}(c^*) = 0$.
-
-Both sides of the equivalence just established are conjunctions over $j$ of
-statements each involving only that one $j$: the right-hand condition holds if
-and only if $P_j \in E : q^\infty$ for every $j$, and $c^* \in \mathcal{V}$ holds if and only if
-$p_{j\alpha}(c^*) = 0$ for every $j$ and $\alpha$.  Taking the conjunction over
-$j = 1, \ldots, t$ of the per-equation equivalence therefore gives
-%
-\[
-c^* \in \mathcal{V}
-\quad\Longleftrightarrow\quad
-P_j \in [A(c^*)] : q(c^*)^\infty \ \text{ for } j = 1, \ldots, t .
-\]
-%
-
-The ansatz $A=S^=$ and, since $(S^=, S^{\ne})$ is differentially simple,
-its initials and separants are listed in the inequations $S^{\ne}$, so $q\in S^{\ne}$.
-However, there may be additional inequalities in $S^{\ne}$ not in $q$.
-Furthermore, the saturation ideal corresponds to the Zariski closure
-of the set-theoretic difference between $[A(c^*)]$ and $q(c^*)$,
-which may still include points that violate the inequations.
-We deal with all of this by using Proposition~\ref{prop:simple-membership}
-again.  We reduce the inequations modulo the $A$, collect like terms in the constants,
-and obtain a system of equations in $\mathbb{Q}[c_1, \ldots, c_n]$ for the constants that
-place the inequations in $[A(c^*)] : q(c^*)^\infty$ and must be excluded.  These constants
-are now excluded from consideration by using a constructable set.
+Now the power products $m_{\alpha}$ are distinct monomials in a polynomial
+ring, hence linearly independent over~$\mathbb{C}$, so $r(c^*) = 0$ if and only
+if every coefficient $p_{\alpha}(c^*) = 0$.  The result follows.
 
 \hfill $\square$
 
 \medskip
-Theorem~\ref{thm:completeness} concerns a single component.  The membership
+Theorem~\ref{thm:completeness} shows how a variety in constant space is
+associated with membership of a single polynomial in a saturated differential ideal.
+A simple differential system will have both equations and inequations that
+must be satisfied, and the intersection of the varieties associated
+with the equations, less the union of the varieties associated
+with the inequations, give a constructable set.
+
+\medskip
+The membership
 locus of the ansatz as a whole is recovered by intersecting over the
 decomposition.
 
 \begin{corollary}
 \label{cor:assembly}
-Let $\mathcal{V}_1, \ldots, \mathcal{V}_r$ be the varieties produced by
+Let $\mathcal{V}_1, \ldots, \mathcal{V}_r$ be the constuctable sets produced by
 Theorem~\ref{thm:completeness} from the components $S_1, \ldots, S_r$ of a
 differential Thomas decomposition of the ansatz.  Then, for every
 $c^* \in \mathbb{C}^n$,
@@ -1946,59 +1947,10 @@ and the ansatz is inconsistent at this value of $c^*$.
 
 \medskip
 \noindent
-The two quantifiers the corollary combines --- over the components of the
-decomposition and over the equations of the system --- are independent, and both
-are conjunctions, so the order in which they are discharged is immaterial.  The
-algorithm discharges the inner one first, pooling the coefficients of all $t$
-remainders into a single $J_i$ before the component's minimal primes are
-computed, which is why the cost of the assembly is unchanged by the size of the
-system.
-
-\medskip
-\noindent
-Determining which cells contain a given $c^*$ requires no computation.  Because
-the constants form a block below every non-constant indeterminate and the
-component is triangular, its equations and inequations sort by leader: those
-whose leader is a non-constant indeterminate involve that indeterminate and
-lower-ranked quantities, while the rest involve only the constants and the
-independent variables.  Of the latter, those lying in
-$\mathbb{Q}[c_1, \ldots, c_n]$ are the cell.  Indeed, by \cite{ThomasDecomp}, Remark~2.3, every solution of the
-subsystem in the strictly lower-ranked variables extends to a solution of the
-next level of a simple system, and conversely every solution restricts; so,
-inductively, the projection of $\mathrm{Sol}(S^=, S^{\ne})$ onto $\mathbb{C}^n$
-is exactly the solution set of the constant-only part of $(S^=, S^{\ne})$.
-Deciding whether $c^*$ lies in the cell is therefore a matter of substituting
-$c^*$ into finitely many polynomials in the constants and checking that the
-equations vanish and the inequations do not.  The cell is thus quasi-affine ---
-cut out by equations {\it and} inequations --- and cells belonging to different
-components may overlap, even though the components themselves are disjoint,
-since a case distinction made at the level of a derivative refines the fibre
-without refining the base.
-
-All of this rests on the constants being differential indeterminates in their
-own right, ranked as a block, rather than elements of the coefficient ring.
-Buried in the coefficients they would be inert: no decomposition would ever
-split on them, and there would be no cells to read off.  It is the same choice
-that lets the method solve for a constant --- an energy eigenvalue, say ---
-rather than be handed it.
-
-This is a different operation from the projection step of
-\S\ref{sec:membership-locus}, and the two should not be confused.  There we ask
-each reduced equation to vanish {\it identically}, and so set the coefficient of every
-power product to zero; here the equations of the component are constraints
-cutting out its solution set, not identities holding on it, and their
-coefficients are not required to vanish at all.
-
-\medskip
-\noindent
-So the per-component test decides membership in the {\it saturated} ideal of
+The per-component test decides membership in the {\it saturated} ideal of
 that component, while intersecting over the decomposition decides membership in
 the {\it radical} differential ideal of the ansatz --- which is the membership
-locus as defined in \S\ref{sec:constant-loci}.  Note that this is an
-intersection of loci in the space of constants, not a union: a $c^*$ at which
-even one equation of $\mathcal{P}^=$ fails on even one component is not in
-$V_\forall$, since the ansatz there
-has solutions that do not satisfy the system.
+locus as defined in \S\ref{sec:constant-loci}.
 
 \vfill\eject
 
