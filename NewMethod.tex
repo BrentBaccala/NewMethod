@@ -1774,7 +1774,7 @@ Deciding whether $c^*$ lies in the cell is therefore a matter of substituting
 $c^*$ into finitely many polynomials in the constants and checking that the
 equations vanish and the inequations do not.
 The cell is thus quasi-affine ---
-cut out by equations {\it and} inequations --- and is represented as a constructable set.
+cut out by equations {\it and} inequations --- and is represented as a constructible set.
 
 The constant-only equations and inequations need only be a subset of $(S^=, S^{\ne})$,
 so cells belonging to different
@@ -1815,19 +1815,21 @@ leaders and remain unchanged.
 \label{thm:completeness}
 Let $(S^=, S^{\ne})$ be a differentially simple system,
 computed with the constant
-parameters $c = (c_1, \ldots, c_n)$ ranked below all other indeterminates,
-let $H_A = I_A \cup S_A$ denote the set of initials and separants of~$S^=$,
-and let $P$ be a differential polynomial in the same ring.
+parameters $c = (c_1, \ldots, c_n)$ ranked below all other indeterminates.
+Write $S$ for its equations $S^=$ --- the inequations $S^{\ne}$ play no
+further role in this theorem --- let $H_S = I_S \cup S_S$ denote the set of
+initials and separants of~$S$, and let $P$ be a differential polynomial in
+the same ring.
 
-Apply Ritt's full reduction to $P$ modulo $S^=$, obtaining a
-remainder $r$ and a power product $h$ of elements of $H_A$ such that
+Apply Ritt's full reduction to $P$ modulo $S$, obtaining a
+remainder $r$ and a power product $h$ of elements of $H_S$ such that
 %
 \begin{equation}
 \label{ritt reduction 1}
-h \cdot P - r \in [S^=]
+h \cdot P - r \in [S]
 \end{equation}
 %
-with $r$ fully reduced with respect to $S^=$.
+with $r$ fully reduced with respect to $S$.
 Write $r = \sum_\alpha m_{\alpha} \cdot p_{\alpha}(c)$, where
 the $m_{\alpha}$
 are distinct power products in the non-constant indeterminates and the
@@ -1843,24 +1845,24 @@ $\mathrm{Coeffs}\bigl(r, \mathbb{Q}[c_1, \ldots, c_n]\bigr) = \{p_{1}, \ldots, p
 be the variety
 defined by setting all of these constant coefficients to zero.
 
-Let $q$ be the product of the initials and separants of $S^=$, and suppose $c^*$
+Let $q$ be the product of the initials and separants of $S$, and suppose $c^*$
 lies in the cell of the system.  Then
 %
 \[
 c^* \in \mathcal{V}
 \quad\Longleftrightarrow\quad
-P \in [S^=(c^*)] : q(c^*)^\infty
+P \in [S(c^*)] : q(c^*)^\infty
 \]
 
 \end{theorem}
 
 {\it Proof.}
 Ritt's full reduction algorithm produces $h$ and $r$ satisfying \eqref{ritt reduction 1}, with
-$r$ fully reduced with respect to~$A$.
+$r$ fully reduced with respect to~$S$.
 Evaluating the constants at $c = c^*$ gives
 %
 \[
-h(c^*) \cdot P - r(c^*) \in [A(c^*)] \subseteq [A(c^*)]:q(c^*)^\infty
+h(c^*) \cdot P - r(c^*) \in [S(c^*)] \subseteq [S(c^*)]:q(c^*)^\infty
 \]
 %
 Since $c^*$ lies in the cell, Lemma~\ref{lem:specialization} ensures that
@@ -1869,25 +1871,25 @@ implies that $h(c^*)$ is not zero, since initials and separants (maybe a lemma f
 are not zero on simple differential systems.  Therefore
 %
 \[
-r(c^*) \in [A(c^*)]:q(c^*)^\infty
+r(c^*) \in [S(c^*)]:q(c^*)^\infty
 \quad\Longleftrightarrow\quad
-P \in [A(c^*)]:q(c^*)^\infty
+P \in [S(c^*)]:q(c^*)^\infty
 \]
 %
 
-Since $r$ is fully reduced w.r.t. $A(c^*)$, Proposition~\ref{prop:simple-membership} gives
+Since $r$ is fully reduced w.r.t. $S(c^*)$, Proposition~\ref{prop:simple-membership} gives
 %
 \[
 r(c^*) = 0
 \quad\Longleftrightarrow\quad
-r(c^*) \in [A(c^*)] : q(c^*)^\infty .
+r(c^*) \in [S(c^*)] : q(c^*)^\infty .
 \]
 %
 
 We get the following equivalence:
 %
 \[
-P \in [A(c^*)]:q(c^*)^\infty
+P \in [S(c^*)]:q(c^*)^\infty
 \quad\Longleftrightarrow\quad
 r(c^*) = 0
 \]
@@ -1900,11 +1902,59 @@ if every coefficient $p_{\alpha}(c^*) = 0$.  The result follows.
 
 \medskip
 Theorem~\ref{thm:completeness} shows how a variety in constant space is
-associated with membership of a single polynomial in a saturated differential ideal.
-A simple differential system will have both equations and inequations that
-must be satisfied, and the intersection of the varieties associated
-with the equations, less the union of the varieties associated
-with the inequations, give a constructable set.
+associated with membership of a single polynomial in a saturated differential
+ideal.  A differentially simple system, however, imposes membership
+conditions on several polynomials at once --- an equation for each
+polynomial that must lie in the saturated ideal, and, in general, an
+inequation for each polynomial that must not --- and the following
+corollary assembles the per-polynomial varieties of
+Theorem~\ref{thm:completeness} into a single constructible set for the whole
+system.
+
+\medskip
+\begin{corollary}
+\label{cor:system-locus}
+Let $(S^=, S^{\ne})$ be a differentially simple system as in
+Theorem~\ref{thm:completeness}, and let $\mathcal{E}, \mathcal{N} \subset R$ be
+finite sets of differential polynomials in the same ring --- equations that
+must lie in the saturated ideal $[S(c^*)] : q(c^*)^\infty$, and inequations
+that must not, respectively.  For each $P \in \mathcal{E} \cup \mathcal{N}$
+let $\mathcal{V}_P \subseteq \mathbb{C}^n$ be the variety produced by
+Theorem~\ref{thm:completeness}, and put
+%
+\[
+\mathcal{V} \;=\;
+   \Bigl(\, \bigcap_{P \in \mathcal{E}} \mathcal{V}_P \,\Bigr)
+   \;\setminus\;
+   \Bigl(\, \bigcup_{P \in \mathcal{N}} \mathcal{V}_P \,\Bigr).
+\]
+%
+Then $\mathcal{V}$ is a constructible set, and for every $c^*$ in the cell of
+$(S^=, S^{\ne})$,
+%
+\[
+c^* \in \mathcal{V}
+\quad\Longleftrightarrow\quad
+\mathcal{E} \subset [S(c^*)] : q(c^*)^\infty
+\ \text{ and }\
+\mathcal{N} \cap \bigl( [S(c^*)] : q(c^*)^\infty \bigr) = \emptyset .
+\]
+\end{corollary}
+
+{\it Proof.}
+The set $A = \bigcap_{P \in \mathcal{E}} \mathcal{V}_P$ is a finite
+intersection of algebraic varieties and so is itself a variety, as is
+$B = \bigcup_{P \in \mathcal{N}} \mathcal{V}_P$; thus $\mathcal{V} = A
+\setminus B$ is constructible, being of the form required by the definition
+of a constructible subset.
+
+Fix $c^*$ in the cell.  Theorem~\ref{thm:completeness}, applied to each
+$P \in \mathcal{E} \cup \mathcal{N}$ in turn against the same system $S$ ---
+and hence the same $q$ --- gives $c^* \in \mathcal{V}_P \iff P \in [S(c^*)] :
+q(c^*)^\infty$.  So $c^* \in A$ exactly when every equation of $\mathcal{E}$
+lies in the saturated ideal, and $c^* \notin B$ exactly when no inequation
+of $\mathcal{N}$ does; conjoining the two gives the claimed equivalence.
+\hfill $\square$
 
 \medskip
 The membership
@@ -1913,8 +1963,9 @@ decomposition.
 
 \begin{corollary}
 \label{cor:assembly}
-Let $\mathcal{V}_1, \ldots, \mathcal{V}_r$ be the constuctable sets produced by
-Theorem~\ref{thm:completeness} from the components $S_1, \ldots, S_r$ of a
+Let $\mathcal{V}_1, \ldots, \mathcal{V}_r$ be the constructible sets produced by
+Corollary~\ref{cor:system-locus}, taking $\mathcal{E} = \mathcal{P}^=$ and
+$\mathcal{N} = \emptyset$, from the components $S_1, \ldots, S_r$ of a
 differential Thomas decomposition of the ansatz.  Then, for every
 $c^* \in \mathbb{C}^n$,
 %
