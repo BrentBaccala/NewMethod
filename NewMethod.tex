@@ -1513,19 +1513,91 @@ use of a parametric algorithm, such as parametric Rosenfeld-Gr\"obner \cite{Fako
 differential Thomas decomposition \cite{ThomasDecomp, RobertzLNM}.  The author's experience,
 however, is that this approach is often computationally infeasible.
 
-Therefore, for the remainder of this paper, we will focus our attention on the membership locus $V_\forall$.
-We will develop an algorithm to compute $V_\forall$ that, while still using a parametric decomposition, only does so on the differential
-ideal formed from the ansatz, with the system treated separately.
-This tends to be more computationally feasible than a parametric decomposition of the combined system.
+We record this direct approach below, as Algorithm~\ref{alg:consistency}, both
+for completeness and because its simplicity makes a good introduction to the
+pattern the rest of this section develops.  For the remainder of the paper,
+however, we focus our attention on the membership locus $V_\forall$, computed
+by Algorithm~\ref{alg:core}, which, while still using a parametric
+decomposition, only does so on the differential ideal formed from the
+ansatz, with the target system treated separately.  This tends to be more
+computationally feasible than a parametric decomposition of the combined
+system.
 
 % We see that $h=0$ could lead to extraneous solutions, so we require $h\ne 0$.
+
+\vfill\eject
+
+\subsection{Computing the Consistency Locus}
+\label{sec:consistency-locus}
+
+The consistency locus admits a much simpler algorithm than the membership
+locus, because its definition lets us decompose the ansatz and the target
+system's equations {\it together}, rather than decomposing the ansatz alone
+and testing the target system against each resulting component afterward.
+
+\begin{algorithm}[ConsistencyLocus]
+\label{alg:consistency}
+\mbox{}
+
+{\bf Input:} A differential polynomial ring
+$R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$ with
+derivations $\Delta = \{\delta_1, \ldots, \delta_m\}$ satisfying
+$\delta_i x_j = \delta_{ij}$ and $\delta_i c_l = 0$; the target system
+$\mathcal{P} = (\mathcal{P}^=, \mathcal{P}^{\ne})$, with equations
+$\mathcal{P}^= = \{P_1, \ldots, P_t\} \subset R$ and inequations
+$\mathcal{P}^{\ne} = \{Q_1, \ldots, Q_w\} \subset R$, abbreviated $Q = Q_1
+\cdots Q_w$ as in \S\ref{sec:constant-loci}; an
+ansatz $A(c) \subset R$, a finite set of differential polynomials
+parameterized by the constants $c = (c_1, \ldots, c_n)$; and a block ranking
+$\prec$ with
+%
+\[
+\{u_1, \ldots, u_k\} \;\gg\; \{c_1, \ldots, c_n\} \;\gg\; \{x_1, \ldots, x_m\}.
+\]
+
+{\bf Output:} A constructible subset of $\mathbb{C}^n$, presented as a finite
+set of pairs $(\mathfrak{p}, h)$ in which $\mathfrak{p}$ generates a prime
+ideal, and so as a finite union of irreducible locally closed sets --- the
+consistency locus
+$V_\exists = \{\, c^* \in \mathbb{C}^n : 1 \notin \sqrt{[A(c^*), \mathcal{P}^=]} : Q^\infty \,\}$.
+
+{\bf Algorithm:}
+\begin{pseudocode}
+\item $(S_1, \ldots, S_s) \leftarrow \mathrm{DifferentialDecompose}\bigl( (A(c) \cup \mathcal{P}^=, \{Q\}), \, \prec \bigr)$
+\item {\bf for} $i = 1, \ldots, s$ {\bf do}
+\item \algind $E_i \leftarrow S^=_i \cap \mathbb{Q}[c_1, \ldots, c_n]$
+\item \algind $h_i \leftarrow \prod \bigl( S^{\ne}_i \cap \mathbb{Q}[c_1, \ldots, c_n] \bigr)$
+\item \algind $W_i \leftarrow \bigl\{\, (\mathfrak{p}, h_i) \;:\; \mathfrak{p} \in \mathrm{minAss}\bigl( \langle E_i \rangle : h_i^\infty \bigr) \,\bigr\}$
+\item {\bf end for}
+\item {\bf return} $\textstyle\bigcup_{i=1}^{s} W_i$
+\end{pseudocode}
+\end{algorithm}
+
+Each component $S_i$ of the decomposition is, by construction, a
+differentially simple specialization of $A(c) \cup \mathcal{P}^=$ together
+with the target's inequations $Q$: the target's equations are decomposed
+{\it as part of} $S_i^=$, and its inequations are decomposed {\it as part of}
+$S_i^{\ne}$, rather than checked afterward.  By the cell argument used in
+\S\ref{sec:completeness} (\cite{ThomasDecomp}, Remark~2.3), every $c^*$ in
+$S_i$'s cell $C_i = V(E_i) \setminus V(h_i)$ extends to a genuine solution of
+the whole specialized system, respecting $Q \ne 0$ along with everything
+else in $S_i^{\ne}$; so $c^* \in V_\exists$ exactly when it lies in the cell
+of {\it some} component, and $V_\exists = \bigcup_{i=1}^{s} C_i$.  Unlike
+Algorithm~\ref{alg:core}, there is no need to test the target's equations
+against each component separately, and no need for the further reduction
+that built $g_i$ there: both are already accounted for by what was
+decomposed, and every solution of a differentially simple system satisfies
+its own equations and respects its own inequations by construction.
 
 \vfill\eject
 
 \subsection{Computing the Membership Locus}
 \label{sec:membership-locus}
 
-The following algorithm computes the membership locus.
+The following algorithm computes the membership locus.  It follows the same
+overall shape as Algorithm~\ref{alg:consistency} --- decompose, then read
+information off each component --- but decomposes only the ansatz, and so
+must separately test the target system against each resulting component.
 
 \begin{algorithm}[MembershipLocus]
 \label{alg:core}
