@@ -9,7 +9,7 @@ it is not sufficient even for the first — the author committed AI-drafted
 material under his own name at least six times, and the AI committed the
 author's proposals under its name many more. Every claim below of the form
 "proposed by the author" or "drafted by the AI" rests on the transcripts, not
-on the commit's author field. Covers contributions through 5 August 2026 and
+on the commit's author field. Covers contributions through 18 August 2026 and
 should be updated as work continues. Commit hashes are given for auditability,
 and the appendix tabulates every commit to the paper or its companion notes
 that the AI touched.*
@@ -692,6 +692,86 @@ theorem and the algorithm.
   of the talk, and stating the non-physicality of the J₀ solution outright
   rather than eliding it. The deck is not part of the submitted paper.
 
+The bullets that follow record a third connected arc, 17–18 August 2026
+(model Claude Sonnet 5), carried out while the author was working directly
+in the completeness subsection: cleaning up a notation leftover, formalizing
+a paragraph he supplied into a corollary, correcting a saturation bug in the
+membership-locus algorithm that he found, and adding a simpler
+consistency-locus algorithm ahead of it at his request.
+
+- **Cleaned up the A/S^= notation left over from the previous session's
+  theorem rewrite, and formalized a paragraph into a corollary**
+  (`b981e50`). Found unprompted, while reviewing the section at the
+  author's general request to look at where he'd last been working:
+  Theorem 11 had been reworded from "$A$" to "$S^=$" but its proof still
+  said "$A$" throughout ($h(c^*)$, $[A(c^*)]$, etc.), a leftover from
+  before the rename. At the author's direction — "let's just use S for
+  the equations of a differentially simple system, since we don't use the
+  inequations for anything in the theorem" — replaced both the leftover
+  $A$ and the theorem statement's $S^=$ with a single $S$, matching the
+  paper's own existing convention for a generic system $S$ (§2.1); fixed
+  three "constuctable"/"constructable" typos in the same pass. Then, given
+  a paragraph the author had written ("Theorem 10 shows how a variety...
+  give a constructible set") and asked to have "worked up into a
+  Corollary," formalized it as the new **Corollary 12**: equations
+  $\mathcal{E}$ and inequations $\mathcal{N}$, each reduced against the
+  same component, assembled by intersection-minus-union into one
+  constructible set, with a proof from the definition of constructible
+  plus the per-polynomial theorem. Corollary 13 (the assembly step) was
+  rewritten to cite Corollary 12 explicitly — taking
+  $\mathcal{E}=\mathcal{P}^=$, $\mathcal{N}=\emptyset$ — instead of
+  invoking the single-polynomial theorem directly, closing a gap where it
+  had asserted a per-component constructible set without ever justifying
+  where it came from.
+- **Corrected a saturation bug in Algorithm MembershipLocus that the
+  author found, getting it wrong once before he supplied the fix**
+  (`f99f416`). The author read line 11 and objected: $W_i$ reused $h_i$ —
+  the cell's own constant-only inequation product — as its saturator,
+  when $W_i$ needs to know whether a component degenerates the *target's*
+  declared inequations, a different fact entirely. **My first attempt was
+  wrong, twice over, and the author corrected both parts in one message**:
+  I had proposed reducing the target's combined inequation $Q$ directly
+  inside the per-component loop and multiplying its coefficients into
+  $h_i$; the author rejected this — "I don't think we want Q on line 11 -
+  we want to reduce the system's $S_i^{\ne}$, and on line 12 I don't think
+  we need $h_i$" — without yet saying how $Q$ should enter at all. Once
+  redirected, reducing the (now correctly scoped) $S_i^{\ne}$ as a single
+  product resolved the second part on its own: an already-constant
+  inequation reduces to itself under `FullReduce` and passes through the
+  product unchanged, so $h_i$'s contribution is subsumed automatically and
+  no separate multiplication is needed, matching the author's second
+  objection exactly. That left $Q$'s own role unaccounted for, which I
+  flagged as an open question; the author supplied the actual resolution
+  in the next message — feed $Q$ into the `DifferentialDecompose` call on
+  line 1 as the system's inequation, $(A(c),\{Q\})$, so the Thomas
+  decomposition's own case-splitting absorbs $Q$ into every component's
+  $S_i^{\ne}$ automatically, which the already-fixed reduction step then
+  picks up with no further change. Updated the surrounding prose and the
+  $W_i=\mathcal{V}_i\cap C_i$ identity (now $W_i=\mathcal{V}_i\cap
+  C_i\cap N_i$) to match, and declared
+  $\mathcal{P}^{\ne}=\{Q_1,\ldots,Q_w\}$ in the algorithm's Input, which
+  the pre-existing Output line had referenced without ever declaring.
+- **Added Algorithm ConsistencyLocus** (`62a9f8e`), at the author's
+  request and to his specification: "it just runs DifferentialDecompose on
+  the whole system and then we have to pull out the constants." Supplied
+  the formal write-up — decompose $(A(c)\cup\mathcal{P}^=,\{Q\})$ in one
+  call, then read $E_i,h_i$ off each component with no per-equation
+  reduction loop, no $g_i$ refinement and no SMPD assembly — and the
+  justification for why the simpler version is sound: the target's
+  equations and inequations are decomposed as *part of* $S_i^=$ and
+  $S_i^{\ne}$ rather than tested afterward, so cell membership alone, via
+  the same \cite{ThomasDecomp} Remark 2.3 extension argument the
+  completeness section already uses, guarantees a genuine solution —
+  unlike MembershipLocus, which needs the finer per-equation
+  ideal-membership test because it decomposes the ansatz alone. Inserted
+  as a new §2.4 ahead of MembershipLocus (which shifts to §2.5 without any
+  label changes), both for completeness and, per the author's own stated
+  reasoning, "to ease the reader in with a simpler algorithm" before the
+  more elaborate one. Softened the §2.3 closing paragraph, which
+  previously described the direct approach only to declare it infeasible
+  and drop it, and added a one-sentence transition into MembershipLocus
+  tying the two algorithms together.
+
 **Computational infrastructure (no paper text).** The following is tooling and
 measurement on the directory's computation scripts, recorded here for
 completeness rather than because it produced prose; 5 August 2026, model
@@ -926,8 +1006,11 @@ diff it against the Commit column, and only the new rows need thought.
 | `af0670c` | 2026-08-05 | NewMethod.tex | membership locus on the saturated radical ideal; Lemma 3 | author |
 | `289af84` | 2026-08-05 | NewMethod-talk.tex | **new artifact**: 33-slide colloquium deck | author |
 | `d3dd938` | 2026-08-05 | NewMethod.tex | existence locus renamed the consistency locus | author |
+| `b981e50` | 2026-08-17 | NewMethod.tex | A/S^= notation **corrected**; typos fixed; Corollary 12 formalized | joint |
+| `f99f416` | 2026-08-17 | NewMethod.tex | **corrected** Algorithm 7's saturation bug, after two wrong AI attempts | joint |
+| `62a9f8e` | 2026-08-18 | NewMethod.tex | **new algorithm**: ConsistencyLocus, ahead of MembershipLocus | author |
 
 */Claude Opus 4.8 (this record drafted by the AI it documents); updated
 27 July 2026, 30 July 2026 and 5 August 2026 by /Claude Opus 5, and audited
 against the full git history and the session transcripts on 5 August 2026 by
-/Claude Opus 5.*
+/Claude Opus 5; updated 18 August 2026 by /Claude Sonnet 5.*
