@@ -1354,7 +1354,7 @@ rule those out.
 
 \begin{equation}
 \label{eq:nondegeneracy}
-N_Q = \{ c^* \in {\mathbb C}^n : 1 \notin \sqrt{[A(c^*)]}:Q^\infty \},
+N_Q = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*)]:Q^\infty \},
 \end{equation}
 
 The {\it non-degeneracy locus} $N_Q$ is the set of constants for which the ansatz
@@ -1364,7 +1364,7 @@ alone is consistent in the sense of
 {\bf The Consistency Locus}
 
 \begin{equation}
-V_\exists = \{ c^* \in {\mathbb C}^n : 1 \notin \sqrt{[A(c^*), \mathcal{P}^=]} : Q^\infty \}
+V_\exists = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty \}
 \end{equation}
 
 The {\it consistency locus} $V_\exists$ is the set of constants for which the ansatz
@@ -1375,11 +1375,6 @@ The {\it consistency locus} $V_\exists$ is the set of constants for which the an
 % jointly; the standing assumption that the ansatz {\it by itself} is consistent
 % for every $c^*$ is a separate and far weaker statement.
 
-Taking the radical of the ideal is justified when we will ultimately map the differential indeterminates
-into a function space whose range has no nilpotent elements.  Since neither the real nor the complex numbers
-have nilpotents, and we are ultimately looking for either real- or complex-valued functions, we
-take the radical to simplify both the theory and the implementation.
-
 Informally, consistency says that the ansatz and the system have a common
 solution respecting the inequations, and we use that language below where it
 aids intuition.  Existence of a solution in some function space, however,
@@ -1388,13 +1383,18 @@ is an analytic statement that is not asserted here.
 {\bf The Membership Locus}
 
 \begin{equation}
-V_{\forall} = \{ c^* \in {\mathbb C}^n : \mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \wedge 1 \notin \sqrt{[A(c^*)]} : Q^\infty \}
+V_{\forall} = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*)] : Q^\infty \wedge \mathcal{P}^= \subseteq \sqrt{[A(c^*)] : Q^\infty} \}
 \end{equation}
 
 The {\it membership locus} is the set of constants for which the ansatz is consistent and every equation of
 the system lies in the saturated radical differential ideal defined by the
 ansatz, meaning that any function satisfying the ansatz {\it and the
 inequations} will satisfy every equation of the system.
+
+Taking the radical of the ideal is justified when we will ultimately map the differential indeterminates
+into a function space whose range has no nilpotent elements.  Since neither the real nor the complex numbers
+have nilpotents, and we are ultimately looking for either real- or complex-valued functions, we
+take the radical to simplify both the theory and the implementation.
 
 % \begin{equation}
 % V_{\forall} = \{ c^* \in {\mathbb C}^n : P \in [A(c^*)] \}
@@ -1411,15 +1411,15 @@ V_\forall \subseteq V_\exists
 \end{theorem}
 
 {\it Proof.}
-$\sqrt{[A(c^*)]} : Q^\infty$ is a differential ideal, and if every element
+$\sqrt{[A(c^*)] : Q^\infty}$ is a differential ideal, and if every element
 of $\mathcal{P}^=$ lies in it then it contains both $A(c^*)$ and $\mathcal{P}^=$,
 hence contains $[A(c^*), \mathcal{P}^=]$; saturating that containment
 by~$Q^\infty$ and using $(I : Q^\infty) : Q^\infty = I : Q^\infty$ gives
 %
 \begin{equation}
 \begin{gathered}
-\mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \implies [A(c^*),\mathcal{P}^=] : Q^\infty = \sqrt{[A(c^*)]} : Q^\infty \\
-Q \notin \sqrt{[A(c^*)]} \implies 1 \notin \sqrt{[A(c^*)]} : Q^\infty \implies 1 \notin \sqrt{[A(c^*), \mathcal{P}^=]} : Q^\infty \\
+\mathcal{P}^= \subseteq \sqrt{[A(c^*)] : Q^\infty} \implies [A(c^*),\mathcal{P}^=] : Q^\infty = \sqrt{[A(c^*)] : Q^\infty} \\
+Q \notin \sqrt{[A(c^*)]} \implies 1 \notin \sqrt{[A(c^*)] : Q^\infty} \implies 1 \notin \sqrt{[A(c^*), \mathcal{P}^=] : Q^\infty} \\
 V_\forall \subseteq V_\exists
 \end{gathered}
 \end{equation}
@@ -1448,7 +1448,7 @@ but splits into two differentially simple subsystems:
 \end{gathered}
 \end{equation}
 $\mathcal{S}_1$, in particular, has no restriction on $c$ (other than it be constant)
-and no terms in $\mathbb{C}$, so $1 \notin \sqrt{[\mathcal{S}_1^=]}$ and $V_\exists = \mathbb{C}$.
+and no terms in $\mathbb{C}$, so $1 \notin [\mathcal{S}_1^=]$ and $V_\exists = \mathbb{C}$.
 
 To compute $V_\forall$, we need to identify the constants where
 $\mathcal{P} \subseteq \sqrt{[A(c)]}$.  $A(c)$ is a simple differential
@@ -1618,7 +1618,7 @@ $\prec$ with
 set $\mathcal{W}$ of pairs $(\mathfrak{p}, \mathfrak{b})$ of ideals in which
 $\mathfrak{p}$ is prime, and so as a finite union of irreducible locally
 closed sets: $\mathrm{Z}(\mathcal{W}) = V_\exists$, the consistency locus
-$V_\exists = \{\, c^* \in \mathbb{C}^n : 1 \notin \sqrt{[A(c^*), \mathcal{P}^=]} : Q^\infty \,\}$.
+$V_\exists = \{\, c^* \in \mathbb{C}^n : 1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty \,\}$.
 
 {\bf Algorithm:}
 \begin{pseudocode}
@@ -1685,7 +1685,7 @@ set $\mathcal{W}$ of pairs $(\mathfrak{p}, \mathfrak{b})$ of ideals in which
 $\mathfrak{p}$ is prime, so that $\mathrm{Z}(\mathcal{W})$ is a finite union
 of irreducible locally closed sets.  For $\mu = \forall$ it is the
 membership locus
-$V_\forall = \{\, c^* \in \mathbb{C}^n : \mathcal{P}^= \subseteq \sqrt{[A(c^*)]} : Q^\infty \,\}$.  For
+$V_\forall = \{\, c^* \in \mathbb{C}^n : \mathcal{P}^= \subseteq \sqrt{[A(c^*)] : Q^\infty} \,\}$.  For
 $\mu = \exists\forall$ it is the intermediate locus $V_{\exists\forall}$, which
 satisfies $V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists$ whenever
 the ansatz is consistent throughout $\mathbb{C}^n$ --- a condition the algorithm
@@ -1758,7 +1758,7 @@ factors $q_k$ of $q$; since $\mathfrak{p}$ is prime, some $\langle q_k
 \rangle \subseteq \mathfrak{p}$ exactly when $q \in \mathfrak{p}$, the test
 $h_i$ was already built from.
 
-Membership of $P_j$ in $\sqrt{[A(c^*)]} : Q^\infty$ is a statement about $P_j$ as a
+Membership of $P_j$ in $\sqrt{[A(c^*)] : Q^\infty}$ is a statement about $P_j$ as a
 polynomial, not about its value at any particular point.
 Accordingly, we split each term of each reduced equation $r_j$ into a power product
 in the non-constant indeterminates and a coefficient in the constants alone,
