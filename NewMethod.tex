@@ -1504,25 +1504,6 @@ so a solution to the ansatz does not necessarily solve the PDE and $V_\forall = 
 The containment \eqref{eq:locus-containment} reads
 $\emptyset \subseteq \{1\}$, as it must.
 
-The most straightforward way to compute the consistency locus $V_\exists$ is to proceed
-as its definition suggests: combine the system and the ansatz together as the generators of a singular differential
-ideal.  We do not wish to treat the constants as indeterminates (as they would always be non-zero), but rather
-as parameters, and seek conditions on those parameters that would yield a non-trivial
-differential ideal where $1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty$.  This suggests the
-use of a parametric algorithm, such as parametric Rosenfeld-Gr\"obner \cite{Fakouri2018} or a
-differential Thomas decomposition \cite{ThomasDecomp, RobertzLNM}.  The author's experience,
-however, is that this approach is often computationally infeasible.
-
-We record this direct approach below, as Algorithm~\ref{alg:consistency}, both
-for completeness and because its simplicity makes a good introduction to the
-pattern the rest of this section develops.  For the remainder of the paper,
-however, we focus our attention on the membership locus $V_\forall$, computed
-by Algorithm~\ref{alg:core}, which, while still using a parametric
-decomposition, only does so on the differential ideal formed from the
-ansatz, with the target system treated separately.  This tends to be more
-computationally feasible than a parametric decomposition of the combined
-system.
-
 % We see that $h=0$ could lead to extraneous solutions, so we require $h\ne 0$.
 
 \vfill\eject
@@ -1530,10 +1511,30 @@ system.
 \subsection{Computing the Consistency Locus}
 \label{sec:consistency-locus}
 
+We now present algorithms to compute the consistency and membership loci.
+
+The most straightforward way to compute the consistency locus $V_\exists$ is to proceed
+as its definition suggests: combine the system and the ansatz together as the generators of a singular differential
+ideal.  We do not wish to treat the constants as indeterminates (as they would always be non-zero), but rather
+as parameters, and seek conditions on those parameters that would yield a non-trivial
+differential ideal where $1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty$.  This suggests the
+use of a parametric algorithm, such as parametric Rosenfeld-Gr\"obner \cite{Fakouri2018} or a
+differential Thomas decomposition \cite{ThomasDecomp, RobertzLNM}.  We have adopted
+differential Thomas decomposition primarily because it has convenient theoretical
+properties that allow us to prove completeness of the algorithm.
+
+We record this direct approach below, as Algorithm~\ref{alg:consistency}, both
+for completeness and because its simplicity makes a good introduction to the
+rest of this section.
+
+\begin{comment}
 The consistency locus admits a much simpler algorithm than the membership
 locus, because its definition lets us decompose the ansatz and the target
 system's equations {\it together}, rather than decomposing the ansatz alone
 and testing the target system against each resulting component afterward.
+However, the {\tt DifferentialDecompose} step is more computationally
+demanding, precisely because its input involves more polynomials.
+\end{comment}
 
 \begin{definition}[\cite{CTD}, Definition 6]
 A {\it constructible subset} of $\mathbb{C}^n$ is any finite union
@@ -1546,7 +1547,8 @@ where $A_1, \ldots , A_e , B_1 , \ldots , B_e$ are algebraic varieties in $\math
 \begin{definition}
 The {\it cell} of a differentially simple system $(S^=, S^{\ne})$,
 computed with the constant parameters $c = (c_1, \ldots, c_n)$ ranked below all other indeterminates,
-is the constant locus in $\mathbb{C}^n$ that solves the equations and inequations that lie in $\mathbb{Q}[c_1, \ldots, c_n]$.
+is the constant locus in $\mathbb{C}^n$ that solves the equations and inequations of $(S^=, S^{\ne})$
+that lie in $\mathbb{Q}[c_1, \ldots, c_n]$.
 \end{definition}
 
 \medskip
@@ -1652,6 +1654,7 @@ An actual implementation of these algorithms would likely do all of this.
 Algorithm~\ref{alg:core} computes the membership locus.  It follows the same
 overall shape as Algorithm~\ref{alg:consistency} but decomposes only the ansatz, and
 separately tests the target system against each resulting component.
+It tends to be less computationally demanding that Algorithm~\ref{alg:consistency}.
 
 Algorithm~\ref{alg:core} has two branches which compute two different loci: the membership
 locus $V_\forall$ and an intermediate locus $V_{\exists\forall}$ which lies
@@ -1672,12 +1675,10 @@ $V_\exists$          & $\exists$ & $\exists$ & at one solution \\
 \end{center}
 
 It is possible for multiple subsystems to lie over a single constant.
-The membership locus proper requires $\mathcal{P}^=$ to vanish
-on every subsystem that lies over a given constant.
-The intermediate locus, on the other hand, requires only a single subsystem
-to lie over a constant.
+The membership locus proper requires $\mathcal{P}^=$ to belong to every such subsystem.
+The intermediate locus, on the other hand, requires only membership in a single subsystem.
 The intermediate locus is somewhat easier to compute
-and is generally preferred when our primary interest is in the consistency locus.
+and may be preferred when our primary interest is in the consistency locus.
 In that case, there is little justification for the extra work required
 to discard solutions outside the membership locus; the relationship
 between the three loci is as follows:
@@ -1688,7 +1689,7 @@ V_\forall \;\subseteq\; V_{\exists\forall} \;\subseteq\; V_\exists .
 \end{equation}
 
 Writing
-$\mathrm{Z}(C_i) = V(E_i) \setminus V(h_i)$ for the {\it cell} of the
+$\mathrm{Z}(C_i)$ for the {\it cell} of the
 component, and $\mathrm{Z}(W_i)$ for the solution variety,
 the two loci
 are constructed as follows:
@@ -1698,10 +1699,6 @@ V_\forall \;=\; \bigcap_{i=1}^{s} \bigl( \mathrm{Z}(W_i) \cup (\mathbb{C}^n \set
 \qquad
 V_{\exists\forall} \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
 \]
-%
-A point lies in the membership locus when it lies in $\mathcal{V}_i \cap N_i$
-for {\it every} component whose cell contains it, and lies in the intermediate locus
-if it lies in $\mathcal{V}_i \cap N_i$ for {\it some} such component.
 
 \vfill\eject
 
