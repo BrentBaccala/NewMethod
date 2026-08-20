@@ -2959,4 +2959,9 @@ def main():
     print_total_time()
 
 
-main()
+# Verified under this script's own runner, not assumed: `sage
+# thomas-ansatz-solve.sage` preparses to a .sage.py and executes it with
+# __name__ == '__main__', so the guard fires.  Had it not, the guard would
+# have turned the script into a silent no-op rather than failing loudly.
+if __name__ == '__main__':
+    main()
