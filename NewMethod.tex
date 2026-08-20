@@ -1649,10 +1649,61 @@ An actual implementation of these algorithms would likely do all of this.
 \subsection{Computing the Membership Locus}
 \label{sec:membership-locus}
 
-The following algorithm computes the membership locus.  It follows the same
-overall shape as Algorithm~\ref{alg:consistency} --- decompose, then read
-information off each component --- but decomposes only the ansatz, and so
-must separately test the target system against each resulting component.
+Algorithm~\ref{alg:core} computes the membership locus.  It follows the same
+overall shape as Algorithm~\ref{alg:consistency} but decomposes only the ansatz, and
+separately tests the target system against each resulting component.
+
+Algorithm~\ref{alg:core} has two branches which compute two different loci: the membership
+locus $V_\forall$ and an intermediate locus $V_{\exists\forall}$ which lies
+between the membership locus and the consistency locus.  The distinction
+between them lies in how they handle constants which appear in multiple
+subsystems.
+
+\begin{center}
+\begin{tabular}{llll}
+\hline
+locus & subsystems & solutions & all of $\mathcal{P}^=$ vanishes \ldots \\
+\hline
+$V_\forall$          & $\forall$ & $\forall$ & on every solution \\
+$V_{\exists\forall}$ & $\exists$ & $\forall$ & on some subsystem \\
+$V_\exists$          & $\exists$ & $\exists$ & at one solution \\
+\hline
+\end{tabular}
+\end{center}
+
+It is possible for multiple subsystems to lie over a single constant.
+The membership locus proper requires $\mathcal{P}^=$ to vanish
+on every subsystem that lies over a given constant.
+The intermediate locus, on the other hand, requires only a single subsystem
+to lie over a constant.
+The intermediate locus is somewhat easier to compute
+and is generally preferred when our primary interest is in the consistency locus.
+In that case, there is little justification for the extra work required
+to discard solutions outside the membership locus; the relationship
+between the three loci is as follows:
+
+\begin{equation}
+\label{eq:intermediate-sandwich}
+V_\forall \;\subseteq\; V_{\exists\forall} \;\subseteq\; V_\exists .
+\end{equation}
+
+Writing
+$\mathrm{Z}(C_i) = V(E_i) \setminus V(h_i)$ for the {\it cell} of the
+component, and $\mathrm{Z}(W_i)$ for the solution variety,
+the two loci
+are constructed as follows:
+%
+\[
+V_\forall \;=\; \bigcap_{i=1}^{s} \bigl( \mathrm{Z}(W_i) \cup (\mathbb{C}^n \setminus \mathrm{Z}(C_i)) \bigr)
+\qquad
+V_{\exists\forall} \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
+\]
+%
+A point lies in the membership locus when it lies in $\mathcal{V}_i \cap N_i$
+for {\it every} component whose cell contains it, and lies in the intermediate locus
+if it lies in $\mathcal{V}_i \cap N_i$ for {\it some} such component.
+
+\vfill\eject
 
 \begin{algorithm}[MembershipLocus]
 \label{alg:core}
@@ -1814,64 +1865,6 @@ compute them (\cite{GTZ}, among others).
 Each subsystem's inequations can include inequations in $\mathbb{Q}[c_1, \ldots, c_n]$,
 which must be preserved with the minimal primes, using the ideal notation
 introduced in \S\ref{sec:consistency-locus}.
-
-The algorithm now has two branches which compute two different loci: the membership
-locus $V_\forall$ and an intermediate locus $V_{\exists\forall}$ which lies
-between the membership locus and the consistency locus.  The distinction
-between them lies in how they handle constants which appear in multiple
-subsystems.
-
-\begin{center}
-\begin{tabular}{llll}
-\hline
-locus & subsystems & solutions & all of $\mathcal{P}^=$ vanishes \ldots \\
-\hline
-$V_\forall$          & $\forall$ & $\forall$ & on every solution \\
-$V_{\exists\forall}$ & $\exists$ & $\forall$ & on some subsystem \\
-$V_\exists$          & $\exists$ & $\exists$ & at one solution \\
-\hline
-\end{tabular}
-\end{center}
-
-It is possible for multiple subsystems to lie over a single constant.
-The membership locus proper requires $\mathcal{P}^=$ to vanish
-on every subsystem that lies over a given constant.
-The intermediate locus, on the other hand, requires only a single subsystem
-to lie over a constant.
-The intermediate locus is somewhat easier to compute
-and is generally preferred when our primary interest is in the consistency locus.
-In that case, there is little justification for the extra work required
-to discard solutions outside the membership locus; the relationship
-between the three loci is as follows:
-
-\begin{equation}
-\label{eq:intermediate-sandwich}
-V_\forall \;\subseteq\; V_{\exists\forall} \;\subseteq\; V_\exists .
-\end{equation}
-
-Writing
-$\mathcal{V}_i := V(J_i)$ for the variety of the projection,
-$\mathrm{Z}(C_i) = V(E_i) \setminus V(h_i)$ for the {\it cell} of the
-component, and $N_i = \mathbb{C}^n \setminus V(\mathfrak{h}_i) =
-\mathbb{C}^n \setminus \bigcup_{\mathfrak{q} \in K_i} V(\mathfrak{q})$ for the
-locus where no inequation of $S^{\ne}_i$ degenerates on this component, we
-have $\mathrm{Z}(W_i) = \mathcal{V}_i \cap \mathrm{Z}(C_i) \cap N_i$ exactly:
-a discarded prime $\mathfrak{p}$ satisfies $V(\mathfrak{p}) \subseteq
-V(\mathfrak{q}) \subseteq V(\mathfrak{h}_i)$ for the $\mathfrak{q} \in K_i$
-that contained it, so it contributes nothing either way, and $V(h_i)
-\subseteq V(\mathfrak{h}_i)$ since $h_i$'s own factors are among $K_i$'s, so
-intersecting with $\mathrm{Z}(C_i)$ adds nothing beyond $N_i$.  The two loci
-are constructed as follows:
-%
-\[
-V_\forall \;=\; \bigcap_{i=1}^{s} \bigl( \mathrm{Z}(W_i) \cup (\mathbb{C}^n \setminus \mathrm{Z}(C_i)) \bigr)
-\qquad
-V_{\exists\forall} \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
-\]
-%
-A point lies in the membership locus when it lies in $\mathcal{V}_i \cap N_i$
-for {\it every} component whose cell contains it, and lies in the intermediate locus
-if it lies in $\mathcal{V}_i \cap N_i$ for {\it some} such component.
 
 The algorithm calls four subroutines, each taken from the
 literature and used unmodified; the work is in what is handed to them and how
