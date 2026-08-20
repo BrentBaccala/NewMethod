@@ -989,57 +989,102 @@ def generic_cell(eqs):
 
 # --- differential-Thomas decomposition of the ansatz, WITH Q as its
 # --- inequation (Algorithm MembershipLocus, line 1: (A(c), {Q})) ----------
-if GENERIC_CELL:
-    print("\n--generic-cell: skipping the differential Thomas decomposition; "
-          "building the ansatz's generic cell (%d ansatz + %d constancy eqs) ..."
-          % (len(ansatz0), len(pconst)), flush=True)
-    cells_ds = [generic_cell(list(ansatz0) + list(pconst))]
-    if ALL_INEQS:
-        # Fold Q into this cell's inequations too, for consistency with the
-        # decomposed path (in both, the piece is cut out by a component whose
-        # inequations already carry Q).
-        cells_ds[0].ineqs.append(Q_INEQ)
-    print("-> 1 generic cell, %d inequations:" % len(cell_ineqs(cells_ds[0])),
-          flush=True)
-    for _q in cell_ineqs(cells_ds[0]):
-        print("     ", to_bracket(_q), "!= 0", flush=True)
-    print("   (the other cells of the decomposition -- where these vanish -- "
-          "are NOT computed)\n" + "=" * 72, flush=True)
-else:
-    # Feed Q in as the system's inequation whenever there is one: {Q_INEQ}, a
-    # single-element set containing the combined product, matching the
-    # paper's own abbreviation (section "The Constant Loci") rather than the
-    # raw list of individual inequations.  Q = 1 (ALL_INEQS empty) adds
-    # nothing, so it is skipped rather than handed in as a vacuous "1 != 0".
-    decompose_ineqs = [Q_INEQ] if ALL_INEQS else []
-    print("\nComputing native DifferentialThomas decomposition of the ansatz "
-          "together with Q (%d ansatz + %d constancy eqs%s) ..."
-          % (len(ansatz0), len(pconst),
-             ", Q from %d inequations" % len(ALL_INEQS) if ALL_INEQS
-             else ""), flush=True)
-    _t0 = time.time()
-    cells_ds = dt.differential_thomas_decomposition(
-        ansatz0 + pconst, decompose_ineqs, prob['rk'])
-    _wall = time.time() - _t0
-    print("-> %d cells in %.1fs\n" % (len(cells_ds), _wall) + "=" * 72, flush=True)
+def decompose_ansatz():
+    r"""
+    Differential-Thomas-decompose the ansatz together with `Q`.
+
+    This is line 1 of Algorithm MembershipLocus: ``DifferentialDecompose(A(c),
+    {Q})``, whose output is the disjoint components `(S_i^=, S_i^{\neq})` the
+    rest of the algorithm reads information off.  `Q` -- the product of every
+    declared inequation, the ansatz's own non-degeneracy forms together with
+    the target system's `\mathcal{P}^{\neq}` -- is handed in as the system's
+    inequation rather than multiplied into the PDE reductions afterwards, so
+    each component's own inequations already carry whatever of `Q`'s
+    non-degeneracy survives on it.  `Q = 1` (no declared inequations) is
+    skipped instead of handed in as a vacuous ``1 != 0``.
+
+    Under ``--generic-cell`` the decomposition is not run at all: the single
+    hand-built generic cell of :func:`generic_cell` stands in for it, with `Q`
+    folded into its inequations for consistency with the decomposed path.  See
+    the :class:`GenericCell` docstring for what that cell does and does not
+    entitle you to conclude.
+
+    The decomposition is kept a step of its own, rather than folded into
+    :func:`intermediate_locus`, for two reasons: ``--decompose-only`` stops
+    between the two, and the `\mu = \forall` branch would consume the same
+    components, so a future ``membership_locus`` can be a sibling of
+    :func:`intermediate_locus` over one shared decomposition.
+
+    Each component is checked for the defining property of a triangular set --
+    no two equations sharing a leader -- and a violation is printed as a
+    ``SOUNDNESS FAIL`` line.  With ``--cells-out`` the raw components are also
+    written to that path; nothing reads the file back, so it is a debugging
+    artifact rather than an output of the algorithm.
+
+    OUTPUT:
+
+    the list of components, each a differential system answering
+    :func:`cell_eqs` and :func:`cell_ineqs`
+
+    EXAMPLES::
+
+        sage: cells = decompose_ansatz()         # not tested (needs a problem)
+        sage: len(cells)                         # not tested
+        16
+    """
+    if GENERIC_CELL:
+        print("\n--generic-cell: skipping the differential Thomas decomposition; "
+              "building the ansatz's generic cell (%d ansatz + %d constancy eqs) ..."
+              % (len(ansatz0), len(pconst)), flush=True)
+        cells_ds = [generic_cell(list(ansatz0) + list(pconst))]
+        if ALL_INEQS:
+            # Fold Q into this cell's inequations too, for consistency with the
+            # decomposed path (in both, the piece is cut out by a component whose
+            # inequations already carry Q).
+            cells_ds[0].ineqs.append(Q_INEQ)
+        print("-> 1 generic cell, %d inequations:" % len(cell_ineqs(cells_ds[0])),
+              flush=True)
+        for _q in cell_ineqs(cells_ds[0]):
+            print("     ", to_bracket(_q), "!= 0", flush=True)
+        print("   (the other cells of the decomposition -- where these vanish -- "
+              "are NOT computed)\n" + "=" * 72, flush=True)
+    else:
+        # Feed Q in as the system's inequation whenever there is one: {Q_INEQ}, a
+        # single-element set containing the combined product, matching the
+        # paper's own abbreviation (section "The Constant Loci") rather than the
+        # raw list of individual inequations.  Q = 1 (ALL_INEQS empty) adds
+        # nothing, so it is skipped rather than handed in as a vacuous "1 != 0".
+        decompose_ineqs = [Q_INEQ] if ALL_INEQS else []
+        print("\nComputing native DifferentialThomas decomposition of the ansatz "
+              "together with Q (%d ansatz + %d constancy eqs%s) ..."
+              % (len(ansatz0), len(pconst),
+                 ", Q from %d inequations" % len(ALL_INEQS) if ALL_INEQS
+                 else ""), flush=True)
+        _t0 = time.time()
+        cells_ds = dt.differential_thomas_decomposition(
+            ansatz0 + pconst, decompose_ineqs, prob['rk'])
+        _wall = time.time() - _t0
+        print("-> %d cells in %.1fs\n" % (len(cells_ds), _wall) + "=" * 72, flush=True)
 
 
-for i, ds in enumerate(cells_ds, 1):
-    leaders = [e.leader() for e in cell_eqs(ds) if not e.is_zero()]
-    jl = [L for L in leaders if L is not None]
-    if len(jl) != len(set(jl)):
-        print("  SOUNDNESS FAIL cell %d: repeated leader" % i, flush=True)
+    for i, ds in enumerate(cells_ds, 1):
+        leaders = [e.leader() for e in cell_eqs(ds) if not e.is_zero()]
+        jl = [L for L in leaders if L is not None]
+        if len(jl) != len(set(jl)):
+            print("  SOUNDNESS FAIL cell %d: repeated leader" % i, flush=True)
 
-if CELLS_OUT:
-    try:
-        with open(CELLS_OUT, 'w') as fh:
-            for i, ds in enumerate(cells_ds, 1):
-                fh.write("--- cell %d ---\nEQS: %s\nINEQS: %s\n\n"
-                         % (i, [to_bracket(e) for e in cell_eqs(ds)],
-                            [to_bracket(q) for q in cell_ineqs(ds)]))
-        print("Wrote raw cells to", CELLS_OUT, flush=True)
-    except Exception as ex:
-        print("(could not write cells file: %s)" % ex, flush=True)
+    if CELLS_OUT:
+        try:
+            with open(CELLS_OUT, 'w') as fh:
+                for i, ds in enumerate(cells_ds, 1):
+                    fh.write("--- cell %d ---\nEQS: %s\nINEQS: %s\n\n"
+                             % (i, [to_bracket(e) for e in cell_eqs(ds)],
+                                [to_bracket(q) for q in cell_ineqs(ds)]))
+            print("Wrote raw cells to", CELLS_OUT, flush=True)
+        except Exception as ex:
+            print("(could not write cells file: %s)" % ex, flush=True)
+    return cells_ds
+
 
 def print_total_time():
     r"""
@@ -1059,12 +1104,6 @@ def print_total_time():
     t = time.time() - _T_START
     print("Total time: %.1fs (%d:%02d:%05.2f)"
           % (t, int(t) // 3600, (int(t) % 3600) // 60, t % 60), flush=True)
-
-
-if DECOMPOSE_ONLY:
-    print("\n--decompose-only: stopping before the prime pipeline.", flush=True)
-    print_total_time()
-    sys.exit(0)
 
 
 def ineq_coeff_set(q):
@@ -1682,17 +1721,6 @@ def minimal_associated_primes_gtz(I, tag):
     return _gtz_parse(primes_path, R)
 
 
-strata_cache = {}
-# The union of the W_i, bucketed by prime: {prime_key: (P, [cell numbers])}.
-# Every minimal prime of every cell's <J_i U E_i> lands here -- there is no
-# "genuine" / "degenerate" / "trivial" sorting, and no bucket but this one.
-# (The script once carried extra buckets for varieties a hand-written rule
-# called degenerate -- `a == 0` -- or trivial -- `Psi == 0`.  Those rules were
-# variety discards, and they are gone: what a cell's inequations exclude is
-# excluded by the inequations, and everything else is reported.  The
-# ansatz-library `v_params` / `amp_params` fields that fed them are gone too.)
-union_primes = {}
-
 # The cell inequations restricting each reported piece, keyed as the buckets are.
 #
 # A piece is not the variety V(P): the cell it came from carries inequations, and
@@ -2140,166 +2168,6 @@ def _piece_contained(Pi, ki, Pj, kj):
             if not any(Kg <= comp for Kg in Di):
                 return False
     return True
-
-_cells = cells_ds if MAX_CELLS <= 0 else cells_ds[:MAX_CELLS]
-
-# The cells C_i = (<E_i>, <h_i>) of Algorithm MembershipLocus line 10, one
-# entry (num, E_i, h_i) per component.  C_i plays no part in the
-# mu = exists-forall assembly this script computes -- it is used by the
-# mu = forall branch, which is out of scope -- but the paper's Output section
-# promises that the algorithm REPORTS whether the ansatz is consistent
-# throughout C^n, and by the proof of Corollary cor:assembly that condition is
-# exactly whether the C_i cover C^n.  See consistency_report below.
-cells_Ci = []
-
-for num, ds in enumerate(_cells, 1):
-    cp = adapt_cell(ds, num)
-    # E_i = S_i^= INTERSECT Q[c]  (Algorithm MembershipLocus, line 8).
-    Z = sorted((p for p in cp['param_eqs']), key=str)
-    Zkey = tuple(map(str, Z))
-    # h_i = prod (S_i^!= INTERSECT Q[c])  (line 9), for C_i alone.  Note the
-    # INTERSECTION with Q[c]: cp['param_ineqs'] holds the jet-free inequations,
-    # which may still carry COORDINATES (the ansatz's own non-degeneracy form
-    # `v`, say, maps to v0*R1 + v1*R2 + v2*R12).  Such an inequation is not in
-    # Q[c] and contributes no factor to h_i -- its constant content is its
-    # Coeffs, which is a factor of hfrak_i instead (line 11).  The empty
-    # product is 1, i.e. <h_i> = (1) and V(h_i) = {}, per the paper's
-    # convention.
-    _consts = set(PolyRing_constants)
-    h_i = PolyRing.one()
-    for _pq in cp['param_ineqs']:
-        if set(_pq.variables()) <= _consts:
-            h_i = h_i * _pq
-    cells_Ci.append((num, list(Z), h_i))
-
-    # Reduce the PDE against the cell's OWN differential-triangular equations
-    # (`cell_eqs`, polynomial form, initials carried as cofactors/inequations by
-    # the Thomas decomposition) instead of a sympy-solved re-specialization of
-    # the ansatz.  Dropping `specialize`/`sympy.solve` avoids its radicals,
-    # RootOf objects, injected denominators, arbitrary branch choice, and
-    # zero-substitution fallback.  Keyed on the cell's equations (not just the
-    # parametric stratum Zkey), since the reduction now depends on the full cell.
-    ce = cell_eqs(ds)
-    cache_key = tuple(sorted(str(e) for e in ce))
-    if cache_key not in strata_cache:
-        # pconst dropped: cell_eqs already carries the (triangularized) constancy
-        # relations, so `+ pconst` was redundant reductors (extra per-pass cost).
-        reductors = list(ce)
-        # Flushed phase markers with timings, so a stall is diagnosable from the
-        # LAST line: stuck after "entering full_prem" => in the pseudo-reduction;
-        # stuck after "entering GTZ" => in minimal_associated_primes (primdec).
-        # Leading blank line so each cell's timing block is separated from the
-        # previous cell's variety list (the "--- cell N ---" header supplies the
-        # blank line before the result block).
-        print("\n  [cell %d] entering full_prem: %d reductors ..." % (num, len(reductors)),
-              flush=True)
-        _t = time.time()
-        # Reduce EACH PDE of the system against the same cell, unmultiplied.
-        # Q's non-degeneracy was already imposed when this cell was built --
-        # Q was fed into the differential Thomas decomposition as the system's
-        # inequation (see the decomposition call above) -- so the cell's own
-        # equations already reflect it, and a plain reduction is the
-        # membership test Algorithm MembershipLocus asks for (line 5).  The
-        # constant-coefficient equations of all the remainders are combined
-        # into ONE system, solved once per cell.
-        rem_elts = [full_prem(P_, reductors)[0] for P_ in PDES]
-        t_prem = time.time() - _t
-        rems = [_elt_to_polyring(re_) for re_ in rem_elts]
-        nonzero = [r_ for r_ in rems if not r_.is_zero()]
-        # `eqns` below is the paper's
-        #     J_i = UNION over j of Coeffs(FullReduce(P_j, S_i^=), Q[c])
-        # (Algorithm MembershipLocus, lines 3-7): the union, over the PDEs of
-        # the system, of the constant coefficients of each remainder.  `Z` is
-        # E_i, and `I = ideal(eqns + Z)` is therefore <J_i U E_i>, the first
-        # half of W_i (line 12).
-        if not nonzero:
-            eqns = ()
-        elif len(nonzero) == 1:
-            eqns = build_system_of_equations(nonzero[0], PolyRing_constants)
-        else:
-            # deduplicate the combined list the same way
-            # build_system_of_equations already does internally.
-            _all = []
-            for r_ in nonzero:
-                _all.extend(build_system_of_equations(r_, PolyRing_constants))
-            eqns = tuple(set(_all))
-        gens = list(eqns) + list(Z)
-        I = ideal(gens) if gens else ideal(PolyRing.zero())
-        print("  [cell %d] full_prem %.1fs (%d eqns); entering GTZ minimal_associated_primes"
-              " (%d gens) ..." % (num, t_prem, len(eqns), len(gens)), flush=True)
-        _t = time.time()
-        primes = minimal_associated_primes_gtz(I, 'cell%d' % num)
-        t_gtz = time.time() - _t
-        print("  [cell %d] GTZ %.1fs -> %d primes" % (num, t_gtz, len(primes)), flush=True)
-        strata_cache[cache_key] = dict(spec_len=len(reductors), rems=rems, eqns=eqns,
-                                       primes=primes)
-
-    sc = strata_cache[cache_key]
-    # W_i = ( <J_i U E_i>, hfrak_i )  -- Algorithm MembershipLocus, line 12.
-    # `I` above is <J_i U E_i> (the projected PDE coefficients J_i together
-    # with the cell's own constant equations E_i); cp['ineq_coeffs'] is
-    # hfrak_i, carried as its unmultiplied factors.  W_i is registered below,
-    # one entry per minimal prime of <J_i U E_i>, each paired with the same
-    # hfrak_i.
-    #
-    # Splitting <J_i U E_i> into minimal primes is the first of the three
-    # places this script deliberately goes beyond the pseudocode.  The paper
-    # says, just after Algorithm ConsistencyLocus: "For simplicity of the
-    # presentation, no attempt is made to take radicals of the ideals, factor
-    # them into prime ideals, or detect duplication between them.  An actual
-    # implementation of these algorithms would likely do all of this."  This
-    # script is that actual implementation; do not remove the minAss step to
-    # match the pseudocode.
-    #
-    # NO prime is discarded here.  `P.is_one()` is skipped because
-    # minAss((1)) = {} is the stated signature of the subroutine, not a special
-    # case about which families are interesting.  Every other minimal prime is
-    # registered with the cell's full hfrak_i and the piece machinery decides:
-    # Z(p, hfrak_i) = V(p) \ V(hfrak_i) is empty on its own exactly when
-    # V(p) is inside V(hfrak_i), which piece_conditions detects and reports as
-    # an EMPTY PIECE naming the cells responsible.  An earlier revision dropped
-    # such primes right here -- the paper's since-removed "a prime p is
-    # discarded outright when some q in K_i is entirely contained in it" --
-    # which made emptiness a rule about primes rather than a property of the
-    # pair, and hid it from the output.
-    survivors = [P for P in sc['primes'] if not P.is_one()]
-
-    print("\n--- cell %d: zero {%s}; ansatz %d eqs; %d param-ineqs, %d jet-ineqs ---"
-          % (num, ', '.join(Zkey) or '(none, generic)', sc['spec_len'],
-             len(cp['param_ineqs']), len(cp['jet_ineqs'])), flush=True)
-    if VERBOSE_REM:
-        for _i, _r in enumerate(sc['rems'], 1):
-            print("  remainder[pde %d]:" % _i, to_bracket(_r), flush=True)
-    if all(r_.is_zero() for r_ in sc['rems']):
-        print("  PDE reduces to 0: the whole stratum solves the PDE (nontrivially)", flush=True)
-    if not survivors:
-        print("  minimal primes of <J_i U E_i>: NONE (the ideal is (1), and "
-              "minAss((1)) = {})", flush=True)
-    for P in survivors:
-        # Whether one factor of THIS cell's hfrak_i vanishes identically on
-        # V(P) is worth showing in the per-cell listing, but it is NOT a reason
-        # to drop the prime: the same prime may surface from another cell whose
-        # inequations do not vanish on it, and the piece is the union over
-        # contributing cells.  The decision is made once, at the union, by
-        # piece_conditions.
-        #
-        # `all(g in P for g in cs)` is <cs> contained in P, which is exactly the
-        # test the paper used to phrase through K_i -- the minimal primes of
-        # <Coeffs(q, Q[c])> -- before commit ebe2da9 dropped K_i from the
-        # pseudocode.  For P PRIME, <cs> is contained in P iff SOME minimal
-        # prime of <cs> is contained in P (a prime containing a product/ideal
-        # contains one of its minimal primes over it), so testing the
-        # coefficient set directly and testing every q in K_i separately decide
-        # the same thing.  That is why no minAss is needed on the inequation
-        # side, and why K_i should not be reintroduced.
-        dead_here = any(all(g in P for g in cs) for cs in cp['ineq_coeffs'])
-        print("   V: %s%s"
-              % (fmt_ideal(P),
-                 "   [cell %d's inequations vanish identically on it]" % num
-                 if dead_here else ""), flush=True)
-        union_primes.setdefault(prime_key(P), (P, []))[1].append(num)
-        piece_excl.setdefault(prime_key(P), []).append(
-            (num, tuple(cp['ineq_coeffs'])))
 
 
 def prune_enclosed(d):
@@ -2768,65 +2636,327 @@ def latex_union(d, label='ideal'):
     print(r"\end{subequations}")
 
 
-print("\n" + "=" * 72)
-consistency_report(cells_Ci)
+def intermediate_locus(cells_ds):
+    r"""
+    Compute `V_{\exists\forall}`, the intermediate locus, and print it.
 
-# Duplicate detection, mathematically: two cells' GTZ calls can return the same
-# prime under different generating sets, which prime_key hashes apart.  See
-# merge_equal_primes for why leaving them apart loses part of a piece.
-print("\n" + "=" * 72)
-union_primes, _merges = merge_equal_primes(union_primes)
-if _merges:
-    print("Duplicate ideals merged (equal as ideals, different generating sets):\n")
-    for _ka, _kk in _merges:
-        print("   Ideal (%s)   merged into   Ideal (%s)"
-              % (", ".join(_ka), ", ".join(_kk)))
-    print("")
+    The `\mu = \exists\forall` branch of Algorithm MembershipLocus, lines 2
+    onwards: reduce each PDE of the target system, unmultiplied, modulo each
+    component's own equations; project the remainders onto the constants to
+    get `J_i`; pair `\langle J_i \cup E_i \rangle` with the component's
+    inequations `\mathfrak{h}_i` to get `W_i`; and union the `Z(W_i)`.  There
+    is no separate guard step -- `Q`'s non-degeneracy was imposed when the
+    components were built, in :func:`decompose_ansatz` -- so a plain reduction
+    is the whole membership test.
 
-# Emptiness is a property of the pair (p, hfrak_i), decided by the inequations
-# -- not a rule about which primes to keep.  Every minimal prime reached the
-# union; the ones whose cells' inequations vanish identically on them leave it
-# here, and the drop is printed with the cells responsible.
-union_primes, _empty = drop_empty_pieces(union_primes)
-if _empty:
-    print("Pieces emptied by their cells' inequations "
-          "(V(p) inside V(hfrak_i); dropped from the union):\n")
-    for _k, _P, _cells, _ep in sorted(_empty, key=lambda t: str(t[0])):
-        print("   V: %s   [%s]" % (fmt_ideal(_P), _ep.label()))
-    print("")
+    The locus computed is the INTERMEDIATE one, `V_{\exists\forall}`, which
+    asks the target system to belong to SOME subsystem lying over a constant.
+    The membership locus proper asks it to belong to EVERY such subsystem:
 
-solution_primes = dump_union(
-          "Solution varieties over all cells (the union, Z(W_1) u ... u Z(W_s))",
-          union_primes, prune=True)
+    .. MATH::
 
-print("\n" + "=" * 72)
-if solution_primes:
-    print("VERDICT: %d solution variety(ies) found for %s / ansatz %s."
-          % (len(solution_primes), PDE_NAME, ANSATZ))
-else:
-    print("VERDICT: NO solution for %s / ansatz %s "
-          "(no non-empty piece survived: every cell's <J_i U E_i> was the unit "
-          "ideal, or its inequations -- Q included -- emptied every minimal "
-          "prime's piece)."
-          % (PDE_NAME, ANSATZ))
-print("         This is V_{exists-forall}; the mu = forall branch "
-      "(V_forall) is not implemented.")
-if UNMAPPED_INEQS:
-    print("         WARNING: %d cell inequation(s) had no PolyRing image and "
-          "were dropped" % len(UNMAPPED_INEQS))
-    print("         from hfrak_i, so the pieces above are UPPER BOUNDS, not "
-          "exact:")
-    for _n, _q in UNMAPPED_INEQS:
-        print("           cell %s: %s != 0" % (_n, _q))
-else:
-    print("         Every cell inequation mapped into PolyRing, so the pieces "
-          "above are exact")
-    print("         (up to the reporting caveats in the consistency report).")
+        V_\forall = \bigcap_{i=1}^{s} \bigl( Z(W_i) \cup (\mathbb{C}^n
+        \setminus Z(C_i)) \bigr)
+        \qquad
+        V_{\exists\forall} = \bigcup_{i=1}^{s} Z(W_i)
 
-if LATEX_OUT and solution_primes:
-    print("\n" + "-" * 72)
-    print("Solution varieties, LaTeX (paper) form:\n")
-    latex_union(solution_primes)
+    so `V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists`.  The
+    `\mu = \forall` branch -- RefiningPartition and the `D` filter -- is not
+    implemented; ``cells_Ci`` below already carries the `C_i` it would need.
 
-print("\n" + "=" * 72)
-print_total_time()
+    Three things the paper's pseudocode does not ask for are done anyway,
+    because the paper says an actual implementation would: each
+    `\langle J_i \cup E_i \rangle` is split into its minimal associated
+    primes, primes equal as ideals are merged across components
+    (:func:`merge_equal_primes`), and a piece contained in another is pruned
+    (:func:`prune_enclosed`).  Nothing else leaves the union: a prime is
+    dropped only when the inequations empty its piece, and that drop is
+    printed as an EMPTY PIECE line (:func:`drop_empty_pieces`).
+
+    The function prints its own working as it goes -- the per-component
+    timings and prime lists, the consistency report, the merges, the emptied
+    pieces, the union and the verdict -- and returns the union it printed.
+
+    INPUT:
+
+    - ``cells_ds`` -- the components from :func:`decompose_ansatz`.  Only the
+      first ``--max-cells`` of them are processed when that option is given.
+
+    OUTPUT:
+
+    the union as a bucket ``{prime_key: (P, [cell numbers])}`` -- the pieces
+    left after merging, emptying and (unless ``--keep-enclosed``) pruning
+
+    EXAMPLES::
+
+        sage: intermediate_locus(decompose_ansatz())   # not tested (needs a problem)
+        ...
+        VERDICT: 6 solution variety(ies) found for hydrogen / ansatz 5.
+    """
+    _cells = cells_ds if MAX_CELLS <= 0 else cells_ds[:MAX_CELLS]
+
+    strata_cache = {}
+    # The union of the W_i, bucketed by prime: {prime_key: (P, [cell numbers])}.
+    # Every minimal prime of every cell's <J_i U E_i> lands here -- there is no
+    # "genuine" / "degenerate" / "trivial" sorting, and no bucket but this one.
+    # (The script once carried extra buckets for varieties a hand-written rule
+    # called degenerate -- `a == 0` -- or trivial -- `Psi == 0`.  Those rules were
+    # variety discards, and they are gone: what a cell's inequations exclude is
+    # excluded by the inequations, and everything else is reported.  The
+    # ansatz-library `v_params` / `amp_params` fields that fed them are gone too.)
+    union_primes = {}
+
+    # The cells C_i = (<E_i>, <h_i>) of Algorithm MembershipLocus line 10, one
+    # entry (num, E_i, h_i) per component.  C_i plays no part in the
+    # mu = exists-forall assembly this script computes -- it is used by the
+    # mu = forall branch, which is out of scope -- but the paper's Output section
+    # promises that the algorithm REPORTS whether the ansatz is consistent
+    # throughout C^n, and by the proof of Corollary cor:assembly that condition is
+    # exactly whether the C_i cover C^n.  See consistency_report below.
+    cells_Ci = []
+
+    for num, ds in enumerate(_cells, 1):
+        cp = adapt_cell(ds, num)
+        # E_i = S_i^= INTERSECT Q[c]  (Algorithm MembershipLocus, line 8).
+        Z = sorted((p for p in cp['param_eqs']), key=str)
+        Zkey = tuple(map(str, Z))
+        # h_i = prod (S_i^!= INTERSECT Q[c])  (line 9), for C_i alone.  Note the
+        # INTERSECTION with Q[c]: cp['param_ineqs'] holds the jet-free inequations,
+        # which may still carry COORDINATES (the ansatz's own non-degeneracy form
+        # `v`, say, maps to v0*R1 + v1*R2 + v2*R12).  Such an inequation is not in
+        # Q[c] and contributes no factor to h_i -- its constant content is its
+        # Coeffs, which is a factor of hfrak_i instead (line 11).  The empty
+        # product is 1, i.e. <h_i> = (1) and V(h_i) = {}, per the paper's
+        # convention.
+        _consts = set(PolyRing_constants)
+        h_i = PolyRing.one()
+        for _pq in cp['param_ineqs']:
+            if set(_pq.variables()) <= _consts:
+                h_i = h_i * _pq
+        cells_Ci.append((num, list(Z), h_i))
+
+        # Reduce the PDE against the cell's OWN differential-triangular equations
+        # (`cell_eqs`, polynomial form, initials carried as cofactors/inequations by
+        # the Thomas decomposition) instead of a sympy-solved re-specialization of
+        # the ansatz.  Dropping `specialize`/`sympy.solve` avoids its radicals,
+        # RootOf objects, injected denominators, arbitrary branch choice, and
+        # zero-substitution fallback.  Keyed on the cell's equations (not just the
+        # parametric stratum Zkey), since the reduction now depends on the full cell.
+        ce = cell_eqs(ds)
+        cache_key = tuple(sorted(str(e) for e in ce))
+        if cache_key not in strata_cache:
+            # pconst dropped: cell_eqs already carries the (triangularized) constancy
+            # relations, so `+ pconst` was redundant reductors (extra per-pass cost).
+            reductors = list(ce)
+            # Flushed phase markers with timings, so a stall is diagnosable from the
+            # LAST line: stuck after "entering full_prem" => in the pseudo-reduction;
+            # stuck after "entering GTZ" => in minimal_associated_primes (primdec).
+            # Leading blank line so each cell's timing block is separated from the
+            # previous cell's variety list (the "--- cell N ---" header supplies the
+            # blank line before the result block).
+            print("\n  [cell %d] entering full_prem: %d reductors ..." % (num, len(reductors)),
+                  flush=True)
+            _t = time.time()
+            # Reduce EACH PDE of the system against the same cell, unmultiplied.
+            # Q's non-degeneracy was already imposed when this cell was built --
+            # Q was fed into the differential Thomas decomposition as the system's
+            # inequation (see the decomposition call above) -- so the cell's own
+            # equations already reflect it, and a plain reduction is the
+            # membership test Algorithm MembershipLocus asks for (line 5).  The
+            # constant-coefficient equations of all the remainders are combined
+            # into ONE system, solved once per cell.
+            rem_elts = [full_prem(P_, reductors)[0] for P_ in PDES]
+            t_prem = time.time() - _t
+            rems = [_elt_to_polyring(re_) for re_ in rem_elts]
+            nonzero = [r_ for r_ in rems if not r_.is_zero()]
+            # `eqns` below is the paper's
+            #     J_i = UNION over j of Coeffs(FullReduce(P_j, S_i^=), Q[c])
+            # (Algorithm MembershipLocus, lines 3-7): the union, over the PDEs of
+            # the system, of the constant coefficients of each remainder.  `Z` is
+            # E_i, and `I = ideal(eqns + Z)` is therefore <J_i U E_i>, the first
+            # half of W_i (line 12).
+            if not nonzero:
+                eqns = ()
+            elif len(nonzero) == 1:
+                eqns = build_system_of_equations(nonzero[0], PolyRing_constants)
+            else:
+                # deduplicate the combined list the same way
+                # build_system_of_equations already does internally.
+                _all = []
+                for r_ in nonzero:
+                    _all.extend(build_system_of_equations(r_, PolyRing_constants))
+                eqns = tuple(set(_all))
+            gens = list(eqns) + list(Z)
+            I = ideal(gens) if gens else ideal(PolyRing.zero())
+            print("  [cell %d] full_prem %.1fs (%d eqns); entering GTZ minimal_associated_primes"
+                  " (%d gens) ..." % (num, t_prem, len(eqns), len(gens)), flush=True)
+            _t = time.time()
+            primes = minimal_associated_primes_gtz(I, 'cell%d' % num)
+            t_gtz = time.time() - _t
+            print("  [cell %d] GTZ %.1fs -> %d primes" % (num, t_gtz, len(primes)), flush=True)
+            strata_cache[cache_key] = dict(spec_len=len(reductors), rems=rems, eqns=eqns,
+                                           primes=primes)
+
+        sc = strata_cache[cache_key]
+        # W_i = ( <J_i U E_i>, hfrak_i )  -- Algorithm MembershipLocus, line 12.
+        # `I` above is <J_i U E_i> (the projected PDE coefficients J_i together
+        # with the cell's own constant equations E_i); cp['ineq_coeffs'] is
+        # hfrak_i, carried as its unmultiplied factors.  W_i is registered below,
+        # one entry per minimal prime of <J_i U E_i>, each paired with the same
+        # hfrak_i.
+        #
+        # Splitting <J_i U E_i> into minimal primes is the first of the three
+        # places this script deliberately goes beyond the pseudocode.  The paper
+        # says, just after Algorithm ConsistencyLocus: "For simplicity of the
+        # presentation, no attempt is made to take radicals of the ideals, factor
+        # them into prime ideals, or detect duplication between them.  An actual
+        # implementation of these algorithms would likely do all of this."  This
+        # script is that actual implementation; do not remove the minAss step to
+        # match the pseudocode.
+        #
+        # NO prime is discarded here.  `P.is_one()` is skipped because
+        # minAss((1)) = {} is the stated signature of the subroutine, not a special
+        # case about which families are interesting.  Every other minimal prime is
+        # registered with the cell's full hfrak_i and the piece machinery decides:
+        # Z(p, hfrak_i) = V(p) \ V(hfrak_i) is empty on its own exactly when
+        # V(p) is inside V(hfrak_i), which piece_conditions detects and reports as
+        # an EMPTY PIECE naming the cells responsible.  An earlier revision dropped
+        # such primes right here -- the paper's since-removed "a prime p is
+        # discarded outright when some q in K_i is entirely contained in it" --
+        # which made emptiness a rule about primes rather than a property of the
+        # pair, and hid it from the output.
+        survivors = [P for P in sc['primes'] if not P.is_one()]
+
+        print("\n--- cell %d: zero {%s}; ansatz %d eqs; %d param-ineqs, %d jet-ineqs ---"
+              % (num, ', '.join(Zkey) or '(none, generic)', sc['spec_len'],
+                 len(cp['param_ineqs']), len(cp['jet_ineqs'])), flush=True)
+        if VERBOSE_REM:
+            for _i, _r in enumerate(sc['rems'], 1):
+                print("  remainder[pde %d]:" % _i, to_bracket(_r), flush=True)
+        if all(r_.is_zero() for r_ in sc['rems']):
+            print("  PDE reduces to 0: the whole stratum solves the PDE (nontrivially)", flush=True)
+        if not survivors:
+            print("  minimal primes of <J_i U E_i>: NONE (the ideal is (1), and "
+                  "minAss((1)) = {})", flush=True)
+        for P in survivors:
+            # Whether one factor of THIS cell's hfrak_i vanishes identically on
+            # V(P) is worth showing in the per-cell listing, but it is NOT a reason
+            # to drop the prime: the same prime may surface from another cell whose
+            # inequations do not vanish on it, and the piece is the union over
+            # contributing cells.  The decision is made once, at the union, by
+            # piece_conditions.
+            #
+            # `all(g in P for g in cs)` is <cs> contained in P, which is exactly the
+            # test the paper used to phrase through K_i -- the minimal primes of
+            # <Coeffs(q, Q[c])> -- before commit ebe2da9 dropped K_i from the
+            # pseudocode.  For P PRIME, <cs> is contained in P iff SOME minimal
+            # prime of <cs> is contained in P (a prime containing a product/ideal
+            # contains one of its minimal primes over it), so testing the
+            # coefficient set directly and testing every q in K_i separately decide
+            # the same thing.  That is why no minAss is needed on the inequation
+            # side, and why K_i should not be reintroduced.
+            dead_here = any(all(g in P for g in cs) for cs in cp['ineq_coeffs'])
+            print("   V: %s%s"
+                  % (fmt_ideal(P),
+                     "   [cell %d's inequations vanish identically on it]" % num
+                     if dead_here else ""), flush=True)
+            union_primes.setdefault(prime_key(P), (P, []))[1].append(num)
+            piece_excl.setdefault(prime_key(P), []).append(
+                (num, tuple(cp['ineq_coeffs'])))
+
+    print("\n" + "=" * 72)
+    consistency_report(cells_Ci)
+
+    # Duplicate detection, mathematically: two cells' GTZ calls can return the same
+    # prime under different generating sets, which prime_key hashes apart.  See
+    # merge_equal_primes for why leaving them apart loses part of a piece.
+    print("\n" + "=" * 72)
+    union_primes, _merges = merge_equal_primes(union_primes)
+    if _merges:
+        print("Duplicate ideals merged (equal as ideals, different generating sets):\n")
+        for _ka, _kk in _merges:
+            print("   Ideal (%s)   merged into   Ideal (%s)"
+                  % (", ".join(_ka), ", ".join(_kk)))
+        print("")
+
+    # Emptiness is a property of the pair (p, hfrak_i), decided by the inequations
+    # -- not a rule about which primes to keep.  Every minimal prime reached the
+    # union; the ones whose cells' inequations vanish identically on them leave it
+    # here, and the drop is printed with the cells responsible.
+    union_primes, _empty = drop_empty_pieces(union_primes)
+    if _empty:
+        print("Pieces emptied by their cells' inequations "
+              "(V(p) inside V(hfrak_i); dropped from the union):\n")
+        for _k, _P, _cells, _ep in sorted(_empty, key=lambda t: str(t[0])):
+            print("   V: %s   [%s]" % (fmt_ideal(_P), _ep.label()))
+        print("")
+
+    solution_primes = dump_union(
+              "Solution varieties over all cells (the union, Z(W_1) u ... u Z(W_s))",
+              union_primes, prune=True)
+
+    print("\n" + "=" * 72)
+    if solution_primes:
+        print("VERDICT: %d solution variety(ies) found for %s / ansatz %s."
+              % (len(solution_primes), PDE_NAME, ANSATZ))
+    else:
+        print("VERDICT: NO solution for %s / ansatz %s "
+              "(no non-empty piece survived: every cell's <J_i U E_i> was the unit "
+              "ideal, or its inequations -- Q included -- emptied every minimal "
+              "prime's piece)."
+              % (PDE_NAME, ANSATZ))
+    print("         This is V_{exists-forall}; the mu = forall branch "
+          "(V_forall) is not implemented.")
+    if UNMAPPED_INEQS:
+        print("         WARNING: %d cell inequation(s) had no PolyRing image and "
+              "were dropped" % len(UNMAPPED_INEQS))
+        print("         from hfrak_i, so the pieces above are UPPER BOUNDS, not "
+              "exact:")
+        for _n, _q in UNMAPPED_INEQS:
+            print("           cell %s: %s != 0" % (_n, _q))
+    else:
+        print("         Every cell inequation mapped into PolyRing, so the pieces "
+              "above are exact")
+        print("         (up to the reporting caveats in the consistency report).")
+
+    return solution_primes
+
+
+def main():
+    r"""
+    Run the script: decompose, compute the requested locus, report.
+
+    The driver.  It owns the steps that are not part of any one locus --
+    the shared decomposition, the ``--decompose-only`` early exit, the
+    ``--latex`` re-print of whatever locus was computed, and the total-time
+    line -- and delegates the locus itself to :func:`intermediate_locus`.
+    That is the only locus implemented today; the consistency locus
+    (Algorithm ConsistencyLocus, which decomposes the ansatz and the target
+    system TOGETHER and so needs a decomposition of its own) and the
+    membership locus proper are meant to become siblings called from here.
+
+    OUTPUT: ``None`` (everything is printed)
+
+    EXAMPLES::
+
+        sage: main()                             # not tested (this is the script)
+    """
+    cells_ds = decompose_ansatz()
+
+    if DECOMPOSE_ONLY:
+        print("\n--decompose-only: stopping before the prime pipeline.", flush=True)
+        print_total_time()
+        sys.exit(0)
+
+    solution_primes = intermediate_locus(cells_ds)
+
+    if LATEX_OUT and solution_primes:
+        print("\n" + "-" * 72)
+        print("Solution varieties, LaTeX (paper) form:\n")
+        latex_union(solution_primes)
+
+    print("\n" + "=" * 72)
+    print_total_time()
+
+
+main()
