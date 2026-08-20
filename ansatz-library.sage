@@ -144,8 +144,19 @@ def coordinate_system(pde_name):
 #     build_problem assembles the chain rules for these from `order`.
 #   every other entry (product 1/1.1/2/3/18/20/20.1, rational 6/7,
 #     product-of-two 10, nested 12, algext 13, coeff-ring 14/15/16, log 17/17.1)
-#     -- dict(kind, jets_dep, equations, params, v_params, amp_params); its
+#     -- dict(kind, jets_dep, equations, params, ineqs); its
 #     differential-polynomial equations are listed inline.
+#
+# REMOVED (2026-08): the `v_params` and `amp_params` fields, which named the
+# parameters whose vanishing was supposed to mark a prime DEGENERATE (`a == 0`)
+# or TRIVIAL (`Psi == 0`).  They were the data behind exactly the hand-written
+# variety discards the method does not make -- see the paragraph above: the
+# degenerate loci are REPORTED, not excluded.  thomas-ansatz-solve.sage, the
+# membership-locus driver, never read them; nothing else did either.  What a
+# cell's inequations exclude is now excluded by the inequations alone.
+# (`excludes`, which the 25.3x normalization rungs carry, is a different thing
+# and stays: it records what a CHART of the ansatz gives up, as data, and is
+# printed as a header.  It is not a variety discard.)
 #
 # EVERY entry carries a comment block in the ansatz-10 format: a banner naming
 # the template and the closed form, a prose paragraph placing it against its
@@ -176,10 +187,11 @@ def ansatz_spec(ansatz, coords, roots):
     #   the product:   Ψ − A·Φ
     #   chain rule:    Φ[c] − Φ·B[c]                          (Φ′ = Φ)
     #
-    # B's coefficients are the v_params, so B ≡ 0 — the exponential collapsing to
-    # 1 and leaving a bare polynomial Ψ = A — is the degenerate case, which Thomas
-    # splits off as its own cell rather than excluding.  A ≡ 0 (the amp_params) is
-    # the trivial Ψ ≡ 0 face.
+    # B ≡ 0 — the exponential collapsing to 1 and leaving a bare polynomial
+    # Ψ = A — is the degenerate case, which Thomas splits off as its own cell
+    # rather than excluding; A ≡ 0 is the Ψ ≡ 0 face.  Neither is discarded:
+    # B is declared as the family's inequation, so the decomposition splits on
+    # it and whatever survives is reported with its own conditions.
     # Code jet names: Φ→Phi.
 
     if ansatz == 1:
@@ -189,7 +201,7 @@ def ansatz_spec(ansatz, coords, roots):
                + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
                + ['B - (%s)' % B])
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
-                    equations=eqs, params=ap + bp, ineqs=[B], v_params=bp, amp_params=ap)
+                    equations=eqs, params=ap + bp, ineqs=[B])
 
     # ----- QUADRATIC-AMPLITUDE CUSP template: Ψ = A(deg 2)·exp(B) ------------
     # Ansatz 1 with a Hylleraas-type quadratic amplitude — no new template, one
@@ -213,7 +225,7 @@ def ansatz_spec(ansatz, coords, roots):
                + ['Phi[%s] - Phi*B[%s]' % (c, c) for c in coords]
                + ['B - (%s)' % B])
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B'],
-                    equations=eqs, params=ap + bp, ineqs=[B], v_params=bp, amp_params=ap)
+                    equations=eqs, params=ap + bp, ineqs=[B])
 
     # ----- LOGARITHM template: Ψ = A·log(C) ----------------------------------
     # A polynomial amplitude times the logarithm of a linear form.  Ξ = log(C) has
@@ -227,7 +239,7 @@ def ansatz_spec(ansatz, coords, roots):
     #   the product:   Ψ − A·Ξ
     #   chain rule:    C·Ξ[c] − C[c]                          (Ξ′ = 1/C, cleared)
     #
-    # C's coefficients are the v_params: C ≡ 0 kills the log outright.  This is
+    # C ≡ 0 kills the log outright, so C is the family's inequation.  This is
     # the MULTIPLICATIVE log; for a log admitted additively see 17/17.1, through
     # the inner variable see 19, and inside an exponent see 20/20.1.
     # Code jet names: Ξ→Xi.
@@ -239,7 +251,7 @@ def ansatz_spec(ansatz, coords, roots):
                + ['C*Xi[%s] - C[%s]' % (c, c) for c in coords]
                + ['C - (%s)' % C])
         return dict(kind='product', jets_dep=['Psi', 'Xi', 'C'],
-                    equations=eqs, params=ap + cp, ineqs=[C], v_params=cp, amp_params=ap)
+                    equations=eqs, params=ap + cp, ineqs=[C])
 
     # ----- COORDINATE-COEFFICIENT ODE template: Ψ = A·X(B) -------------------
     # helium.sage's "weird second-order mess": a polynomial amplitude times an
@@ -258,8 +270,9 @@ def ansatz_spec(ansatz, coords, roots):
     #   chain rules:   X[c] − X′·B[c],  X′[c] − X″·B[c]
     #   the relation:  pC·X″ − pD·X′ − pF·X − pG = 0
     #
-    # B's coefficients are the v_params (B ≡ 0 collapses X to a constant), A's the
-    # amp_params.  Six trial polynomials makes this the widest product entry.
+    # B ≡ 0 collapses X to a constant, so B is the family's inequation; A ≡ 0
+    # is the Ψ ≡ 0 face.  Six trial polynomials makes this the widest product
+    # entry.
     # Code jet names: X/X′/X″→Chi/DChi/DDChi; pC/pD/pF/pG params are c*/d*/f*/g*.
 
     if ansatz == 3:
@@ -276,7 +289,7 @@ def ansatz_spec(ansatz, coords, roots):
                + ['B - (%s)' % B])
         return dict(kind='product', jets_dep=['Psi', 'DDChi', 'DChi', 'Chi', 'B'],
                     equations=eqs, params=ap + bp + cp + dp + fp + gp,
-                    ineqs=[B], v_params=bp, amp_params=ap)
+                    ineqs=[B])
 
     # ----- ZETA template: Ψ = Z(v), one ODE function of one inner variable ---
     # The flagship of the library and the base case of the whole Zeta family: one
@@ -348,8 +361,8 @@ def ansatz_spec(ansatz, coords, roots):
     #
     # B/C is invariant under (B,C) → (λB, λC), an extra scaling dimension we let
     # Thomas carry rather than gauge-fix, so every prime arrives with that one
-    # spurious degree of freedom.  B's coefficients are the v_params: B ≡ 0 gives
-    # w = 0, the degenerate cell.
+    # spurious degree of freedom.  B ≡ 0 gives w = 0, the degenerate cell, so B
+    # is the family's inequation.
     # Code jet names: Z/Z′/Z″→Psi/DPsi/DDPsi.
 
     if ansatz in (6, 7):
@@ -366,7 +379,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='rational',
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 'w'],
                     equations=eqs, params=bp + cp + dp + mp + np_,
-                    ineqs=[B], v_params=bp)                         # B==0 -> w=0 -> degenerate
+                    ineqs=[B])       # B == 0 -> w = 0: its own cell, not a discard
 
     # ----- FIRST-ORDER ZETA template: Ψ = Z(v), M·Z′ = N·Z -------------------
     # The 1st-order face of the Zeta family: one chain rule instead of two, one
@@ -452,7 +465,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='product2',
                     jets_dep=['Psi', 'DDF', 'DF', 'F', 'DDG', 'DG', 'G', 'xi', 'eta'],
                     equations=eqs, params=pp + qq + odep,
-                    ineqs=[XI, ETA], v_params=pp + qq, amp_params=[])
+                    ineqs=[XI, ETA])
 
     # ----- NESTED-ODE template: Ψ = Z(V), V = V(coords, Θ), Θ = Θ(U) ---------
     # Two coupled ODE functions, one inside the other.  The inner Θ solves its own
@@ -501,7 +514,7 @@ def ansatz_spec(ansatz, coords, roots):
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 'V',
                               'DDTheta', 'DTheta', 'Theta', 'U'],
                     equations=eqs, params=up + ap + bp + cp + vp + dp + mp + np_,
-                    ineqs=[V], v_params=vp)
+                    ineqs=[V])
 
     # ----- ALGEBRAIC-EXTENSION template: Ψ = Z(V), ODE coeffs over Q(V)[g] ---
     # (helium.sage calls this one 13.)  The Zeta family with the ODE coefficients
@@ -547,7 +560,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='algext',
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 'g', 'V'],
                     equations=eqs, params=vp + dp + mp + np_ + ap + bp + cp,
-                    ineqs=[V], v_params=vp)
+                    ineqs=[V])
 
     # ----- EXPONENTIAL COEFFICIENT-RING template: coeffs over Q(v)[exp(e₀v)] -
     # The first of the three COEFFICIENT-RING entries (14, 15, 16): Ψ = Z(v) with
@@ -584,7 +597,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='expext',
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 't', 'v'],
                     equations=eqs, params=vp + ['e0'] + dp + mp + np_,
-                    ineqs=[V], v_params=vp, amp_params=[])
+                    ineqs=[V])
 
     # ----- HOLONOMIC COEFFICIENT-RING template: coeffs over Q(v)[t, t′] ------
     # NewSol.tex's 2nd-order HOLONOMIC coefficient-ring case.  A holonomic element
@@ -622,7 +635,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='holoext',
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 'DDt', 'Dt', 't', 'v'],
                     equations=eqs, params=vp + pp + qp + sp + dp + mp + np_,
-                    ineqs=[V], v_params=vp, amp_params=[])
+                    ineqs=[V])
 
     # ----- ALGEBRAIC-BASE template: Ψ = Z(v), v over the coordinates AND g ---
     # NewSol.tex / helium.sage's coded ansatz 16: an algebraic root nested BELOW
@@ -667,7 +680,7 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='algbase',
                     jets_dep=['DDPsi', 'DPsi', 'Psi', 'v', 'g'],
                     equations=eqs, params=vp + kp + ap + bp + cp,
-                    ineqs=[V], v_params=vp, amp_params=[])
+                    ineqs=[V])
 
     # ----- LOG-HYPERRADIUS LINEAR template: Ψ = A + B·L ----------------------
     # The first of the LOG-HYPERRADIUS entries (17, 17.1, 18, 19), which carry the
@@ -685,10 +698,11 @@ def ansatz_spec(ansatz, coords, roots):
     #   17.1  Ψ − (A + b₀·(R₁² + R₂²)·L),  A deg 2            (report ansatz 14.1)
     #
     # 17.1 pins the log to the exact O(s² log s) Fock slot instead of letting it
-    # float.  B ≡ 0 (resp. b₀ ≡ 0) is the v_params face — the log gone; A ≡ B ≡ 0
-    # is the trivial Ψ ≡ 0 face.  Both keep the log LINEAR and multiplicative, so
-    # neither can represent more than (ln s)¹, which is why both came back
-    # clean-negative; ansatz 20 is the exponentiated form that holds the tower.
+    # float.  B ≡ 0 (resp. b₀ ≡ 0) is the log-gone face, and is the family's
+    # inequation; A ≡ B ≡ 0 is the Ψ ≡ 0 face.  Both keep the log LINEAR and
+    # multiplicative, so neither can represent more than (ln s)¹, which is why
+    # both came back clean-negative; ansatz 20 is the exponentiated form that
+    # holds the tower.
     # Refs: ~/project/reports/helium-new-ansatze.md.
 
     if int(ansatz) == 17:
@@ -699,15 +713,14 @@ def ansatz_spec(ansatz, coords, roots):
                    + _log_relations(coords))            # leaders L[c]
             return dict(kind='loglin', jets_dep=['Psi', 'L'],
                         equations=eqs, params=ap + bp,
-                        ineqs=[B], v_params=bp,            # B == 0  -> log gone -> DEGENERATE
-                        amp_params=ap + bp)     # A==B==0 -> Psi == 0 -> TRIVIAL
+                        ineqs=[B])      # B == 0 -> log gone (its own cell)
         else:                                           # ansatz 17.1
             ap, A = trial('a', gens, 2, roots=rset)
             eqs = (['Psi - ((%s) + b0*(R1^2 + R2^2)*L)' % A]
                    + _log_relations(coords))
             return dict(kind='loglin', jets_dep=['Psi', 'L'],
                         equations=eqs, params=ap + ['b0'],
-                        ineqs=['b0'], v_params=['b0'], amp_params=ap + ['b0'])
+                        ineqs=['b0'])
 
     # ----- KATO × FOCK template: Ψ = exp(B)·(A₀ + A₁·L) ----------------------
     # The cusp exponential times the first Fock log — ansatz 1's product template
@@ -723,8 +736,8 @@ def ansatz_spec(ansatz, coords, roots):
     #   chain rule:    Φ[c] − Φ·B[c]                          (Φ = exp(B))
     #   the log jet:   (R₁² + R₂²)·L[c] − ∂c(R₁² + R₂²)
     #
-    # A₁ ≡ 0 (the v_params) drops the log and lands back in ansatz-1 territory;
-    # A₀ ≡ A₁ ≡ 0 is the trivial Ψ ≡ 0 face.
+    # A₁ ≡ 0 drops the log and lands back in ansatz-1 territory, so A₁ is the
+    # family's inequation; A₀ ≡ A₁ ≡ 0 is the Ψ ≡ 0 face.
     # Code jet names: Φ→Phi; A₁'s parameters are named h₀…, not a₄….
 
     if ansatz == 18:
@@ -737,8 +750,7 @@ def ansatz_spec(ansatz, coords, roots):
                + _log_relations(coords))
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B', 'L'],
                     equations=eqs, params=bp + a0p + a1p,
-                    ineqs=[A1], v_params=a1p,             # A1 == 0 -> log gone (ansatz-1 land)
-                    amp_params=a0p + a1p)     # A0==A1==0 -> Psi == 0
+                    ineqs=[A1])       # A1 == 0 -> log gone (ansatz-1 land)
 
     # ----- LOG-EXTENDED ZETA template: Ψ = Z(v), v over coordinates AND L ----
     # The Zeta family with the log admitted through the INNER VARIABLE rather than
@@ -788,8 +800,8 @@ def ansatz_spec(ansatz, coords, roots):
     # (R₁, R₂, R₁₂) ARE the KS-rationalized coordinates — the hyperspherical
     # √(1 − sin a cos t), √(1 + sin a) irrationalities of the angular Fock
     # coefficients are polynomial here, so L is the only transcendental jet.
-    # C ≡ 0 (the v_params) drops the log and leaves Kato-only: DEGENERATE.  exp is
-    # never zero, so there is no Ψ ≡ 0 (TRIVIAL) mode and amp_params is empty.
+    # C ≡ 0 drops the log and leaves Kato-only, so C is the family's inequation.
+    # exp is never zero, so there is no Ψ ≡ 0 mode at all.
     # Refs: MUSM 1991 eq (23); Liverts 2022 eq (8); Fournais et al. 2004/2009;
     # ~/project/reports/helium-new-ansatze.md.
 
@@ -803,14 +815,13 @@ def ansatz_spec(ansatz, coords, roots):
                + _log_relations(coords))               # leaders L[c]
         return dict(kind='product', jets_dep=['Psi', 'B', 'C', 'L'],
                     equations=eqs, params=bp + cp,
-                    ineqs=[Cx], v_params=cp,        # C == 0 -> log gone -> Kato-only (DEGENERATE)
-                    amp_params=[])      # exp is never 0: no Psi==0 (TRIVIAL) mode
+                    ineqs=[Cx])       # C == 0 -> log gone: Kato-only, its own cell
 
     # ----- EXPONENTIATED FOCK + AMPLITUDE: Ψ = A·exp(B + C·L) ----------------
     # Ansatz 20 with a Hylleraas-style polynomial prefactor (cf. 1 → 1.1).  The
     # amplitude lets Ψ carry a polynomial node/bulk factor on top of the exp-Fock
     # singular structure, the way hydrogen's 2s = (1 − Zr/2)·e^{−Zr/2} carries its
-    # node.  Introducing A also brings the TRIVIAL mode back, which ansatz 20 does
+    # node.  Introducing A also brings back the Ψ ≡ 0 mode, which ansatz 20 does
     # not have: A ≡ 0 gives Ψ ≡ 0.
     #
     #   amplitude:          A = a₀ + a₁·R₁ + a₂·R₂ + a₃·R₁₂    (deg 1)
@@ -820,7 +831,7 @@ def ansatz_spec(ansatz, coords, roots):
     #   the exponential:    Φ[c] − Φ·(B[c] + C[c]·L + C·L[c])
     #   the log jet:        (R₁² + R₂²)·L[c] − ∂c(R₁² + R₂²)
     #
-    # C ≡ 0 (the v_params) drops the log: DEGENERATE.  Refs as ansatz 20.
+    # C ≡ 0 drops the log, so C is the family's inequation.  Refs as ansatz 20.
     # Code jet names: Φ→Phi.
 
     if ansatz == 20.1:
@@ -835,8 +846,7 @@ def ansatz_spec(ansatz, coords, roots):
                + _log_relations(coords))
         return dict(kind='product', jets_dep=['Psi', 'Phi', 'B', 'C', 'L'],
                     equations=eqs, params=ap + bp + cp,
-                    ineqs=[Cx], v_params=cp,        # C == 0 -> log gone -> DEGENERATE
-                    amp_params=ap)      # A == 0 -> Psi == 0 -> TRIVIAL
+                    ineqs=[Cx])       # C == 0 -> log gone: its own cell
 
     # ----- NONLINEAR SECOND-DEGREE SYSTEM template: (u,v,w,p) over Ψ = Z(s) --
     # Figure 8 / equation (25) of NewMethod.tex — hence the number — the
@@ -869,12 +879,12 @@ def ansatz_spec(ansatz, coords, roots):
     # alone (u − u₅Ψ), but p KEEPS its full linear part, so the run can
     # confirm p₁ = p₂ = p₃ = 0 rather than assume it.
     #
-    # u₅, v₅, w₅ are the v_params — the amplitude vector a of the paper.
-    # a ≡ 0 removes the ODE element from the velocity field entirely, which is
-    # the DEGENERATE case.  amp_params is EMPTY: Ψ ≡ 0 leaves the linear
-    # background, which is a real (if dull) solution of the system — one of
-    # the linear strain-and-rotation flows — not a collapse to a trivial
-    # solution, so no prime is tagged TRIVIAL on that account.
+    # u₅, v₅, w₅ are the amplitude vector a of the paper.  a ≡ 0 removes the
+    # ODE element from the velocity field entirely: the degenerate case, which
+    # the decomposition reports as its own cell rather than excluding.  Ψ ≡ 0
+    # leaves the linear background, which is a real (if dull) solution of the
+    # system — one of the linear strain-and-rotation flows — not a collapse,
+    # so there is nothing to exclude on that account either.
     # Refs: NewMethod.tex Figure 8 (nonlinear ansatz figure) and eq. (25)
     # [label `ansatz 18`], sec:NavierStokes; oracle ns-reduction-check.py.
     # Code jet names: Ψ/Ψ′/Ψ″→Psi/DPsi/DDPsi; the ODE's independent variable
@@ -912,8 +922,9 @@ def ansatz_spec(ansatz, coords, roots):
     # continuity is (a·s)Ψ′ = u₅s₁Ψ′ once s₂ = s₃ = 0, so in the s₁ ≠ 0
     # chart it forces u₅ = 0 (modulo the degenerate Ψ′ ≡ 0); normalizing
     # u₅ = 1 would silently select the s₁ = 0 branch instead.  v₅ is the
-    # transverse amplitude — the Stokes-layer direction.  v_params is EMPTY
-    # from this rung on (see the code comment at the v_params assignment).
+    # transverse amplitude — the Stokes-layer direction.  With v₅ = 1 the
+    # amplitude vector can never vanish, so from this rung on the a ≡ 0
+    # degeneracy is not reachable at all.
     #
     # norm ≥ 3 (25.33, 19 params) — PRESSURE TRIM: p₁ = p₂ = p₃ = 0, so
     # p = p₄t + p₅Ψ.  The one rung that is NOT a symmetry quotient.  Task
@@ -1001,13 +1012,6 @@ def ansatz_spec(ansatz, coords, roots):
                + [' + '.join(ode_terms)]
                + [s_def]
                + field_eqs)
-        # v_params (a ≡ 0 -> DEGENERATE) shrink with the amplitude vector and
-        # are EMPTY from norm 2 on: with v5 = 1 the amplitude vector can never
-        # vanish, so the a ≡ 0 test is vacuous — leaving it in would silently
-        # change what a DEGENERATE verdict means.
-        v_params = ([] if norm >= 2
-                    else ['u5', 'v5'] if norm == 1
-                    else ['u5', 'v5', 'w5'])
         # excluded locus, as data (forwarded by build_problem): what each
         # chart rung gives up relative to 25.3.  Rung 4 records none — it is
         # a different ansatz family, not a chart, so nothing "lifts" anyway.
@@ -1024,8 +1028,6 @@ def ansatz_spec(ansatz, coords, roots):
         return dict(kind='nssystem',
                     jets_dep=['u', 'v', 'w', 'p', 'DDPsi', 'DPsi', 'Psi', 's'],
                     equations=eqs, params=sp_ + fparams + odep,
-                    v_params=v_params,
-                    amp_params=[],
                     excludes=excludes)
 
     raise NotImplementedError(
@@ -1184,8 +1186,6 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
         # already assembled the differential-polynomial equations and jet list.
         jets_dep = spec['jets_dep']
         ansatz_eqs_str = list(spec['equations']) + root_eqs
-        v_params = spec['v_params']
-        amp_params = spec.get('amp_params', [])
         # Each such family declares the form whose identical vanishing collapses
         # it -- the exponent B, the log coefficient C, and so on.  A family with
         # no single such form (the Navier-Stokes system, whose degeneracy is the
@@ -1206,14 +1206,10 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
         # an extra differential jet (e.g. ansatz 19's log jet L) whose defining
         # relations arrive via the `extra` slot; rank it just below v.
         jets_dep = list(reversed(tower)) + ['v'] + list(spec.get('extra_jets', []))
-        # inner-variable coefficients: params appearing in V.
-        v_toks = set(re.findall(r'[A-Za-z]\w*', spec['V']))
-        v_params = [p for p in params if p in v_toks]
-        amp_params = []          # Zeta family: Psi is the free jet (no amplitude)
         # The inner variable is carried as the jet `v`, tied to the coordinates
         # by the ansatz equation `v - (V)`, so `v` itself is the family's
         # non-degeneracy inequation: v == 0 identically is exactly the collapse
-        # of every v_param.
+        # of every coefficient of V.
         ansatz_ineqs_str = ['v']
 
     # jets high->low: dependent jets, then roots.
@@ -1241,7 +1237,7 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
 
     return dict(R=R, rk=rk, coords=coords, roots=roots, jets=jets,
                 tower=tower, order=spec.get('order'), params=params,
-                v_params=v_params, amp_params=amp_params, ansatz_eqs=ansatz_eqs,
+                ansatz_eqs=ansatz_eqs,
                 pconst=pconst, pdes=pdes, pde_ineqs=pde_ineqs,
                 ansatz_ineqs=ansatz_ineqs,
                 pde_params=pparams,
