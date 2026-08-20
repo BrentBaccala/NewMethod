@@ -67,6 +67,31 @@ January 2026).
   search confirming the ansatz+Gröbner coupling is nearly unique to Chaharbashloo
   (one verified sibling, Acosta-Humánez–Venegas-Gómez 2018; zero verified forward
   citations). Draft pending the author's review.
+- Drafted the **Lean 4 / Mathlib formalization of the two algorithms**,
+  `NewMethod/Lean/NewMethodAlgorithms.lean` + `README.md` (`1a80ee3`,
+  20 August 2026; model Claude Opus 5): a single self-contained file stating
+  Algorithm 1 (`ConsistencyLocus`) and Algorithm 2 (`MembershipLocus`) step for
+  step against the pseudocode, together with every supporting notion their
+  Input/Output clauses mention — differential ideals and saturation, `Sol` and
+  simple systems after ThomasDecomp Def. 2.2/3.5, constructible sets after CTD
+  Def. 6, cells, the four subroutines as cited contracts, and the three constant
+  loci.  The mechanical ideal-arithmetic layer is genuinely proved
+  (`V(𝔞𝔟) = V(𝔞) ∪ V(𝔟)`, `V((1)) = ∅`, `cell = Z(E_i,h_i)`, saturation
+  idempotence, `V_∀ ⊆ V_∃`, and the two assembly identities of §5.5); the
+  subroutines and the literature results are axioms, each citing its source's own
+  numbering and the local file it was read from.  Checks clean against
+  axiommath.ai (`okay: True`, 0 errors); 18 axioms and 8 `sorry`s are inventoried
+  and classified in the README.  The exercise turned up five defects, recorded
+  but **not** silently repaired: the saturation definition in §5.1 is malformed
+  (`I : S^∞ = {p : ∃ q ∈ R, qp ∈ I}` — the multiplier is unconstrained and `S`
+  does not appear); Algorithm 2 line 11's `𝔥_i` is not the `𝔥_i` of the
+  surrounding prose (the prose's `K_i` and its discarded-prime rule are absent
+  from the pseudocode); `minAss` is cited to GTZ Cor. 3.2(v), which is the
+  *saturation* primitive `I : f^∞` and belongs to Algorithm 2 line 17 instead;
+  `RefiningPartition` is cited to CSTools §3 but lives in §2.4, and the paper's
+  description of it is stronger than CSTools' own; and `V_∀ ⊆ V_{∃∀}` is not
+  merely aided but *falsified* without the stated covering hypothesis, which the
+  paper does not remark on.  Unreviewed draft pending the author's check.
 - **Repaired the containment proofs in "The Constant Loci"** (author's commit
   `53c4eba`, 27 July 2026; model Claude Opus 5). Found that the claimed
   containment V_∀ ⊆ V_{∃\Ψ} is **false** as stated — consistency of the ansatz
@@ -1088,8 +1113,10 @@ diff it against the Commit column, and only the new rows need thought.
 | `f99f416` | 2026-08-17 | NewMethod.tex | **corrected** Algorithm 7's saturation bug, after two wrong AI attempts | joint |
 | `62a9f8e` | 2026-08-18 | NewMethod.tex | **new algorithm**: ConsistencyLocus, ahead of MembershipLocus | author |
 | `4491431` | 2026-08-18 | NewMethod.tex | ideals typed as ideals throughout; **corrected** RefiningPartition naming | joint |
+| `1a80ee3` | 2026-08-20 | NewMethod/Lean/ | **new artifact**: Lean 4 formalization of Algorithms 1 and 2; five defects found | AI |
 
 */Claude Opus 4.8 (this record drafted by the AI it documents); updated
 27 July 2026, 30 July 2026 and 5 August 2026 by /Claude Opus 5, and audited
 against the full git history and the session transcripts on 5 August 2026 by
-/Claude Opus 5; updated 18 August 2026 by /Claude Sonnet 5.*
+/Claude Opus 5; updated 18 August 2026 by /Claude Sonnet 5;
+updated 20 August 2026 by /Claude Opus 5.*
