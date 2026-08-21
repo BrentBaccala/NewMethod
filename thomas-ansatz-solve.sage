@@ -3300,7 +3300,13 @@ def refining_partition(family, supersets=None, budget=0, label=None, ring=None):
 
     OUTPUT:
 
-    a list of pairs ``(constructible set, frozenset of member indices)``
+    a list of pairs ``(constructible set, frozenset of member indices)``, none
+    of them with an EMPTY `\iota`.  A part inside no member of the family is
+    dropped: no member is a union over it, so the specification does not
+    mention it, and CSTools' Example 8 returns none.  Nothing is lost for
+    Algorithm MembershipLocus, whose family contains `((0),(1))` -- every
+    non-empty part is inside THAT, so an empty `\iota` there would mean an
+    empty part
 
     EXAMPLES:
 
@@ -3362,7 +3368,7 @@ def refining_partition(family, supersets=None, budget=0, label=None, ring=None):
             print("  [%s] member %d/%d: %d part(s), %d piece(s), %.1fs"
                   % (label, k + 1, len(family), len(parts), _cs_size(parts),
                      time.time() - t0), flush=True)
-    return parts
+    return [(B, iota) for B, iota in parts if iota]
 
 
 def cell_data(cells_ds):
