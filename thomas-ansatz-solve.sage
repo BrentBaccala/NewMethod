@@ -56,12 +56,19 @@
 #           problem of any size it is the whole cost of the run.
 #       --locus membership               V_forall, the mu = forall branch --
 #           RefiningPartition and the D filter of the paper's lines 14-17.
-#           NOT IMPLEMENTED: the flag reports that and exits, rather than
-#           quietly computing something else.
+#           SAME decomposition and same per-cell records as the intermediate
+#           locus; the difference is the assembly.  It refines the family
+#           {((0),(1)), W_1, C_1, ..., W_s, C_s} into disjoint parts, keeps
+#           the parts on which C_i in iota => W_i in iota for every i, and
+#           takes minAss(a : b^inf) of each.  It also DECIDES the ansatz-
+#           consistency condition that the other two loci can only bound --
+#           the part lying in no Z(C_i) is the exact uncovered locus.
 #
 #     So a plain run still computes the intermediate locus, and the sandwich
-#     gives a check between the two implemented ones: every piece of
-#     V_{exists-forall} must lie in V_exists.
+#     gives a check between them: every piece of V_{exists-forall} must lie in
+#     V_exists, and V_forall must lie in V_{exists-forall} whenever the cells
+#     cover C^n.  A membership run checks the second containment itself, on
+#     its own parts, and says so.
 #
 #   * minAss IS kept, along with duplicate-ideal detection between cells and
 #     the piece-containment pruning, none of which the pseudocode asks for.
@@ -137,8 +144,8 @@ drop is printed as an EMPTY PIECE line.  The same three go-beyond steps are
 applied to the consistency locus, whose own ideals <E_i> are much smaller.
 
 --locus chooses which locus is computed; without it the script computes
-V_{exists-forall}, exactly as it did before the flag existed.  The mu = forall
-branch (RefiningPartition), and so V_forall itself, is NOT implemented.
+V_{exists-forall}, exactly as it did before the flag existed.  All three of the
+paper's loci are implemented.
 
 Choosing the problem
   --pde NAME         hydrogen | helium | navier-stokes | navier-stokes-nd
@@ -165,12 +172,24 @@ Choosing what to compute
                                      decomposition is essentially the whole
                                      computation, and the paper warns it is
                                      the expensive one.
-                       membership    V_forall, the mu = forall branch.  NOT
-                                     IMPLEMENTED: the flag reports that and
-                                     exits.
+                       membership    V_forall, the mu = forall branch.  Same
+                                     decomposition and same per-cell records
+                                     as intermediate; the assembly refines
+                                     {((0),(1)), W_1, C_1, ...} into disjoint
+                                     parts (RefiningPartition), keeps those on
+                                     which C_i => W_i for every i, and takes
+                                     minAss(a : b^inf) of each.  It also
+                                     decides -- rather than bounds -- whether
+                                     the cells cover C^n.
                      The three satisfy V_forall <= V_{exists-forall} <=
-                     V_exists (the paper's eq:intermediate-sandwich), so a
-                     consistency run is a check on an intermediate one.
+                     V_exists (the paper's eq:intermediate-sandwich) whenever
+                     the ansatz is consistent throughout C^n, so a consistency
+                     run is a check on an intermediate one.
+  --refine-budget N  cap on the total number of pieces RefiningPartition may
+                     hold across all parts (default 20000; 0 disables).  The
+                     refinement is exponential in the worst case, and this
+                     stops a blow-up with a diagnosis naming the member it died
+                     on.  --locus membership only.
   --generic-cell     skip the Thomas decomposition and run the pipeline on the
                      ansatz's own generic cell: the ansatz equations plus the
                      constancy relations, with the initials, separants and
@@ -312,7 +331,9 @@ GENERIC_CELL = '--generic-cell' in sys.argv
 #                                    decompose_combined)
 #   membership    V_forall           Algorithm MembershipLocus, the mu = forall
 #                                    branch -- RefiningPartition and the D
-#                                    filter of lines 14-17.  NOT IMPLEMENTED
+#                                    filter of lines 14-17.  Shares the
+#                                    intermediate locus's decomposition and its
+#                                    per-cell records (cell_data)
 LOCUS = _argval('--locus', 'intermediate')
 if LOCUS not in ('intermediate', 'membership', 'consistency'):
     sys.stdout.write("unknown --locus %r: expected intermediate, membership or "
@@ -320,16 +341,12 @@ if LOCUS not in ('intermediate', 'membership', 'consistency'):
     sys.stdout.flush()
     # os._exit, not sys.exit: the sage runner swallows SystemExit (see --help).
     os._exit(2)
-if LOCUS == 'membership':
-    sys.stdout.write(
-        "--locus membership (V_forall, the mu = forall branch of Algorithm\n"
-        "MembershipLocus: RefiningPartition and the D filter of lines 14-17) is\n"
-        "NOT IMPLEMENTED YET -- see task newmethod-membership-locus.  Nothing was\n"
-        "computed.  --locus intermediate (the default) computes V_{exists-forall},\n"
-        "which contains V_forall; --locus consistency computes V_exists, which\n"
-        "V_{exists-forall} is contained in.\n")
-    sys.stdout.flush()
-    os._exit(2)
+# The piece budget of RefiningPartition (--locus membership only).  The
+# refinement over the 2s+1 constructible sets of Algorithm MembershipLocus
+# line 14 is exponential in the worst case; this caps the total number of
+# pieces held across all parts, so a blow-up stops with a diagnosis naming the
+# member it died on rather than exhausting memory.  0 disables the cap.
+REFINE_BUDGET = int(_argval('--refine-budget', '20000'))
 # By default, prune a piece contained in another piece, printing only the
 # maximal (enclosing) ones.  Two primes coming out of different cells are often
 # nested (e.g. the c1=0 wall of a larger E=-1/2 component reappears as its own
@@ -2525,6 +2542,39 @@ def drop_empty_pieces(d):
     return kept, empty
 
 
+def _consistency_covers(cis):
+    r"""
+    True when the cells provably cover `\mathbb{C}^n` BY INSPECTION.
+
+    The one case that can be decided without a constructible-set complement: a
+    GENERIC cell (`E_i = (0)`) whose `h_i` is a unit has `Z(C_i) = V(0)
+    \setminus V(1) = \mathbb{C}^n` on its own.  ``False`` therefore means "not
+    decided here", not "does not cover" -- :func:`membership_locus` decides it
+    exactly, from the part of the refinement lying in no `Z(C_i)`.
+
+    Split out of :func:`consistency_report` so both the report and the
+    `\mu = \forall` verdict can ask the question without the report having to
+    return a value (its doctests print, and only print).
+
+    INPUT:
+
+    - ``cis`` -- a list of triples ``(cell number, E_i generators, h_i)``
+
+    OUTPUT: boolean
+
+    EXAMPLES::
+
+        sage: R4.<u,v> = PolynomialRing(QQ)
+        sage: _consistency_covers([(1, [], R4.one())])       # generic, h a unit
+        True
+        sage: _consistency_covers([(1, [], u)])              # generic, h not a unit
+        False
+        sage: _consistency_covers([(1, [u], R4.one())])      # not generic
+        False
+    """
+    return any(not E and h.is_unit() for _num, E, h in cis)
+
+
 def consistency_report(cis):
     r"""
     Report the ansatz-consistency condition of Algorithm MembershipLocus.
@@ -2606,6 +2656,8 @@ def consistency_report(cis):
               % (num, num, "(0)" if not E else "<%s>" % ", ".join(map(str, E)),
                  h, tag))
     print("")
+    # _consistency_covers is the same predicate, quantified: any generic cell
+    # with a unit h_i covers C^n by itself.
     covering = [num for num, h in generic if h.is_unit()]
     if covering:
         print("  cell %d is generic with h_%d a unit: Z(C_%d) = C^n.  The cells"
@@ -2628,7 +2680,7 @@ def consistency_report(cis):
     print("  complement C^n \\ union_i Z(C_i) is not computed.")
 
 
-def dump_union(title, d, prune=False):
+def dump_union(title, d, prune=False, origin='cells'):
     r"""
     Print a bucket of solution varieties under ``title``, one prime per line.
 
@@ -2637,6 +2689,12 @@ def dump_union(title, d, prune=False):
     - ``title`` -- a heading string printed above the list
 
     - ``d`` -- a bucket ``{key: (P, cells)}`` (see :func:`prune_enclosed`)
+
+    - ``origin`` -- what the bucket's second component names (default:
+      ``'cells'``).  The two loci built on :func:`decompose_ansatz` bucket by
+      the CELL a prime came from; :func:`membership_locus` buckets by the
+      RefiningPartition REGION, and saying "cells" there would name the wrong
+      object
 
     - ``prune`` -- boolean (default: ``False``); when ``True`` and the global
       ``PRUNE_ENCLOSED`` is set, first drop the varieties contained in a larger
@@ -2656,7 +2714,7 @@ def dump_union(title, d, prune=False):
             else ", %d enclosed sub-variety(ies) pruned" % len(dropped))
     print("\n%s (%d distinct primes%s):\n" % (title, len(d), note))
     for key, (P, cells_for) in sorted(d.items(), key=lambda kv: str(kv[0])):
-        print("  V:", fmt_ideal(P), "  (from cells:",
+        print("  V:", fmt_ideal(P), "  (from %s:" % origin,
               ", ".join(map(str, sorted(set(cells_for)))) + ")")
         # The piece is V(P) less what its cells exclude; printing the variety
         # alone overstates the answer on a proper closed subset of it, and
@@ -2765,6 +2823,548 @@ def latex_union(d, label='ideal'):
     print(r"\end{subequations}")
 
 
+# ==========================================================================
+# Constructible sets and RefiningPartition (Algorithm MembershipLocus line 14)
+# ==========================================================================
+#
+# The mu = forall branch needs Boolean algebra over constructible subsets of
+# C^n -- intersection, difference and emptiness -- which the rest of the script
+# never needed: the mu = exists-forall assembly is a plain UNION, and a union of
+# locally closed sets needs no refinement to be written down.
+#
+# REPRESENTATION.  A PIECE is a pair ``(a, F)`` in which ``a`` is an ideal and
+# ``F`` a tuple of ideals, standing for the locally closed set
+#
+#     V(a) \ ( V(F_1) u ... u V(F_r) ) .
+#
+# The removed locus is a UNION of varieties rather than the single V(b) of the
+# paper's pair (a, b) for the same reason :func:`_excluded_components` carries a
+# list: the paper's b is a product of ideals -- hfrak_i is
+# prod_q <Coeffs(q, Q[c])> (line 11) -- and V of a product IS the union of the
+# V's of its factors.  Carrying the factors unmultiplied avoids ever forming the
+# product ideal, whose generator count is the product of the factors'.  So this
+# representation is the paper's pair with b left factored, and F = () is
+# b = (1), i.e. nothing removed.  It is the same shape :data:`piece_excl`
+# already stores per cell, which is why the pieces this branch produces can be
+# handed to :func:`piece_conditions` unchanged.
+#
+# A CONSTRUCTIBLE SET is a list of pieces, meaning their union.  The pieces of
+# one such list are NOT required to be disjoint; only the parts RefiningPartition
+# returns are.
+#
+# WHY A REFINEMENT IS NEEDED AT ALL.  Line 14's family is
+# {((0),(1)), W_1, C_1, ..., W_s, C_s} and line 15 keeps the parts B on which
+# ``C_i in iota => W_i in iota`` for every i.  The union of those parts is
+#
+#     INTERSECT_i ( Z(W_i) u (C^n \ Z(C_i)) )  =  V_forall
+#
+# because a part, being an atom of the Boolean algebra the family generates, is
+# either wholly inside or wholly outside each member -- which is exactly what
+# lets a membership question ("is this constant in EVERY subsystem lying over
+# it?") be answered part by part.  The whole space ((0),(1)) is in the family so
+# that the parts cover C^n: the constants no cell lies over satisfy the
+# implication vacuously and belong to V_forall, and without that member they
+# would fall outside the partition entirely.
+
+
+# Reduced Groebner bases, keyed by the raw generator strings that produced them.
+# One entry per distinct PRESENTATION; the value is the canonical key, so two
+# presentations of one ideal share a value.  Sage caches groebner_basis() on the
+# ideal OBJECT, which is no help here -- the refinement builds a fresh object for
+# every sum it forms.
+_CS_GB_CACHE = {}
+
+
+def _cs_ideal_key(I):
+    r"""
+    A CANONICAL key for an ideal: its reduced Groebner basis as a string tuple.
+
+    Unlike :func:`prime_key`, which hashes a presentation and leaves equal
+    ideals under different generating sets in different buckets, this is a true
+    normal form -- the reduced Groebner basis is unique for a fixed monomial
+    order -- so ``_cs_ideal_key(I) == _cs_ideal_key(J)`` iff ``I == J``.  The
+    refinement needs that: it forms sums and saturations by the thousand and
+    would otherwise carry duplicate pieces through every subsequent step.
+
+    Two special values are worth naming, since the rest of the machinery tests
+    for them instead of calling ``is_one`` / ``is_zero`` (which would recompute
+    a Groebner basis that this cache already holds):
+
+    - ``('1',)`` -- the unit ideal, `V = \emptyset`
+    - ``('0',)`` -- the zero ideal, `V = \mathbb{C}^n`
+
+    INPUT:
+
+    - ``I`` -- an ideal of :data:`PolyRing`
+
+    OUTPUT: a tuple of strings
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: _cs_ideal_key(R4.ideal(x + y, x))     # same ideal, two forms
+        ('x', 'y')
+        sage: _cs_ideal_key(R4.ideal(y, x))
+        ('x', 'y')
+        sage: _cs_ideal_key(R4.ideal(R4.one()))
+        ('1',)
+        sage: _cs_ideal_key(R4.ideal(R4.zero()))
+        ('0',)
+    """
+    raw = tuple(sorted(str(g) for g in I.gens()))
+    k = _CS_GB_CACHE.get(raw)
+    if k is None:
+        k = tuple(sorted(str(g) for g in I.groebner_basis()))
+        _CS_GB_CACHE[raw] = k
+    return k
+
+
+def _cs_piece_key(p):
+    r"""
+    A canonical key for a piece ``(a, F)``, for deduplication.
+
+    The removed loci are a SET: their order does not matter and a repeat is
+    redundant, so ``F`` contributes a frozenset of :func:`_cs_ideal_key` values.
+
+    INPUT:
+
+    - ``p`` -- a piece ``(a, F)``
+
+    OUTPUT: a hashable pair
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: a = R4.ideal(x)
+        sage: (_cs_piece_key((a, (R4.ideal(y), R4.ideal(x + y))))
+        ....:  == _cs_piece_key((a, (R4.ideal(x + y), R4.ideal(y)))))
+        True
+    """
+    a, F = p
+    return (_cs_ideal_key(a), frozenset(_cs_ideal_key(I) for I in F))
+
+
+def _cs_saturate(a, F):
+    r"""
+    The ideal `a : b^\infty` for `b` the product of ``F``, without forming `b`.
+
+    Saturation by a product is successive saturation by its factors --
+    `a : (IJ)^\infty = (a : I^\infty) : J^\infty` -- which is what this does,
+    so the product ideal (whose generator count multiplies out) is never built.
+    Only the RADICAL of the result is ever used here (an emptiness test and a
+    ``minAss`` call), and `V(a : b^\infty)` is the Zariski closure of the piece
+    `V(a) \setminus V(b)` either way.
+
+    A factor that is the ZERO ideal removes all of `\mathbb{C}^n`, so the piece
+    is empty and the saturation is the unit ideal; that case is taken directly
+    rather than handed to ``saturation``, for which `(0)^\infty` is not
+    meaningful.
+
+    INPUT:
+
+    - ``a`` -- an ideal
+
+    - ``F`` -- a tuple of ideals, the unmultiplied factors of `b`
+
+    OUTPUT: an ideal
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: _cs_saturate(R4.ideal(x*y), (R4.ideal(x),))     # V(xy) less V(x)
+        Ideal (y) of ...
+        sage: _cs_saturate(R4.ideal(x*y), ()).gens()          # nothing removed
+        [x*y]
+        sage: _cs_saturate(R4.ideal(x), (R4.ideal(x),)).is_one()
+        True
+    """
+    s = a
+    for I in F:
+        if _cs_ideal_key(s) == ('1',):
+            return s
+        if _cs_ideal_key(I) == ('0',):
+            return I.ring().ideal(I.ring().one())
+        s = s.saturation(I)[0]
+    return s
+
+
+def _cs_piece_norm(a, F):
+    r"""
+    Normalize a piece, returning ``None`` when it is EMPTY.
+
+    Four reductions, cheapest first, each of them exact:
+
+    - `a = (1)`: `V(a) = \emptyset`.
+    - a removed factor that is the zero ideal removes all of `\mathbb{C}^n`.
+    - a removed factor `I` with `I \subseteq a` has `V(a) \subseteq V(I)`, so the
+      piece is empty (tested as `a + I = a`, one Groebner basis from the cache).
+    - a removed factor with `a + I = (1)` misses `V(a)` entirely and is DROPPED,
+      shrinking ``F`` for every later step.
+
+    What survives all four still needs the real test, `a : b^\infty = (1)`
+    (:func:`_cs_saturate`): a union of removed loci can cover `V(a)` without any
+    single one of them covering it.
+
+    INPUT:
+
+    - ``a`` -- an ideal
+
+    - ``F`` -- an iterable of ideals, the removed loci
+
+    OUTPUT: a piece ``(a, F')`` with ``F'`` deduplicated and pruned, or ``None``
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: _cs_piece_norm(R4.ideal(x), (R4.ideal(x, y),))[1]     # y != 0 on V(x)
+        (Ideal (x, y) of ...,)
+        sage: _cs_piece_norm(R4.ideal(x), (R4.ideal(x),)) is None   # V(x) inside V(x)
+        True
+        sage: _cs_piece_norm(R4.ideal(x, y), (R4.ideal(x - 1),))[1] # misses V(x,y)
+        ()
+
+
+    A union of removed loci can empty a piece without either one emptying it;
+    that is the case the saturation test is there for::
+
+        sage: _cs_piece_norm(R4.ideal(x*y), (R4.ideal(x), R4.ideal(y))) is None
+        True
+    """
+    # Drop zero and duplicate generators from `a` before anything else.  The
+    # refinement builds `a` by SUMMING ideals -- the whole-space part starts as
+    # (0), and every meet adds another summand -- so the same generator, and the
+    # zero the whole space contributes, accumulate.  Nothing downstream depends
+    # on the presentation (the canonical key is the Groebner basis, and the
+    # reported primes come from minAss), but the part listing prints these
+    # generators, and `V(0, 0, v3, v3)` for `V(v3)` is a worse report than it
+    # needs to be.
+    _g = sorted(set(g for g in a.gens() if not g.is_zero()), key=str)
+    a = a.ring().ideal(_g) if _g else a.ring().ideal(a.ring().zero())
+    ka = _cs_ideal_key(a)
+    if ka == ('1',):
+        return None
+    keep, seen = [], set()
+    for I in F:
+        kI = _cs_ideal_key(I)
+        if kI == ('0',):
+            return None                  # V(I) = C^n: the piece loses everything
+        if kI in seen:
+            continue
+        kai = _cs_ideal_key(a + I)
+        if kai == ka:
+            return None                  # I inside a, so V(a) inside V(I)
+        if kai == ('1',):
+            continue                     # V(a) misses V(I): removes nothing
+        seen.add(kI)
+        keep.append(I)
+    if keep and _cs_ideal_key(_cs_saturate(a, keep)) == ('1',):
+        return None
+    return (a, tuple(keep))
+
+
+def _cs_norm(pieces):
+    r"""
+    Normalize a constructible set: drop empty pieces, duplicates and subsumed ones.
+
+    The subsumption test is the cheap SOUND one, not the complete one
+    :func:`_piece_contained` runs at the reporting stage: piece `(a, F)` is
+    dropped when another piece `(a', F')` of the same set has `a' \subseteq a`
+    (so `V(a) \subseteq V(a')`) and `F' \subseteq F` as a set of removed loci (so
+    the survivor removes no more).  Both directions of a tie would drop each
+    other, so a piece is only dropped in favour of one that is not itself
+    dropped.
+
+    Completeness is not needed: leaving a subsumed piece in place costs work
+    but changes no set.  Cheapness is, because this runs once per refinement
+    step per part.
+
+    INPUT:
+
+    - ``pieces`` -- an iterable of pieces ``(a, F)``
+
+    OUTPUT: a list of pieces, possibly empty (the empty constructible set)
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: len(_cs_norm([(R4.ideal(x), ()), (R4.ideal(x, y), ())]))   # V(x,y) inside V(x)
+        1
+        sage: _cs_norm([(R4.ideal(R4.one()), ())])                       # all empty
+        []
+    """
+    out, seen = [], {}
+    for a, F in pieces:
+        p = _cs_piece_norm(a, F)
+        if p is None:
+            continue
+        k = _cs_piece_key(p)
+        if k not in seen:
+            seen[k] = p
+            out.append(p)
+    if len(out) < 2:
+        return out
+    keys = [_cs_piece_key(p) for p in out]
+    drop = set()
+    for i in range(len(out)):
+        if i in drop:
+            continue
+        for j in range(len(out)):
+            if i == j or j in drop:
+                continue
+            # out[j] subsumes out[i]?
+            if not (keys[j][1] <= keys[i][1]):
+                continue
+            if _cs_ideal_key(out[i][0] + out[j][0]) == keys[i][0]:
+                drop.add(i)
+                break
+    return [p for i, p in enumerate(out) if i not in drop]
+
+
+def _cs_meet(X, Y):
+    r"""
+    The intersection of two constructible sets.
+
+    Pieces meet piecewise: `(V(a_1) \setminus U_1) \cap (V(a_2) \setminus U_2)
+    = V(a_1 + a_2) \setminus (U_1 \cup U_2)`, so the equation ideals add and the
+    removed-locus lists concatenate.  Distributing over the two unions gives one
+    candidate per pair.
+
+    INPUT:
+
+    - ``X``, ``Y`` -- constructible sets (lists of pieces)
+
+    OUTPUT: a constructible set
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: _cs_meet([(R4.ideal(x), ())], [(R4.ideal(y), ())])
+        [(Ideal (x, y) of ..., ())]
+        sage: _cs_meet([(R4.ideal(x), ())], [(R4.ideal(x - 1), ())])   # disjoint
+        []
+    """
+    return _cs_norm([(a1 + a2, tuple(F1) + tuple(F2))
+                     for a1, F1 in X for a2, F2 in Y])
+
+
+def _cs_piece_minus(p, q):
+    r"""
+    The difference of two pieces, as a constructible set.
+
+    With `X = V(a) \setminus U` and `Y = V(c) \setminus U'` where
+    `U' = \bigcup_j V(G_j)`,
+
+    .. MATH::
+
+        X \setminus Y = \bigl( X \setminus V(c) \bigr) \;\cup\;
+                        \bigl( X \cap U' \bigr),
+
+    since a point of `X` leaves `Y` either by leaving `V(c)` or by falling into
+    the locus `Y` itself removes.  The first term adds `c` to the removed list;
+    the second is one piece per `G_j`, adding `G_j` to the equations.  So the
+    result has `1 + |G|` candidate pieces, which is where the refinement's cost
+    lives.
+
+    The degenerate cases need no special handling: `c = (0)` makes the first
+    term remove all of `\mathbb{C}^n` (empty, correctly -- `Y` is everything
+    `U'` does not take), and `G = ()` makes the second term absent (correctly --
+    `Y` removes nothing).
+
+    INPUT:
+
+    - ``p``, ``q`` -- pieces ``(a, F)``
+
+    OUTPUT: a constructible set
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: _cs_piece_minus((R4.ideal(x*y), ()), (R4.ideal(x), ()))
+        [(Ideal (x*y) of ..., (Ideal (x) of ...,))]
+        sage: _cs_piece_minus((R4.ideal(x), ()), (R4.ideal(x), ()))     # nothing left
+        []
+    """
+    a, F = p
+    c, G = q
+    cand = [(a, tuple(F) + (c,))]
+    for I in G:
+        cand.append((a + I, tuple(F)))
+    return _cs_norm(cand)
+
+
+def _cs_minus(X, Y):
+    r"""
+    The difference of two constructible sets, `X \setminus Y`.
+
+    `X \setminus Y = X \setminus \bigcup_k Y_k` is computed by removing the
+    pieces of `Y` one at a time from a running constructible set, renormalizing
+    after each so the piece count does not run away.
+
+    Pieces of the RESULT may overlap each other; that is harmless, since the
+    result stands for their union.  Disjointness is a property of the PARTS
+    :func:`refining_partition` returns, not of the pieces inside one part.
+
+    INPUT:
+
+    - ``X``, ``Y`` -- constructible sets
+
+    OUTPUT: a constructible set; ``[]`` exactly when `X \subseteq Y`
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: _cs_minus([(R4.ideal(x*y), ())], [(R4.ideal(x), ()), (R4.ideal(y), ())])
+        []
+        sage: len(_cs_minus([(R4.ideal(x*y), ())], [(R4.ideal(x), ())]))
+        1
+    """
+    cur = list(X)
+    for q in Y:
+        if not cur:
+            return []
+        nxt = []
+        for p in cur:
+            nxt.extend(_cs_piece_minus(p, q))
+        cur = _cs_norm(nxt)
+    return cur
+
+
+def _cs_size(parts):
+    r"""
+    The total number of pieces across a list of ``(constructible set, iota)`` parts.
+
+    The refinement's cost measure, and what ``--refine-budget`` caps.
+
+    INPUT:
+
+    - ``parts`` -- a list of pairs ``(constructible set, iota)``
+
+    OUTPUT: an integer
+
+    EXAMPLES::
+
+        sage: _cs_size([([1, 2], frozenset()), ([3], frozenset([0]))])
+        3
+    """
+    return sum(len(B) for B, _iota in parts)
+
+
+def refining_partition(family, supersets=None, budget=0, label=None, ring=None):
+    r"""
+    RefiningPartition of \cite{CSTools}, \S3, on a family of constructible sets.
+
+    Returns a finite list of pairs `(B, \iota)` in which the `B` are pairwise
+    DISJOINT constructible sets, `\iota` is the set of indices of the family
+    members containing `B`, and every member of the family is the union of the
+    `B` whose `\iota` contains its index -- the specification Algorithm
+    MembershipLocus line 14 calls for.  The CSTools paper describes it as a
+    "set-theoretical co-prime factorization" and reports it in its Example 8
+    as returning, for a two-member family, the three parts
+    `cs_2 \setminus cs_1` (`\iota = \{2\}`), `cs_1 \cap cs_2`
+    (`\iota = \{1,2\}`) and `cs_1 \setminus cs_2` (`\iota = \{1\}`) -- the
+    non-empty atoms of the Boolean algebra the family generates, each tagged
+    with the members it sits inside.
+
+    The construction is incremental, member by member: the running partition
+    starts as the single part `\mathbb{C}^n` with `\iota = \emptyset`, and each
+    new member `m` splits every existing part `B` into `B \cap m` (tagged with
+    `m`) and `B \setminus m` (tagged as before), the empty ones dropped.  That
+    is the only construction that keeps the part count at the number of NON-EMPTY
+    atoms rather than at `2^{|family|}`, which for the `2s+1` members of line 14
+    with `s` in the teens is out of reach by several orders of magnitude.  The
+    worst case is still exponential; ``budget`` is the guard.
+
+    ``supersets`` is an exact shortcut, not an approximation.  If member `k` is
+    known to be contained in an ALREADY PROCESSED member `j`, then a part not
+    tagged with `j` cannot meet `k`, and the intersection is skipped without
+    computing it.  Algorithm MembershipLocus supplies exactly one such
+    containment per component, `Z(W_i) \subseteq Z(C_i)`, which
+    :func:`membership_locus` verifies before passing it in.
+
+    INPUT:
+
+    - ``family`` -- a list of constructible sets
+
+    - ``supersets`` -- optional dict ``{k: [j, ...]}``; member ``k`` is
+      contained in each member ``j``
+
+    - ``budget`` -- integer (default: 0); when positive, the maximum total
+      number of pieces allowed across all parts.  Exceeding it raises
+      ``RuntimeError`` rather than running out of memory silently
+
+    - ``label`` -- optional string; when given, a per-member progress line is
+      printed with the part and piece counts and the elapsed time
+
+    - ``ring`` -- the polynomial ring the ideals live in (default:
+      :data:`PolyRing`); only the initial whole-space part needs it
+
+    OUTPUT:
+
+    a list of pairs ``(constructible set, frozenset of member indices)``
+
+    EXAMPLES:
+
+    The CSTools Example 8 shape, on two overlapping lines::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: cs1, cs2 = [(R4.ideal(x), ())], [(R4.ideal(y), ())]
+        sage: parts = refining_partition([cs1, cs2])
+        sage: sorted(sorted(i) for _B, i in parts)
+        [[0], [0, 1], [1]]
+
+    A member contained in another produces no part tagged with the smaller
+    alone::
+
+        sage: big, small = [(R4.ideal(x), ())], [(R4.ideal(x, y), ())]
+        sage: sorted(sorted(i) for _B, i in refining_partition([big, small]))
+        [[0], [0, 1]]
+
+    Disjoint members never share a part::
+
+        sage: A, B_ = [(R4.ideal(x), ())], [(R4.ideal(x - 1), ())]
+        sage: sorted(sorted(i) for _B, i in refining_partition([A, B_]))
+        [[0], [1]]
+    """
+    if ring is None:
+        ring = (family[0][0][0].ring() if family and family[0] else PolyRing)
+    whole = [(ring.ideal(ring.zero()), ())]
+    parts = [(whole, frozenset())]
+    t0 = time.time()
+    for k, member in enumerate(family):
+        new = []
+        for B, iota in parts:
+            skip = False
+            for j in (supersets or {}).get(k, ()):
+                if j < k and j not in iota:
+                    skip = True          # B misses member j, so it misses k
+                    break
+            if skip:
+                new.append((B, iota))
+                continue
+            inside = _cs_meet(B, member)
+            if not inside:
+                new.append((B, iota))
+                continue
+            outside = _cs_minus(B, member)
+            new.append((inside, iota | frozenset([k])))
+            if outside:
+                new.append((outside, iota))
+        parts = new
+        if budget > 0 and _cs_size(parts) > budget:
+            raise RuntimeError(
+                "RefiningPartition exceeded --refine-budget %d after %d of %d "
+                "members: %d parts, %d pieces.  The refinement over the "
+                "2s+1 constructible sets of Algorithm MembershipLocus line 14 "
+                "is exponential in the worst case; raise the budget or accept "
+                "that this problem is out of reach."
+                % (budget, k + 1, len(family), len(parts), _cs_size(parts)))
+        if label:
+            print("  [%s] member %d/%d: %d part(s), %d piece(s), %.1fs"
+                  % (label, k + 1, len(family), len(parts), _cs_size(parts),
+                     time.time() - t0), flush=True)
+    return parts
+
+
 def cell_data(cells_ds):
     r"""
     The per-component data of Algorithm MembershipLocus, lines 2-12.
@@ -2778,7 +3378,7 @@ def cell_data(cells_ds):
     union: that is the assembly step, and it differs per locus.  The
     `\mu = \exists\forall` assembly is :func:`intermediate_locus`; the
     `\mu = \forall` one (RefiningPartition and the `D` filter of lines 14-17)
-    is a future sibling that will consume exactly the same records.
+    is :func:`membership_locus`, which consumes exactly the same records.
 
     Algorithm ConsistencyLocus is deliberately NOT a consumer of this
     function: its lines 2-6 read `E_i` and `h_i` off a DIFFERENT decomposition
@@ -2999,9 +3599,11 @@ def intermediate_locus(cells_ds):
         \qquad
         V_{\exists\forall} = \bigcup_{i=1}^{s} Z(W_i)
 
-    so `V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists`.  The
-    `\mu = \forall` branch -- RefiningPartition and the `D` filter -- is not
-    implemented; ``cells_Ci`` below already carries the `C_i` it would need.
+    so `V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists` whenever
+    the ansatz is consistent throughout `\mathbb{C}^n`.  The `\mu = \forall`
+    branch -- RefiningPartition and the `D` filter -- is
+    :func:`membership_locus`, reached by ``--locus membership``; it consumes
+    the same :func:`cell_data` records plus the `C_i` collected below.
 
     Three things the paper's pseudocode does not ask for are done anyway,
     because the paper says an actual implementation would: each
@@ -3044,8 +3646,8 @@ def intermediate_locus(cells_ds):
 
     # The cells C_i = (<E_i>, <h_i>) of Algorithm MembershipLocus line 10, one
     # entry (num, E_i, h_i) per component.  C_i plays no part in the
-    # mu = exists-forall assembly this script computes -- it is used by the
-    # mu = forall branch, which is out of scope -- but the paper's Output section
+    # mu = exists-forall assembly -- it is the mu = forall branch
+    # (membership_locus) that needs it -- but the paper's Output section
     # promises that the algorithm REPORTS whether the ansatz is consistent
     # throughout C^n, and by the proof of Corollary cor:assembly that condition is
     # exactly whether the C_i cover C^n.  See consistency_report below.
@@ -3107,8 +3709,14 @@ def intermediate_locus(cells_ds):
               "ideal, or its inequations -- Q included -- emptied every minimal "
               "prime's piece)."
               % (PDE_NAME, ANSATZ))
-    print("         This is V_{exists-forall}; the mu = forall branch "
-          "(V_forall) is not implemented.")
+    print("         This is V_{exists-forall} (Algorithm MembershipLocus, the "
+          "mu = exists-forall")
+    print("         branch).  By eq:intermediate-sandwich it CONTAINS V_forall "
+          "(--locus membership)")
+    print("         and is contained in V_exists (--locus consistency), "
+          "whenever the ansatz is")
+    print("         consistent throughout C^n -- the condition the report "
+          "above speaks to.")
     if UNMAPPED_INEQS:
         print("         WARNING: %d cell inequation(s) had no PolyRing image and "
               "were dropped" % len(UNMAPPED_INEQS))
@@ -3120,6 +3728,353 @@ def intermediate_locus(cells_ds):
         print("         Every cell inequation mapped into PolyRing, so the pieces "
               "above are exact")
         print("         (up to the reporting caveats in the consistency report).")
+
+    return solution_primes
+
+
+def _cs_from_pieces(pieces, tag):
+    r"""
+    Turn a constructible set into ``{prime_key: (P, [tag])}``, filling :data:`piece_excl`.
+
+    Line 16 of Algorithm MembershipLocus: for each pair `(\mathfrak{a},
+    \mathfrak{b})` of the retained parts, the returned pairs are
+    `(\mathfrak{p}, \mathfrak{b})` for `\mathfrak{p} \in
+    \mathrm{minAss}(\mathfrak{a} : \mathfrak{b}^\infty)`.  The saturation is
+    :func:`_cs_saturate` (the removed locus left factored), and the residual
+    `\mathfrak{b}` becomes the piece's :data:`piece_excl` entry in exactly the
+    coefficient-set form the reporting machinery already reads, so
+    :func:`piece_conditions`, :func:`drop_empty_pieces` and
+    :func:`prune_enclosed` work on these pieces unchanged.
+
+    Splitting `\mathfrak{a} : \mathfrak{b}^\infty` into minimal primes loses
+    nothing: `V(\mathfrak{a} : \mathfrak{b}^\infty)` is the Zariski closure of
+    the piece, so the primes cover it, and re-removing `V(\mathfrak{b})` from
+    each gives back the piece exactly.
+
+    INPUT:
+
+    - ``pieces`` -- a constructible set (a list of pieces ``(a, F)``)
+
+    - ``tag`` -- an integer labelling the part these pieces came from; it lands
+      in the bucket's origin list and in :data:`piece_excl`
+
+    OUTPUT: a bucket ``{prime_key: (P, [tag])}``
+
+    EXAMPLES::
+
+        sage: _cs_from_pieces([], 1)
+        {}
+    """
+    out = {}
+    for j, (a, F) in enumerate(pieces, 1):
+        sat = _cs_saturate(a, F)
+        print("    [region %d piece %d] minAss(a : b^inf) on %d gen(s) ..."
+              % (tag, j, len(sat.gens())), flush=True)
+        _t = time.time()
+        primes = minimal_associated_primes_gtz(sat, 'membership-r%d-p%d' % (tag, j))
+        print("    [region %d piece %d] %.1fs -> %d prime(s)"
+              % (tag, j, time.time() - _t, len(primes)), flush=True)
+        for P in primes:
+            # minAss((1)) = {} is the subroutine's stated signature; a unit
+            # ideal here means the saturation emptied the piece, which
+            # _cs_piece_norm should already have caught.
+            if P.is_one():
+                continue
+            out.setdefault(prime_key(P), (P, []))[1].append(tag)
+            piece_excl.setdefault(prime_key(P), []).append(
+                (tag, tuple(tuple(I.gens()) for I in F)))
+    return out
+
+
+def _fmt_piece(a, F):
+    r"""
+    A piece ``(a, F)`` as one readable line, ``V(a) \ (V(F_1) u ...)``.
+
+    INPUT:
+
+    - ``a`` -- the equation ideal
+
+    - ``F`` -- the tuple of removed-locus ideals
+
+    OUTPUT: a string
+
+    EXAMPLES::
+
+        sage: R4.<x,y> = PolynomialRing(QQ)
+        sage: _fmt_piece(R4.ideal(x), ())
+        'V(x)'
+        sage: _fmt_piece(R4.ideal(x), (R4.ideal(y),))
+        'V(x) \\ V(y)'
+    """
+    head = "C^n" if all(g.is_zero() for g in a.gens()) else \
+           "V(%s)" % ", ".join(str(g) for g in a.gens())
+    if not F:
+        return head
+    return "%s \\ (%s)" % (head, " u ".join(
+        "V(%s)" % ", ".join(str(g) for g in I.gens()) for I in F))
+
+
+def membership_locus(cells_ds):
+    r"""
+    Compute `V_\forall`, the membership locus, and print it.
+
+    The `\mu = \forall` branch of Algorithm MembershipLocus, lines 14-17, on
+    the same per-component records :func:`intermediate_locus` consumes
+    (:func:`cell_data`).  Where that branch UNIONS the `Z(W_i)`, this one asks
+    the target system to belong to EVERY subsystem lying over a constant:
+
+    .. MATH::
+
+        V_\forall = \bigcap_{i=1}^{s} \bigl( Z(W_i) \cup (\mathbb{C}^n
+        \setminus Z(C_i)) \bigr)
+        \qquad
+        V_{\exists\forall} = \bigcup_{i=1}^{s} Z(W_i)
+
+    and the intersection is what forces the Boolean machinery: a union of
+    locally closed sets can be written down as it stands, an intersection of
+    unions with complements cannot.  Line 14 refines the family
+    `\{((0),(1)), W_1, C_1, \ldots, W_s, C_s\}` into disjoint parts
+    (:func:`refining_partition`), line 15 keeps the parts satisfying
+    `C_i \in \iota \implies W_i \in \iota` for every `i`, and line 16 splits
+    each retained part's `\mathfrak{a} : \mathfrak{b}^\infty` into minimal
+    primes.
+
+    THE WHOLE-SPACE MEMBER MATTERS.  A constant no cell lies over satisfies the
+    implication vacuously -- there is no subsystem for the target to fail to
+    belong to -- so it IS in `V_\forall`, and `((0),(1))` is in the family so
+    that the partition has a part for it.  That part is the exact complement
+    `\mathbb{C}^n \setminus \bigcup_i Z(C_i)` which :func:`consistency_report`
+    can only bound, and it is non-empty exactly when the ansatz is NOT
+    consistent throughout `\mathbb{C}^n` -- the precondition the paper's Output
+    section attaches to `V_\forall \subseteq V_{\exists\forall} \subseteq
+    V_\exists`.  So this branch does not merely need the consistency report,
+    it DECIDES the condition the report estimates, and prints the verdict
+    either way.
+
+    Two set differences fall out of the parts for free, because a part is by
+    construction wholly inside or wholly outside each `Z(W_i)`:
+
+    - `V_{\exists\forall} \setminus V_\forall` is the union of the DROPPED
+      parts that still lie in some `Z(W_j)` -- the pieces the `\mu = \forall`
+      filter removes, each labelled with the components whose `C_i` did it;
+    - `V_\forall \setminus V_{\exists\forall}` is the union of the retained
+      parts lying in no `Z(W_j)`, which (given the filter) is exactly the
+      uncovered locus above.
+
+    Both are reported, so the sandwich is checked rather than asserted, and a
+    failure of the inner containment is attributed to the precondition rather
+    than left ambiguous.
+
+    The same three go-beyond-the-pseudocode steps the other two loci take are
+    taken here -- minAss (which line 16 asks for anyway), merging primes equal
+    as ideals across parts, and pruning a piece contained in another.
+
+    INPUT:
+
+    - ``cells_ds`` -- the components from :func:`decompose_ansatz`.  Only the
+      first ``--max-cells`` of them are processed when that option is given.
+
+    OUTPUT:
+
+    the union as a bucket ``{prime_key: (P, [part numbers])}``, the same shape
+    :func:`intermediate_locus` returns, so ``--latex`` consumes either
+
+    EXAMPLES::
+
+        sage: membership_locus(decompose_ansatz())   # not tested (needs a problem)
+        ...
+        VERDICT: the membership locus V_forall ...
+    """
+    cells_Ci, C_sets, W_sets = [], [], []
+
+    for rec in cell_data(cells_ds):
+        num = rec['num']
+        cells_Ci.append((num, list(rec['Z']), rec['h_i']))
+        # C_i = ( <E_i>, <h_i> ) -- line 10.  h_i a unit means V(h_i) is empty
+        # and the cell removes nothing.
+        Ea = (PolyRing.ideal(list(rec['Z'])) if rec['Z']
+              else PolyRing.ideal(PolyRing.zero()))
+        hF = () if rec['h_i'].is_unit() else (PolyRing.ideal(rec['h_i']),)
+        C_sets.append((num, _cs_norm([(Ea, hF)])))
+        # W_i = ( <J_i u E_i>, hfrak_i ) -- line 12.  <J_i u E_i> is presented
+        # by its minimal primes (cell_data already computed them), whose
+        # varieties union to V(<J_i u E_i>); hfrak_i is the product of the
+        # per-inequation coefficient ideals, and V of that product is the union
+        # of their varieties, which is the removed-locus list exactly.
+        hf = tuple(PolyRing.ideal(list(cs)) for cs in rec['cp']['ineq_coeffs'])
+        W_sets.append((num, _cs_norm([(P, hf) for P in rec['survivors']])))
+
+    print("\n" + "=" * 72)
+    consistency_report(cells_Ci)
+    covers_by_inspection = _consistency_covers(cells_Ci)
+
+    # ---- line 14: the family, and the one containment worth exploiting ----
+    print("\n" + "=" * 72)
+    print("RefiningPartition (Algorithm MembershipLocus, line 14) over the %d"
+          % (2 * len(W_sets) + 1))
+    print("constructible set(s) {((0),(1)), W_1, C_1, ..., W_s, C_s}:\n")
+    family = [[(PolyRing.ideal(PolyRing.zero()), ())]]
+    fam_label = ['C^n']
+    idx_C, idx_W, supersets = {}, {}, {}
+    for (num, C), (_num2, W) in zip(C_sets, W_sets):
+        idx_C[num] = len(family)
+        family.append(C)
+        fam_label.append('C_%d' % num)
+        idx_W[num] = len(family)
+        family.append(W)
+        fam_label.append('W_%d' % num)
+        # Z(W_i) SUBSET Z(C_i) holds by construction -- V(<J_i u E_i>) is inside
+        # V(<E_i>), and hfrak_i removes at least what h_i does, since every
+        # inequation lying in Q[c] is its own coefficient set -- but it is
+        # VERIFIED here rather than assumed, because refining_partition uses it
+        # to skip intersections.  A failure turns the shortcut off for that
+        # component and changes no answer.
+        if not _cs_minus(W, C):
+            supersets[idx_W[num]] = [idx_C[num]]
+        else:
+            print("  NOTE: Z(W_%d) is not contained in Z(C_%d); the containment"
+                  " shortcut is off for" % (num, num))
+            print("        this component (the refinement is unaffected "
+                  "otherwise).")
+    print("  Z(W_i) SUBSET Z(C_i) verified for %d of %d component(s); the "
+          "refinement skips" % (len(supersets), len(W_sets)))
+    print("  the intersections that containment makes empty.\n")
+
+    _t = time.time()
+    parts = refining_partition(family, supersets=supersets,
+                               budget=REFINE_BUDGET, label='refine')
+    t_refine = time.time() - _t
+    print("\n  RefiningPartition: %d part(s), %d piece(s), %.1fs"
+          % (len(parts), _cs_size(parts), t_refine), flush=True)
+
+    # ---- line 15: D = the parts on which C_i in iota => W_i in iota ----
+    regions = []
+    for r, (B, iota) in enumerate(parts, 1):
+        blame = sorted(num for num in idx_C
+                       if idx_C[num] in iota and idx_W[num] not in iota)
+        in_some_W = sorted(num for num in idx_W if idx_W[num] in iota)
+        regions.append(dict(r=r, B=B, iota=iota, blame=blame, inW=in_some_W))
+
+    kept = [g for g in regions if not g['blame']]
+    dropped = [g for g in regions if g['blame']]
+
+    print("\n  parts and the D filter (line 15):\n")
+    for g in regions:
+        print("   region %d: %s   [%s]"
+              % (g['r'],
+                 ", ".join(fam_label[i] for i in sorted(g['iota'])) or "(none)",
+                 "IN D" if not g['blame'] else
+                 "dropped: C_%s holds but W_%s fails"
+                 % (", C_".join(map(str, g['blame'])),
+                    ", W_".join(map(str, g['blame'])))))
+        for a, F in g['B']:
+            print("        %s" % _fmt_piece(a, F))
+    print("\n  %d of %d part(s) are in D." % (len(kept), len(regions)))
+
+    # ---- line 16: minAss of each retained part's a : b^inf ----
+    print("\n" + "=" * 72)
+    print("Minimal primes of the retained parts (Algorithm MembershipLocus, "
+          "line 16):", flush=True)
+    union_primes = {}
+    for g in kept:
+        for k, (P, tags) in _cs_from_pieces(g['B'], g['r']).items():
+            union_primes.setdefault(k, (P, []))[1].extend(tags)
+
+    # ---- the two set differences the parts hand over for free ----
+    print("\n" + "=" * 72)
+    print("The mu = forall filter against the mu = exists-forall union:\n")
+    removed = [g for g in dropped if g['inW']]
+    if removed:
+        print("  V_{exists-forall} \\ V_forall -- pieces the filter REMOVED:\n")
+        for g in removed:
+            print("   region %d: lies in W_%s, but C_%s holds without W_%s"
+                  % (g['r'], ", W_".join(map(str, g['inW'])),
+                     ", C_".join(map(str, g['blame'])),
+                     ", W_".join(map(str, g['blame']))))
+            for a, F in g['B']:
+                print("        %s" % _fmt_piece(a, F))
+        print("")
+    else:
+        print("  V_{exists-forall} \\ V_forall is EMPTY: no part lies in some "
+              "Z(W_j) while\n  failing the filter, so the mu = forall branch "
+              "removed nothing and\n  V_forall CONTAINS V_{exists-forall}.\n")
+    uncovered = [g for g in kept if not g['inW']]
+    if uncovered:
+        print("  V_forall \\ V_{exists-forall} -- the constants NO cell lies "
+              "over, which\n  satisfy the membership condition vacuously:\n")
+        for g in uncovered:
+            for a, F in g['B']:
+                print("        region %d: %s" % (g['r'], _fmt_piece(a, F)))
+        print("")
+        print("  This set is the EXACT complement C^n \\ union_i Z(C_i) that "
+              "the consistency\n  report can only bound.  It is non-empty, so "
+              "the ansatz is NOT consistent\n  throughout C^n, the "
+              "precondition of eq:intermediate-sandwich FAILS, and\n  "
+              "V_forall SUBSET V_{exists-forall} is not claimed.\n")
+    else:
+        print("  V_forall \\ V_{exists-forall} is EMPTY: every retained part "
+              "lies in some\n  Z(W_j), so the cells cover C^n, the ansatz IS "
+              "consistent throughout C^n,\n  and V_forall SUBSET "
+              "V_{exists-forall} holds.\n")
+
+    # ---- the same reporting pipeline the other two loci use ----
+    print("\n" + "=" * 72)
+    union_primes, _merges = merge_equal_primes(union_primes)
+    if _merges:
+        print("Duplicate ideals merged (equal as ideals, different generating "
+              "sets):\n")
+        for _ka, _kk in _merges:
+            print("   Ideal (%s)   merged into   Ideal (%s)"
+                  % (", ".join(_ka), ", ".join(_kk)))
+        print("")
+
+    union_primes, _empty = drop_empty_pieces(union_primes)
+    if _empty:
+        print("Pieces emptied by their parts' residual conditions "
+              "(V(p) inside V(b); dropped):\n")
+        for _k, _P, _cells, _ep in sorted(_empty, key=lambda t: str(t[0])):
+            print("   V: %s   [%s]" % (fmt_ideal(_P), _ep.label()))
+        print("")
+
+    solution_primes = dump_union(
+        "Membership locus V_forall over all retained parts",
+        union_primes, prune=True, origin='regions')
+
+    print("\n" + "=" * 72)
+    if solution_primes:
+        print("VERDICT: the membership locus V_forall of %s / ansatz %s is the "
+              "union of the\n         %d piece(s) above."
+              % (PDE_NAME, ANSATZ, len(solution_primes)))
+    else:
+        print("VERDICT: the membership locus V_forall of %s / ansatz %s is "
+              "EMPTY (no constant\n         puts the target system in EVERY "
+              "subsystem lying over it, and the cells\n         cover C^n so "
+              "there is no vacuous region either)."
+              % (PDE_NAME, ANSATZ))
+    print("         This is V_forall (Algorithm MembershipLocus, the mu = "
+          "forall branch).")
+    if uncovered:
+        print("         The ansatz is NOT consistent throughout C^n (%d "
+              "uncovered region(s)),"
+              % len(uncovered))
+        print("         so eq:intermediate-sandwich's precondition FAILS and "
+              "V_forall is NOT")
+        print("         contained in V_{exists-forall}: the uncovered region "
+              "is in V_forall alone.")
+    else:
+        print("         The cells cover C^n, so V_forall SUBSET "
+              "V_{exists-forall} SUBSET V_exists")
+        print("         holds%s."
+              % ("" if covers_by_inspection
+                 else " (the covering was decided by the refinement, which the "
+                      "consistency\n         report could only bound)"))
+    if UNMAPPED_INEQS:
+        print("         WARNING: %d cell inequation(s) had no PolyRing image "
+              "and were dropped" % len(UNMAPPED_INEQS))
+        print("         from hfrak_i, so the pieces above are UPPER BOUNDS, "
+              "not exact:")
+        for _n, _q in UNMAPPED_INEQS:
+            print("           cell %s: %s != 0" % (_n, _q))
 
     return solution_primes
 
@@ -3359,21 +4314,21 @@ def main():
     re-print of whatever locus was computed, and the total-time line -- and
     delegates the locus itself to the function ``--locus`` selects.
 
-    The two implemented loci differ in BOTH halves, which is why the
-    decomposition is chosen here rather than inside them:
+    The three loci do not all share a decomposition, which is why it is chosen
+    here rather than inside them:
 
     ===================  ==========================  =======================
     ``--locus``          decomposition               assembly
     ===================  ==========================  =======================
     ``intermediate``     :func:`decompose_ansatz`    :func:`intermediate_locus`
+    ``membership``       :func:`decompose_ansatz`    :func:`membership_locus`
     ``consistency``      :func:`decompose_combined`  :func:`consistency_locus`
     ===================  ==========================  =======================
 
-    ``--locus membership`` (`V_\forall`) is rejected at option-parse time, up
-    with :data:`LOCUS`, so it costs nothing and cannot be mistaken for a run.
-    When it is implemented it will be a third row here, sharing
-    :func:`decompose_ansatz`'s components -- and :func:`cell_data`'s records --
-    with the intermediate locus.
+    The first two share both the decomposition AND the per-component records
+    :func:`cell_data` produces; they differ only in the assembly on top of
+    them (line 18 versus lines 14-17).  The third cannot share either: its
+    input is the ansatz together with the target equations.
 
     OUTPUT: ``None`` (everything is printed)
 
@@ -3394,8 +4349,9 @@ def main():
         print_total_time()
         sys.exit(0)
 
-    solution_primes = (consistency_locus(cells_ds) if consistency
-                       else intermediate_locus(cells_ds))
+    solution_primes = {'consistency': consistency_locus,
+                       'membership': membership_locus,
+                       'intermediate': intermediate_locus}[LOCUS](cells_ds)
 
     if LATEX_OUT and solution_primes:
         print("\n" + "-" * 72)
