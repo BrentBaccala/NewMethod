@@ -2398,15 +2398,6 @@ leading to the following exact solution to \eqref{schrodinger hydrogen 2}, with 
 where $x,y,z$ are Cartesian coordinates, $r=\sqrt{x^2+y^2+z^2}$, $E=0$,
 and $J_0$ is the ordinary Bessel function $J_0$.
 
-\eqref{schrodinger hydrogen 2} admits a separation of variables
-in parabolic coordinates (\cite{LandauLifshitz} \S37):
-
-\begin{equation}
-\xi = r + z \qquad \eta = r - z \qquad \psi = \tan^{-1} \frac{y}{x}
-\end{equation}
-
-Solution \eqref{solution} is in this parabolic form.
-
 \begin{comment}
 This solution is not of either standard separated form --- neither the
 spherical $R(r)\,\Theta(\theta)\,\Phi(\varphi)$ nor the Cartesian
@@ -2466,6 +2457,79 @@ In[5]:= FullSimplify[eqn /. Psi -> ({x, y, z} |-> sol[x, y, z])]
 Out[5]= True
 \end{verbatim}
 \end{tiny}
+
+It has been known since the time of Schr\"odinger (\cite{Schrodinger26}) that \eqref{schrodinger hydrogen 2} admits a separation of variables
+in parabolic coordinates (\cite{LandauLifshitz} \S37):
+
+\begin{equation}
+\xi = r + z \qquad \eta = r - z \qquad \psi = \tan^{-1} \frac{y}{x}
+\end{equation}
+
+Solution \eqref{solution} is in this parabolic form.
+
+Turning now to analysis, we ask in what function spaces \eqref{solution} exists.
+
+  \begin{center}
+  \small
+  \begin{tabularx}{\textwidth}{@{}llX@{}}
+  \hline
+  space & & reason \\
+  \hline
+  $L^\infty(\mathbb{R}^3)$
+    & yes
+    & $|J_0| \le 1$, with $\|\Psi\|_\infty = 1$ attained on all of
+      $\{x<0,\, y=z=0\}$ \\[3pt]
+  $C^0(\mathbb{R}^3)$
+    & yes
+    & $\xi$ is continuous and $J_0$ is entire; $\Psi(0) = 1$ \\[3pt]
+  $C^\omega(\mathbb{R}^3 \setminus \{0\})$
+    & yes
+    & real-analytic off the origin, by elliptic regularity \\[3pt]
+  $C^{0,1}(\mathbb{R}^3) = W^{1,\infty}(\mathbb{R}^3)$
+    & yes
+    & $|\nabla\Psi|^2 = 2J_1(2\sqrt{\xi})^2/r$ and $\xi \le 2r$, giving the
+      sharp Lipschitz constant $2$ \\[3pt]
+  $W^{2,p}_{\mathrm{loc}}(\mathbb{R}^3)$, $p < 3$
+    & yes
+    & sharp: $\nabla^2\Psi = -2\Psi/r$, and $1/r \in L^p_{\mathrm{loc}}$
+      exactly for $p<3$ \\[3pt]
+  $\mathcal{S}'(\mathbb{R}^3)$
+    & yes
+    & bounded, hence tempered; \eqref{schrodinger hydrogen} holds in
+      $\mathcal{D}'(\mathbb{R}^3)$ with no $\delta$ at the origin \\[3pt]
+  $L^2\!\left(\mathbb{R}^3, (1+r)^{-s} dV\right)$
+    & $s > 5/2$
+    & the envelope $\xi^{-1/4}$ improves on the $s>3$ of a bounded
+      non-decaying function by exactly one half power \\[3pt]
+  \hline
+  $L^p(\mathbb{R}^3)$, $p < \infty$
+    & no
+    & $|\Psi| \ge J_0(2\sqrt{c}) > 0$ on the paraboloid
+      $y^2 + z^2 \le c\,(c - 2x)$, of infinite volume \\[3pt]
+  $\dot{H}^1(\mathbb{R}^3)$
+    & no
+    & $\int |\nabla\Psi|^2 dV
+       = \int\!\!\int\!\!\int J_1(2\sqrt{\xi})^2 d\xi\, d\eta\, d\varphi$,
+      whose integrand is independent of $\eta$ \\[3pt]
+  $C^1(\mathbb{R}^3)$, $W^{2,3}_{\mathrm{loc}}(\mathbb{R}^3)$
+    & no
+    & $\nabla\Psi$ is bounded but discontinuous at the origin: it tends to $0$
+      along $-\hat{e}_x$ and to $-2\hat{e}_x$ along $+\hat{e}_x$ \\[3pt]
+  $\mathcal{D}(H)$, $H$ self-adjoint on $L^2$
+    & no
+    & $E=0$ is the threshold of the continuous spectrum $[0,\infty)$, not an
+      eigenvalue \\[3pt]
+  \hline
+  \end{tabularx}
+  \end{center}
+
+For our purposes, the failure of \eqref{solution} to lie in $L^2(\mathbb{R}^3)$ represents a
+fundamental barrier: it is a solution to the Schr\"odinger {\it equation}, but is not a solution
+to the Schr\"odinger {\it problem} since to solve the later, it must also be a valid {\it wavefunction},
+which means it must lie in $L^2(\mathbb{R}^3)$, so that $\int |\Psi|^2 dV$ can be interpreted as a probability distribution.
+Thus, \eqref{solution} is not a physical state.
+
+%% REMAINING IDEALS
 
 The remaining ideals are first order ODEs and can be analyzed in a similar fashion, yielding the following solutions:
 
@@ -3380,6 +3444,11 @@ P. Gianni, Properties of Gr\"obner bases under specializations, in: J.H. Davenpo
 
 \bibitem{mathematica}
 Wolfram Research, Inc., Mathematica, version 14.0 [software], Wolfram Research, Inc., Champaign, IL, 2024.
+
+\bibitem{Schrodinger26}
+E. Schr\"odinger, Quantisierung als Eigenwertproblem (Dritte Mitteilung:
+St\"orungstheorie, mit Anwendung auf den Starkeffekt der Balmerlinien),
+Ann. Phys. (4) 80 (1926) 437--490. \url{https://doi.org/10.1002/andp.19263851302}.
 
 \bibitem{LandauLifshitz}
 L.D. Landau, E.M. Lifshitz, Quantum Mechanics: Non-Relativistic Theory, third ed., Course of Theoretical Physics, vol.~3, Pergamon Press, Oxford, 1977.
