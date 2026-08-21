@@ -556,7 +556,7 @@ def is_param_constancy(p):
     return False
 
 
-# Under the ELIMINATION ranking, full_prem's normal form may legitimately retain
+# Under the ELIMINATION ranking, differential_prem's normal form may legitimately retain
 # parametric DERIVATIVE jets: the block ranking makes the order-0 jets the
 # leaders of the chain rules (DPsi outranks Psi[R1], so `Psi[R1] - DPsi*v[R1]`
 # rewrites DPsi), leaving derivative jets like Psi[R12] under the staircase.
@@ -828,7 +828,7 @@ class GenericCell(object):
       weaker property entirely -- a triangular system can still have an
       integrability condition that does not reduce to zero.
 
-      When the cell is not passive, `full_prem` against it is not a normal
+      When the cell is not passive, `differential_prem` against it is not a normal
       form: a PDE that lies in the completed cell's differential ideal can
       still leave a nonzero remainder here.  The projection then reads that
       remainder's coefficients as constraints, so the membership locus comes
@@ -1328,53 +1328,6 @@ def reductors_for(spec):
         [...]
     """
     return list(spec) + list(pconst)
-
-
-def full_prem(p, reductors, max_passes=64):
-    r"""
-    Ritt's full reduction of ``p`` against ``reductors``, iterated to a fixpoint.
-
-    ``R.differential_prem`` makes a single pass over the reductor list, and one
-    pass is not enough: reducing a high derivative by one reductor can re-expose
-    a lower derivative that an *earlier* reductor handles -- for instance
-    ``Psi[R1,R1]`` reduces down to ``DPsi[R1]`` and then to ``n0*Psi[R1]``,
-    whose leader belongs to a chain rule the pass has already gone by.  A single
-    pass therefore leaves first-order jets unreduced whenever the system has
-    first-derivative terms: invisible for ``hydrogen``'s pure Laplacian, wrong
-    for ``helium``'s `2/R_i \, \partial/\partial R_i` terms.  Looping to a
-    fixpoint gives the true normal form, and costs one extra no-op pass once the
-    remainder is fully reduced.
-
-    INPUT:
-
-    - ``p`` -- the differential polynomial to reduce; coerced into ``R`` if it
-      is not already an element
-
-    - ``reductors`` -- the differential polynomials to reduce against
-
-    - ``max_passes`` -- integer (default: 64); the iteration cap, a backstop
-      against a non-terminating reduction rather than a limit ever reached in
-      practice
-
-    OUTPUT:
-
-    a pair ``(r, h)`` -- the remainder, and the product of the initials the
-    reduction multiplied through by, so that `h \cdot p \equiv r`
-
-    EXAMPLES::
-
-        sage: full_prem(R('Psi[x]'), [])         # not tested (needs R)
-        (Psi[x], 1)
-    """
-    r = p if isinstance(p, type(R.one())) else R(p)
-    h = R.one()
-    for _ in range(max_passes):
-        r2, h2 = R.differential_prem(r, reductors)
-        h = h * h2
-        if r2 == r:
-            return r2, h
-        r = r2
-    return r, h
 
 
 def prime_key(P):
@@ -2749,12 +2702,12 @@ def intermediate_locus(cells_ds):
             # relations, so `+ pconst` was redundant reductors (extra per-pass cost).
             reductors = list(ce)
             # Flushed phase markers with timings, so a stall is diagnosable from the
-            # LAST line: stuck after "entering full_prem" => in the pseudo-reduction;
+            # LAST line: stuck after "entering differential_prem" => in the pseudo-reduction;
             # stuck after "entering GTZ" => in minimal_associated_primes (primdec).
             # Leading blank line so each cell's timing block is separated from the
             # previous cell's variety list (the "--- cell N ---" header supplies the
             # blank line before the result block).
-            print("\n  [cell %d] entering full_prem: %d reductors ..." % (num, len(reductors)),
+            print("\n  [cell %d] entering differential_prem: %d reductors ..." % (num, len(reductors)),
                   flush=True)
             _t = time.time()
             # Reduce EACH PDE of the system against the same cell, unmultiplied.
@@ -2765,7 +2718,7 @@ def intermediate_locus(cells_ds):
             # membership test Algorithm MembershipLocus asks for (line 5).  The
             # constant-coefficient equations of all the remainders are combined
             # into ONE system, solved once per cell.
-            rem_elts = [full_prem(P_, reductors)[0] for P_ in PDES]
+            rem_elts = [R.differential_prem(P_, reductors)[0] for P_ in PDES]
             t_prem = time.time() - _t
             rems = [_elt_to_polyring(re_) for re_ in rem_elts]
             nonzero = [r_ for r_ in rems if not r_.is_zero()]
@@ -2788,7 +2741,7 @@ def intermediate_locus(cells_ds):
                 eqns = tuple(set(_all))
             gens = list(eqns) + list(Z)
             I = ideal(gens) if gens else ideal(PolyRing.zero())
-            print("  [cell %d] full_prem %.1fs (%d eqns); entering GTZ minimal_associated_primes"
+            print("  [cell %d] differential_prem %.1fs (%d eqns); entering GTZ minimal_associated_primes"
                   " (%d gens) ..." % (num, t_prem, len(eqns), len(gens)), flush=True)
             _t = time.time()
             primes = minimal_associated_primes_gtz(I, 'cell%d' % num)
