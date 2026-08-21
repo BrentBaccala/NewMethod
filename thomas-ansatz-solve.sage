@@ -2589,46 +2589,31 @@ def latex_union(d, label='ideal'):
     print(r"\end{subequations}")
 
 
-def intermediate_locus(cells_ds):
+def cell_data(cells_ds):
     r"""
-    Compute `V_{\exists\forall}`, the intermediate locus, and print it.
+    The per-component data of Algorithm MembershipLocus, lines 2-12.
 
-    The `\mu = \exists\forall` branch of Algorithm MembershipLocus, lines 2
-    onwards: reduce each PDE of the target system, unmultiplied, modulo each
-    component's own equations; project the remainders onto the constants to
-    get `J_i`; pair `\langle J_i \cup E_i \rangle` with the component's
-    inequations `\mathfrak{h}_i` to get `W_i`; and union the `Z(W_i)`.  There
-    is no separate guard step -- `Q`'s non-degeneracy was imposed when the
-    components were built, in :func:`decompose_ansatz` -- so a plain reduction
-    is the whole membership test.
+    One pass over the components, producing everything a locus assembly can
+    want from a single component: the cell `C_i = (\langle E_i \rangle,
+    \langle h_i \rangle)` of lines 8-10, the reduced PDE remainders of lines
+    3-5, the projected system `J_i` of lines 6-7, the minimal primes of
+    `\langle J_i \cup E_i \rangle`, and the unmultiplied factors of
+    `\mathfrak{h}_i` (line 11).  What it does NOT do is assemble them into a
+    union: that is the assembly step, and it differs per locus.  The
+    `\mu = \exists\forall` assembly is :func:`intermediate_locus`; the
+    `\mu = \forall` one (RefiningPartition and the `D` filter of lines 14-17)
+    is a future sibling that will consume exactly the same records.
 
-    The locus computed is the INTERMEDIATE one, `V_{\exists\forall}`, which
-    asks the target system to belong to SOME subsystem lying over a constant.
-    The membership locus proper asks it to belong to EVERY such subsystem:
+    Algorithm ConsistencyLocus is deliberately NOT a consumer of this
+    function: its lines 2-6 read `E_i` and `h_i` off a DIFFERENT decomposition
+    (the ansatz together with the target equations, :func:`decompose_combined`)
+    and need no reduction and no primes, so :func:`consistency_locus` has a
+    per-cell loop of its own, which is cheap.
 
-    .. MATH::
-
-        V_\forall = \bigcap_{i=1}^{s} \bigl( Z(W_i) \cup (\mathbb{C}^n
-        \setminus Z(C_i)) \bigr)
-        \qquad
-        V_{\exists\forall} = \bigcup_{i=1}^{s} Z(W_i)
-
-    so `V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists`.  The
-    `\mu = \forall` branch -- RefiningPartition and the `D` filter -- is not
-    implemented; ``cells_Ci`` below already carries the `C_i` it would need.
-
-    Three things the paper's pseudocode does not ask for are done anyway,
-    because the paper says an actual implementation would: each
-    `\langle J_i \cup E_i \rangle` is split into its minimal associated
-    primes, primes equal as ideals are merged across components
-    (:func:`merge_equal_primes`), and a piece contained in another is pruned
-    (:func:`prune_enclosed`).  Nothing else leaves the union: a prime is
-    dropped only when the inequations empty its piece, and that drop is
-    printed as an EMPTY PIECE line (:func:`drop_empty_pieces`).
-
-    The function prints its own working as it goes -- the per-component
-    timings and prime lists, the consistency report, the merges, the emptied
-    pieces, the union and the verdict -- and returns the union it printed.
+    The per-cell PRINTING lives here rather than in the assembly -- the timing
+    lines, the cell header, the remainders under ``--verbose-remainder`` and
+    the per-cell prime list -- so that the running commentary of a long run is
+    produced as each component finishes, not held back until the end.
 
     INPUT:
 
@@ -2637,36 +2622,29 @@ def intermediate_locus(cells_ds):
 
     OUTPUT:
 
-    the union as a bucket ``{prime_key: (P, [cell numbers])}`` -- the pieces
-    left after merging, emptying and (unless ``--keep-enclosed``) pruning
+    a list of dictionaries, one per processed component, with keys
+
+    - ``'num'`` -- the component's number, counting from 1
+    - ``'Z'`` -- `E_i`, the cell's constant-space equations, sorted
+    - ``'Zkey'`` -- their string form, as printed in the cell header
+    - ``'h_i'`` -- `h_i = \prod (S_i^{\ne} \cap \QQ[c])`, for `C_i`
+    - ``'cp'`` -- the :func:`adapt_cell` dictionary, whose ``'ineq_coeffs'``
+      is `\mathfrak{h}_i` in unmultiplied form
+    - ``'survivors'`` -- the minimal primes of `\langle J_i \cup E_i \rangle`,
+      the unit ideal's empty list included as such
+    - ``'rems'`` -- the PDE remainders
+    - ``'eqns'`` -- `J_i`, the projected constant coefficients
+    - ``'spec_len'`` -- the number of reductors used, as the header reports it
 
     EXAMPLES::
 
-        sage: intermediate_locus(decompose_ansatz())   # not tested (needs a problem)
-        ...
-        VERDICT: 6 solution variety(ies) found for hydrogen / ansatz 5.
+        sage: [r['num'] for r in cell_data(decompose_ansatz())]  # not tested (needs a problem)
+        [1, 2, 3]
     """
     _cells = cells_ds if MAX_CELLS <= 0 else cells_ds[:MAX_CELLS]
 
     strata_cache = {}
-    # The union of the W_i, bucketed by prime: {prime_key: (P, [cell numbers])}.
-    # Every minimal prime of every cell's <J_i U E_i> lands here -- there is no
-    # "genuine" / "degenerate" / "trivial" sorting, and no bucket but this one.
-    # (The script once carried extra buckets for varieties a hand-written rule
-    # called degenerate -- `a == 0` -- or trivial -- `Psi == 0`.  Those rules were
-    # variety discards, and they are gone: what a cell's inequations exclude is
-    # excluded by the inequations, and everything else is reported.  The
-    # ansatz-library `v_params` / `amp_params` fields that fed them are gone too.)
-    union_primes = {}
-
-    # The cells C_i = (<E_i>, <h_i>) of Algorithm MembershipLocus line 10, one
-    # entry (num, E_i, h_i) per component.  C_i plays no part in the
-    # mu = exists-forall assembly this script computes -- it is used by the
-    # mu = forall branch, which is out of scope -- but the paper's Output section
-    # promises that the algorithm REPORTS whether the ansatz is consistent
-    # throughout C^n, and by the proof of Corollary cor:assembly that condition is
-    # exactly whether the C_i cover C^n.  See consistency_report below.
-    cells_Ci = []
+    per_cell = []
 
     for num, ds in enumerate(_cells, 1):
         cp = adapt_cell(ds, num)
@@ -2686,7 +2664,6 @@ def intermediate_locus(cells_ds):
         for _pq in cp['param_ineqs']:
             if set(_pq.variables()) <= _consts:
                 h_i = h_i * _pq
-        cells_Ci.append((num, list(Z), h_i))
 
         # Reduce the PDE against the cell's OWN differential-triangular equations
         # (`cell_eqs`, polynomial form, initials carried as cofactors/inequations by
@@ -2813,9 +2790,105 @@ def intermediate_locus(cells_ds):
                   % (fmt_ideal(P),
                      "   [cell %d's inequations vanish identically on it]" % num
                      if dead_here else ""), flush=True)
+        # One record per component: everything an assembly can read off this
+        # cell, and nothing about how it is to be assembled.
+        per_cell.append(dict(num=num, Z=list(Z), Zkey=Zkey, h_i=h_i, cp=cp,
+                             survivors=survivors, rems=sc['rems'],
+                             eqns=sc['eqns'], spec_len=sc['spec_len']))
+
+    return per_cell
+
+
+def intermediate_locus(cells_ds):
+    r"""
+    Compute `V_{\exists\forall}`, the intermediate locus, and print it.
+
+    The `\mu = \exists\forall` branch of Algorithm MembershipLocus, lines 2
+    onwards: reduce each PDE of the target system, unmultiplied, modulo each
+    component's own equations; project the remainders onto the constants to
+    get `J_i`; pair `\langle J_i \cup E_i \rangle` with the component's
+    inequations `\mathfrak{h}_i` to get `W_i`; and union the `Z(W_i)`.  There
+    is no separate guard step -- `Q`'s non-degeneracy was imposed when the
+    components were built, in :func:`decompose_ansatz` -- so a plain reduction
+    is the whole membership test.
+
+    The locus computed is the INTERMEDIATE one, `V_{\exists\forall}`, which
+    asks the target system to belong to SOME subsystem lying over a constant.
+    The membership locus proper asks it to belong to EVERY such subsystem:
+
+    .. MATH::
+
+        V_\forall = \bigcap_{i=1}^{s} \bigl( Z(W_i) \cup (\mathbb{C}^n
+        \setminus Z(C_i)) \bigr)
+        \qquad
+        V_{\exists\forall} = \bigcup_{i=1}^{s} Z(W_i)
+
+    so `V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists`.  The
+    `\mu = \forall` branch -- RefiningPartition and the `D` filter -- is not
+    implemented; ``cells_Ci`` below already carries the `C_i` it would need.
+
+    Three things the paper's pseudocode does not ask for are done anyway,
+    because the paper says an actual implementation would: each
+    `\langle J_i \cup E_i \rangle` is split into its minimal associated
+    primes, primes equal as ideals are merged across components
+    (:func:`merge_equal_primes`), and a piece contained in another is pruned
+    (:func:`prune_enclosed`).  Nothing else leaves the union: a prime is
+    dropped only when the inequations empty its piece, and that drop is
+    printed as an EMPTY PIECE line (:func:`drop_empty_pieces`).
+
+    The function prints its own working as it goes -- the per-component
+    timings and prime lists, the consistency report, the merges, the emptied
+    pieces, the union and the verdict -- and returns the union it printed.
+
+    INPUT:
+
+    - ``cells_ds`` -- the components from :func:`decompose_ansatz`.  Only the
+      first ``--max-cells`` of them are processed when that option is given.
+
+    OUTPUT:
+
+    the union as a bucket ``{prime_key: (P, [cell numbers])}`` -- the pieces
+    left after merging, emptying and (unless ``--keep-enclosed``) pruning
+
+    EXAMPLES::
+
+        sage: intermediate_locus(decompose_ansatz())   # not tested (needs a problem)
+        ...
+        VERDICT: 6 solution variety(ies) found for hydrogen / ansatz 5.
+    """
+    # The union of the W_i, bucketed by prime: {prime_key: (P, [cell numbers])}.
+    # Every minimal prime of every cell's <J_i U E_i> lands here -- there is no
+    # "genuine" / "degenerate" / "trivial" sorting, and no bucket but this one.
+    # (The script once carried extra buckets for varieties a hand-written rule
+    # called degenerate -- `a == 0` -- or trivial -- `Psi == 0`.  Those rules were
+    # variety discards, and they are gone: what a cell's inequations exclude is
+    # excluded by the inequations, and everything else is reported.  The
+    # ansatz-library `v_params` / `amp_params` fields that fed them are gone too.)
+    union_primes = {}
+
+    # The cells C_i = (<E_i>, <h_i>) of Algorithm MembershipLocus line 10, one
+    # entry (num, E_i, h_i) per component.  C_i plays no part in the
+    # mu = exists-forall assembly this script computes -- it is used by the
+    # mu = forall branch, which is out of scope -- but the paper's Output section
+    # promises that the algorithm REPORTS whether the ansatz is consistent
+    # throughout C^n, and by the proof of Corollary cor:assembly that condition is
+    # exactly whether the C_i cover C^n.  See consistency_report below.
+    cells_Ci = []
+
+    # The assembly proper.  The per-cell work -- reduction, projection, primes,
+    # and all the per-cell printing -- is :func:`cell_data`; what is left here
+    # is the mu = exists-forall union of the W_i (line 18) and the reporting
+    # around it.
+    for rec in cell_data(cells_ds):
+        num = rec['num']
+        cells_Ci.append((num, list(rec['Z']), rec['h_i']))
+        # W_i = ( <J_i U E_i>, hfrak_i )  -- Algorithm MembershipLocus, line 12,
+        # registered one entry per minimal prime of <J_i U E_i>, each paired with
+        # the same hfrak_i (rec['cp']['ineq_coeffs'], the unmultiplied factors).
+        for P in rec['survivors']:
             union_primes.setdefault(prime_key(P), (P, []))[1].append(num)
             piece_excl.setdefault(prime_key(P), []).append(
-                (num, tuple(cp['ineq_coeffs'])))
+                (num, tuple(rec['cp']['ineq_coeffs'])))
 
     print("\n" + "=" * 72)
     consistency_report(cells_Ci)
