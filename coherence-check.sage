@@ -39,17 +39,6 @@ print("%s / ansatz %s: %d equations, coords %s"
       % (PDE_NAME, ANSATZ, len(eqs), COORDS))
 
 
-def full_prem(p, reductors, max_passes=64):
-    r, h = p, R.one()
-    for _ in range(max_passes):
-        r2, h2 = R.differential_prem(r, reductors)
-        h = h * h2
-        if r2 == r:
-            return r2
-        r = r2
-    return r
-
-
 def split_leader(L):
     """'Psi[x,y]' -> ('Psi', ['x','y']);  'DDPsi' -> ('DDPsi', [])."""
     if L is None:
@@ -90,7 +79,7 @@ for head, group in sorted(by_head.items()):
                 for _ in range(n - cb.get(c, 0)):
                     dq = dq.differentiate(c)
             delta = q.separant() * dp - p.separant() * dq
-            rem = full_prem(delta, eqs)
+            rem = R.differential_prem(delta, eqs)[0]
             checked += 1
             if not rem.is_zero():
                 missing.append((p.leader(), q.leader(), rem))
@@ -98,7 +87,7 @@ for head, group in sorted(by_head.items()):
 print("\nchecked %d integrability conditions" % checked)
 if not missing:
     print("PASSIVE: every integrability condition reduces to zero.")
-    print("The generic cell is coherent -- full_prem against it IS a normal form.")
+    print("The generic cell is coherent -- differential_prem against it IS a normal form.")
 else:
     print("NOT PASSIVE: %d integrability condition(s) do NOT reduce to zero."
           % len(missing))
