@@ -37,11 +37,31 @@
 #
 # STANDING DECISIONS (they differ from the paper's pseudocode on purpose):
 #
-#   * ONLY the mu = exists-forall branch is implemented.  The mu = forall
-#     branch -- RefiningPartition and the D filter of the paper's lines 14-17,
-#     which computes the membership locus V_forall proper -- is out of scope,
-#     and this script does not compute it.  What it computes is the
-#     intermediate locus V_{exists-forall}.
+#   * WHICH LOCUS is computed is chosen by --locus, and steps 3-6 above
+#     describe the DEFAULT one.  The paper defines three (section "The
+#     Constant Loci"), nested by eq:intermediate-sandwich
+#
+#         V_forall  SUBSET  V_{exists-forall}  SUBSET  V_exists
+#
+#     and this script implements the outer two:
+#
+#       --locus intermediate  (default)  V_{exists-forall}, the mu = exists-
+#           forall branch of Algorithm MembershipLocus -- steps 1-6 above.
+#       --locus consistency              V_exists, Algorithm ConsistencyLocus.
+#           A DIFFERENT decomposition (decompose_combined: the ansatz together
+#           with the target equations, not the ansatz alone) and a trivial
+#           assembly on top of it -- (<E_i>, <h_i>) read off each component,
+#           with no PDE reduction, no J_i and no hfrak_i.  The paper says this
+#           decomposition is the computationally demanding one, and on a
+#           problem of any size it is the whole cost of the run.
+#       --locus membership               V_forall, the mu = forall branch --
+#           RefiningPartition and the D filter of the paper's lines 14-17.
+#           NOT IMPLEMENTED: the flag reports that and exits, rather than
+#           quietly computing something else.
+#
+#     So a plain run still computes the intermediate locus, and the sandwich
+#     gives a check between the two implemented ones: every piece of
+#     V_{exists-forall} must lie in V_exists.
 #
 #   * minAss IS kept, along with duplicate-ideal detection between cells and
 #     the piece-containment pruning, none of which the pseudocode asks for.
@@ -113,9 +133,12 @@ across components, and a piece contained in another is pruned
 
 Nothing is discarded by a rule about which solution families are interesting.
 A prime leaves the union only when the inequations empty its piece, and that
-drop is printed as an EMPTY PIECE line.  The mu = forall branch
-(RefiningPartition) is NOT implemented: the locus printed is
-V_{exists-forall}, not V_forall.
+drop is printed as an EMPTY PIECE line.  The same three go-beyond steps are
+applied to the consistency locus, whose own ideals <E_i> are much smaller.
+
+--locus chooses which locus is computed; without it the script computes
+V_{exists-forall}, exactly as it did before the flag existed.  The mu = forall
+branch (RefiningPartition), and so V_forall itself, is NOT implemented.
 
 Choosing the problem
   --pde NAME         hydrogen | helium | navier-stokes | navier-stokes-nd
@@ -129,6 +152,25 @@ Choosing the problem
                      comment block per family, is ansatz-library.sage.
 
 Choosing what to compute
+  --locus NAME       which of the paper's three constant loci to compute:
+                     intermediate (default) | consistency | membership.
+                       intermediate  V_{exists-forall}, Algorithm
+                                     MembershipLocus's mu = exists-forall
+                                     branch -- the locus this script has always
+                                     computed
+                       consistency   V_exists, Algorithm ConsistencyLocus.
+                                     Decomposes the ansatz TOGETHER WITH the
+                                     target equations, then reads (<E_i>,
+                                     <h_i>) off each component.  The
+                                     decomposition is essentially the whole
+                                     computation, and the paper warns it is
+                                     the expensive one.
+                       membership    V_forall, the mu = forall branch.  NOT
+                                     IMPLEMENTED: the flag reports that and
+                                     exits.
+                     The three satisfy V_forall <= V_{exists-forall} <=
+                     V_exists (the paper's eq:intermediate-sandwich), so a
+                     consistency run is a check on an intermediate one.
   --generic-cell     skip the Thomas decomposition and run the pipeline on the
                      ansatz's own generic cell: the ansatz equations plus the
                      constancy relations, with the initials, separants and
@@ -255,6 +297,39 @@ RANKING = _argval('--ranking', 'orderly')
 # locus at all; for one whose does, it computes the single cell the
 # decomposition would have called generic.
 GENERIC_CELL = '--generic-cell' in sys.argv
+# Which of the paper's three constant loci to compute (section "The Constant
+# Loci", and the containment eq:intermediate-sandwich
+#     V_forall  SUBSET  V_{exists-forall}  SUBSET  V_exists ):
+#
+#   intermediate  V_{exists-forall}  Algorithm MembershipLocus, the
+#                                    mu = exists-forall branch (the default,
+#                                    and the only locus this script computed
+#                                    before --locus existed)
+#   consistency   V_exists           Algorithm ConsistencyLocus.  The one locus
+#                                    that cannot share the other two's
+#                                    decomposition: its input is the ansatz
+#                                    TOGETHER WITH the target equations (see
+#                                    decompose_combined)
+#   membership    V_forall           Algorithm MembershipLocus, the mu = forall
+#                                    branch -- RefiningPartition and the D
+#                                    filter of lines 14-17.  NOT IMPLEMENTED
+LOCUS = _argval('--locus', 'intermediate')
+if LOCUS not in ('intermediate', 'membership', 'consistency'):
+    sys.stdout.write("unknown --locus %r: expected intermediate, membership or "
+                     "consistency\n" % LOCUS)
+    sys.stdout.flush()
+    # os._exit, not sys.exit: the sage runner swallows SystemExit (see --help).
+    os._exit(2)
+if LOCUS == 'membership':
+    sys.stdout.write(
+        "--locus membership (V_forall, the mu = forall branch of Algorithm\n"
+        "MembershipLocus: RefiningPartition and the D filter of lines 14-17) is\n"
+        "NOT IMPLEMENTED YET -- see task newmethod-membership-locus.  Nothing was\n"
+        "computed.  --locus intermediate (the default) computes V_{exists-forall},\n"
+        "which contains V_forall; --locus consistency computes V_exists, which\n"
+        "V_{exists-forall} is contained in.\n")
+    sys.stdout.flush()
+    os._exit(2)
 # By default, prune a piece contained in another piece, printing only the
 # maximal (enclosing) ones.  Two primes coming out of different cells are often
 # nested (e.g. the c1=0 wall of a larger E=-1/2 component reappears as its own
@@ -1067,6 +1142,36 @@ def decompose_ansatz():
         print("-> %d cells in %.1fs\n" % (len(cells_ds), _wall) + "=" * 72, flush=True)
 
 
+    return check_and_dump_cells(cells_ds)
+
+
+def check_and_dump_cells(cells_ds):
+    r"""
+    Check each component is triangular, honour ``--cells-out``, return them.
+
+    The tail shared by every decomposition entry point
+    (:func:`decompose_ansatz` and :func:`decompose_combined`), so that a
+    component list is checked and dumped the same way whichever system
+    produced it.
+
+    A component of a Thomas decomposition is a triangular set: no two of its
+    equations share a leader.  A violation means the decomposition returned
+    something that is not a Thomas component, so it is printed as a
+    ``SOUNDNESS FAIL`` line rather than silently consumed.  With
+    ``--cells-out`` the raw components are also written to that path; nothing
+    reads the file back, so it is a debugging artifact rather than an output.
+
+    INPUT:
+
+    - ``cells_ds`` -- the components
+
+    OUTPUT: ``cells_ds`` unchanged
+
+    EXAMPLES::
+
+        sage: check_and_dump_cells([])
+        []
+    """
     for i, ds in enumerate(cells_ds, 1):
         leaders = [e.leader() for e in cell_eqs(ds) if not e.is_zero()]
         jl = [L for L in leaders if L is not None]
@@ -1084,6 +1189,77 @@ def decompose_ansatz():
         except Exception as ex:
             print("(could not write cells file: %s)" % ex, flush=True)
     return cells_ds
+
+
+def decompose_combined():
+    r"""
+    Differential-Thomas-decompose the ansatz TOGETHER WITH the target equations.
+
+    Line 1 of Algorithm ConsistencyLocus:
+    ``DifferentialDecompose( (A(c) UNION P^=, {Q}), prec )``.  This is a
+    function of its own, and not a mode of :func:`decompose_ansatz`, because
+    the input really is a different system: the consistency locus asks where
+    the ansatz and the target are SIMULTANEOUSLY consistent, so the target's
+    equations go into the decomposition itself, whereas Algorithm
+    MembershipLocus decomposes the ansatz alone and reduces the target against
+    the components afterwards.  It is the one locus that cannot share
+    :func:`decompose_ansatz`'s output, and the reason ``--locus consistency``
+    costs a second decomposition rather than a second assembly.
+
+    `Q` is handed in exactly as in :func:`decompose_ansatz` -- the single
+    product of every declared inequation, skipped when `Q = 1`.
+
+    EXPECT THIS TO BE EXPENSIVE.  The paper says so directly ("is more
+    computationally demanding, precisely because its input involves more
+    polynomials"), and an earlier draft called the approach "often
+    computationally infeasible".  On the hydrogen ansatz the same combined
+    system `A \cup \{P\}` has never completed by the Rosenfeld-Groebner route
+    -- a 2026-07-10 run was OOM-killed after 26 hours on a 94 GB machine, on a
+    Delta-polynomial from the `r`/`v` auxiliaries (see
+    ``~/project/reports/joca-rg-delta-polynomial-cliff.md``).  Differential
+    Thomas is a different algorithm, but Janet completion and Rosenfeld-Groebner
+    coherence are two faces of one formal-integrability test, so the same family
+    is a live risk here.  Run it under a memory ceiling.
+
+    ``--generic-cell`` is refused for this decomposition: the generic cell of
+    :func:`generic_cell` is built from the ansatz alone, and there is no
+    hand-built triangular generic cell of `A(c) \cup \mathcal{P}^=` to stand in
+    for the decomposition of one.
+
+    OUTPUT:
+
+    the list of components, each a differential system answering
+    :func:`cell_eqs` and :func:`cell_ineqs`
+
+    EXAMPLES::
+
+        sage: cells = decompose_combined()       # not tested (needs a problem)
+    """
+    if GENERIC_CELL:
+        print("--generic-cell is not defined for --locus consistency: the generic "
+              "cell is built\nfrom the ansatz alone, and Algorithm ConsistencyLocus "
+              "decomposes the ansatz\nTOGETHER WITH the target equations.  Nothing "
+              "was computed.", flush=True)
+        print_total_time()
+        os._exit(2)
+
+    # Same treatment of Q as decompose_ansatz: one inequation, the product,
+    # skipped entirely when there is none.
+    decompose_ineqs = [Q_INEQ] if ALL_INEQS else []
+    print("\nComputing native DifferentialThomas decomposition of the ansatz "
+          "together with Q\nAND the target equations -- Algorithm "
+          "ConsistencyLocus line 1, (A(c) u P^=, {Q}) --\n(%d ansatz + %d "
+          "constancy + %d target eqs%s) ..."
+          % (len(ansatz0), len(pconst), len(PDES),
+             ", Q from %d inequations" % len(ALL_INEQS) if ALL_INEQS else ""),
+          flush=True)
+    _t0 = time.time()
+    cells_ds = dt.differential_thomas_decomposition(
+        list(ansatz0) + list(pconst) + list(PDES), decompose_ineqs, prob['rk'])
+    _wall = time.time() - _t0
+    print("-> %d cells in %.1fs\n" % (len(cells_ds), _wall) + "=" * 72, flush=True)
+
+    return check_and_dump_cells(cells_ds)
 
 
 def print_total_time():
@@ -2948,18 +3124,256 @@ def intermediate_locus(cells_ds):
     return solution_primes
 
 
+def consistency_locus(cells_ds):
+    r"""
+    Compute `V_\exists`, the consistency locus, and print it.
+
+    Algorithm ConsistencyLocus, lines 2-6, on the components of
+    :func:`decompose_combined`:
+
+    .. MATH::
+
+        E_i = S^=_i \cap \QQ[c], \qquad
+        h_i = \prod \bigl( S^{\ne}_i \cap \QQ[c] \bigr), \qquad
+        W_i = \bigl\{ (\langle E_i \rangle, \langle h_i \rangle) \bigr\},
+
+    and `V_\exists = \bigcup_i C_i` with `C_i = V(E_i) \setminus V(h_i)`.
+
+    What the pseudocode does NOT ask for here is as informative as what it
+    does.  There is no reduction of the target system, no `J_i`, and no
+    `\mathfrak{h}_i`: the target's equations went INTO the decomposition (that
+    is the whole difference between this algorithm and Algorithm
+    MembershipLocus), so every component already satisfies them, and the only
+    question left is which constants a component lies over.  Lines 3-4 are a
+    filter -- keep the equations and inequations that lie in `\QQ[c]` -- and
+    :func:`adapt_cell` already computes exactly those, as ``'param_eqs'`` and
+    ``'param_ineqs'``.
+
+    So the cost of this locus is the DECOMPOSITION, essentially in full: on
+    anything larger than a toy problem, either :func:`decompose_combined` does
+    not finish and there is nothing to assemble, or it finishes and the
+    assembly follows almost immediately.
+
+    Both filters are read as conditions on the constants rather than as literal
+    ring membership, and the two cases pull in opposite directions:
+
+    - `E_i` (line 3) takes each jet-free equation's COEFFICIENTS over `\QQ[c]`,
+      not only the equations lying in `\QQ[c]` outright.  The combined system
+      routinely produces a jet-free equation that still carries the
+      coordinates -- eliminating the jets from `A(c) \cup \mathcal{P}^=` is
+      what the decomposition does -- and dropping it would report `C_i =
+      \mathbb{C}^n` for a component that in fact lies over a hypersurface.
+      See the comment at the projection itself.
+    - `h_i` (line 4) is read literally: only the inequations lying in `\QQ[c]`
+      outright contribute, and one carrying a coordinate or a jet contributes
+      NOTHING (where `\mathfrak{h}_i` would have taken its coefficients).  That
+      is the pseudocode's own choice, and it only ENLARGES the reported locus,
+      so what is printed is an over-approximation of `V_\exists` -- the safe
+      direction, since `V_\exists` is the outer term of the sandwich.
+
+    Three things the paper's pseudocode does not ask for are done anyway, the
+    same three the intermediate locus does, and for the paper's own stated
+    reason ("An actual implementation of these algorithms would likely do all
+    of this"): each `\langle E_i \rangle` is split into its minimal associated
+    primes, primes equal as ideals are merged across components
+    (:func:`merge_equal_primes`), and a piece contained in another is pruned
+    (:func:`prune_enclosed`).  They are far cheaper here than for the
+    intermediate locus, `\langle E_i \rangle` being a handful of
+    constant-space equations rather than the hundreds of generators
+    `\langle J_i \cup E_i \rangle` can reach.
+
+    The EXCLUSION data differs from the intermediate locus's, and this is the
+    one place the shapes do not line up.  There, a piece is cut by
+    `\mathfrak{h}_i` (line 11): the product, over EVERY inequation of the cell
+    including the jet-carrying ones, of the ideal generated by that
+    inequation's constant coefficients, carried unmultiplied as a list of
+    coefficient SETS.  Here it is `\langle h_i \rangle` (line 4): the product
+    of just those inequations that lie in `\QQ[c]` outright, a single
+    polynomial.  A single polynomial is the one-element coefficient set
+    ``(h_i,)``, so the piece machinery takes it as the one-set tuple
+    ``((h_i,),)``.  The exclusion is therefore SMALLER than the intermediate
+    locus's -- fewer inequations contribute, and each contributes itself
+    rather than its coefficients -- which is as it should be: `V_\exists` is
+    the largest of the three loci.
+
+    INPUT:
+
+    - ``cells_ds`` -- the components from :func:`decompose_combined`.  Only
+      the first ``--max-cells`` of them are processed when that option is
+      given.
+
+    OUTPUT:
+
+    the union as a bucket ``{prime_key: (P, [cell numbers])}``, the same shape
+    :func:`intermediate_locus` returns, so ``--latex`` consumes either
+
+    EXAMPLES::
+
+        sage: consistency_locus(decompose_combined())  # not tested (needs a problem)
+        ...
+        VERDICT: the consistency locus V_exists is non-empty ...
+    """
+    _cells = cells_ds if MAX_CELLS <= 0 else cells_ds[:MAX_CELLS]
+
+    # The union of the W_i, bucketed by prime, exactly as in
+    # intermediate_locus -- but the W_i are the (<E_i>, <h_i>) of Algorithm
+    # ConsistencyLocus line 5, not the (<J_i U E_i>, hfrak_i) of Algorithm
+    # MembershipLocus line 12.
+    union_primes = {}
+
+    for num, ds in enumerate(_cells, 1):
+        cp = adapt_cell(ds, num)
+        # E_i = S_i^= INTERSECT Q[c]  (Algorithm ConsistencyLocus, line 3) --
+        # with one deviation, forced by what the combined decomposition actually
+        # returns.  cp['param_eqs'] holds the equations free of JETS, which is
+        # not the same as lying in Q[c]: they may still carry the COORDINATES.
+        # The combined system produces such an equation routinely -- on
+        # helium/9 the single component's only equation is the target PDE with
+        # the ansatz substituted in, a polynomial in R1, R2, R12 AND the
+        # constants -- because eliminating the jets from A(c) u P^= is exactly
+        # what the decomposition does.
+        #
+        # Read literally, line 3 would DROP such an equation for not being in
+        # Q[c], leaving E_i = () and C_i = C^n: the algorithm would report that
+        # every c* is consistent, when what the equation says is that almost
+        # none is.  An equation with no jet in it is a condition on the
+        # constants whose coefficients happen to depend on the coordinates, and
+        # holding identically -- which is what an equation of a differential
+        # system does, over an open set of coordinate space -- means every one
+        # of those coefficients vanishes.  So the equation is projected onto
+        # Q[c] the same way Algorithm MembershipLocus line 6 projects a
+        # remainder, with build_system_of_equations.  A jet-free equation
+        # already in Q[c] is its own only coefficient, so this is the identity
+        # on the case the pseudocode has in mind.
+        _E = []
+        for _pe in cp['param_eqs']:
+            _E.extend(build_system_of_equations(_pe, PolyRing_constants))
+        Z = sorted(set(_E), key=str)
+        Zkey = tuple(map(str, Z))
+        # h_i = prod (S_i^!= INTERSECT Q[c])  (line 4).  The INTERSECTION with
+        # Q[c] is what makes this a smaller exclusion than hfrak_i: an
+        # inequation carrying a coordinate or a jet is not in Q[c] and
+        # contributes NO factor, where line 11 of Algorithm MembershipLocus
+        # would have taken its constant coefficients.  The empty product is 1,
+        # so <h_i> = (1) and V(h_i) = {}: nothing excluded.
+        _consts = set(PolyRing_constants)
+        h_i = PolyRing.one()
+        for _pq in cp['param_ineqs']:
+            if set(_pq.variables()) <= _consts:
+                h_i = h_i * _pq
+
+        I = ideal(list(Z)) if Z else ideal(PolyRing.zero())
+        print("\n  [cell %d] entering GTZ minimal_associated_primes on <E_i> "
+              "(%d gens) ..." % (num, len(Z)), flush=True)
+        _t = time.time()
+        primes = minimal_associated_primes_gtz(I, 'consistency-cell%d' % num)
+        t_gtz = time.time() - _t
+        print("  [cell %d] GTZ %.1fs -> %d primes" % (num, t_gtz, len(primes)),
+              flush=True)
+
+        # minAss((1)) = {} is the stated signature of the subroutine, not a rule
+        # about which families are interesting -- see the STANDING DECISIONS
+        # block.  <E_i> being the unit ideal would mean the cell lies over no
+        # constant at all.
+        survivors = [P for P in primes if not P.is_one()]
+
+        print("\n--- cell %d: zero {%s}; %d param-ineqs, %d jet-ineqs; h_%d = %s ---"
+              % (num, ', '.join(Zkey) or '(none, generic)',
+                 len(cp['param_ineqs']), len(cp['jet_ineqs']), num, h_i),
+              flush=True)
+        if not survivors:
+            print("  minimal primes of <E_i>: NONE (the ideal is (1), and "
+                  "minAss((1)) = {})", flush=True)
+        for P in survivors:
+            dead_here = h_i in P
+            print("   V: %s%s"
+                  % (fmt_ideal(P),
+                     "   [h_%d vanishes identically on it]" % num
+                     if dead_here else ""), flush=True)
+            union_primes.setdefault(prime_key(P), (P, []))[1].append(num)
+            # W_i = ( <E_i>, <h_i> ) -- line 5.  The exclusion is the single
+            # polynomial h_i, so its coefficient set is (h_i,) and the cell
+            # contributes the one-set tuple ((h_i,),).  Compare
+            # intermediate_locus, which passes cp['ineq_coeffs'] -- one set per
+            # inequation, each the inequation's constant COEFFICIENTS.
+            piece_excl.setdefault(prime_key(P), []).append((num, ((h_i,),)))
+
+    # No ansatz-consistency report here.  consistency_report asks whether the
+    # cells of the ANSATZ's decomposition cover C^n, which is the hypothesis
+    # the sandwich needs; the cells reaching this function are cells of the
+    # ansatz TOGETHER WITH the target, and their covering C^n would be a
+    # different (and much stronger) statement -- that the target system is
+    # consistent with the ansatz at every c^*.  Printing the ansatz report over
+    # these cells would put the right words on the wrong object.
+
+    print("\n" + "=" * 72)
+    union_primes, _merges = merge_equal_primes(union_primes)
+    if _merges:
+        print("Duplicate ideals merged (equal as ideals, different generating sets):\n")
+        for _ka, _kk in _merges:
+            print("   Ideal (%s)   merged into   Ideal (%s)"
+                  % (", ".join(_ka), ", ".join(_kk)))
+        print("")
+
+    union_primes, _empty = drop_empty_pieces(union_primes)
+    if _empty:
+        print("Pieces emptied by their cells' inequations "
+              "(V(p) inside V(h_i); dropped from the union):\n")
+        for _k, _P, _cells, _ep in sorted(_empty, key=lambda t: str(t[0])):
+            print("   V: %s   [%s]" % (fmt_ideal(_P), _ep.label()))
+        print("")
+
+    solution_primes = dump_union(
+              "Consistency locus V_exists over all cells (the union, C_1 u ... u C_s)",
+              union_primes, prune=True)
+
+    print("\n" + "=" * 72)
+    if solution_primes:
+        print("VERDICT: the consistency locus V_exists of %s / ansatz %s is the "
+              "union of the %d\n         piece(s) above."
+              % (PDE_NAME, ANSATZ, len(solution_primes)))
+    else:
+        print("VERDICT: the consistency locus V_exists of %s / ansatz %s is EMPTY "
+              "(no c* makes\n         the ansatz and the target system "
+              "simultaneously consistent: every cell's\n         <E_i> was the "
+              "unit ideal, or its h_i emptied every minimal prime's piece)."
+              % (PDE_NAME, ANSATZ))
+    print("         This is V_exists (Algorithm ConsistencyLocus).  By "
+          "eq:intermediate-sandwich\n         it CONTAINS V_{exists-forall} "
+          "(--locus intermediate) and V_forall.")
+    if UNMAPPED_INEQS:
+        print("         WARNING: %d cell inequation(s) had no PolyRing image "
+              "(none of them can\n         have contributed to an h_i, which "
+              "takes only the inequations lying in\n         Q[c] outright)"
+              % len(UNMAPPED_INEQS))
+
+    return solution_primes
+
+
 def main():
     r"""
     Run the script: decompose, compute the requested locus, report.
 
     The driver.  It owns the steps that are not part of any one locus --
-    the shared decomposition, the ``--decompose-only`` early exit, the
-    ``--latex`` re-print of whatever locus was computed, and the total-time
-    line -- and delegates the locus itself to :func:`intermediate_locus`.
-    That is the only locus implemented today; the consistency locus
-    (Algorithm ConsistencyLocus, which decomposes the ansatz and the target
-    system TOGETHER and so needs a decomposition of its own) and the
-    membership locus proper are meant to become siblings called from here.
+    the decomposition, the ``--decompose-only`` early exit, the ``--latex``
+    re-print of whatever locus was computed, and the total-time line -- and
+    delegates the locus itself to the function ``--locus`` selects.
+
+    The two implemented loci differ in BOTH halves, which is why the
+    decomposition is chosen here rather than inside them:
+
+    ===================  ==========================  =======================
+    ``--locus``          decomposition               assembly
+    ===================  ==========================  =======================
+    ``intermediate``     :func:`decompose_ansatz`    :func:`intermediate_locus`
+    ``consistency``      :func:`decompose_combined`  :func:`consistency_locus`
+    ===================  ==========================  =======================
+
+    ``--locus membership`` (`V_\forall`) is rejected at option-parse time, up
+    with :data:`LOCUS`, so it costs nothing and cannot be mistaken for a run.
+    When it is implemented it will be a third row here, sharing
+    :func:`decompose_ansatz`'s components -- and :func:`cell_data`'s records --
+    with the intermediate locus.
 
     OUTPUT: ``None`` (everything is printed)
 
@@ -2967,14 +3381,21 @@ def main():
 
         sage: main()                             # not tested (this is the script)
     """
-    cells_ds = decompose_ansatz()
+    consistency = (LOCUS == 'consistency')
+    cells_ds = decompose_combined() if consistency else decompose_ansatz()
 
     if DECOMPOSE_ONLY:
+        # For --locus consistency this stops after essentially the whole
+        # computation rather than before most of it: the assembly that follows
+        # is a filter, not a pipeline.  Useful for cell counts and for finding
+        # out whether the combined decomposition terminates at all, but NOT a
+        # proxy for having run the locus.
         print("\n--decompose-only: stopping before the prime pipeline.", flush=True)
         print_total_time()
         sys.exit(0)
 
-    solution_primes = intermediate_locus(cells_ds)
+    solution_primes = (consistency_locus(cells_ds) if consistency
+                       else intermediate_locus(cells_ds))
 
     if LATEX_OUT and solution_primes:
         print("\n" + "-" * 72)
