@@ -2417,6 +2417,7 @@ without loss of generality.
 We now have to solve a second order ODE:
 
 \begin{equation}
+\label{eq:Bessel solution ODE}
 v \Psi''(v) + \Psi'(v) + \Psi(v) = 0
 \end{equation}
 
@@ -2503,13 +2504,25 @@ Out[5]= True
 \end{tiny}
 
 It has been known since the time of Schr\"odinger (\cite{Schrodinger26}) that \eqref{schrodinger hydrogen 2} admits a separation of variables
-in parabolic coordinates (\cite{LandauLifshitz} \S37):
+in parabolic coordinates:
 
 \begin{equation}
 \xi = r + z \qquad \eta = r - z \qquad \psi = \tan^{-1} \frac{y}{x}
 \end{equation}
 
 Solution \eqref{solution} is in this parabolic form.
+
+Landau and Lifshitz (\cite{LandauLifshitz} \S37) demonstrate separation of variables for a particle in a Coulumb field (the hydrogen case)
+in parabolic coordinates, and obtain \cite{LandauLifshitz} (37.8):
+
+\begin{equation}
+\frac{\mathrm{d}}{\mathrm{d}\xi}\left(\xi\frac{\mathrm{d}f_1}{\mathrm{d}\xi}\right)
+  +\left[\tfrac{1}{2}E\xi-\tfrac{1}{4}m^2/\xi+\beta_1\right]f_1 = 0
+\end{equation}
+When we expand the derivative, set the {\it separation parameter} $\beta_1$ to one, and set
+the {\it energy} $E$ and the {\it magnetic quantum number} $m$ to zero, we obtain \eqref{eq:Bessel solution ODE},
+so \eqref{solution} can hardly be called unanticipated, yet \cite{LandauLifshitz} is primarily
+interested in the discrete energy spectrum and never explicitly exhibited \eqref{solution}.
 
 Turning now to analysis, we ask in what function spaces \eqref{solution} exists.
 
