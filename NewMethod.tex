@@ -695,7 +695,7 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE 
 \begin{figure}[H]
 \makebox[\textwidth][c]{%
 \fbox{
-\begin{minipage}{380pt}
+\begin{minipage}{365pt}
 \centering
 \resizebox{\linewidth}{!}{%
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
@@ -731,17 +731,21 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE 
         \node (Lambda block) [fit=(Lambda) (Qu) (u) (Lambda label), inner sep=10pt, element] {};
         \node (Theta block)  [fit=(Theta) (Qv) (v) (Theta label), inner sep=10pt, element] {};
         \node (Phi block)    [fit=(Phi) (Qw) (w) (Phi label), inner sep=10pt, element] {};
-        \node (product ring) [ring, fill=none,
-                              fit=(Lambda block) (Theta block) (Phi block), inner sep=12pt] {};
     \end{scope}
 
     % ---- the product, which is the element expected to solve the PDE ----
-    \node (Psi) [poly2, node distance=14pt, above=of product ring.north] {$\Psi = \Lambda\,\Theta\,\Phi$};
-    \draw[degree] (Psi.south) -- (Psi.south|-product ring.north);
+    \node (Psi) [poly2, anchor=south, at={([yshift=36pt] Theta block.north)}] {$\Psi = \Lambda\,\Theta\,\Phi$};
+    \coordinate (bus) at ($(Psi.south)!0.5!(Psi.south|-Theta block.north)$);
+    \draw[degree] (Psi.south) -- (bus);
+    \draw[degree] (Lambda block.north|-bus) -- (Phi block.north|-bus);
+    \draw[degree] (Lambda block.north|-bus) -- (Lambda block.north);
+    \draw[degree] (Theta block.north|-bus) -- (Theta block.north);
+    \draw[degree] (Phi block.north|-bus) -- (Phi block.north);
 
     % ---- base ring ----
     \node (base) [dring, text width=200pt,
-                  fit={([yshift=-46pt]product ring.south west) ([yshift=-18pt]product ring.south east)},
+                  fit={([xshift=-12pt,yshift=-46pt]Lambda block.south west)
+                       ([xshift=12pt,yshift=-18pt]Phi block.south east)},
                   inner sep=0pt] {$\mathbb{Q}[x,y,z]\{r\}$};
     \draw[degree] (u.south) -- (u.south|-base.north) node[right,pos=0.7] {1};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
