@@ -552,7 +552,8 @@ Over the next several pages, I'll describe several possible ans\"atze.
 
 \tikzstyle{poly}=[rectangle, draw, thick, fill=white, text width=5em, align=center, rounded corners, minimum height=2em]
 \tikzstyle{poly2}=[rectangle, draw, thick, fill=white, align=center, rounded corners, minimum height=2em]
-\tikzstyle{ring}=[rectangle, draw=blue, thick, fill=blue!20, text width=5em,align=center, rounded corners, minimum height=2em]
+\tikzstyle{ring}=[rectangle, draw=black, thick, fill=white, text width=5em,align=center, rounded corners, minimum height=2em]
+\tikzstyle{dring}=[rectangle, draw=blue, thick, fill=blue!20, text width=5em,align=center, rounded corners, minimum height=2em]
 \tikzstyle{element}=[rectangle, draw=orange, thick, fill=orange!20, align=center, rounded corners, minimum height=2em]
 \tikzstyle{algebraic}=[rectangle, draw=green, thick, fill=green!20, align=center, rounded corners, minimum height=2em]
 \tikzstyle{degree}=[]
@@ -564,7 +565,7 @@ Over the next several pages, I'll describe several possible ans\"atze.
 \scalebox{0.73}{
   \begin{tikzpicture}[remember picture]
     \node (oPsi) [poly, text width=200pt] {Polynomial selected from ring: $\framebox(10,10){}\tikzmark{a}$};
-    \node (ring) [ring, node distance=50pt, below of=oPsi, text width=200pt] {differential ring, labeled like\\$\mathbb{C}[x,y,z]$};
+    \node (ring) [dring, node distance=50pt, below of=oPsi, text width=200pt] {differential ring, labeled like\\$\mathbb{C}[x,y,z]$};
 %    \draw[degree] (a.west) -- (a.west|-ring.north) node[right,pos=0.6] {1\tikzmark{one}};
 %    \node [anchor=west, align=left, right of=one] {(degree bound on polynomial)};
     \draw[degree] (a.west) -- (a.west|-ring.north) node[right,pos=0.6] {1\qquad $\Longleftarrow$ \qquad Degree bound on polynomial};
@@ -623,7 +624,7 @@ box is the description.
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
     \end{scope}
-    \node (base) [ring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
+    \node (base) [dring, node distance=70pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \end{minipage}%
@@ -739,7 +740,7 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE 
     \draw[degree] (Psi.south) -- (Psi.south|-product ring.north);
 
     % ---- base ring ----
-    \node (base) [ring, text width=200pt,
+    \node (base) [dring, text width=200pt,
                   fit={([yshift=-46pt]product ring.south west) ([yshift=-18pt]product ring.south east)},
                   inner sep=0pt] {$\mathbb{Q}[x,y,z]\{r\}$};
     \draw[degree] (u.south) -- (u.south|-base.north) node[right,pos=0.7] {1};
@@ -820,7 +821,7 @@ r^2 = x^2 + y^2 + z^2
         \node (Theta field) [ring, fill=none, fit=(Theta block), text width=250pt] {};
     \end{scope}
 
-    \node (base) [ring, node distance=70pt, below=of Theta field.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
+    \node (base) [dring, node distance=70pt, below=of Theta field.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
     \draw[degree] (v.south) -- (v.south|-Theta field.north) node[right,pos=0.7] {1};
     \draw[degree] (u.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
@@ -884,7 +885,7 @@ We don't write the PDE explicitly here because the ans\"atze can be applied to m
         \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
     \end{scope}
     \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {1};
-    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
+    \node (base) [dring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
     \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {1};
     \draw[degree] (b.west) -- (b.west|-base.north) node[right,pos=0.8] {1};
     \draw[degree] (c.west) -- (c.west|-base.north) node[right,pos=0.8] {1};
@@ -941,7 +942,7 @@ r^2 - (x^2 + y^2 + z^2)
         \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
     \end{scope}
     \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {2};
-    \node (base) [ring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[r_1,r_2,r_{12}]$};
+    \node (base) [dring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[r_1,r_2,r_{12}]$};
     \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {2};
   \end{tikzpicture}
 \end{minipage}
@@ -994,7 +995,7 @@ v = v_1 r_1 + v_2 r_2 + v_3 r_{12} + v_4 \gamma + v_5 r_1^2 + v_6 r_2^2 \nonumbe
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (Qvw) (v), inner sep=10pt, element] {};
     \end{scope}
-    \node (base) [ring, node distance=20pt, below=of Psi block.south, anchor=north, text width=250pt] {$\mathbb{Q}[x,y,z]$};
+    \node (base) [dring, node distance=20pt, below=of Psi block.south, anchor=north, text width=250pt] {$\mathbb{Q}[x,y,z]$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \end{center}
@@ -1047,7 +1048,7 @@ v = v_1 x + v_2 y + v_3 z
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
     \end{scope}
-    \node (base) [ring, node distance=100pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
+    \node (base) [dring, node distance=100pt, below=of Psi block.east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]$};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
   \end{tikzpicture}
 \end{minipage}%
@@ -1103,7 +1104,7 @@ v = v_1 x + v_2 y + v_3 z
         \node (Psi block title) [node distance=20pt, above=of Psi block.north, anchor=center, text centered] {$\mathbb{Q}[x,y,z,t]\{\Psi,\Psi',\Psi''\}$};
         \node (Psi block field) [ring, fill=none, fit=(Psi block) (Psi block title)] {};
     \end{scope}
-    \node (base) [ring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}[x,y,z,t]$};
+    \node (base) [dring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}[x,y,z,t]$};
     \draw[degree] (s.south) -- (s.south|-base.north) node[right,pos=0.7] {1};
 
     \node (u) [poly, text width=20pt, node distance=20pt, above=of Psi block field.north west] {u};
@@ -2765,7 +2766,7 @@ to be inert, which is what \S\ref{ns viscous block} does.
         \node (Psi block title) [node distance=20pt, above=of Psi block.north, anchor=center, text centered] {$\mathbb{Q}[x,y,z,t]\{\Psi,\Psi',\Psi''\}$};
         \node (Psi block field) [ring, fill=none, fit=(Psi block) (Psi block title)] {};
     \end{scope}
-    \node (base) [ring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}[x,y,z,t]$};
+    \node (base) [dring, node distance=80pt, below=of Psi block.east, anchor=east, text width=300pt] {$\mathbb{Q}[x,y,z,t]$};
     \draw[degree] (ns.south) -- (ns.south|-base.north);
 
     \node (u) [poly2, node distance=20pt, above=of Psi block field.north west] {$u = \markedcoeff{nu}\Psi$};
