@@ -692,6 +692,108 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE 
 \vfill\eject
 
 \begin{figure}[H]
+\makebox[\textwidth][c]{%
+\fbox{
+\begin{minipage}{500pt}
+\centering
+\resizebox{\linewidth}{!}{%
+  \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
+
+    % ---- first factor ----
+    \node (Lambda) [poly, text width=100pt] {$\coeff\tikzmark{la}\,\Lambda'' + \coeff\tikzmark{lb}\,\Lambda' + \coeff\tikzmark{lc}\,\Lambda$};
+    \node (Qu) [ring, below of=Lambda, text width=100pt] {$\mathbb{Q}[u]$};
+    \node (u) [poly, right=of Qu] {$u$};
+    \draw[degree] (la.west) -- (la.west|-Qu.north) node[right,pos=0.6] {1};
+    \draw[degree] (lb.west) -- (lb.west|-Qu.north) node[right,pos=0.6] {1};
+    \draw[degree] (lc.west) -- (lc.west|-Qu.north) node[right,pos=0.6] {1};
+    \node (Lambda label) [at=(u.east|-Lambda.north), anchor=north east] {\Large$\Lambda$};
+
+    % ---- second factor ----
+    \node (Theta) [poly, node distance=250pt, right of=Lambda, text width=100pt] {$\coeff\tikzmark{ta}\,\Theta'' + \coeff\tikzmark{tb}\,\Theta' + \coeff\tikzmark{tc}\,\Theta$};
+    \node (Qv) [ring, below of=Theta, text width=100pt] {$\mathbb{Q}[v]$};
+    \node (v) [poly, right=of Qv] {$v$};
+    \draw[degree] (ta.west) -- (ta.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (tb.west) -- (tb.west|-Qv.north) node[right,pos=0.6] {1};
+    \draw[degree] (tc.west) -- (tc.west|-Qv.north) node[right,pos=0.6] {1};
+    \node (Theta label) [at=(v.east|-Theta.north), anchor=north east] {\Large$\Theta$};
+
+    % ---- third factor ----
+    \node (Phi) [poly, node distance=250pt, right of=Theta, text width=100pt] {$\coeff\tikzmark{pa}\,\Phi'' + \coeff\tikzmark{pb}\,\Phi' + \coeff\tikzmark{pc}\,\Phi$};
+    \node (Qw) [ring, below of=Phi, text width=100pt] {$\mathbb{Q}[w]$};
+    \node (w) [poly, right=of Qw] {$w$};
+    \draw[degree] (pa.west) -- (pa.west|-Qw.north) node[right,pos=0.6] {1};
+    \draw[degree] (pb.west) -- (pb.west|-Qw.north) node[right,pos=0.6] {1};
+    \draw[degree] (pc.west) -- (pc.west|-Qw.north) node[right,pos=0.6] {1};
+    \node (Phi label) [at=(w.east|-Phi.north), anchor=north east] {\Large$\Phi$};
+
+    \begin{scope}[on background layer]
+        \node (Lambda block) [fit=(Lambda) (Qu) (u), inner sep=10pt, element] {};
+        \node (Theta block)  [fit=(Theta) (Qv) (v), inner sep=10pt, element] {};
+        \node (Phi block)    [fit=(Phi) (Qw) (w), inner sep=10pt, element] {};
+        \node (product ring) [ring, fill=none,
+                              fit=(Lambda block) (Theta block) (Phi block), inner sep=12pt] {};
+    \end{scope}
+
+    % ---- the product, which is the element expected to solve the PDE ----
+    \node (Psi) [poly2, node distance=20pt, above=of product ring.north] {$\Psi = \Lambda\,\Theta\,\Phi$};
+    \draw[degree] (Psi.south) -- (Psi.south|-product ring.north);
+
+    % ---- base ring ----
+    \node (base) [ring, text width=200pt,
+                  fit={([yshift=-52pt]product ring.south west) ([yshift=-24pt]product ring.south east)},
+                  inner sep=0pt] {$\mathbb{Q}[x,y,z]\{r\}$};
+    \draw[degree] (u.south) -- (u.south|-base.north) node[right,pos=0.7] {1};
+    \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
+    \draw[degree] (w.south) -- (w.south|-base.north) node[right,pos=0.7] {1};
+  \end{tikzpicture}
+}
+\end{minipage}%
+}%
+}
+\caption{An ansatz for a classical separation of variables}
+\label{separation ansatz figure}
+\end{figure}
+
+Figure \ref{separation ansatz figure} models a classical separation of variables.  Three ODE
+elements, each identical to the one in Figure \ref{ansatz 5 figure} but carrying its own
+independent variable, are adjoined to the base ring, and the element expected to solve the PDE is
+their product, written out in place of a single white box and carrying no degree bound because it
+is a fixed monomial with no free coefficients.  All three factors are required to be non-trivial;
+that is what makes this a separation of variables rather than a single ODE element.
+
+\begin{subequations}
+\label{separation ansatz}
+\begin{gather}
+\Psi = \Lambda\,\Theta\,\Phi \label{separation ansatz:product} \\
+(a_0 + a_1 u) \Lambda'' + (b_0 + b_1 u) \Lambda' + (c_0 + c_1 u) \Lambda = 0 \label{separation ansatz:L} \\
+u = u_1 x + u_2 y + u_3 z + u_4 r \label{separation ansatz:u} \\
+\begin{gathered}
+\Lambda_x = \Lambda' u_x \qquad \Lambda_y = \Lambda' u_y \qquad \Lambda_z = \Lambda' u_z \\
+\Lambda'_x = \Lambda'' u_x \qquad \Lambda'_y = \Lambda'' u_y \qquad \Lambda'_z = \Lambda'' u_z
+\end{gathered} \label{separation ansatz:Lchain} \\
+(d_0 + d_1 v) \Theta'' + (e_0 + e_1 v) \Theta' + (f_0 + f_1 v) \Theta = 0 \label{separation ansatz:T} \\
+v = v_1 x + v_2 y + v_3 z + v_4 r \label{separation ansatz:v} \\
+\begin{gathered}
+\Theta_x = \Theta' v_x \qquad \Theta_y = \Theta' v_y \qquad \Theta_z = \Theta' v_z \\
+\Theta'_x = \Theta'' v_x \qquad \Theta'_y = \Theta'' v_y \qquad \Theta'_z = \Theta'' v_z
+\end{gathered} \label{separation ansatz:Tchain} \\
+(g_0 + g_1 w) \Phi'' + (h_0 + h_1 w) \Phi' + (k_0 + k_1 w) \Phi = 0 \label{separation ansatz:P} \\
+w = w_1 x + w_2 y + w_3 z + w_4 r \label{separation ansatz:w} \\
+\begin{gathered}
+\Phi_x = \Phi' w_x \qquad \Phi_y = \Phi' w_y \qquad \Phi_z = \Phi' w_z \\
+\Phi'_x = \Phi'' w_x \qquad \Phi'_y = \Phi'' w_y \qquad \Phi'_z = \Phi'' w_z
+\end{gathered} \label{separation ansatz:Pchain} \\
+r^2 = x^2 + y^2 + z^2
+\end{gather}
+\end{subequations}
+
+The three extensions are independent: no factor's independent variable mentions another.  The
+ansatz carries thirty parameters, ten per factor.
+
+\vfill\eject
+
+
+\begin{figure}[H]
 \fbox{
 \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule-7pt}
 \centering
