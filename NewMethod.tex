@@ -747,10 +747,13 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE 
     % 365pt minipage, a factor of 0.6797.  Scaling this label by the reciprocal
     % renders it at the same 10pt as the labels in the unscaled ansatz diagrams.
     % The box is set by \fit, so the larger label does not change its size.
-    \node (base) [dring, text width=200pt,
+    % The label goes in a node of its own, centred on the box: text set with
+    % \fit and inner sep=0pt does not sit vertically centred in its node.
+    \node (base) [dring,
                   fit={([xshift=-12pt,yshift=-46pt]Lambda block.south west)
                        ([xshift=12pt,yshift=-18pt]Phi block.south east)},
-                  inner sep=0pt] {\scalebox{1.4712}{$\mathbb{Q}[x,y,z]\{r\}$}};
+                  inner sep=0pt] {};
+    \node at (base.center) {\scalebox{1.4712}{$\mathbb{Q}[x,y,z]\{r\}$}};
     \draw[degree] (u.south) -- (u.south|-base.north) node[right,pos=0.7] {1};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
     \draw[degree] (w.south) -- (w.south|-base.north) node[right,pos=0.7] {1};
