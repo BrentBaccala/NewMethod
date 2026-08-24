@@ -53,7 +53,13 @@ show["ODE, expanded and multiplied through by xi",
    the verification cannot close.  DSolve[ode, f1, xi] returns
    f1 -> Function[{xi}, ...], which substitutes into the derivatives too. *)
 sol = DSolve[ode, f1, xi];
-show["DSolve general solution", f1[xi] /. First[sol]];
+
+(* Print the ENTIRE DSolve result, exactly as returned: a list (one element
+   per solution branch) of lists of rules f1 -> Function[{xi}, ...]. *)
+show["DSolve raw result (all branches)", sol];
+Print["\n   number of solution branches: ", Length[sol]];
+Do[show["  branch " <> ToString[i] <> ": f1[xi]", f1[xi] /. sol[[i]]],
+   {i, Length[sol]}];
 
 (* Verification.  FullSimplify on the symbolic HypergeometricU/LaguerreL
    solution with symbolic m segfaults the 14.0 kernel, so verify numerically:
@@ -71,14 +77,18 @@ check[label_, f_] := (
      {ev, {-1, 3}}, {bv, {0, 7/5}}, {mv, {0, 2}}, {xv, {13/10}}], N::meprec];
 );
 
-check["general solution", f1[xi] /. First[sol]];
+Do[check["general solution, branch " <> ToString[i], f1[xi] /. sol[[i]]],
+   {i, Length[sol]}];
 
 (* ---- Bessel limit: beta1 -> 0 ---- *)
 ode0 = ode /. beta1 -> 0;
 sol0 = DSolve[ode0, f1, xi];
-show["beta1 = 0 (expect Bessel of order m/2)", f1[xi] /. First[sol0]];
+show["beta1 = 0, raw result (all branches)", sol0];
+Do[show["  beta1=0 branch " <> ToString[i] <> ": f1[xi]", f1[xi] /. sol0[[i]]],
+   {i, Length[sol0]}];
 Print["\n== verification of the beta1=0 Bessel solution (want True) =="];
-Print["  ", FullSimplify[ode0 /. First[sol0], xi > 0]];
+Do[Print["   branch ", i, ": ", FullSimplify[ode0 /. sol0[[i]], xi > 0]],
+   {i, Length[sol0]}];
 
 (* ---- the textbook Whittaker form ----
    xi^2 f1'' + xi f1' + (E xi^2/2 + beta1 xi - m^2/4) f1 = 0  becomes the
@@ -95,5 +105,5 @@ check["Whittaker W form", whitW];
 check["Whittaker M form", whitM];
 
 (* ---- general case rewritten ---- *)
-show["general solution under FunctionExpand",
-     FunctionExpand[f1[xi] /. First[sol]]];
+Do[show["general solution under FunctionExpand, branch " <> ToString[i],
+        FunctionExpand[f1[xi] /. sol[[i]]]], {i, Length[sol]}];
