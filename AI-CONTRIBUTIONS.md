@@ -9,7 +9,7 @@ it is not sufficient even for the first — the author committed AI-drafted
 material under his own name at least six times, and the AI committed the
 author's proposals under its name many more. Every claim below of the form
 "proposed by the author" or "drafted by the AI" rests on the transcripts, not
-on the commit's author field. Covers contributions through 18 August 2026 and
+on the commit's author field. Covers contributions through 24 August 2026 and
 should be updated as work continues. Commit hashes are given for auditability,
 and the appendix tabulates every commit to the paper or its companion notes
 that the AI touched.*
@@ -130,14 +130,15 @@ January 2026).
   false under the paper's own definition of homogeneity, since the generator
   defining the independent variable is Ψ-free.
 
-**Companion notes and working documents.** Twelve `.tex`/`.md` documents sit
-beside `NewMethod.tex` in this directory. **All twelve were drafted by the AI**;
+**Companion notes and working documents.** Thirteen `.tex`/`.md` documents
+accompany `NewMethod.tex`, twelve in this directory and one in `cas/`. **All
+thirteen were drafted by the AI**;
 none is part of the submitted paper, and their status ranges from checked and
 absorbed into the paper to unreviewed draft. They are recorded here because
 material has repeatedly moved from a note into the paper, and because several of
 them are the source of statements the paper now makes. Two are already described
 above (`gcrd-closure-partial-strata.tex` and `ansatz-method-provenance.md`); the
-remaining ten are:
+remaining eleven are:
 
 - **`rg-saturation-and-the-bad-locus.tex`** (`59ccab9`, `b659ce8`, 5 June 2026;
   model Claude Opus 4.8). Found that `joca-rg.sage` was computing a *wrong*
@@ -236,6 +237,22 @@ remaining ten are:
   material is not in the submitted paper; it is recorded because the commit that
   moved it is one of the six in which the author committed AI prose under his
   own name.
+- **`cas/cas-comparison.tex`** (`fbb2e26`, `12fb88c`, `47e123d`, 23 August
+  2026). What four computer algebra systems do with the $\xi$ separated
+  equation, together with the runnable scripts that produced the answers
+  (`f1-ode.wls`, `f1-ode-sympy.py`, `f1-ode-sage.sage`, `f1-ode-fricas.input`).
+  The equation is **Whittaker's, not Bessel's** — Bessel appears only in the
+  $\beta_1 = 0$ specialization the paper uses. Wolfram and Sage/Maxima both
+  return the general confluent-hypergeometric solution, on opposite Frobenius
+  branches at the regular singular point ($+m/2$ and $-m/2$); SymPy has no
+  Whittaker functions and cannot; FriCAS returns an empty basis, which is a
+  *decision* — by the Kovacic algorithm the equation has no Liouvillian
+  solution — and not a failure. Author-requested at every step, including the
+  widening from Wolfram alone to the four-system comparison. The note also
+  corrected three claims the session had reached earlier, among them the
+  reading that a commercial system had succeeded where free ones failed: the
+  real axis is whether a confluent-hypergeometric solver is present, and
+  Maxima has one.
 
 **A correction to the paper arising from the notes** (12 June 2026; model
 Claude Opus 4.8).
@@ -917,6 +934,21 @@ Claude Opus 5) and 17–18 August 2026 (model Claude Sonnet 5).
   ("task-runner: conf-audio-autojoin-start-limit") — caught by the
   author, and amended to describe what actually changed.
 
+**A new ansatz diagram** (24 August 2026; model Claude Opus 5). The author
+specified a page for a classical separation of variables — three ODE elements
+side by side, each of them the block of Figure 2 carrying its own capital Greek
+letter and its own independent variable, with the element expected to solve the
+PDE being their product — and the AI drew it and wrote out the corresponding
+equation system (`6e2b8c0`). Three rounds of the author's revisions followed:
+the blocks tightened horizontally by restacking each independent variable onto a
+line below its coefficient ring (`b317da0`); the box around the three blocks
+replaced by a bus dropped from the product block (`816bba1`); and the base
+ring's label set at the size it has in the unscaled diagrams and centred in its
+box (`a1d91f4`, `3790695`). The label had not been centred because text in a
+node whose size comes from `\fit` with `inner sep=0pt` does not sit vertically
+centred in that node — Figure 2 escapes this only because its box is sized by
+`minimum height` instead.
+
 **Editorial / typesetting assistance.** Reformatted the bibliography to
 Elsevier's numbered style (`2b71ff5`) and added/repaired citations (`02b57b8`
 and others); tightened and reconciled prose in the Projection and completeness
@@ -945,7 +977,7 @@ the journal's disclosure requirement attaches. Where a computation changed what
 the paper *says*, that is recorded above as a paper contribution, not here.
 
 **Artifacts.** The **Graphical Abstract** is AI-generated (`6db3f5b`). The
-colloquium slide deck `NewMethod-talk.tex` (`289af84`), the twelve companion
+colloquium slide deck `NewMethod-talk.tex` (`289af84`), the thirteen companion
 notes listed above, and this record itself are AI-produced.
 
 **Note for the formal declaration — an inventory, not a decision.** Elsevier's
@@ -982,7 +1014,7 @@ fall outside "language and readability":
   tracks this is the most restrictive, and it may bear on whether the artifact
   can be submitted at all, not merely on how it is described.
 
-Items outside the submission itself — the twelve companion notes, the
+Items outside the submission itself — the thirteen companion notes, the
 colloquium deck (`289af84`), and this record — are noted here for completeness;
 whether they require disclosure at all is part of the deferred decision.
 
@@ -1114,9 +1146,17 @@ diff it against the Commit column, and only the new rows need thought.
 | `62a9f8e` | 2026-08-18 | NewMethod.tex | **new algorithm**: ConsistencyLocus, ahead of MembershipLocus | author |
 | `4491431` | 2026-08-18 | NewMethod.tex | ideals typed as ideals throughout; **corrected** RefiningPartition naming | joint |
 | `1a80ee3` | 2026-08-20 | NewMethod/Lean/ | **new artifact**: Lean 4 formalization of Algorithms 1 and 2; five defects found | AI |
+| `fbb2e26` | 2026-08-23 | cas note | **new artifact**: Wolfram vs SymPy vs Sage/Maxima on the xi ODE; it is Whittaker's, not Bessel's | author |
+| `12fb88c` | 2026-08-23 | cas note | equation (6) reflowed; all overfull boxes cleared | author |
+| `47e123d` | 2026-08-23 | cas note | FriCAS added: empty basis is a Kovacic **decision**, not a failure | author |
+| `6e2b8c0` | 2026-08-24 | NewMethod.tex | **new page**: classical separation-of-variables ansatz, three ODE blocks, and its equation system | author |
+| `b317da0` | 2026-08-24 | NewMethod.tex | that diagram tightened horizontally; each independent variable restacked below its ring | author |
+| `816bba1` | 2026-08-24 | NewMethod.tex | its enclosing box replaced by a bus dropped from the product block | author |
+| `a1d91f4` | 2026-08-24 | NewMethod.tex | its base-ring label set at the size used in the unscaled diagrams | author |
+| `3790695` | 2026-08-24 | NewMethod.tex | that label centred vertically; \fit with inner sep=0pt does not centre text | author |
 
 */Claude Opus 4.8 (this record drafted by the AI it documents); updated
 27 July 2026, 30 July 2026 and 5 August 2026 by /Claude Opus 5, and audited
 against the full git history and the session transcripts on 5 August 2026 by
 /Claude Opus 5; updated 18 August 2026 by /Claude Sonnet 5;
-updated 20 August 2026 by /Claude Opus 5.*
+updated 20 August 2026 and 24 August 2026 by /Claude Opus 5.*
