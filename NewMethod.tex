@@ -2411,180 +2411,53 @@ v_1^2 + v_2^2 + v_3^2 = 1
 The expression $v_1 x + v_2 y + v_3 z$ is easily identified as a dot product between
 the coordinate $(x,y,z)$ and the unit vector $(v_1, v_2, v_3)$ (remembering
 that $v_1^2 + v_2^2 + v_3^2 = 1$).  The direction of this vector is arbitrary,
-so we can orient the $x$-axis in this direction and set $(v_1, v_2, v_3) = (1,0,0)$
+so we can orient the $z$-axis in this direction and set $(v_1, v_2, v_3) = (0,0,1)$
 without loss of generality.
 
 We now have to solve a second order ODE:
 
 \begin{equation}
 \label{eq:Bessel solution ODE}
-v \Psi''(v) + \Psi'(v) + \Psi(v) = 0
+\begin{gathered}
+v \Psi''(v) + \Psi'(v) + \Psi(v) = 0 \\
+v=z+r
+\end{gathered}
 \end{equation}
 
-Wolfram Mathematica \cite{mathematica} can now
-analyze this equation and determine that it is solved
-by the Bessel function \eqref{solution}.
+It has been known since the 1920s (\cite{Schrodinger26}) that \eqref{schrodinger hydrogen 2} separates
+in parabolic coordinates; Schr\"odinger exhibited this equation as \cite{Schrodinger26}'s (38):
 
-\begin{scriptsize}
-\begin{verbatim}
-In[1]:= DSolve[x*y''[x] + y'[x] + y[x] == 0, y[x], x]
+{\small
+  \begin{equation}
+\label{eq:Schrodinger ODE}
+  \begin{gathered}
+  \frac{\partial^{2}\Phi}{\partial\phi^{2}} = -n^{2}\Phi \\[2ex]
+  \begin{aligned}
+  \frac{\partial}{\partial\lambda_{1}}\!\left(\lambda_{1}\frac{\partial\Lambda_{1}}{\partial\lambda_{1}}\right)
+   + \frac{2\pi^{2}m}{h^{2}}\left(-\tfrac{1}{2}eF\lambda_{1}^{2} + E\lambda_{1} + e^{2} - \beta
+     - \frac{n^{2}h^{2}}{8\pi^{2}m}\,\frac{1}{\lambda_{1}}\right)\Lambda_{1} &= 0 \\[1ex]
+  \frac{\partial}{\partial\lambda_{2}}\!\left(\lambda_{2}\frac{\partial\Lambda_{2}}{\partial\lambda_{2}}\right)
+   + \frac{2\pi^{2}m}{h^{2}}\left(\tfrac{1}{2}eF\lambda_{2}^{2} + E\lambda_{2} + e^{2} + \beta
+     - \frac{n^{2}h^{2}}{8\pi^{2}m}\,\frac{1}{\lambda_{2}}\right)\Lambda_{2} &= 0
+  \end{aligned}
+  \end{gathered}
+  \end{equation}
+}
 
-Out[1]= {{y[x] -> BesselJ[0, 2 Sqrt[x]] C[1] + 2 BesselY[0, 2 Sqrt[x]] C[2]}}
-\end{verbatim}
-\end{scriptsize}
+\eqref{eq:Bessel solution ODE} is in this parabolic form, with $v$ playing the role of $\lambda_1$.
+Normalizing \eqref{eq:Schrodinger ODE}'s second equation
+into Hartree atomic units gives $h=2\pi$, $m=1$, and $e=1$.
+Expanding the derivative,
+setting the field $F$, the energy $E$, the {\it magnetic quantum number} $n$, and the {\it separation parmeter} $\beta$ to zero
+gives \eqref{eq:Bessel solution ODE}.
+Landau and Lifshitz (\cite{LandauLifshitz} \S37) derive essentially the same result as (37.8).
 
-leading to the following exact solution to \eqref{schrodinger hydrogen 2}, with $E=0$:
+That the hydrogen atom separates in {\it both} systems is the signature
+of its hidden symmetry: beyond the angular momentum $\mathbf{L}$, the
+problem also conserves the Laplace--Runge--Lenz vector $\mathbf{A}$
+(\cite{BanderItzykson} (3)).
 
-\begin{equation}
-\label{solution}
-\Psi = J_0(2\sqrt{x+r})
-\end{equation}
 
-where $x,y,z$ are Cartesian coordinates, $r=\sqrt{x^2+y^2+z^2}$, $E=0$,
-and $J_0$ is the ordinary Bessel function $J_0$.
-
-\begin{comment}
-This solution is not of either standard separated form --- neither the
-spherical $R(r)\,\Theta(\theta)\,\Phi(\varphi)$ nor the Cartesian
-$X(x)Y(y)Z(z)$ --- so separation of variables in those coordinates cannot
-produce it.  It is, however, separable in {\it parabolic} coordinates: with
-$\xi = r + x$ one of the parabolic coordinates, \eqref{solution} is a function
-of $\xi$ alone, the azimuthally symmetric ($m=0$) separated solution at $E=0$
-(\cite{LandauLifshitz}, \S37).  This is no accident, and it is illuminated by
-the two branches the algorithm returned.  The classical branch
-\eqref{ideal:1}, with $v = r$, is the spherical separation; the present branch
-\eqref{ideal:2}, with $v = v_1 x + v_2 y + v_3 z + v_4 r$, is the parabolic
-one.  That the hydrogen atom separates in {\it both} systems is the signature
-of its hidden symmetry: beyond the angular momentum $\mathbf{L}$, the Coulomb
-problem conserves the Laplace--Runge--Lenz vector $\mathbf{A}$, and together
-$\mathbf{L}$ and $\mathbf{A}$ generate the dynamical $\mathrm{SO}(4)$ symmetry
-responsible for the degeneracy of the bound spectrum
-(\cite{BanderItzykson}).  Spherical separation diagonalizes $\{L^2, L_z\}$;
-parabolic separation about an axis $\hat{a}$ diagonalizes instead the
-components $\mathbf{A}\cdot\hat{a}$ and $\mathbf{L}\cdot\hat{a}$.  The algorithm
-recovers {\it both} separations from a single ansatz, without committing to any
-coordinate system in advance --- and the unit vector fixing the parabolic axis
-in the generalized solution \eqref{generalized solution} is precisely the
-direction of the Runge--Lenz vector.
-\end{comment}
-
-% \vskip 12pt
-
-%Then \eqref{solution} is an exact solution to \eqref{schrodinger}, with $E=0$.
-
-%\subsection*{Verification}
-
-\label{verification}
-%The result can be easily verified using Mathematica\footnote{A manual verification is presented in an appendix}, as follows:
-The result can be easily verified using Wolfram Mathematica \cite{mathematica}, as follows:
-
-\begin{tiny}
-\begin{verbatim}
-In[1]:= Psif := Psi[x, y, z]
-
-In[2]:= r[x_, y_, z_] = Sqrt[x^2 + y^2 + z^2]
-
-              2    2    2
-Out[2]= Sqrt[x  + y  + z ]
-
-In[3]:= eqn = - 1 / 2 * Laplacian[Psif, {x, y, z}] - 1 / r[x, y, z] * Psif == 0
-
-                                    (0,0,2)               (0,2,0)               (2,0,0)
-             Psi[x, y, z]       -Psi       [x, y, z] - Psi       [x, y, z] - Psi       [x, y, z]
-Out[3]= -(------------------) + ---------------------------------------------------------------- == 0
-                2    2    2                                    2
-          Sqrt[x  + y  + z ]
-
-In[4]:= sol[x_, y_, z_] := BesselJ[0, 2 * Sqrt[x + r[x, y, z]]]
-
-In[5]:= FullSimplify[eqn /. Psi -> ({x, y, z} |-> sol[x, y, z])]
-
-Out[5]= True
-\end{verbatim}
-\end{tiny}
-
-It has been known since the time of Schr\"odinger (\cite{Schrodinger26}) that \eqref{schrodinger hydrogen 2} admits a separation of variables
-in parabolic coordinates:
-
-\begin{equation}
-\xi = r + z \qquad \eta = r - z \qquad \psi = \tan^{-1} \frac{y}{x}
-\end{equation}
-
-Solution \eqref{solution} is in this parabolic form.
-
-Landau and Lifshitz (\cite{LandauLifshitz} \S37) demonstrate separation of variables for a particle in a Coulumb field (the hydrogen case)
-in parabolic coordinates, and obtain \cite{LandauLifshitz} (37.8):
-
-\begin{equation}
-\frac{\mathrm{d}}{\mathrm{d}\xi}\left(\xi\frac{\mathrm{d}f_1}{\mathrm{d}\xi}\right)
-  +\left[\tfrac{1}{2}E\xi-\tfrac{1}{4}m^2/\xi+\beta_1\right]f_1 = 0
-\end{equation}
-When we expand the derivative, set the {\it separation parameter} $\beta_1$ to one, and set
-the {\it energy} $E$ and the {\it magnetic quantum number} $m$ to zero, we obtain \eqref{eq:Bessel solution ODE},
-so \eqref{solution} can hardly be called unanticipated, yet \cite{LandauLifshitz} is primarily
-interested in the discrete energy spectrum and never explicitly exhibited \eqref{solution}.
-
-Turning now to analysis, we ask in what function spaces \eqref{solution} exists.
-
-  \begin{center}
-  \small
-  \begin{tabularx}{\textwidth}{@{}llX@{}}
-  \hline
-  space & & reason \\
-  \hline
-  $L^\infty(\mathbb{R}^3)$
-    & yes
-    & $|J_0| \le 1$, with $\|\Psi\|_\infty = 1$ attained on all of
-      $\{x<0,\, y=z=0\}$ \\[3pt]
-  $C^0(\mathbb{R}^3)$
-    & yes
-    & $\xi$ is continuous and $J_0$ is entire; $\Psi(0) = 1$ \\[3pt]
-  $C^\omega(\mathbb{R}^3 \setminus \{0\})$
-    & yes
-    & real-analytic off the origin, by elliptic regularity \\[3pt]
-  $C^{0,1}(\mathbb{R}^3) = W^{1,\infty}(\mathbb{R}^3)$
-    & yes
-    & $|\nabla\Psi|^2 = 2J_1(2\sqrt{\xi})^2/r$ and $\xi \le 2r$, giving the
-      sharp Lipschitz constant $2$ \\[3pt]
-  $W^{2,p}_{\mathrm{loc}}(\mathbb{R}^3)$, $p < 3$
-    & yes
-    & sharp: $\nabla^2\Psi = -2\Psi/r$, and $1/r \in L^p_{\mathrm{loc}}$
-      exactly for $p<3$ \\[3pt]
-  $\mathcal{S}'(\mathbb{R}^3)$
-    & yes
-    & bounded, hence tempered; \eqref{schrodinger hydrogen} holds in
-      $\mathcal{D}'(\mathbb{R}^3)$ with no $\delta$ at the origin \\[3pt]
-  $L^2\!\left(\mathbb{R}^3, (1+r)^{-s} dV\right)$
-    & $s > 5/2$
-    & the envelope $\xi^{-1/4}$ improves on the $s>3$ of a bounded
-      non-decaying function by exactly one half power \\[3pt]
-  \hline
-  $L^p(\mathbb{R}^3)$, $p < \infty$
-    & no
-    & $|\Psi| \ge J_0(2\sqrt{c}) > 0$ on the paraboloid
-      $y^2 + z^2 \le c\,(c - 2x)$, of infinite volume \\[3pt]
-  $\dot{H}^1(\mathbb{R}^3)$
-    & no
-    & $\int |\nabla\Psi|^2 dV
-       = \int\!\!\int\!\!\int J_1(2\sqrt{\xi})^2 d\xi\, d\eta\, d\varphi$,
-      whose integrand is independent of $\eta$ \\[3pt]
-  $C^1(\mathbb{R}^3)$, $W^{2,3}_{\mathrm{loc}}(\mathbb{R}^3)$
-    & no
-    & $\nabla\Psi$ is bounded but discontinuous at the origin: it tends to $0$
-      along $-\hat{e}_x$ and to $-2\hat{e}_x$ along $+\hat{e}_x$ \\[3pt]
-  $\mathcal{D}(H)$, $H$ self-adjoint on $L^2$
-    & no
-    & $E=0$ is the threshold of the continuous spectrum $[0,\infty)$, not an
-      eigenvalue \\[3pt]
-  \hline
-  \end{tabularx}
-  \end{center}
-
-For our purposes, the failure of \eqref{solution} to lie in $L^2(\mathbb{R}^3)$ represents a
-fundamental barrier: it is a solution to the Schr\"odinger {\it equation}, but is not a solution
-to the Schr\"odinger {\it problem} since to solve the later, it must also be a valid {\it wavefunction},
-which means it must lie in $L^2(\mathbb{R}^3)$, so that $\int |\Psi|^2 dV$ can be interpreted as a probability distribution.
-Thus, \eqref{solution} is not a physical state.
 
 %% REMAINING IDEALS
 
@@ -2610,7 +2483,8 @@ $\Psi = (2-r)e^{-r/2}$
 % Out[2]= {{y[x] -> E                       C[1]}}
 
 In short, the algorithm presented in section \ref{sec:Solution Algorithm} finds solutions expressed
-in both first and second order differential equations, in both spherical and cylindrical coordinates.
+in both first and second order differential equations, in both spherical and cylindrical coordinates,
+without require the coordinate system to be specified in advance.
 
 \vfill\eject
 
