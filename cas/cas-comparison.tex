@@ -1,0 +1,260 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+
+\lstset{basicstyle=\ttfamily\footnotesize,breaklines=true,
+        columns=fullflexible,frame=single,framesep=4pt,xleftmargin=6pt}
+
+\newcommand{\WL}{Wolfram Language}
+
+\title{Closed-form solution of the $\xi$ separated equation:\\
+       what three computer algebra systems can and cannot do}
+\author{Brent Baccala}
+\date{23 August 2026}
+
+\begin{document}
+\maketitle
+
+\section{The equation}
+
+The separation of the hydrogenic problem in parabolic coordinates
+$\xi=r+z$, $\eta=r-z$, $\psi=\tan^{-1}(y/x)$ produces, for the $\xi$
+factor,
+\begin{equation}\label{eq:f1}
+\frac{\mathrm{d}}{\mathrm{d}\xi}\left(\xi\frac{\mathrm{d}f_1}{\mathrm{d}\xi}\right)
+  +\left[\tfrac{1}{2}E\xi-\tfrac{1}{4}m^2/\xi+\beta_1\right]f_1 = 0 .
+\end{equation}
+Everything other than $\xi$ and $f_1$ is constant: the energy $E$, the
+magnetic quantum number $m$, and the separation constant $\beta_1$.
+Note that $\xi = r+z \geq 0$ identically, since $r\geq|z|$.
+
+Multiplying through by $\xi$ puts \eqref{eq:f1} in the form in which its
+character is visible,
+\begin{equation}\label{eq:f1x}
+\xi^2 f_1'' + \xi f_1' + \left(\tfrac{1}{2}E\xi^2 + \beta_1\xi
+  - \tfrac{1}{4}m^2\right) f_1 = 0 ,
+\end{equation}
+which is \emph{not} Bessel's equation unless $\beta_1=0$: the term
+$\beta_1\xi$ is linear in $\xi$ where Bessel's equation requires a pure
+$k^2\xi^2$. Substituting $f_1 = \xi^{-1/2}\,w(2k\xi)$ with
+$k=\sqrt{-E/2}$ converts \eqref{eq:f1x} into Whittaker's equation
+\begin{equation}\label{eq:whittaker}
+\frac{\mathrm{d}^2 w}{\mathrm{d}z^2}
+  + \left(-\frac{1}{4} + \frac{\kappa}{z}
+          + \frac{\tfrac{1}{4}-\mu^2}{z^2}\right) w = 0 ,
+\qquad \kappa = \frac{\beta_1}{2k},\quad \mu = \frac{m}{2},
+\end{equation}
+so the general solution is
+$f_1 = \xi^{-1/2} W_{\kappa,\,m/2}(2k\xi)$ and its $M$ companion.  The
+separation constant $\beta_1$ is the Coulomb (Sommerfeld) parameter
+$\kappa$; setting $\beta_1=0$ sends $\kappa\to0$ and only then does
+\eqref{eq:f1x} degenerate to Bessel.
+
+\section{Summary of results}
+
+Three systems were tried on \eqref{eq:f1} with all of $E$, $m$, $\beta_1$
+symbolic.  Versions: Wolfram Engine 14.0.0 (21 December 2023), SymPy
+1.14.0, SageMath 10.7 driving Maxima 5.48.1.  Numerical checks throughout
+use mpmath 1.3.0.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}llll@{}}
+\toprule
+ & \textbf{general $\beta_1\neq0$} & \textbf{$\beta_1=0$} & \textbf{closed form returned}\\
+\midrule
+Wolfram 14.0        & solved & solved & \verb|HypergeometricU|, \verb|LaguerreL| / \verb|BesselJ|,\verb|BesselY| \\
+Sage 10.7 / Maxima  & solved\rlap{$^\dagger$} & solved & \verb|hypergeometric_M|,\verb|_U| / \verb|bessel_J|,\verb|bessel_Y| \\
+SymPy 1.14.0        & \textbf{no} & solved & --- / \verb|besselj|, \verb|bessely| \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent$^\dagger$ only with \verb|contrib_ode=True|, and on a branch that
+degenerates at integer $m$; see \S\ref{sec:sage}.
+
+The headline: \textbf{the free systems are not uniformly weaker here.}
+Maxima solves the general case that SymPy cannot touch, and does so in
+essentially the same closed form as Wolfram.  The relevant axis is not
+commercial-vs-free but whether the system carries a confluent
+hypergeometric ODE solver.
+
+\section{Wolfram Language}
+
+\verb|DSolve| solves \eqref{eq:f1} outright.  Writing \verb|EE| for the
+energy (plain \verb|E| is Euler's number and is \verb|Protected|):
+\begin{lstlisting}
+SetAttributes[{EE, m, beta1}, Constant];
+ode = ( D[xi D[f1[xi], xi], xi]
+        + ((1/2) EE xi - (1/4) m^2/xi + beta1) f1[xi] == 0 );
+sol = DSolve[ode, f1, xi];
+\end{lstlisting}
+returning a single branch,
+\begin{equation}\label{eq:wolfram}
+f_1 = \xi^{m/2} e^{-i\sqrt{E/2}\,\xi}
+      \left[ C_1\, U(a,\,m+1,\,i\sqrt{2E}\,\xi)
+           + C_2\, L^{m}_{-a}(i\sqrt{2E}\,\xi) \right],
+\qquad a = \tfrac{1}{2}\!\left(1+m+\frac{i\sqrt2\,\beta_1}{\sqrt E}\right).
+\end{equation}
+Setting $\beta_1=0$ first gives the Bessel reduction directly,
+\begin{equation}
+f_1 = C_1 J_{m/2}\!\left(\sqrt{E/2}\,\xi\right)
+    + C_2 Y_{m/2}\!\left(\sqrt{E/2}\,\xi\right),
+\end{equation}
+which \verb|FullSimplify| verifies symbolically (returns \verb|True|).
+
+Three practical traps, all of which cost real time:
+
+\begin{enumerate}
+\item \textbf{\texttt{.wls} line continuation.}  In a script file every
+  top-level line that parses as a complete expression \emph{ends the
+  statement}.  Writing \verb|ode = D[...]| on one line and
+  \verb|+ [...] == 0| on the next silently assigns only the first line ---
+  the entire bracketed potential term and the \verb|== 0| are discarded as
+  separate throwaway expressions, and \verb|DSolve| then reports
+  ``Equation or list of equations expected''.  Multi-line expressions must
+  be parenthesised.
+
+\item \textbf{\texttt{DSolve[ode, f1[xi], xi]} cannot be verified.}  That
+  form returns a rule for the \emph{symbol} \verb|f1[xi]|, so \verb|f1'[xi]|
+  and \verb|f1''[xi]| survive the replacement and the residual never
+  closes.  Solving for the \emph{function}, \verb|DSolve[ode, f1, xi]|,
+  returns \verb|f1 -> Function[{xi}, ...]| which substitutes into the
+  derivatives as well.
+
+\item \textbf{\texttt{FullSimplify} on \eqref{eq:wolfram} segfaults} the
+  14.0 kernel when $m$ is symbolic (and then misreports the crash as a
+  licence error).  The general solution was therefore verified numerically
+  instead: the residual of \eqref{eq:f1} evaluates to $0$ at 40 digits for
+  all of $E\in\{-1,3\}$, $\beta_1\in\{0,7/5\}$, $m\in\{0,2\}$.  The
+  $\beta_1=0$ branch is small enough to verify symbolically.
+\end{enumerate}
+
+Also note that \verb|Print[InputForm[expr]]| prints the \emph{wrapper}, not
+the formatted expression; \verb|ToString[expr, InputForm]| is what formats.
+And \verb|TeXForm| of a \verb|Function| emits \verb|\unicode{f4a1}| for the
+$\mapsto$ arrow, which will not compile --- extract \verb|f1[xi] /. sol[[i]]|
+before asking for \TeX.
+
+\section{Sage / Maxima}\label{sec:sage}
+
+Plain \verb|desolve| fails: Maxima's \verb|ode2| does not recognise
+\eqref{eq:f1} and raises \verb|NotImplementedError|.  With
+\verb|contrib_ode=True| --- Maxima's \verb|contrib_ode| package, which
+carries a Kovacic-style solver and hypergeometric pattern matching ---
+it succeeds:
+\begin{lstlisting}
+sol = desolve(ode, f, ivar=xi, contrib_ode=True)
+\end{lstlisting}
+\begin{equation}\label{eq:maxima}
+f_1 = \xi^{-m/2} e^{\frac{1}{2}\sqrt{-2E}\,\xi}
+      \left[ K_1\, M(a',\,1-m,\,-\sqrt{-2E}\,\xi)
+           + K_2\, U(a',\,1-m,\,-\sqrt{-2E}\,\xi) \right],
+\qquad a' = -\frac{\sqrt{-2E}\,\beta_1 + E m - E}{2E}.
+\end{equation}
+Passing \verb|ivar=xi| is mandatory; with four symbols in play Sage will
+not guess the independent variable and raises ``Unable to determine
+independent variable''.
+
+\eqref{eq:maxima} is a correct solution, but it is the \emph{other}
+Frobenius branch.  The indicial equation of \eqref{eq:f1x} at the regular
+singular point $\xi=0$ has roots $\pm m/2$; Wolfram returns $\xi^{+m/2}$,
+Maxima returns $\xi^{-m/2}$.  This matters twice over:
+
+\begin{itemize}
+\item The \verb|hypergeometric_M| half of \eqref{eq:maxima} is
+  \textbf{undefined for positive integer $m$}, because its second parameter
+  $1-m$ is then a non-positive integer and $M(a,b,z)$ has poles in $b$
+  there.  Numerically this shows up as a division by zero at
+  $m=2$ and (for $\beta_1\neq0$) $m=3$, while every non-integer $m$ and
+  every case of the \verb|hypergeometric_U| half checks out to $10^{-31}$.
+  Since $m$ is a magnetic quantum number, the degenerate case is precisely
+  the physical one.
+\item $\xi^{-m/2}$ is the solution that \emph{blows up} at the origin.  For
+  \eqref{eq:f1} the admissible solution is the regular one, $\xi^{+m/2}$,
+  so Wolfram's branch is the one to quote in the paper.
+\end{itemize}
+
+A smaller annoyance: differentiating Sage's \verb|hypergeometric_M|
+symbolically raises \verb|ZeroDivisionError: symbolic division by zero|,
+because its \verb|_derivative_| method forms $a/b$ with $b=1-m$.  The
+verification in \verb|f1-ode-sage.sage| is therefore done in mpmath.
+
+For $\beta_1=0$ Maxima gives
+$K_1 J_{-m/2}(-\sqrt{E/2}\,\xi) + K_2 Y_{-m/2}(-\sqrt{E/2}\,\xi)$ ---
+again the $-m/2$ order, and with a negated argument, but a valid basis.
+
+\section{SymPy}
+
+SymPy solves \eqref{eq:f1} only when $\beta_1=0$.  \verb|classify_ode|
+states the position exactly:
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+case & hints offered \\
+\midrule
+$\beta_1=0$, any $m$ & \verb|factorable|, \verb|2nd_linear_bessel|, \verb|2nd_power_series_regular| \\
+$\beta_1\neq0$       & \verb|factorable|, \verb|2nd_power_series_regular| \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent With $\beta_1=0$ it returns the correct closed form, and for
+symbolic $m$ at that:
+\begin{lstlisting}
+C1*besselj(m/2, sqrt(2)*sqrt(E)*xi/2) + C2*bessely(m/2, sqrt(2)*sqrt(E)*xi/2)
+\end{lstlisting}
+agreeing with Wolfram once $\sqrt2\sqrt E/2 = \sqrt{E/2}$ is recognised.
+
+With $\beta_1\neq0$ the only applicable solver is Frobenius, so the answer
+is a truncated series with an $O(\xi^6)$ tail rather than a closed form ---
+and even that works only for numeric $m$; symbolic $m$ fails with
+\verb|TypeError: Cannot convert symbols to int|.  (A related failure occurs
+if $m$ is declared merely \verb|nonnegative|: the Frobenius code cannot
+decide $-m/2 < m/2$ when $m$ might be $0$, and raises
+\verb|TypeError: cannot determine truth value of Relational|.)
+
+The cause is coverage, not cleverness.  SymPy 1.14 has \textbf{no Whittaker
+functions at all} and no \verb|hyperu|/Kummer $U$; it carries \verb|hyper|
+and \verb|meijerg| as generic objects but has no ODE solver that recognises
+the confluent hypergeometric equation.  Wolfram reaches for
+\verb|HypergeometricU| and \verb|LaguerreL| and Maxima for
+\verb|hypergeometric_M|/\verb|_U|; SymPy has neither in usable form and
+falls back to series.
+
+SymPy also cannot \emph{verify} the closed form when handed one.  Given
+\eqref{eq:wolfram} written as
+\verb|xi**(m/2)*exp(-I*k*xi)*hyper((a,),(m+1,),2*I*k*xi)|,
+\verb|checkodesol| returns \verb|False| with a 711-operation residual: it
+cannot collapse the contiguous-relation combination of \verb|hyper| terms.
+The expression is nonetheless correct --- mpmath gives residuals of
+$10^{-41}$ at 40 digits across $E\in\{0.7,3\}$, $\beta_1\in\{0,1.4\}$,
+$m\in\{0,2,3\}$.  A \verb|False| from \verb|checkodesol| is a simplification
+failure, not a refutation.
+
+\section{Files}
+
+\begin{tabular}{@{}ll@{}}
+\toprule
+\verb|cas/f1-ode.wls|       & Wolfram script; \verb|DSolve|, verification, Whittaker cross-check \\
+\verb|cas/f1-ode-sympy.py|  & SymPy script; \verb|classify_ode| evidence, mpmath verification \\
+\verb|cas/f1-ode-sage.sage| & Sage/Maxima script; \verb|contrib_ode|, branch degeneracy check \\
+\verb|cas/cas-comparison.tex| & this note \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\noindent Run them with, respectively,
+\verb|/opt/Wolfram/WolframScript/bin/wolframscript -file f1-ode.wls|,
+\verb|python f1-ode-sympy.py|, and
+\verb|sage f1-ode-sage.sage|.
+
+\vspace{2em}
+\noindent\rule{0.3\textwidth}{0.4pt}\\
+{\footnotesize /claude-opus-5}
+
+\end{document}
