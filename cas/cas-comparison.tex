@@ -55,10 +55,10 @@ $\kappa$; setting $\beta_1=0$ sends $\kappa\to0$ and only then does
 
 \section{Summary of results}
 
-Three systems were tried on \eqref{eq:f1} with all of $E$, $m$, $\beta_1$
+Four systems were tried on \eqref{eq:f1} with all of $E$, $m$, $\beta_1$
 symbolic.  Versions: Wolfram Engine 14.0.0 (21 December 2023), SymPy
-1.14.0, SageMath 10.7 driving Maxima 5.48.1.  Numerical checks throughout
-use mpmath 1.3.0.
+1.14.0, SageMath 10.7 driving Maxima 5.48.1, and FriCAS 1.3.13 on SBCL
+2.4.8.  Numerical checks throughout use mpmath 1.3.0.
 
 \begin{table}[h]
 \centering
@@ -71,18 +71,25 @@ use mpmath 1.3.0.
 Wolfram 14.0        & solved & solved & \verb|HypergeometricU|, \verb|LaguerreL| / \verb|BesselJ|,\verb|BesselY| \\
 Sage 10.7 / Maxima  & solved\rlap{$^\dagger$} & solved & \verb|hypergeometric_M|,\verb|_U| / \verb|bessel_J|,\verb|bessel_Y| \\
 SymPy 1.14.0        & \textbf{no} & solved & --- / \verb|besselj|, \verb|bessely| \\
+FriCAS 1.3.13       & \textbf{no}\rlap{$^\ddagger$} & odd $m$ only\rlap{$^\ddagger$} & Liouvillian basis, else \verb|[]| \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \noindent$^\dagger$ only with \verb|contrib_ode=True|, and on a branch that
 degenerates at integer $m$; see \S\ref{sec:sage}.
+$^\ddagger$ FriCAS is not searching a special-function table at all; it
+\emph{decides} Liouvillian solvability, and answers a sharper question than
+the other three.  See \S\ref{sec:fricas} --- its \verb|[]| is a theorem, not
+a shrug.
 
 The headline: \textbf{the free systems are not uniformly weaker here.}
 Maxima solves the general case that SymPy cannot touch, and does so in
 essentially the same closed form as Wolfram.  The relevant axis is not
 commercial-vs-free but whether the system carries a confluent
-hypergeometric ODE solver.
+hypergeometric ODE solver.  FriCAS sits outside that axis entirely: it
+answers a different and more precise question, and the shape of its answer
+turns out to encode the quantization of the energy (\S\ref{sec:fricas}).
 
 \section{Wolfram Language}
 
@@ -246,6 +253,118 @@ $10^{-41}$ at 40 digits across $E\in\{0.7,3\}$, $\beta_1\in\{0,1.4\}$,
 $m\in\{0,2,3\}$.  A \verb|False| from \verb|checkodesol| is a simplification
 failure, not a refutation.
 
+
+\section{FriCAS}\label{sec:fricas}
+
+FriCAS returns
+\begin{lstlisting}
+[particular = 0, basis = []]
+\end{lstlisting}
+\noindent for \eqref{eq:f1} with symbolic parameters, and also for the
+$\beta_1=0$ reduction.  Read carelessly this looks like the weakest result
+of the four.  It is in fact the strongest statement any of them makes.
+
+FriCAS's \verb|solve| for linear ODEs works in the \emph{Liouvillian}
+class --- solutions built from rational functions by exponentiation,
+integration and algebraic extension --- via the Kovacic algorithm, which
+for second-order linear equations with rational coefficients is a
+\emph{decision procedure}.  An empty basis therefore asserts that no
+Liouvillian solution exists.  Bessel and confluent hypergeometric
+functions are not Liouvillian, so there is nothing for it to return, and
+saying so is the correct answer.
+
+That the machinery is working, and that \verb|[]| is discriminating rather
+than reflexive, is easy to confirm.  On Liouvillian problems it answers at
+once:
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+equation & basis returned \\
+\midrule
+$y''-y=0$                 & $e^{x},\; e^{-x}$ \\
+$x^2y''+xy'-y=0$          & $(x^2-1)/x,\; (x^2+1)/x$ \\
+$y''+x^{-1}y'=0$          & $1,\; \log x$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\noindent and FriCAS does carry Bessel functions (\verb|besselJ(1,2.0)|
+evaluates to $0.5767248\ldots$) --- it simply will not manufacture them
+from an ODE.
+
+\subsection*{The $\beta_1=0$ case resolves by parity of $m$}
+
+Bessel's equation of order $\nu$ has Liouvillian solutions if and only if
+$\nu$ is a half-integer.  Here $\nu=m/2$, so the criterion is that $m$ be
+\emph{odd}.  Setting $\beta_1=0$, $E=2$ and stepping $m$ reproduces this
+exactly:
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+$m$ & order $m/2$ & half-integer? & FriCAS \\
+\midrule
+1 & $1/2$ & yes & $e^{i\xi}/\sqrt\xi,\ e^{-i\xi}/\sqrt\xi$ \\
+2 & $1$   & no  & \verb|[]| \\
+3 & $3/2$ & yes & elementary (bulky) \\
+4 & $2$   & no  & \verb|[]| \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{With $\beta_1\neq0$ the criterion becomes quantization}
+
+The confluent hypergeometric series terminates --- and the solution
+becomes Liouvillian --- exactly when its first parameter is a non-positive
+integer, i.e.\ when the Kummer function collapses to a Laguerre
+polynomial.  For \eqref{eq:f1} with $E<0$ and $k=\sqrt{-E/2}$ that
+condition reads
+\begin{equation}\label{eq:quant}
+\beta_1 = 2k\left(\frac{1+m}{2}+n_1\right), \qquad n_1=0,1,2,\dots
+\end{equation}
+which is precisely the bound-state quantization condition, $n_1$ the
+parabolic quantum number.  Taking $E=-2$ so that $k=1$:
+
+\begin{center}
+\begin{tabular}{@{}lllp{0.42\textwidth}@{}}
+\toprule
+$m$ & $\beta_1$ & \eqref{eq:quant}? & FriCAS basis \\
+\midrule
+0 & 1 & yes, $n_1=0$ & $e^{-\xi}$,\; $\mathrm{Ei}(2\xi)e^{-\xi}$ \\
+0 & 3 & yes, $n_1=1$ & $(2\xi-1)e^{-\xi}$,\; $\dots$ \\
+0 & 2 & \textbf{no}  & \verb|[]| \\
+2 & 3 & yes, $n_1=0$ & $\xi e^{-\xi}$,\; $\dots$ \\
+2 & 2 & \textbf{no}  & \verb|[]| \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The first basis element is in each case $\xi^{m/2}e^{-k\xi}$
+times the Laguerre polynomial of degree $n_1$; the second is the
+reduction-of-order partner, Liouvillian but not elementary (hence the
+exponential integral).  \textbf{FriCAS's Liouvillian decision procedure is
+detecting the energy quantization.}  Where Wolfram and Maxima hand back a
+closed form valid for all $\beta_1$, FriCAS partitions the $\beta_1$ axis
+into the physically admissible points and the rest.  Neither answer
+subsumes the other, and for this problem FriCAS's is arguably the more
+informative.
+
+\subsection*{Installation note}
+
+FriCAS is not packaged for this machine and needs no root:
+\begin{lstlisting}
+mamba create -n fricas -c conda-forge fricas
+mamba install -n fricas -c conda-forge 'sbcl=2.4.8'
+\end{lstlisting}
+\noindent The second command is required.  The conda \verb|fricas| 1.3.13
+core is built against SBCL 2.4.8, the solver installs a newer SBCL, and the
+mismatch aborts at startup with
+\begin{lstlisting}
+GC strategy mismatch: runtime uses 1, core built for 38
+\end{lstlisting}
+\noindent Also, \verb|-nosman| must be the \emph{first}
+argument; otherwise FriCAS starts its session manager, which wants a tty
+and hangs on piped stdin.
+
 \section{Files}
 
 \begin{tabular}{@{}ll@{}}
@@ -253,6 +372,7 @@ failure, not a refutation.
 \verb|cas/f1-ode.wls|       & Wolfram script; \verb|DSolve|, verification, Whittaker cross-check \\
 \verb|cas/f1-ode-sympy.py|  & SymPy script; \verb|classify_ode| evidence, mpmath verification \\
 \verb|cas/f1-ode-sage.sage| & Sage/Maxima script; \verb|contrib_ode|, branch degeneracy check \\
+\verb|cas/f1-ode-fricas.input| & FriCAS script; Liouvillian decision, quantization scan \\
 \verb|cas/cas-comparison.tex| & this note \\
 \bottomrule
 \end{tabular}
@@ -263,6 +383,7 @@ failure, not a refutation.
 /opt/Wolfram/WolframScript/bin/wolframscript -file f1-ode.wls
 python f1-ode-sympy.py
 sage f1-ode-sage.sage
+fricas -nosman < f1-ode-fricas.input
 \end{lstlisting}
 
 \vspace{2em}
