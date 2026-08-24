@@ -694,7 +694,7 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE 
 \begin{figure}[H]
 \makebox[\textwidth][c]{%
 \fbox{
-\begin{minipage}{500pt}
+\begin{minipage}{380pt}
 \centering
 \resizebox{\linewidth}{!}{%
   \begin{tikzpicture}[remember picture,out=315,in=225,distance=0.4cm,node distance=40pt]
@@ -702,45 +702,45 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE 
     % ---- first factor ----
     \node (Lambda) [poly, text width=100pt] {$\coeff\tikzmark{la}\,\Lambda'' + \coeff\tikzmark{lb}\,\Lambda' + \coeff\tikzmark{lc}\,\Lambda$};
     \node (Qu) [ring, below of=Lambda, text width=100pt] {$\mathbb{Q}[u]$};
-    \node (u) [poly, right=of Qu] {$u$};
     \draw[degree] (la.west) -- (la.west|-Qu.north) node[right,pos=0.6] {1};
     \draw[degree] (lb.west) -- (lb.west|-Qu.north) node[right,pos=0.6] {1};
     \draw[degree] (lc.west) -- (lc.west|-Qu.north) node[right,pos=0.6] {1};
-    \node (Lambda label) [at=(u.east|-Lambda.north), anchor=north east] {\Large$\Lambda$};
+    \node (Lambda label) [anchor=north west, at={([xshift=14pt] Lambda.north east)}] {\Large$\Lambda$};
+    \node (u) [poly, anchor=north east, at={([yshift=-14pt] Lambda label.east |- Qu.south)}] {$u$};
 
     % ---- second factor ----
-    \node (Theta) [poly, node distance=250pt, right of=Lambda, text width=100pt] {$\coeff\tikzmark{ta}\,\Theta'' + \coeff\tikzmark{tb}\,\Theta' + \coeff\tikzmark{tc}\,\Theta$};
+    \node (Theta) [poly, node distance=173pt, right of=Lambda, text width=100pt] {$\coeff\tikzmark{ta}\,\Theta'' + \coeff\tikzmark{tb}\,\Theta' + \coeff\tikzmark{tc}\,\Theta$};
     \node (Qv) [ring, below of=Theta, text width=100pt] {$\mathbb{Q}[v]$};
-    \node (v) [poly, right=of Qv] {$v$};
     \draw[degree] (ta.west) -- (ta.west|-Qv.north) node[right,pos=0.6] {1};
     \draw[degree] (tb.west) -- (tb.west|-Qv.north) node[right,pos=0.6] {1};
     \draw[degree] (tc.west) -- (tc.west|-Qv.north) node[right,pos=0.6] {1};
-    \node (Theta label) [at=(v.east|-Theta.north), anchor=north east] {\Large$\Theta$};
+    \node (Theta label) [anchor=north west, at={([xshift=14pt] Theta.north east)}] {\Large$\Theta$};
+    \node (v) [poly, anchor=north east, at={([yshift=-14pt] Theta label.east |- Qv.south)}] {$v$};
 
     % ---- third factor ----
-    \node (Phi) [poly, node distance=250pt, right of=Theta, text width=100pt] {$\coeff\tikzmark{pa}\,\Phi'' + \coeff\tikzmark{pb}\,\Phi' + \coeff\tikzmark{pc}\,\Phi$};
+    \node (Phi) [poly, node distance=173pt, right of=Theta, text width=100pt] {$\coeff\tikzmark{pa}\,\Phi'' + \coeff\tikzmark{pb}\,\Phi' + \coeff\tikzmark{pc}\,\Phi$};
     \node (Qw) [ring, below of=Phi, text width=100pt] {$\mathbb{Q}[w]$};
-    \node (w) [poly, right=of Qw] {$w$};
     \draw[degree] (pa.west) -- (pa.west|-Qw.north) node[right,pos=0.6] {1};
     \draw[degree] (pb.west) -- (pb.west|-Qw.north) node[right,pos=0.6] {1};
     \draw[degree] (pc.west) -- (pc.west|-Qw.north) node[right,pos=0.6] {1};
-    \node (Phi label) [at=(w.east|-Phi.north), anchor=north east] {\Large$\Phi$};
+    \node (Phi label) [anchor=north west, at={([xshift=14pt] Phi.north east)}] {\Large$\Phi$};
+    \node (w) [poly, anchor=north east, at={([yshift=-14pt] Phi label.east |- Qw.south)}] {$w$};
 
     \begin{scope}[on background layer]
-        \node (Lambda block) [fit=(Lambda) (Qu) (u), inner sep=10pt, element] {};
-        \node (Theta block)  [fit=(Theta) (Qv) (v), inner sep=10pt, element] {};
-        \node (Phi block)    [fit=(Phi) (Qw) (w), inner sep=10pt, element] {};
+        \node (Lambda block) [fit=(Lambda) (Qu) (u) (Lambda label), inner sep=10pt, element] {};
+        \node (Theta block)  [fit=(Theta) (Qv) (v) (Theta label), inner sep=10pt, element] {};
+        \node (Phi block)    [fit=(Phi) (Qw) (w) (Phi label), inner sep=10pt, element] {};
         \node (product ring) [ring, fill=none,
                               fit=(Lambda block) (Theta block) (Phi block), inner sep=12pt] {};
     \end{scope}
 
     % ---- the product, which is the element expected to solve the PDE ----
-    \node (Psi) [poly2, node distance=20pt, above=of product ring.north] {$\Psi = \Lambda\,\Theta\,\Phi$};
+    \node (Psi) [poly2, node distance=14pt, above=of product ring.north] {$\Psi = \Lambda\,\Theta\,\Phi$};
     \draw[degree] (Psi.south) -- (Psi.south|-product ring.north);
 
     % ---- base ring ----
     \node (base) [ring, text width=200pt,
-                  fit={([yshift=-52pt]product ring.south west) ([yshift=-24pt]product ring.south east)},
+                  fit={([yshift=-46pt]product ring.south west) ([yshift=-18pt]product ring.south east)},
                   inner sep=0pt] {$\mathbb{Q}[x,y,z]\{r\}$};
     \draw[degree] (u.south) -- (u.south|-base.north) node[right,pos=0.7] {1};
     \draw[degree] (v.south) -- (v.south|-base.north) node[right,pos=0.7] {1};
@@ -755,11 +755,12 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE 
 \end{figure}
 
 Figure \ref{separation ansatz figure} models a classical separation of variables.  Three ODE
-elements, each identical to the one in Figure \ref{ansatz 5 figure} but carrying its own
-independent variable, are adjoined to the base ring, and the element expected to solve the PDE is
-their product, written out in place of a single white box and carrying no degree bound because it
-is a fixed monomial with no free coefficients.  All three factors are required to be non-trivial;
-that is what makes this a separation of variables rather than a single ODE element.
+elements, each identical to the one in Figure \ref{ansatz 5 figure} but with its own independent
+variable, are adjoined to the base ring, and the element expected to solve the PDE is their
+product, written out in place of a single white box because it is a fixed monomial with no free
+coefficients.  The three extensions are independent --- no factor's independent variable mentions
+another --- and all three factors must be non-trivial, which is what makes this a separation of
+variables rather than a single ODE element.  The ansatz carries thirty parameters, ten per factor.
 
 \begin{subequations}
 \label{separation ansatz}
@@ -786,9 +787,6 @@ w = w_1 x + w_2 y + w_3 z + w_4 r \label{separation ansatz:w} \\
 r^2 = x^2 + y^2 + z^2
 \end{gather}
 \end{subequations}
-
-The three extensions are independent: no factor's independent variable mentions another.  The
-ansatz carries thirty parameters, ten per factor.
 
 \vfill\eject
 
