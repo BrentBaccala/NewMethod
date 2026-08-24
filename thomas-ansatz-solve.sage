@@ -269,7 +269,15 @@ sys.path.insert(0, os.path.expanduser('~/sage-differential-polynomial/src'))
 import differentialthomas as dt
 from sage_differential_polynomial import _blad
 
+# sys.argv[0] is this script under `sage thomas-ansatz-solve.sage ...`, but it
+# is the sage BINARY under `sage -t thomas-ansatz-solve.sage`: the doctest
+# framework loads the file through sage.repl.load, which sets neither argv[0]
+# nor __file__.  Without the fallback the doctest runner cannot import this
+# script at all -- it dies in the framework with "did not find file
+# .../bin/ansatz-library.sage" before running a single test.
 _HERE = os.path.dirname(os.path.abspath(sys.argv[0])) if sys.argv[0] else '.'
+if not os.path.exists(os.path.join(_HERE, 'ansatz-library.sage')):
+    _HERE = os.getcwd()
 load(os.path.join(_HERE, 'ansatz-library.sage'))
 
 

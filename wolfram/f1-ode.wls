@@ -20,6 +20,12 @@ ClearAll[f1, xi, EE, m, beta1];
    infers it anyway (only f1 is the dependent function), but this states it. *)
 SetAttributes[{EE, m, beta1}, Constant];
 
+(* xi > 0 holds identically: xi = r + z is a parabolic coordinate
+   (NewMethod.tex, eq. above (\ref{f1ode})) and r >= |z|.  It is NOT needed
+   to get the solution -- DSolve returns the identical result with
+   $Assumptions = {} -- it only pins the branch of xi^(m/2) = E^(m Log[xi]/2)
+   and of the 1/Sqrt[xi] in the Whittaker form.  Under xi < 0 those pick up
+   the I Pi branch shift. *)
 $Assumptions = {EE \[Element] Reals, beta1 \[Element] Reals,
                 m \[Element] Integers, xi > 0};
 
