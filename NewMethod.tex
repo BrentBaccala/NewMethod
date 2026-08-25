@@ -769,10 +769,8 @@ The element $\Psi$ is expected to solve the PDE, and we use it to write the PDE 
 Figure \ref{separation ansatz figure} models a classical separation of variables.  Three ODE
 elements, each identical to the one in Figure \ref{ansatz 5 figure} but with its own independent
 variable, are adjoined to the base ring, and the element expected to solve the PDE is their
-product, written out in place of a single white box because it is a fixed monomial with no free
-coefficients.  The three extensions are independent --- no factor's independent variable mentions
-another --- and all three factors must be non-trivial, which is what makes this a separation of
-variables rather than a single ODE element.  The ansatz carries thirty parameters, ten per factor.
+product.
+The ansatz carries thirty parameters, ten per factor.
 
 \begin{subequations}
 \label{separation ansatz}
@@ -889,25 +887,28 @@ We don't write the PDE explicitly here because the ans\"atze can be applied to m
     \begin{scope}[on background layer]
         \node (Psi block)[fit=(Psi) (Qv) (v), inner sep=10pt, element] {};
     \end{scope}
-    \node (alg ext) [poly, node distance=150pt, below=of Psi.east, anchor=east, text width=100pt] {$\framebox(10,10){}\tikzmark{a}\,\gamma^2 + \framebox(10,10){}\tikzmark{b}\,\gamma + \coeff\tikzmark{c}$};
+    \node (alg ext) [poly, node distance=120pt, below=of Psi.east, text width=200pt] {$\framebox(10,10){}\tikzmark{a'}\,\gamma^5 + \framebox(10,10){}\tikzmark{b'}\,\gamma^4 + \framebox(10,10){}\tikzmark{c'}\,\gamma^3 + \framebox(10,10){}\tikzmark{d'}\,\gamma^2 + \framebox(10,10){}\tikzmark{e'}\,\gamma + \coeff\tikzmark{f'}$};
     \begin{scope}[on background layer]
-        \node (alg ext element) [algebraic, fit=(alg ext) (Psi label.east|-alg ext.north), inner sep=10pt] {};
+        \node (alg ext element) [algebraic, fit=(alg ext), inner sep=10pt] {};
         \node (alg ext title) [node distance=20pt, above=of alg ext element.north, anchor=center, text centered, text width=250pt] {$\mathbb{Q}[x,y,z]\{r,\gamma\}$};
         \node (alg ext field) [ring, fill=none, fit=(alg ext title) (alg ext element), node distance=70pt, text width=250pt] {};
     \end{scope}
     \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {1};
     \node (base) [dring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
-    \draw[degree] (a.west) -- (a.west|-base.north) node[right,pos=0.8] {1};
-    \draw[degree] (b.west) -- (b.west|-base.north) node[right,pos=0.8] {1};
-    \draw[degree] (c.west) -- (c.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (a'.west) -- (a'.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (b'.west) -- (b'.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (c'.west) -- (c'.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (d'.west) -- (d'.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (e'.west) -- (e'.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (f'.west) -- (f'.west|-base.north) node[right,pos=0.8] {1};
   \end{tikzpicture}
 \end{minipage}%
 }
-\caption{An ansatz for a second-order linear homogenous ODE with first degree coefficients and first degree independent variable, and an algebraic extension used in the formation of the independent variable}
+\caption{An ansatz for an ODE extension nested over an algebraic extension}
 \label{ansatz 11 figure}
 \end{figure}
 
-Figure \ref{ansatz 11 figure}'s ansatz shows how a second-degree algebraic extension with first-degree coefficients
+Figure \ref{ansatz 11 figure}'s ansatz shows how an algebraic extension with first-degree coefficients
 can be used in the formation of the distinguished variable, in addition to the pre-defined algebraic extension $r$.
 
 \begin{subequations}
@@ -921,10 +922,13 @@ can be used in the formation of the distinguished variable, in addition to the p
 \Psi'_z = \Psi'' v_z \stepcounter{equation}\stepcounter{equation}\stepcounter{equation}\tag{\arabic{parentequation}d,e,f} \\
 (a_0 + a_1 v) \Psi'' + (b_0 + b_1 v) \Psi' + (c_0 + c_1 v) \Psi = 0 \label{ansatz 11 plus:1} \\
 v = (v_1 x + v_2 y + v_3 z + v_4 r + v_5 \gamma) \label{ansatz 11 plus:2} \\
-g_0 = (g_{00} x + g_{01} y + g_{02} z + g_{03} r) \\
-g_1 = (g_{10} x + g_{11} y + g_{12} z + g_{13} r) \\
-g_2 = (g_{20} x + g_{21} y + g_{22} z + g_{23} r) \\
-g_0 \gamma^2 + g_1 \gamma + g_2 = 0 \\
+g_0 = (g_{00} x + g_{01} y + g_{02} z + g_{03} r + g_{04}) \\
+g_1 = (g_{10} x + g_{11} y + g_{12} z + g_{13} r + g_{14}) \\
+g_2 = (g_{20} x + g_{21} y + g_{22} z + g_{23} r + g_{24}) \\
+g_3 = (g_{30} x + g_{31} y + g_{32} z + g_{33} r + g_{34}) \\
+g_4 = (g_{40} x + g_{41} y + g_{42} z + g_{43} r + g_{44}) \\
+g_5 = (g_{50} x + g_{51} y + g_{52} z + g_{53} r + g_{54}) \\
+g_0 \gamma^5 + g_1 \gamma^4 + g_2 \gamma^3 + g_3 \gamma^2 + g_4 \gamma + g_5 = 0 \\
 r^2 - (x^2 + y^2 + z^2)
 \end{gather}
 \end{subequations}
