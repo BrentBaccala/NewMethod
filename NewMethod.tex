@@ -895,12 +895,12 @@ We don't write the PDE explicitly here because the ans\"atze can be applied to m
     \end{scope}
     \draw[degree] (v.south) -- (v.south|-alg ext field.north) node[right,pos=0.7] {1};
     \node (base) [dring, below=of alg ext field.south east, anchor=east, text width=250pt] {$\mathbb{Q}[x,y,z]\{r\}$};
-    \draw[degree] (a'.west) -- (a'.west|-base.north) node[right,pos=0.8] {1};
-    \draw[degree] (b'.west) -- (b'.west|-base.north) node[right,pos=0.8] {1};
-    \draw[degree] (c'.west) -- (c'.west|-base.north) node[right,pos=0.8] {1};
-    \draw[degree] (d'.west) -- (d'.west|-base.north) node[right,pos=0.8] {1};
-    \draw[degree] (e'.west) -- (e'.west|-base.north) node[right,pos=0.8] {1};
-    \draw[degree] (f'.west) -- (f'.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (a'.west|-alg ext.base) -- (a'.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (b'.west|-alg ext.base) -- (b'.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (c'.west|-alg ext.base) -- (c'.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (d'.west|-alg ext.base) -- (d'.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (e'.west|-alg ext.base) -- (e'.west|-base.north) node[right,pos=0.8] {1};
+    \draw[degree] (f'.west|-alg ext.base) -- (f'.west|-base.north) node[right,pos=0.8] {1};
   \end{tikzpicture}
 \end{minipage}%
 }
