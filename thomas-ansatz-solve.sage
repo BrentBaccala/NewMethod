@@ -2041,6 +2041,95 @@ def _tidy_cond(g):
     return g
 
 
+def _prune_implied(cell_clause):
+    r"""
+    Drop the conjuncts of one cell's clause list that its other conjuncts imply.
+
+    A coefficient set is read as "these do not all vanish", so a conjunct `S`
+    is redundant the moment something else in the same conjunction already
+    forces one member of `S` to be non-zero.  Two ways that happens, both
+    decided by looking at the conjuncts alone:
+
+    - another conjunct `T` with `T \subsetneq S`.  If not all of `T` vanish
+      then a member of `T` -- hence a member of `S` -- is non-zero.
+    - a member of `S` whose irreducible factors are each asserted non-zero by
+      a singleton conjunct, a product of non-zero factors being non-zero.
+      This is what removes the `\left(b_{0}, v_{4} b_{1}\right) \neq 0` that
+      stands next to `v_{4} \neq 0` and `b_{1} \neq 0` in the hydrogen output.
+
+    The two overlap but neither contains the other, and on the hydrogen ansatz
+    the first alone already removes that conjunct (`b_0 \neq 0` is a conjunct
+    too, and `\{b_0\} \subsetneq \{b_0, v_4 b_1\}`).
+
+    Both tests are syntactic: they never look at `V(P)`.  A conjunct that is
+    redundant only for algebraic reasons -- implied through the equations of
+    `P`, or through a relation among the members of a set that no factorization
+    exposes -- survives this pass, and removing those would take a saturation
+    test rather than a comparison of conjuncts.
+
+    Conjuncts are examined simplest-first (fewer members, then lower total
+    degree) and judged only against those already kept, so the relation stays
+    a strict order and two conjuncts can never eliminate each other.  The
+    survivors are returned in the caller's original order.
+
+    The first conjunct examined is judged against nothing and so is always
+    kept: a non-empty conjunction stays non-empty, which is what lets
+    :func:`piece_conditions` keep telling "restricted" apart from "the whole of
+    `V(P)`" after the pass.
+
+    INPUT:
+
+    - ``cell_clause`` -- a list of coefficient sets, read as a conjunction
+
+    OUTPUT: the sublist that survives
+
+    EXAMPLES::
+
+        sage: R4.<u,v,w> = PolynomialRing(QQ)
+        sage: _prune_implied([(u,), (u, v)])            # subset
+        [(u,)]
+        sage: _prune_implied([(u,), (v,), (w, u*v)])    # covered by factors
+        [(u,), (v,)]
+        sage: _prune_implied([(u,), (v,), (u*v,)])
+        [(u,), (v,)]
+
+    Independent conditions are left alone, and so is a set whose members merely
+    share a factor with a singleton::
+
+        sage: _prune_implied([(u,), (v, w)])
+        [(u,), (v, w)]
+        sage: _prune_implied([(u,), (u*v, u*w)])
+        [(u,), (u*v, u*w)]
+    """
+    def _rank(cs):
+        r"""Sort key: fewer members first, then lower degree -- factors before products."""
+        try:
+            deg = sum(g.total_degree() for g in cs)
+        except (AttributeError, TypeError):
+            deg = 0
+        return (len(cs), deg, str(cs))
+
+    def _covered(g, singles):
+        r"""True when every irreducible factor of ``g`` is asserted non-zero."""
+        if g.is_constant():
+            return False                 # constants are handled by the caller
+        try:
+            facs = [_tidy_cond(f) for f, _ in g.factor()]
+        except (ArithmeticError, NotImplementedError, TypeError):
+            return False                 # factorization is an optimization only
+        return bool(facs) and all(f in singles for f in facs)
+
+    kept = []
+    for cs in sorted(cell_clause, key=_rank):
+        singles = set(t[0] for t in kept if len(t) == 1)
+        if any(set(t) < set(cs) for t in kept):
+            continue
+        if any(_covered(g, singles) for g in cs):
+            continue
+        kept.append(cs)
+    return [cs for cs in cell_clause if cs in kept]
+
+
 class EmptyPiece(object):
     r"""
     The distinguished :func:`piece_conditions` result meaning "the piece is empty".
@@ -2122,6 +2211,11 @@ def piece_conditions(P, key):
       so that cell contributes nothing to the piece and its whole disjunct is
       dropped.
 
+    What survives that is then passed through :func:`_prune_implied`, which
+    drops the conjuncts the surviving ones already imply -- the reduction
+    routinely leaves a set condition standing next to the very singleton that
+    makes it vacuous.
+
     Three outcomes, and the caller must tell them apart:
 
     - a non-empty list of clauses -- the piece is `V(P)` cut down by them;
@@ -2172,6 +2266,13 @@ def piece_conditions(P, key):
         sage: piece_conditions(P, prime_key(P)) is None
         True
 
+    A set condition standing next to a singleton that already implies it is
+    dropped, which is :func:`_prune_implied`'s job::
+
+        sage: piece_excl[prime_key(P)] = [(7, ((v,), (v, v^2 + v)))]
+        sage: piece_conditions(P, prime_key(P))
+        [(7, [(v,)])]
+
     One cell vanishing does not empty the piece if another still restricts it
     -- the piece is the UNION over contributing cells::
 
@@ -2204,7 +2305,7 @@ def piece_conditions(P, key):
             continue
         if not cell_clause:
             return None                  # every clause vacuous: piece is V(P)
-        clauses.append((num, cell_clause))
+        clauses.append((num, _prune_implied(cell_clause)))
     if clauses:
         return clauses
     # No cell contributed a disjunct, and none of them returned early, so every
@@ -2764,10 +2865,13 @@ def latex_union(d, label='ideal'):
     r"""
     Print a bucket of solution varieties as a LaTeX ``subequations`` block.
 
-    Each prime becomes one ``align`` row, ``& \left(g_1, \ldots, g_k\right)``
-    followed by ``\label{<label>:N}``, numbered ``1..n`` in the same order
-    :func:`dump_union` prints them.  Coefficients are cleared of denominators
-    by :func:`clear_denominators`.
+    Each prime becomes one ``align`` row, ``& \left(g_1, \ldots, g_k\right)``,
+    numbered ``1..n`` in the same order :func:`dump_union` prints them.  A
+    restricted piece adds an unnumbered continuation line carrying its
+    non-vanishing conditions (``\qquad\text{with}\quad ...``), and it is that
+    line that holds ``\label{<label>:N}`` -- with the row's own number already
+    emitted above it, the label still resolves to the equation.  Coefficients
+    are cleared of denominators by :func:`clear_denominators`.
 
     INPUT:
 
@@ -2799,7 +2903,8 @@ def latex_union(d, label='ideal'):
         \begin{subequations}
         \label{ex}
         \begin{align}
-        & \left(u\right) \quad\text{with}\quad v \neq 0\label{ex:1}
+        & \left(u\right) \\
+        & \qquad\text{with}\quad v \neq 0\label{ex:1} \nonumber
         \end{align}
         \end{subequations}
         sage: piece_excl.clear()
@@ -2810,7 +2915,7 @@ def latex_union(d, label='ideal'):
         gens = ", ".join(latex(clear_denominators(g)) for g in P.gens())
         # The (p, hfrak) pair, not p alone -- see the comment in dump_union.
         conds = piece_conditions(P, key)
-        tail = ""
+        disj = ""
         if conds and not isinstance(conds, EmptyPiece):
             def _one(cs):
                 r"""Render one coefficient set as a LaTeX non-vanishing condition."""
@@ -2821,8 +2926,15 @@ def latex_union(d, label='ideal'):
             disj = r" \;\text{ or }\; ".join(
                 r" ,\; ".join(_one(cs) for cs in cell_clause)
                 for _num, cell_clause in conds)
-            tail = r" \quad\text{with}\quad %s" % disj
-        rows.append(r"& \left(%s\right)%s\label{%s:%d}" % (gens, tail, label, i))
+        if disj:
+            # The conditions get their own line, unnumbered: the generators
+            # keep the row number, `\nonumber` suppresses the continuation's,
+            # and `\label` there still resolves to the number just emitted.
+            rows.append("& \\left(%s\\right) \\\\\n"
+                        "& \\qquad\\text{with}\\quad %s\\label{%s:%d} \\nonumber"
+                        % (gens, disj, label, i))
+        else:
+            rows.append(r"& \left(%s\right)\label{%s:%d}" % (gens, label, i))
     print(r"\begin{subequations}")
     print(r"\label{%s}" % label)
     print(r"\begin{align}")
