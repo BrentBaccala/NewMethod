@@ -2283,8 +2283,6 @@ The script that used these packages to perform the calculations in this paper is
 and the two libraries described above.
 
 
-
-
 %%\section*{An Example: The New Solution of Hydrogen}
 %%\section{Example: A New Pseudo-Solution of Hydrogen}
 \vfill\eject
@@ -2336,13 +2334,12 @@ with $\Delta = \{\delta_x, \delta_y, \delta_z\}$.  To elaborate,
    they are tied to $\Psi$ by the chain-rule equations of the ansatz, and $r$
    likewise carries $r^2 - x^2 - y^2 - z^2$ in the system rather than as a
    quotient of the ring;
-   \item the ranking is specified below.
 \end{itemize}
 
 % \subsection{Ansatz}
 
 We'll use the first ansatz from section \ref{sec:Ansatze},
-a second order ODE with first degree coefficients and a first degree independent variable.
+a second order ODE with first degree coefficients and a first degree independent variable
 (Figure \ref{ansatz 5 figure}).
 
 To equations \eqref{ansatz 5b}, \eqref{ansatz 5c} and \eqref{ansatz 5a} we append
@@ -2436,26 +2433,68 @@ for PDE \eqref{schrodinger hydrogen 2}:
 \begin{subequations}
 \label{ideal}
 \begin{align}
-& \left(v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, -v_{4}^{2} c_{1} + E b_{0}, b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}\right)\label{ideal:1} \\
-& \left(v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}, c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E\right)\label{ideal:2} \\
-& \left(-b_{1} c_{0} + b_{0} c_{1}, v_{4} c_{1} - b_{1}, v_{4} c_{0} - b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right)\label{ideal:3} \\
-& \left(c_{0}^{2} + 4 b_{0} c_{1}, 4 v_{4} c_{1} + c_{0}, v_{4} c_{0} - b_{0}, 2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right)\label{ideal:4}
+& \left(-b_{1} c_{0} + b_{0} c_{1}, v_{4} c_{1} - b_{1}, v_{4} c_{0} - b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right)\label{ideal:1s} \\
+& \left(c_{0}^{2} + 4 b_{0} c_{1}, 4 v_{4} c_{1} + c_{0}, v_{4} c_{0} - b_{0}, 2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right)\label{ideal:2s} \\
+& \left(v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, -v_{4}^{2} c_{1} + E b_{0}, b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}\right)\label{ideal:classical} \\
+& \left(v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}, c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E\right)\label{ideal:parabolic}
+\end{align}
+\end{subequations}
+
+\begin{subequations}
+\label{ideal}
+\begin{align}
+& \left(-b_{1} c_{0} + b_{0} c_{1}, v_{4} c_{1} - b_{1}, v_{4} c_{0} - b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \\
+& \qquad\text{with}\quad v_{4} \neq 0 ,\; b_{1} \neq 0 ,\; \left(b_{0}, v_{4} b_{1}\right) \neq 0 ,\; b_{0} \neq 0\label{ideal:1} \nonumber \\
+& \left(v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, -v_{4}^{2} c_{1} + E b_{0}, b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}\right) \\
+& \qquad\text{with}\quad b_{0} \neq 0 ,\; v_{4} \neq 0\label{ideal:2} \nonumber \\
+& \left(c_{0}^{2} + 4 b_{0} c_{1}, 4 v_{4} c_{1} + c_{0}, v_{4} c_{0} - b_{0}, 2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right) \\
+& \qquad\text{with}\quad v_{4} \neq 0 ,\; c_{0} \neq 0 ,\; b_{0} \neq 0\label{ideal:3} \\
+& \left(v_{4} c_{1} - b_{1}, c_{0}, b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \\
+& \qquad\text{with}\quad v_{4} \neq 0 ,\; b_{1} \neq 0\label{ideal:4} \nonumber \\
+& \left(v_{4} c_{0} - b_{0}, c_{1}, b_{1}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \\
+& \qquad\text{with}\quad v_{4} \neq 0 ,\; b_{0} \neq 0\label{ideal:5} \nonumber \\
+& \left(v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}, c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E\right) \\
+& \qquad\text{with}\quad b_{0} \neq 0 ,\; v_{4} \neq 0 ,\; \left(v_{1} v_{2}, v_{1} v_{3}, v_{2} v_{3}, v_{2}^{2} + v_{3}^{2}, v_{2}^{2} - v_{4}^{2}, v_{3}^{2} - v_{4}^{2}\right) \neq 0\label{ideal:6} \nonumber
 \end{align}
 \end{subequations}
 
 In brief,
 
 \begin{itemize}
-\item[\eqref{ideal:1}] corresponds to the classical radial solutions,
-\item[\eqref{ideal:2}] is a solution in parabolic coordinates,
-\item[\eqref{ideal:3}] is a first-order solution for the 1s shell, and
-\item[\eqref{ideal:4}] is a first-order solution for the 2s shell.
+\item[\eqref{ideal:1s}] is a first-order solution for the 1s shell, and
+\item[\eqref{ideal:2s}] is a first-order solution for the 2s shell.
+\item[\eqref{ideal:classical}] corresponds to the classical radial solutions,
+\item[\eqref{ideal:parabolic}] is a solution in parabolic coordinates,
 \end{itemize}
 
-As an example, let's analyze ideal \eqref{ideal:1}.
+We analyze these varieties by treating their generators as a system of equations, all set equal to zero.
+
+Starting with ideals \eqref{ideal:1s} and \eqref{ideal:2s}, we see that these are first-order solutions because
+both $a_0$ and $a_1$ appear in the list of generators, and are therefore set to zero.  These ideals were not computed from the generic cell;
+they required a differential Thomas decomposition.  There are several scaling operations that don't fundamentally alter
+the result; since $v_4 \ne 0$ it can be set to one to normalize the variable.
+
+The remaining ideals are first order ODEs and can be analyzed in a similar fashion, yielding the following solutions:
+
+\begin{center}
+$ \left(-b_{1} c_{0} + b_{0} c_{1}, v_{4} c_{1} - b_{1}, v_{4} c_{0} - b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) $
+
+$ E = -\frac{1}{2} \qquad v=r \qquad \Psi' + \Psi = 0 $
+
+$ \Psi = e^{-r} $
+
+$\left(c_{0}^{2} + 4 b_{0} c_{1}, 4 v_{4} c_{1} + c_{0}, v_{4} c_{0} - b_{0}, 2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right)$
+
+$ E = -\frac{1}{8} \qquad v=r \qquad (1 - \frac{1}{2} v) \Psi' + (1 - \frac{1}{4} v) \Psi = 0$
+
+$\Psi = (2-r)e^{-r/2}$
+
+\end{center}
+
+As an example, let's analyze ideal \eqref{ideal:classical}.
 $a_0=0$, and we can always multiply our homogenous differential polynomial by a constant without affecting our result, so we can set $a_1=1$.
 Likewise, we can multiply our variable $v$ by a constant and that will only change our coefficients by constants,
-and $v_1=v_2=v_3=0$, so we can normalize by setting $v_4=1$.  This immediately implies that $b_0 = c_0 = 2$ and simplifies ideal \eqref{ideal:1} to:
+and $v_1=v_2=v_3=0$, so we can normalize by setting $v_4=1$.  This immediately implies that $b_0 = c_0 = 2$ and simplifies ideal \eqref{ideal:classical} to:
 
 \begin{equation}
 \left(v_{3}, v_{2}, v_{1}, v_{4} - 1, c_{0} - 2, 2 E - c_{1}, b_{1}, 2 - b_{0}, a_{1} - 1, a_{0}\right)
@@ -2485,11 +2524,11 @@ expand out the derivative to obtain \eqref{classical eq in ideal}.
 % This solution has been
 % known for a hundred years; its presence here was expected and won't be commented on further.
 
-Ideal \eqref{ideal:2} is the most unusual of the four.
+Ideal \eqref{ideal:parabolic} is the most unusual of the four.
 $a_0=0$ and we can set $a_1=1$, by the same logic as above.
 If we limit our $v_i$ coefficients to be real, all of their squares must
 be positive, and since $v_1^2+v_2^2+v_3^3-v_4^2=0$, $v_4$ must be non-zero.  So we can normalize by setting $v_4=1$.
-Substituting in these values, we find ideal generators that imply $b_0=1$ and simplify \eqref{ideal:2} to this ideal:
+Substituting in these values, we find ideal generators that imply $b_0=1$ and simplify \eqref{ideal:parabolic} to this ideal:
 
 \begin{equation}
 \left(v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - 1, v_{4} - 1, c_{0} - 1, c_{1}, b_{1}, 1 - b_{0}, a_1 - 1, a_{0}, E\right)
@@ -2570,42 +2609,12 @@ gives \eqref{eq:Bessel solution ODE}.
 Landau and Lifshitz (\cite{LandauLifshitz} eq 37.8) derive essentially the same result.
 So, \eqref{eq:Bessel solution ODE} can hardly be called novel --- it's a special
 case of a result that's been known for a hundred years.
-
-However, it is notable that the solution method described in this paper finds both
-\eqref{classical eq in ideal} and \eqref{eq:Bessel solution ODE} without needing
-the coordinate system to be specified in advance.
-
 That the hydrogen atom separates in {\it both} systems is the signature
 of its symmetry: the problem conserves both the angular momentum $\mathbf{L}$
 and the Laplace--Runge--Lenz vector $\mathbf{A}$
 (\cite{BanderItzykson} (3)).
 
-
-
-%% REMAINING IDEALS
-
-The remaining ideals are first order ODEs and can be analyzed in a similar fashion, yielding the following solutions:
-
-\begin{center}
-$ \left(-b_{1} c_{0} + b_{0} c_{1}, v_{4} c_{1} - b_{1}, v_{4} c_{0} - b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) $
-
-$ E = -\frac{1}{2} \qquad v=r \qquad \Psi' + \Psi = 0 $
-
-$ \Psi = e^{-r} $
-
-$\left(c_{0}^{2} + 4 b_{0} c_{1}, 4 v_{4} c_{1} + c_{0}, v_{4} c_{0} - b_{0}, 2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right)$
-
-$ E = -\frac{1}{8} \qquad v=r \qquad (1 - \frac{1}{2} v) \Psi' + (1 - \frac{1}{4} v) \Psi = 0$
-
-$\Psi = (2-r)e^{-r/2}$
-
-\end{center}
-
-% In[2]:= DSolve[(-1/2*x+1)*y'[x] + (-1/4*x+1)*y[x] == 0, y[x], x]
-%                    (-x + 2 Log[-2 + x])/2
-% Out[2]= {{y[x] -> E                       C[1]}}
-
-In short, the algorithm presented in section \ref{sec:Solution Algorithm} finds solutions expressed
+In summary, the solution method presented in this paper finds solutions expressed
 in both first and second order differential equations, in both spherical and parabolic coordinates,
 without requiring the coordinate system to be specified in advance.
 
@@ -3309,7 +3318,7 @@ In short, the differential algebra techniques used to analyze integrals and line
 to handling PDEs, and no theory is available at this time to guide the selection of an ansatz.
 The ansatz used for the hydrogen example
 was an educated guess.  It was designed to be general enough to find the existing
-classical solution, and so to be used for testing the software.  The appearance of \eqref{ideal:2}
+classical solution, and so to be used for testing the software.  The appearance of \eqref{ideal:parabolic}
 was not anticipated, as the solutions was previously unknown,
 and serves to illustrate the mysterious nature of these ans\"atze.
 
