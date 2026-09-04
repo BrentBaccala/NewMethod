@@ -4938,29 +4938,123 @@ def comprehensive(union_primes, title):
     out = []
     for l, (a, b) in enumerate(levels):
         comps = prep(a, b)
-        out.append(comps)
+        lvl = []
         print("\n  Level %d  (dim %d):" % (2 * l + 1, a.dimension()))
         for top, holes in comps:
+            compact = None
+            if holes:
+                hb = holes[0]
+                for h in holes[1:]:
+                    hb = hb.intersection(h)
+                g = principal_hole(top, hb, atoms)
+                if g is not None:
+                    compact = [_tidy_cond(x) for x in g]
+            lvl.append((top, holes, compact))
             print("     V: %s" % fmt_ideal(top))
-            for h in holes:
-                print("        minus V: %s" % fmt_ideal(h))
-            if not holes:
-                continue
-            hb = holes[0]
-            for h in holes[1:]:
-                hb = hb.intersection(h)
-            g = principal_hole(top, hb, atoms)
-            if g is None:
-                print("        (no compact hole in <= %d generator(s); the %d "
-                      "prime hole(s) above are the report)"
-                      % (max(1, top.dimension() - hb.dimension()), len(holes)))
-            elif len(g) == 1:
-                print("        where %s != 0" % _tidy_cond(g[0]))
+            if compact is not None:
+                # The compact hole represents the SAME set: V(top) \ V(compact)
+                # = V(top) \ V(holes), which principal_hole verified.  It is
+                # not the canonical Prep -- that is the prime holes -- so the
+                # canonicity claim attaches to the tops and the levels, the
+                # hole being reported by a chosen minimal representative.
+                print("        minus V: Ideal (%s)"
+                      % ", ".join(str(x) for x in compact))
             else:
-                print("        where (%s) not all 0"
-                      % ", ".join(str(_tidy_cond(x)) for x in g))
+                for h in holes:
+                    print("        minus V: %s" % fmt_ideal(h))
+                if holes:
+                    print("        (no compact hole in <= %d generator(s); the "
+                          "canonical prime hole(s) above are the report)"
+                          % max(1, top.dimension() - hb.dimension()))
+        out.append(lvl)
     return out
 
+
+def latex_levels(levels, label='ideal'):
+    r"""
+    Print the Comprehensive algorithms' canonical levels as a LaTeX block.
+
+    The counterpart of :func:`latex_union` for the output of
+    :func:`comprehensive`.  Where ``latex_union`` renders the Basic
+    algorithm's bucket -- one row per prime, conditions read off
+    :data:`piece_excl` -- this renders the canonical levels: one row per
+    P-representation component, its hole rendered from the compact
+    representative when one was found and from the canonical prime holes
+    when it was not.
+
+    Rows are numbered straight through, across levels, so ``\ref`` targets
+    do not shift when a level gains or loses a component.  When there is
+    more than one level, each is announced by a LaTeX comment; a single
+    level (the locally closed case) is not, there being nothing to
+    distinguish.
+
+    INPUT:
+
+    - ``levels`` -- the return value of :func:`comprehensive`: a list of
+      levels, each a list of ``(top, holes, compact)`` triples
+
+    - ``label`` -- string (default: ``'ideal'``); the ``\label`` prefix
+
+    OUTPUT: ``None`` (the block is printed)
+
+    EXAMPLES::
+
+        sage: R4.<u,v> = PolynomialRing(QQ)
+        sage: latex_levels([[(R4.ideal(u), [], None)]], label='ex')
+        \begin{subequations}
+        \label{ex}
+        \begin{align}
+        & \left(u\right)\label{ex:1}
+        \end{align}
+        \end{subequations}
+
+    A component with a compact hole carries it as a non-vanishing condition::
+
+        sage: latex_levels([[(R4.ideal(u), [R4.ideal(u, v)], [v])]], label='ex')
+        \begin{subequations}
+        \label{ex}
+        \begin{align}
+        & \left(u\right) \\
+        & \qquad\text{with}\quad v \neq 0\label{ex:1} \nonumber
+        \end{align}
+        \end{subequations}
+    """
+    rows = []
+    i = 0
+    for l, comps in enumerate(levels):
+        if len(levels) > 1:
+            rows.append("%% Level %d" % (2 * l + 1))
+        for top, holes, compact in comps:
+            i += 1
+            gens = ", ".join(latex(clear_denominators(g)) for g in top.gens())
+            if compact is not None and compact:
+                if len(compact) == 1:
+                    disj = r"%s \neq 0" % latex(clear_denominators(compact[0]))
+                else:
+                    disj = (r"\left(%s\right) \neq 0"
+                            % ", ".join(latex(clear_denominators(g))
+                                        for g in compact))
+            elif holes:
+                # No compact representative: say the point is on none of the
+                # canonical prime holes, one conjunct per hole.
+                disj = r" ,\; ".join(
+                    r"\left(%s\right) \neq 0"
+                    % ", ".join(latex(clear_denominators(g)) for g in h.gens())
+                    for h in holes)
+            else:
+                disj = ""
+            if disj:
+                rows.append("& \\left(%s\\right) \\\\\n"
+                            "& \\qquad\\text{with}\\quad %s\\label{%s:%d} \\nonumber"
+                            % (gens, disj, label, i))
+            else:
+                rows.append(r"& \left(%s\right)\label{%s:%d}" % (gens, label, i))
+    print(r"\begin{subequations}")
+    print(r"\label{%s}" % label)
+    print(r"\begin{align}")
+    print(" \\\\\n".join(rows))
+    print(r"\end{align}")
+    print(r"\end{subequations}")
 
 def main():
     r"""
@@ -5010,13 +5104,20 @@ def main():
                        'membership': membership_locus,
                        'intermediate': intermediate_locus}[LOCUS](cells_ds)
 
+    levels = None
     if COMPREHENSIVE:
-        comprehensive(solution_primes,
-                      {'consistency': 'V_exists',
-                       'membership': 'V_forall',
-                       'intermediate': 'V_{exists-forall}'}[LOCUS])
+        levels = comprehensive(solution_primes,
+                               {'consistency': 'V_exists',
+                                'membership': 'V_forall',
+                                'intermediate': 'V_{exists-forall}'}[LOCUS])
 
-    if LATEX_OUT and solution_primes:
+    if LATEX_OUT and levels:
+        # --comprehensive computed a canonical form; that, not the Basic
+        # algorithm's bucket, is what the paper should carry.
+        print("\n" + "-" * 72)
+        print("Canonical levels, LaTeX (paper) form:\n")
+        latex_levels(levels)
+    elif LATEX_OUT and solution_primes:
         print("\n" + "-" * 72)
         print("Solution varieties, LaTeX (paper) form:\n")
         latex_union(solution_primes)
