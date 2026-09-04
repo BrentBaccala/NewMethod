@@ -1795,7 +1795,8 @@ in a manner that is usually (and hopefully) straightforward to understand.
 
 Computing a P-representation can be computationally demanding.  For instance, the
 first step in \cite{BrunatMontes}'s {\tt ConsLevels} is to enumerate over the
-power set of the input union.
+power set of the input union, so even a simple optimization like discarding
+the ideals corresponding to empty sets can be helpful.
 
 {\bf Comprehensive Algorithm:}
 \begin{pseudocode}
@@ -1805,10 +1806,9 @@ power set of the input union.
 \item \algind $h_i \leftarrow \prod \bigl( S^{\ne}_i \cap \mathbb{Q}[c_1, \ldots, c_n] \bigr)$
 %% \item \algind $W_i \leftarrow \bigl\{\, (\mathfrak{p}, \langle h_i \rangle) \;:\; \mathfrak{p} \in \mathrm{minAss}\bigl( \langle E_i \rangle : h_i^\infty \bigr) \,\bigr\}$
 \item \algind $\mathfrak{a}_i \leftarrow \sqrt{\langle E_i \rangle : h_i^\infty}$
-\item \algind $\mathfrak{b}_i \leftarrow \sqrt{\langle \{ h_i \} \rangle + \alpha}$
-\item \algind $W_i \leftarrow (\mathfrak{a}_i, \mathfrak{b}_i)$
+\item \algind $\mathfrak{b}_i \leftarrow \sqrt{\mathfrak{a}_i + \langle \{ h_i \} \rangle}$
 \item {\bf end for}
-\item $L \leftarrow \mathrm{ConsLevels}(\{W_i\})$
+\item $L \leftarrow \mathrm{ConsLevels}(\{(\mathfrak{a}_i, \mathfrak{b}_i) : \mathfrak{a}_i \ne (1) \})$
 \item {\bf return} $\{ \mathrm{Prep}(L_i) : L_i \in L \}$
 \end{pseudocode}
 \end{algorithm}
