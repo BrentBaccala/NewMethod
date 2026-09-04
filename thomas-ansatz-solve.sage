@@ -246,6 +246,11 @@ Output
   --conslevels-max N refuse --comprehensive above N pieces (default 8, 0 to
                      disable).  ConsLevels enumerates the power set of its
                      input, so the piece count is the binding cost.
+                     Each level's holes are also reported compactly: the
+                     canonical prime holes carry all of their top's generators,
+                     so a compact equivalent -- often a single polynomial -- is
+                     searched for among the original inequations' factors and
+                     printed as a `where ... != 0' condition.
   --latex            re-print the union as a LaTeX subequations block in the
                      form the paper uses, denominators cleared.
   --cells-out PATH   write the raw cells to PATH.  Omitted, no cells file is
@@ -4677,6 +4682,171 @@ def prep(a, b):
     return out
 
 
+def hole_atoms(pairs):
+    r"""
+    The irreducible factors of the Basic algorithm's own hole ideals.
+
+    This is the search space :func:`principal_hole` works in, and it is small
+    and structured rather than arbitrary.  ``FirstLevel`` builds every
+    candidate hole as `P = \sum_{j \in T} \mathfrak{b}_j` from the INPUT holes,
+    and those are the `h_i` -- each a product of one cell's constant
+    inequations.  So the locus every level removes lies inside a union of the
+    original inequation hypersurfaces, and a compact generator for it is a
+    product of their irreducible factors.
+
+    INPUT:
+
+    - ``pairs`` -- the ``(a, b)`` pairs handed to :func:`cons_levels`
+
+    OUTPUT:
+
+    the distinct irreducible factors, simplest first (by degree, then length)
+
+    EXAMPLES::
+
+        sage: R4.<u,v> = PolynomialRing(QQ)
+        sage: [str(f) for f in hole_atoms([(R4.ideal(R4.zero()), R4.ideal(u*v)),
+        ....:                              (R4.ideal(R4.zero()), R4.ideal(v))])]
+        ['u', 'v']
+    """
+    atoms, seen = [], set()
+    for _a, b in pairs:
+        for g in b.gens():
+            if g.is_zero() or g.is_unit():
+                continue
+            for f, _m in g.factor():
+                if f.is_unit():
+                    continue
+                if str(f) not in seen:
+                    seen.add(str(f))
+                    atoms.append(f)
+    atoms.sort(key=lambda f: (f.total_degree(), len(str(f)), str(f)))
+    return atoms
+
+
+def _hole_ok(a, b, gens):
+    r"""
+    True when ``gens`` generate a hole equivalent to ``b`` over the top ``a``.
+
+    The test is `\mathfrak{g} \subseteq \mathfrak{b}` together with
+    `(\mathfrak{a} + \mathfrak{g}) : \mathfrak{b}^\infty = (1)`.  The first
+    gives `V(\mathfrak{a} + \mathfrak{g}) \supseteq V(\mathfrak{b})`; the
+    saturation strips the components lying inside `V(\mathfrak{b})`, so a unit
+    result says there are no others -- no residual.  Equivalent to
+    `\sqrt{\mathfrak{a} + \mathfrak{g}} = \mathfrak{b}` and roughly an order of
+    magnitude cheaper, there being no radical to compute.
+
+    INPUT:
+
+    - ``a``, ``b`` -- the top and the hole of one P-representation component,
+      ``b`` radical and containing ``a``
+
+    - ``gens`` -- the candidate generators
+
+    OUTPUT: boolean
+
+    EXAMPLES::
+
+        sage: R4.<u,v> = PolynomialRing(QQ)
+        sage: a, b = R4.ideal(u*v), R4.ideal(u, v)
+        sage: _hole_ok(a, b, [u])           # V(uv) cap V(u) = V(u), not V(u,v)
+        False
+        sage: _hole_ok(R4.ideal(u), R4.ideal(u, v), [v])
+        True
+    """
+    if not gens:
+        return False
+    if not all(g in b for g in gens):
+        return False
+    J = a.ring().ideal(list(gens))
+    return (a + J).saturation(b)[0].is_one()
+
+
+def principal_hole(a, b, atoms, max_atoms=2, max_gens=None, budget=4000):
+    r"""
+    A compact hole equivalent to ``b`` over the top ``a`` -- principal if one exists.
+
+    The represented set `V(\mathfrak{a}) \setminus V(\mathfrak{b})` is unchanged
+    by any `\mathfrak{b}'` with `\sqrt{\mathfrak{a} + \mathfrak{b}'} =
+    \sqrt{\mathfrak{a} + \mathfrak{b}}`, so the hole may be ENLARGED freely as
+    long as the extra points miss the top.  Brunat-Montes take the smallest such
+    ideal, which is what forces every hole to carry the top's generators; this
+    goes the other way and reports the simplest representative instead.
+
+    Whether a PRINCIPAL one exists is not a matter of searching hard enough.
+    By Krull, `V(\mathfrak{a}) \cap V(f)` is pure codimension 1, so a hole whose
+    minimal primes have different dimensions cannot be cut out by any single
+    `f`; two generators then suffice, an ideal of two elements being free to
+    have components of codimension 1 and 2 at once.  Pure codimension 1 is
+    necessary but not sufficient in general -- the obstruction lives in the
+    divisor class group of `R/\mathfrak{a}`, and vanishes when that ring is a
+    UFD -- so a failed search is informative rather than inconclusive.
+
+    INPUT:
+
+    - ``a``, ``b`` -- the top and the hole of one component
+
+    - ``atoms`` -- the search space, from :func:`hole_atoms`
+
+    - ``max_atoms`` -- how many atoms may be multiplied into one candidate.
+      Products only ever help a SINGLE-generator hole, where the removed locus
+      is a union of atom hypersurfaces cut by one equation; a multi-generator
+      search uses the bare atoms, which keeps it from blowing up
+      combinatorially.
+
+    - ``budget`` -- give up after this many candidate tests
+
+    - ``max_gens`` -- how many candidates may generate the hole.  Defaults to
+      the codimension of the removed locus in the top, which is the least a
+      generating set can have (Krull) and enough whenever the locus is a
+      set-theoretic complete intersection.  It is not a bound in general:
+      Eisenbud-Evans gives `\dim V(\mathfrak{a}) + 1`, and raising this is the
+      thing to try when the search exhausts.
+
+    OUTPUT: the generators, simplest first, or ``None`` if the search exhausts
+
+    EXAMPLES::
+
+        sage: R4.<u,v,w> = PolynomialRing(QQ)
+        sage: a = R4.ideal(w)
+        sage: b = (a + R4.ideal(u*v)).radical()
+        sage: [str(f) for f in principal_hole(a, b, [u, v, w])]
+        ['u*v']
+
+    A hole already equal to the top has nothing to report::
+
+        sage: principal_hole(a, R4.ideal(R4.one()), [u, v]) is None
+        True
+    """
+    if b.is_one() or b.is_zero():
+        return None
+    if max_gens is None:
+        max_gens = max(1, a.dimension() - b.dimension())
+    products, seen = [], set()
+    for k in range(1, max_atoms + 1):
+        for S in itertools.combinations(atoms, k):
+            f = S[0]
+            for g in S[1:]:
+                f = f * g
+            if str(f) not in seen:
+                seen.add(str(f))
+                products.append(f)
+    products.sort(key=lambda f: (f.total_degree(), len(str(f)), str(f)))
+    spent = 0
+    for k in range(1, max_gens + 1):
+        # products for the principal case, bare atoms above it: C(105, 4) is
+        # millions of tests where C(14, 4) is a thousand, and a product can
+        # only ever substitute for one generator anyway.
+        pool = products if k == 1 else atoms
+        for S in itertools.combinations(pool, k):
+            spent += 1
+            if spent > budget:
+                return None
+            if _hole_ok(a, b, S):
+                return list(S)
+    return None
+
+
 def comprehensive(union_primes, title):
     r"""
     The canonicalization tail shared by both Comprehensive algorithms.
@@ -4761,6 +4931,10 @@ def comprehensive(union_primes, title):
     print("  ConsLevels %.1fs -> %d level(s)" % (time.time() - _t, len(levels)),
           flush=True)
 
+    atoms = hole_atoms(creps)
+    if atoms:
+        print("  hole atoms: %s" % ", ".join(str(f) for f in atoms))
+
     out = []
     for l, (a, b) in enumerate(levels):
         comps = prep(a, b)
@@ -4770,6 +4944,21 @@ def comprehensive(union_primes, title):
             print("     V: %s" % fmt_ideal(top))
             for h in holes:
                 print("        minus V: %s" % fmt_ideal(h))
+            if not holes:
+                continue
+            hb = holes[0]
+            for h in holes[1:]:
+                hb = hb.intersection(h)
+            g = principal_hole(top, hb, atoms)
+            if g is None:
+                print("        (no compact hole in <= %d generator(s); the %d "
+                      "prime hole(s) above are the report)"
+                      % (max(1, top.dimension() - hb.dimension()), len(holes)))
+            elif len(g) == 1:
+                print("        where %s != 0" % _tidy_cond(g[0]))
+            else:
+                print("        where (%s) not all 0"
+                      % ", ".join(str(_tidy_cond(x)) for x in g))
     return out
 
 
