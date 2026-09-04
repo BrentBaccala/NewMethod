@@ -1735,17 +1735,16 @@ and so as a finite union of locally
 closed sets: $\mathrm{Z}(\mathcal{W}) = V_\exists$, the consistency locus
 $V_\exists = \{\, c^* \in \mathbb{C}^n : 1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty \,\}$.
 
-{\bf Algorithm:}
+{\bf Basic Algorithm:}
 \begin{pseudocode}
 \item $(S_1, \ldots, S_s) \leftarrow \mathrm{DifferentialDecompose}\bigl( (A(c) \cup \mathcal{P}^=, \{Q\}), \, \prec \bigr)$
 \item {\bf for} $i = 1, \ldots, s$ {\bf do}
 \item \algind $E_i \leftarrow S^=_i \cap \mathbb{Q}[c_1, \ldots, c_n]$
-\item \algind $h_i \leftarrow \prod \bigl( S^{\ne}_i \cap \mathbb{Q}[c_1, \ldots, c_n] \bigr)$
+\item \algind $h_i \leftarrow \bigl\{ \prod \bigl( S^{\ne}_i \cap \mathbb{Q}[c_1, \ldots, c_n] \bigr) \bigr\}$
 \item \algind $W_i \leftarrow \bigl\{\, (\langle E_i \rangle, \langle h_i \rangle) \,\bigr\}$
 \item {\bf end for}
 \item {\bf return} $\textstyle\bigcup_{i=1}^{s} W_i$
 \end{pseudocode}
-\end{algorithm}
 
 Each component $S_i$ of the decomposition is, by construction, a
 differentially simple specialization of $A(c) \cup \mathcal{P}^=$ together
@@ -1758,9 +1757,61 @@ the whole specialized system,
 so $c^* \in V_\exists$ exactly when it lies in the cell
 of {\it some} component, and $V_\exists = \bigcup_{i=1}^{s} C_i$.
 
-For simplicity of the presentation, no attempt is made to take radicals of
-the ideals, factor them into prime ideals, or detect duplication between them.
-An actual implementation of these algorithms would likely do all of this.
+In this basic algorithm, no attempt was made to simplify the resulting ideals.
+The output, while correct, is not in its most useful form, in large part because
+the ideals are not necessarily prime.  Factoring them with something like \cite{GTZ}
+produces prime ideals that tend to have far simpler systems of generators,
+and are therefore easier to interpret, but it not obvious how to deal
+with the exclusion ideal of a constructable set.  \cite{BrunatMontes}
+has studied this problem and developed viable algorithms for processing
+constructable sets.
+The current author recomends
+processing the output of algorithm \ref{alg:consistency}
+further to produce \cite{BrunatMontes}'s P-representation of
+a constructable set:
+
+\begin{definition}
+A {\it P-representation} of a constructable set is a list of prime ideals $\mathfrak{p}_i$,
+each with an associated list of prime ideals:
+\[
+\{[\mathfrak{p}_i , \{\mathfrak{p}_{ij}\} ] \}
+\]
+such that
+\[
+S = union (  V(p_i) \ union(V_pij)  )
+\]
+\cite{BrunatMontes} Prop 2.6(iv)
+\end{definition}
+
+A P-representation specifies a constructable set as a union of irreducible varieties, one for each ideal $\mathfrak{p}_i$,
+each one (potentially) having its intersection with a number of irreducible varieties deleted, corresponding
+to the exclusion ideals $\mathfrak{p}_{ij}$.
+This can be presented as a system of equalities, and a list of inequalities.  If an exclusion ideal is not
+primary, and requires multiple generators, then all its exclusion requires is that one of its
+generators is non-zero, so its place in the list of inequalities is a set of polynomials,
+only one of which needs be non-zero.
+This, as we shall see in the examples, generally describes the solution space
+in a manner that is usually (and hopefully) straightforward to understand.
+
+Computing a P-representation can be computationally demanding.  For instance, the
+first step in \cite{BrunatMontes}'s {\tt ConsLevels} is to enumerate over the
+power set of the input union.
+
+{\bf Comprehensive Algorithm:}
+\begin{pseudocode}
+\item $(S_1, \ldots, S_s) \leftarrow \mathrm{DifferentialDecompose}\bigl( (A(c) \cup \mathcal{P}^=, \{Q\}), \, \prec \bigr)$
+\item {\bf for} $i = 1, \ldots, s$ {\bf do}
+\item \algind $E_i \leftarrow S^=_i \cap \mathbb{Q}[c_1, \ldots, c_n]$
+\item \algind $h_i \leftarrow \prod \bigl( S^{\ne}_i \cap \mathbb{Q}[c_1, \ldots, c_n] \bigr)$
+%% \item \algind $W_i \leftarrow \bigl\{\, (\mathfrak{p}, \langle h_i \rangle) \;:\; \mathfrak{p} \in \mathrm{minAss}\bigl( \langle E_i \rangle : h_i^\infty \bigr) \,\bigr\}$
+\item \algind $\mathfrak{a}_i \leftarrow \sqrt{\langle E_i \rangle : h_i^\infty}$
+\item \algind $\mathfrak{b}_i \leftarrow \sqrt{\langle \{ h_i \} \rangle + \alpha}$
+\item \algind $W_i \leftarrow (\mathfrak{a}_i, \mathfrak{b}_i)$
+\item {\bf end for}
+\item $L \leftarrow \mathrm{ConsLevels}(\{W_i\})$
+\item {\bf return} $\{ \mathrm{Prep}(L_i) : L_i \in L \}$
+\end{pseudocode}
+\end{algorithm}
 
 \vfill\eject
 
