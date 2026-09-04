@@ -1830,8 +1830,8 @@ exactly when $\mathfrak{a}_i = (1)$, which the algorithm has already computed.
 \item \algind $\mathfrak{a}_i \leftarrow \sqrt{\langle E_i \rangle : h_i^\infty}$
 \item \algind $\mathfrak{b}_i \leftarrow \sqrt{\mathfrak{a}_i + \langle h_i \rangle}$
 \item {\bf end for}
-\item $(\mathfrak{c}_1, \ldots, \mathfrak{c}_k) \leftarrow \mathrm{ConsLevels}\bigl( \{\, (\mathfrak{a}_i, \mathfrak{b}_i) \;:\; \mathfrak{a}_i \ne (1) \,\} \bigr)$
-\item {\bf return} $\bigcup \bigl\{\, \mathrm{Prep}(\mathfrak{c}_l, \mathfrak{c}_{l+1}) \;:\; l \text{ odd}, \; 1 \le l < k \,\bigr\}$
+\item $L \leftarrow \mathrm{ConsLevels}\bigl( \{\, (\mathfrak{a}_i, \mathfrak{b}_i) \;:\; \mathfrak{a}_i \ne (1) \,\} \bigr)$
+\item {\bf return} $\{\, \mathrm{Prep}(L_l) \;:\; L_l \in L \,\}$
 \end{pseudocode}
 
 Lines 5 and 6 are \cite{BrunatMontes}'s Prop.~2.4: $\mathfrak{a}_i$ is the intersection
@@ -1839,16 +1839,19 @@ of those minimal primes of $\langle E_i \rangle$ on which $h_i$ does not vanish
 identically, so $V(\mathfrak{a}_i)$ is the closure of the cell $C_i$, and
 $[\mathfrak{a}_i, \mathfrak{b}_i]$ is the C-representation of $C_i$.
 
-$\mathrm{ConsLevels}$ returns the ideals of the {\it closures} of the canonical levels,
-a descending chain $V(\mathfrak{c}_1) \supsetneq \cdots \supsetneq V(\mathfrak{c}_k) =
-\emptyset$ of strictly decreasing dimension, whose successive differences alternate
-between $V_\exists$ and its complement in $\overline{V_\exists}$: the odd levels
-$L_l = V(\mathfrak{c}_l) \setminus V(\mathfrak{c}_{l+1})$ are the pieces of
-$V_\exists$, and the even ones belong to $\overline{V_\exists} \setminus V_\exists$.
-Hence $V_\exists = L_1 \uplus L_3 \uplus \cdots$, a {\it disjoint} union, and only the
-odd levels are passed to $\mathrm{Prep}$.  Each level is locally closed, so
-$\mathrm{Prep}$ applies to it; the result is canonical, depending on $V_\exists$ alone
-and not on the differential decomposition that produced it.
+$\mathrm{ConsLevels}$ decomposes $V_\exists$ into its canonical {\it levels}
+$L_1, L_3, \ldots, L_{2\ell \pm 1}$, a sequence of disjoint locally closed sets of
+strictly decreasing dimension with
+\[
+V_\exists \;=\; L_1 \uplus L_3 \uplus \cdots \uplus L_{2\ell \pm 1},
+\]
+returning each as a C-representation.  The even-numbered levels, which decompose the
+complement $\overline{V_\exists} \setminus V_\exists$, are computed along the way and
+discarded.  Because every level is locally closed, $\mathrm{Prep}$ applies to it; and
+because the level decomposition depends only on $V_\exists$, so does the result --- it
+is independent of the differential decomposition that produced it, and of the order in
+which the segments were presented.  This is the sense in which the output is canonical,
+and it is what the Basic Algorithm's output lacks.
 \end{algorithm}
 
 \vfill\eject
@@ -2093,9 +2096,9 @@ $\mathrm{minAss}$
     presented by generating sets; $\mathrm{minAss}((1)) = \emptyset$
   & \cite{GTZ}, Cor.~3.2(v), \S9 \\[3pt]
 $\mathrm{ConsLevels}$
-  & for a constructible set given as a finite union of locally closed sets in
-    C-representation, the ideals of the closures of its canonical levels
-  & \cite{BrunatMontes}, Alg.~4 \\[3pt]
+  & for a constructible set given as a finite set of C-representations of locally
+    closed sets, the C-representations of its canonical levels
+  & \cite{BrunatMontes}, Alg.~3 \\[3pt]
 $\mathrm{Prep}$
   & the canonical P-representation of a locally closed set given by a pair of
     ideals, as tops $\mathfrak{p}_i$ with their holes $\mathfrak{p}_{ij}$
