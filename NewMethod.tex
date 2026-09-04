@@ -1784,33 +1784,49 @@ in which every $\mathfrak{p}_i$ and every $\mathfrak{p}_{ij}$ is prime, such tha
 S \;=\; \bigcup_{i=1}^{r} \Bigl(\, V(\mathfrak{p}_i) \;\setminus\;
         \bigcup_{j=1}^{r_i} V(\mathfrak{p}_{ij}) \,\Bigr).
 \]
+$\mathfrak{p}_i \subsetneq \mathfrak{p}_{ij}$,
+hence $\dim V(\mathfrak{p}_{ij}) < \dim V(\mathfrak{p}_i)$: a hole never
+exhausts the top it is cut from (\cite{BrunatMontes}, Prop.~2.7).
 Following \cite{BrunatMontes}, each pair $[\mathfrak{p}_i, \{\mathfrak{p}_{ij}\}]$ is a
 {\it component} of $S$, of which $V(\mathfrak{p}_i)$ is the {\it top} and the
-$V(\mathfrak{p}_{ij})$ are its {\it holes}.  Writing $[\mathfrak{a}, \mathfrak{b}]$
-for the C-representation of the same set, the two are related by
+$V(\mathfrak{p}_{ij})$ are its {\it holes}.
+
+While the P-representation is the preferred output format, the algorithm in \cite{BrunatMontes}
+is specified using the C-representation, which is a single pair $(\mathfrak{a}, \mathfrak{b})$
+of not necessarily prime ideals representing the same set $S = V(\mathfrak{a}) \setminus V(\mathfrak{b})$
+and respecting certain closure conditions that ensure uniqueness, among other things.
+The two are related by (\cite{BrunatMontes}, Prop.~2.6)
 \[
 \{\mathfrak{p}_i\}_i = \mathrm{minAss}(\mathfrak{a}),
 \qquad
 \{\mathfrak{p}_{ij}\}_j = \mathrm{minAss}(\mathfrak{p}_i + \mathfrak{b}),
 \]
 so that $\mathfrak{a} = \bigcap_i \mathfrak{p}_i$ and
-$\mathfrak{b} = \bigcap_i \bigcap_j \mathfrak{p}_{ij}$.  The P-representation
-depends only on $S$, and satisfies $\mathfrak{p}_i \subsetneq \mathfrak{p}_{ij}$,
-hence $\dim V(\mathfrak{p}_{ij}) < \dim V(\mathfrak{p}_i)$: a hole never
-exhausts the top it is cut from.
-(\cite{BrunatMontes}, Prop.~2.6 and Prop.~2.7.)
+$\mathfrak{b} = \bigcap_i \bigcap_j \mathfrak{p}_{ij}$.  The C-representation
+of a locally closed set given by arbitrary pair of ideals $(\mathfrak{a'}, \mathfrak{b'})$
+can be normalized into a C-representation that respects the closure conditions as follows:
+(\cite{BrunatMontes}, Prop.~2.4)\footnote{\cite{BrunatMontes} doesn't show explicitly
+    that the radical of the saturation is the intersection of primes rrequired by Prop 2.4}
+\[
+\mathfrak{a} = \sqrt{\mathfrak{a}' : \mathfrak{b}'^\infty}
+\qquad
+\mathfrak{b} = \sqrt{\mathfrak{a} + \mathfrak{b}'}
+\]
+
 \end{definition}
 
 A P-representation specifies a constructible set as a union of irreducible varieties, one for each ideal $\mathfrak{p}_i$,
-each one (potentially) having its intersection with a number of irreducible varieties deleted, corresponding
-to the exclusion ideals $\mathfrak{p}_{ij}$.
-This can be presented as a system of equalities, and a list of inequalities.  A hole
-$\mathfrak{p}_{ij}$ is prime, but may nonetheless require several generators; excluding
+each one (potentially) having its intersection with a number of irreducible varieties deleted,
+the holes $\mathfrak{p}_{ij}$.
+This can be presented as a system of equations and inequations.
+As we shall see in the examples, this generally describes the solution space
+in a manner that is usually (and hopefully) straightforward to understand.
+
+A hole
+$\mathfrak{p}_{ij}$ is prime, but may fail to be principal.  If not, then it requires multiple generators; excluding
 $V(\mathfrak{p}_{ij})$ asks only that a point fail to lie on it, that is, that {\it at least
 one} of those generators be non-zero.  Its place in the list of inequalities is therefore a
 {\it set} of polynomials, only one of which need be non-zero.
-This, as we shall see in the examples, generally describes the solution space
-in a manner that is usually (and hopefully) straightforward to understand.
 
 Computing a P-representation can be computationally demanding.  The first step of
 \cite{BrunatMontes}'s {\tt ConsLevels} enumerates the power set of the input union ---
