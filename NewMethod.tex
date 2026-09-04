@@ -2368,6 +2368,23 @@ of Maple's {\tt DifferentialThomas} library, available here:
 
 \centerline{\url{https://github.com/BrentBaccala/DifferentialThomas-sage}}
 
+The constructible-set algorithms of \cite{BrunatMontes} did not need to be ported:
+they are implemented in Singular \cite{DGPS}'s {\tt grobcov.lib}, which ships with
+Sage and is reachable from it through {\tt sage.libs.singular.function}, taking and
+returning Sage ideals directly.  {\tt Crep}, {\tt Prep} and {\tt ConsLevels} are all
+exported.
+
+One caveat for a reader reproducing Algorithm~\ref{alg:consistency} against that
+implementation: its {\tt ConsLevels} does not have the signature of
+\cite{BrunatMontes}'s Algorithm~3, which is the one used here.  Where the paper
+returns the C-representations of the odd levels --- the levels of $S$ itself, the
+alternation having been resolved internally --- the library returns a flat list of
+the ideals of {\it all} the level closures, the even levels included, so that the
+$l$-th level is the pair of consecutive entries $(\mathfrak{c}_l, \mathfrak{c}_{l+1})$
+and only the odd $l$ belong to $S$.  The companion routine {\tt Levels} performs that
+selection and recovers the C-representations that Algorithm~\ref{alg:consistency}
+passes to {\tt Prep}.
+
 % that uses
 % Fran\c{c}ois Boulier's {\tt DifferentialAlgebra} package \cite{DifferentialAlgebra}
 % for its underlying differential algebra operations, as well as for the Ritt reduction of the PDE,
