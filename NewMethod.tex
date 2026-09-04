@@ -1628,7 +1628,17 @@ $\emptyset \subseteq \{1\}$, as it must.
 \subsection{Computing the Consistency Locus}
 \label{sec:consistency-locus}
 
-We now present algorithms to compute the consistency and membership loci.
+We now present algorithms to compute the consistency and membership loci,
+and return them in the form of ideals that define a {\it constructable subset}
+in the constant space.
+
+\begin{definition}[\cite{CTD}, Definition 6]
+A {\it constructible subset} of $\mathbb{C}^n$ is any finite union
+\[
+(A_1 \setminus B_1 ) \cup \ldots \cup (A_e \setminus B_e )
+\]
+where $A_1, \ldots , A_e , B_1 , \ldots , B_e$ are algebraic varieties in $\mathbb{C}^n$.
+\end{definition}
 
 The most straightforward way to compute the consistency locus $V_\exists$ is to proceed
 as its definition suggests: combine the system and the ansatz together as the generators of a singular differential
@@ -1652,14 +1662,6 @@ and testing the target system against each resulting component afterward.
 However, the {\tt DifferentialDecompose} step is more computationally
 demanding, precisely because its input involves more polynomials.
 \end{comment}
-
-\begin{definition}[\cite{CTD}, Definition 6]
-A {\it constructible subset} of $\mathbb{C}^n$ is any finite union
-\[
-(A_1 \setminus B_1 ) \cup \ldots \cup (A_e \setminus B_e )
-\]
-where $A_1, \ldots , A_e , B_1 , \ldots , B_e$ are algebraic varieties in $\mathbb{C}^n$.
-\end{definition}
 
 \begin{definition}
 The {\it cell} of a differentially simple system $(S^=, S^{\ne})$,
@@ -1710,7 +1712,7 @@ ordinary product of polynomials, e.g.\ $h_i$ below.  The empty product is
 $(1)$, so $\mathfrak{a}_1 \cdots \mathfrak{a}_m = (1)$ when $m = 0$, and
 $V((1)) = \emptyset$.
 
-\begin{algorithm}[ConsistencyLocus, Basic]
+\begin{algorithm}[ConsistencyLocus]
 \label{alg:consistency-basic}
 \mbox{}
 
@@ -1759,129 +1761,6 @@ the whole specialized system,
 so $c^* \in V_\exists$ exactly when it lies in the cell
 of {\it some} component, and $V_\exists = \bigcup_{i=1}^{s} C_i$.
 
-In this basic algorithm, no attempt was made to simplify the resulting ideals.
-The output, while correct, is not in its most useful form, in large part because
-the ideals are not necessarily prime.  Factoring them with something like \cite{GTZ}
-produces prime ideals that tend to have far simpler systems of generators,
-and are therefore easier to interpret, but it not obvious how to deal
-with the exclusion ideal of a constructible set.  \cite{BrunatMontes}
-has studied this problem and developed viable algorithms for processing
-constructible sets.
-The current author recomends
-processing the output of Algorithm~\ref{alg:consistency-basic}
-further to produce \cite{BrunatMontes}'s P-representation of
-a constructible set:
-
-\begin{definition}
-A {\it P-representation} of a non-empty locally closed set $S \subseteq \mathbb{C}^n$
-is a finite list of pairs
-\[
-\bigl\{\, \bigl[\, \mathfrak{p}_i \,,\; \{ \mathfrak{p}_{ij} : 1 \le j \le r_i \} \,\bigr]
-   \;:\; 1 \le i \le r \,\bigr\},
-\]
-in which every $\mathfrak{p}_i$ and every $\mathfrak{p}_{ij}$ is prime, such that
-\[
-S \;=\; \bigcup_{i=1}^{r} \Bigl(\, V(\mathfrak{p}_i) \;\setminus\;
-        \bigcup_{j=1}^{r_i} V(\mathfrak{p}_{ij}) \,\Bigr).
-\]
-$\mathfrak{p}_i \subsetneq \mathfrak{p}_{ij}$,
-hence $\dim V(\mathfrak{p}_{ij}) < \dim V(\mathfrak{p}_i)$: a hole never
-exhausts the top it is cut from (\cite{BrunatMontes}, Prop.~2.7).
-Following \cite{BrunatMontes}, each pair $[\mathfrak{p}_i, \{\mathfrak{p}_{ij}\}]$ is a
-{\it component} of $S$, of which $V(\mathfrak{p}_i)$ is the {\it top} and the
-$V(\mathfrak{p}_{ij})$ are its {\it holes}.
-
-While the P-representation is the preferred output format, the algorithm in \cite{BrunatMontes}
-is specified using the C-representation, which is a single pair $(\mathfrak{a}, \mathfrak{b})$
-of not necessarily prime ideals representing the same set $S = V(\mathfrak{a}) \setminus V(\mathfrak{b})$
-and respecting certain closure conditions that ensure uniqueness, among other things.
-The two are related by (\cite{BrunatMontes}, Prop.~2.6)
-\[
-\{\mathfrak{p}_i\}_i = \mathrm{minAss}(\mathfrak{a}),
-\qquad
-\{\mathfrak{p}_{ij}\}_j = \mathrm{minAss}(\mathfrak{p}_i + \mathfrak{b}),
-\]
-so that $\mathfrak{a} = \bigcap_i \mathfrak{p}_i$ and
-$\mathfrak{b} = \bigcap_i \bigcap_j \mathfrak{p}_{ij}$.  The C-representation
-of a locally closed set given by arbitrary pair of ideals $(\mathfrak{a'}, \mathfrak{b'})$
-can be normalized into a C-representation that respects the closure conditions as follows:
-(\cite{BrunatMontes}, Prop.~2.4)\footnote{\cite{BrunatMontes} doesn't show explicitly
-    that the radical of the saturation is the intersection of primes rrequired by Prop 2.4}
-\[
-\mathfrak{a} = \sqrt{\mathfrak{a}' : \mathfrak{b}'^\infty}
-\qquad
-\mathfrak{b} = \sqrt{\mathfrak{a} + \mathfrak{b}'}
-\]
-
-\end{definition}
-
-A P-representation specifies a constructible set as a union of irreducible varieties, one for each ideal $\mathfrak{p}_i$,
-each one (potentially) having its intersection with a number of irreducible varieties deleted,
-the holes $\mathfrak{p}_{ij}$.
-This can be presented as a system of equations and inequations.
-As we shall see in the examples, this generally describes the solution space
-in a manner that is usually (and hopefully) straightforward to understand.
-
-A hole
-$\mathfrak{p}_{ij}$ is prime, but may fail to be principal.  If not, then it requires multiple generators; excluding
-$V(\mathfrak{p}_{ij})$ asks only that a point fail to lie on it, that is, that {\it at least
-one} of those generators be non-zero.  Its place in the list of inequalities is therefore a
-{\it set} of polynomials, only one of which need be non-zero.
-
-Computing a P-representation can be computationally demanding.  The first step of
-\cite{BrunatMontes}'s {\tt ConsLevels} enumerates the power set of the input union ---
-it distributes the intersection $S^c = \bigcap_i S_i^c$ over the $r$ two-term unions
-$S_i^c = V(\mathfrak{a}_i)^c \cup V(\mathfrak{b}_i)$ --- so its cost is exponential in
-the {\it number} of locally closed sets presented to it, and any reduction of that
-number pays exponentially.  Discarding the pieces that are empty is the cheapest such
-reduction, and comes for free: $V(\mathfrak{a}_i) \setminus V(\mathfrak{b}_i) = \emptyset$
-exactly when $\mathfrak{a}_i = (1)$, which the algorithm has already computed.
-
-\begin{algorithm}[ConsistencyLocus, Comprehensive]
-\label{alg:consistency-comp}
-\mbox{}
-
-{\bf Input:} As in Algorithm~\ref{alg:consistency-basic}.
-
-{\bf Output:} The consistency locus $V_\exists$, presented as the
-P-representations of its canonical levels: a set of components
-$[\mathfrak{p}_i, \{\mathfrak{p}_{ij}\}]$ with all ideals prime, grouped by
-level, the levels disjoint and of strictly decreasing dimension.  The
-presentation depends only on $V_\exists$.
-
-{\bf Algorithm:}
-\begin{pseudocode}
-\item $\mathcal{W} \leftarrow \mathrm{ConsistencyLocus_{basic}}\bigl( R, \, \mathcal{P}, \, A(c), \, \prec \bigr)$, written $\{ (\mathfrak{a}_1, \mathfrak{b}_1), \ldots, (\mathfrak{a}_N, \mathfrak{b}_N) \}$
-\item {\bf for} $i = 1, \ldots, N$ {\bf do}
-\item \algind $\mathfrak{a}'_i \leftarrow \sqrt{\mathfrak{a}_i : \mathfrak{b}_i^\infty}$
-\item \algind $\mathfrak{b}'_i \leftarrow \sqrt{\mathfrak{a}'_i + \mathfrak{b}_i}$
-\item {\bf end for}
-\item $L \leftarrow \mathrm{ConsLevels}\bigl( \{\, (\mathfrak{a}'_i, \mathfrak{b}'_i) \;:\; \mathfrak{a}'_i \ne (1) \,\} \bigr)$
-\item {\bf return} $\{\, \mathrm{Prep}(L_l) \;:\; L_l \in L \,\}$
-\end{pseudocode}
-
-Lines 3 and 4 are \cite{BrunatMontes}'s Prop.~2.4: $\mathfrak{a}'_i$ is the
-intersection of those minimal primes of $\mathfrak{a}_i$ on which
-$\mathfrak{b}_i$ does not vanish identically, so $V(\mathfrak{a}'_i)$ is the
-closure of $\mathrm{Z}(\mathfrak{a}_i, \mathfrak{b}_i)$ and
-$[\mathfrak{a}'_i, \mathfrak{b}'_i]$ is its C-representation.  Line 6 discards
-the empty pieces: $\mathrm{Z}(\mathfrak{a}_i, \mathfrak{b}_i) = \emptyset$
-exactly when $\mathfrak{a}'_i = (1)$.
-
-$\mathrm{ConsLevels}$ decomposes $V_\exists$ into its canonical {\it levels}
-$L_1, L_3, \ldots, L_{2\ell \pm 1}$, a sequence of disjoint locally closed sets of
-strictly decreasing dimension with
-\[
-V_\exists \;=\; L_1 \uplus L_3 \uplus \cdots \uplus L_{2\ell \pm 1},
-\]
-returning each as a C-representation.  The even-numbered levels, which decompose the
-complement $\overline{V_\exists} \setminus V_\exists$, are computed along the way and
-discarded.  Because every level is locally closed, $\mathrm{Prep}$ applies to it; and
-because the level decomposition depends only on $V_\exists$, so does the result --- it
-is independent of the differential decomposition that produced it, and of the order in
-which the segments were presented.  This is the sense in which the output is canonical,
-and it is what Algorithm~\ref{alg:consistency-basic}'s output lacks.
-\end{algorithm}
 
 \vfill\eject
 
@@ -1939,7 +1818,7 @@ V_{\exists\forall} \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
 
 \vfill\eject
 
-\begin{algorithm}[MembershipLocus, Basic]
+\begin{algorithm}[MembershipLocus]
 \label{alg:core-basic}
 \mbox{}
 
@@ -1994,38 +1873,6 @@ reports, as described below.
 \item \algind {\bf return} $\textstyle\bigcup_{i=1}^{s} W_i$
 \item {\bf end if}
 \end{pseudocode}
-\end{algorithm}
-
-\begin{algorithm}[MembershipLocus, Comprehensive]
-\label{alg:core-comp}
-\mbox{}
-
-{\bf Input:} As in Algorithm~\ref{alg:core-basic}, including the flag $\mu$.
-
-{\bf Output:} The locus selected by $\mu$ --- the membership locus $V_\forall$
-or the intermediate locus $V_{\exists\forall}$ --- presented as the
-P-representations of its canonical levels, exactly as in
-Algorithm~\ref{alg:consistency-comp}.
-
-{\bf Algorithm:}
-\begin{pseudocode}
-\item $\mathcal{W} \leftarrow \mathrm{MembershipLocus_{basic}}\bigl( R, \, \mathcal{P}, \, A(c), \, \prec, \, \mu \bigr)$, written $\{ (\mathfrak{a}_1, \mathfrak{b}_1), \ldots, (\mathfrak{a}_N, \mathfrak{b}_N) \}$
-\item {\bf for} $i = 1, \ldots, N$ {\bf do}
-\item \algind $\mathfrak{a}'_i \leftarrow \sqrt{\mathfrak{a}_i : \mathfrak{b}_i^\infty}$
-\item \algind $\mathfrak{b}'_i \leftarrow \sqrt{\mathfrak{a}'_i + \mathfrak{b}_i}$
-\item {\bf end for}
-\item $L \leftarrow \mathrm{ConsLevels}\bigl( \{\, (\mathfrak{a}'_i, \mathfrak{b}'_i) \;:\; \mathfrak{a}'_i \ne (1) \,\} \bigr)$
-\item {\bf return} $\{\, \mathrm{Prep}(L_l) \;:\; L_l \in L \,\}$
-\end{pseudocode}
-
-The canonicalization is word-for-word that of
-Algorithm~\ref{alg:consistency-comp}, and for the same reasons: it depends on
-its input only through the set that input represents, so it applies unchanged
-to whichever of the three loci was computed.  In particular the minimal primes
-that Algorithm~\ref{alg:core-basic} no longer extracts are recovered here, as
-the tops of the P-representations --- by \cite{BrunatMontes}'s Prop.~2.4 the
-$\mathrm{minAss}(\mathfrak{a} : \mathfrak{b}^\infty)$ of a pair are exactly the
-tops of its C-representation, so nothing is lost by deferring them.
 \end{algorithm}
 
 We now summarize and explain Algorithm~\ref{alg:core-basic}.
@@ -2409,6 +2256,140 @@ locus as defined in \S\ref{sec:constant-loci}.
 
 \vfill\eject
 
+\subsection{Polishing a Constructable Set}
+\label{sec:constructable-set}
+
+The algorithms presented in the previous subsections compute the consistency
+and membership loci, and return them in the form of a pair of ideals
+specifying a constructable subset.  For clarify of presentation,
+no attempt was made to simplify the resulting ideals.
+Their output, while correct, is not in its most useful form, in large part because
+the ideals are not necessarily prime.  Factoring them with something like \cite{GTZ}
+produces prime ideals that tend to have far simpler systems of generators,
+and are therefore easier to interpret, but it not obvious how to deal
+with the exclusion ideal of a constructible set.  \cite{BrunatMontes}
+has studied this problem and developed viable algorithms for processing
+constructible sets.
+The current author recomends
+processing the output of Algorithm~\ref{alg:consistency-basic}
+further to produce \cite{BrunatMontes}'s P-representation of
+a constructible set:
+
+\begin{definition}
+A {\it P-representation} of a non-empty locally closed set $S \subseteq \mathbb{C}^n$
+is a finite list of pairs
+\[
+\bigl\{\, \bigl[\, \mathfrak{p}_i \,,\; \{ \mathfrak{p}_{ij} : 1 \le j \le r_i \} \,\bigr]
+   \;:\; 1 \le i \le r \,\bigr\},
+\]
+in which every $\mathfrak{p}_i$ and every $\mathfrak{p}_{ij}$ is prime, such that
+\[
+S \;=\; \bigcup_{i=1}^{r} \Bigl(\, V(\mathfrak{p}_i) \;\setminus\;
+        \bigcup_{j=1}^{r_i} V(\mathfrak{p}_{ij}) \,\Bigr).
+\]
+$\mathfrak{p}_i \subsetneq \mathfrak{p}_{ij}$,
+hence $\dim V(\mathfrak{p}_{ij}) < \dim V(\mathfrak{p}_i)$: a hole never
+exhausts the top it is cut from (\cite{BrunatMontes}, Prop.~2.7).
+Following \cite{BrunatMontes}, each pair $[\mathfrak{p}_i, \{\mathfrak{p}_{ij}\}]$ is a
+{\it component} of $S$, of which $V(\mathfrak{p}_i)$ is the {\it top} and the
+$V(\mathfrak{p}_{ij})$ are its {\it holes}.
+
+While the P-representation is the preferred output format, the algorithm in \cite{BrunatMontes}
+is specified using the C-representation, which is a single pair $(\mathfrak{a}, \mathfrak{b})$
+of not necessarily prime ideals representing the same set $S = V(\mathfrak{a}) \setminus V(\mathfrak{b})$
+and respecting certain closure conditions that ensure uniqueness, among other things.
+The two are related by (\cite{BrunatMontes}, Prop.~2.6)
+\[
+\{\mathfrak{p}_i\}_i = \mathrm{minAss}(\mathfrak{a}),
+\qquad
+\{\mathfrak{p}_{ij}\}_j = \mathrm{minAss}(\mathfrak{p}_i + \mathfrak{b}),
+\]
+so that $\mathfrak{a} = \bigcap_i \mathfrak{p}_i$ and
+$\mathfrak{b} = \bigcap_i \bigcap_j \mathfrak{p}_{ij}$.  The C-representation
+of a locally closed set given by arbitrary pair of ideals $(\mathfrak{a'}, \mathfrak{b'})$
+can be normalized into a C-representation that respects the closure conditions as follows:
+(\cite{BrunatMontes}, Prop.~2.4)\footnote{\cite{BrunatMontes} doesn't show explicitly
+    that the radical of the saturation is the intersection of primes rrequired by Prop 2.4}
+\[
+\mathfrak{a} = \sqrt{\mathfrak{a}' : \mathfrak{b}'^\infty}
+\qquad
+\mathfrak{b} = \sqrt{\mathfrak{a} + \mathfrak{b}'}
+\]
+
+\end{definition}
+
+A P-representation specifies a constructible set as a union of irreducible varieties, one for each ideal $\mathfrak{p}_i$,
+each one (potentially) having its intersection with a number of irreducible varieties deleted,
+the holes $\mathfrak{p}_{ij}$.
+This can be presented as a system of equations and inequations.
+As we shall see in the examples, this generally describes the solution space
+in a manner that is usually (and hopefully) straightforward to understand.
+
+A hole
+$\mathfrak{p}_{ij}$ is prime, but may fail to be principal.  If not, then it requires multiple generators; excluding
+$V(\mathfrak{p}_{ij})$ asks only that a point fail to lie on it, that is, that {\it at least
+one} of those generators be non-zero.  Its place in the list of inequalities is therefore a
+{\it set} of polynomials, only one of which need be non-zero.
+
+Computing a P-representation can be computationally demanding.  The first step of
+\cite{BrunatMontes}'s {\tt ConsLevels} enumerates the power set of the input union ---
+it distributes the intersection $S^c = \bigcap_i S_i^c$ over the $r$ two-term unions
+$S_i^c = V(\mathfrak{a}_i)^c \cup V(\mathfrak{b}_i)$ --- so its cost is exponential in
+the {\it number} of locally closed sets presented to it, and any reduction of that
+number pays exponentially.  Discarding the pieces that are empty is the cheapest such
+reduction, and comes for free: $V(\mathfrak{a}_i) \setminus V(\mathfrak{b}_i) = \emptyset$
+exactly when $\mathfrak{a}_i = (1)$, which the algorithm has already computed.
+
+\begin{algorithm}[PolishLocus]
+\label{alg:consistency-comp}
+\mbox{}
+
+{\bf Input:} A list of pairs $W = \{ (\mathfrak{a}_1, \mathfrak{b}_1), \ldots, (\mathfrak{a}_N, \mathfrak{b}_N) \}$
+of ideals that defines a constructable set,
+i.e, the output of Algorithms~\ref{alg:consistency-basic} or \ref{alg:core-basic}.
+
+{\bf Output:} The P-representation of the same constructable set, presented as
+a set of components
+$[\mathfrak{p}_i, \{\mathfrak{p}_{ij}\}]$ with all ideals prime, grouped by
+level, the levels disjoint and of strictly decreasing dimension.
+
+{\bf Algorithm:}
+\begin{pseudocode}
+\item {\bf for} $i = 1, \ldots, N$ {\bf do}
+\item \algind $\mathfrak{a}'_i \leftarrow \sqrt{\mathfrak{a}_i : \mathfrak{b}_i^\infty}$
+\item \algind $\mathfrak{b}'_i \leftarrow \sqrt{\mathfrak{a}'_i + \mathfrak{b}_i}$
+\item {\bf end for}
+\item $L \leftarrow \mathrm{ConsLevels}\bigl( \{\, (\mathfrak{a}'_i, \mathfrak{b}'_i) \;:\; \mathfrak{a}'_i \ne (1) \,\} \bigr)$
+\item {\bf return} $\{\, \mathrm{Prep}(L_l) \;:\; L_l \in L \,\}$
+\end{pseudocode}
+
+Lines 3 and 4 are \cite{BrunatMontes}'s Prop.~2.4: $\mathfrak{a}'_i$ is the
+intersection of those minimal primes of $\mathfrak{a}_i$ on which
+$\mathfrak{b}_i$ does not vanish identically, so $V(\mathfrak{a}'_i)$ is the
+closure of $\mathrm{Z}(\mathfrak{a}_i, \mathfrak{b}_i)$ and
+$[\mathfrak{a}'_i, \mathfrak{b}'_i]$ is its C-representation.  Line 6 discards
+the empty pieces: $\mathrm{Z}(\mathfrak{a}_i, \mathfrak{b}_i) = \emptyset$
+exactly when $\mathfrak{a}'_i = (1)$.
+
+$\mathrm{ConsLevels}$ decomposes $V_\exists$ into its canonical {\it levels}
+$L_1, L_3, \ldots, L_{2\ell \pm 1}$, a sequence of disjoint locally closed sets of
+strictly decreasing dimension with
+\[
+V_\exists \;=\; L_1 \uplus L_3 \uplus \cdots \uplus L_{2\ell \pm 1},
+\]
+returning each as a C-representation.  The even-numbered levels, which decompose the
+complement $\overline{V_\exists} \setminus V_\exists$, are computed along the way and
+discarded.  Because every level is locally closed, $\mathrm{Prep}$ applies to it; and
+because the level decomposition depends only on $V_\exists$, so does the result --- it
+is independent of the differential decomposition that produced it, and of the order in
+which the segments were presented.  This is the sense in which the output is canonical,
+and it is what Algorithm~\ref{alg:consistency-basic}'s output lacks.
+\end{algorithm}
+
+The P-representation of the holes is somewhat inconvenient, however, as the holes
+are strict subsets of the tops, and therefore contain all of the top's generators.
+
+\vfill\eject
 \section{Software}
 \label{sec:Software}
 
