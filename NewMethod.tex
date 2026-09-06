@@ -2392,35 +2392,37 @@ For example, here is the P-representation of the membership locus of the
 example from section \ref{sec:Example}:
 
 \begin{subequations}
-\label{ideal}
 \begin{align}
-& \left(c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E, v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}\right) \\
-& \qquad\text{with}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, E, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}\right) \neq 0 ,\; \left(c_{1}, b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, E, v_{1}^{2} + v_{2}^{2} + v_{3}^{2}\right) \neq 0\label{ideal:1} \nonumber \\
-& \left(b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}, v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, v_{4}^{2} c_{1} - E b_{0}\right) \\
-& \qquad\text{with}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}\right) \neq 0 ,\; \left(c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}\right) \neq 0 ,\; \left(b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}, E\right) \neq 0\label{ideal:2} \nonumber \\
-& \left(2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1, 4 v_{4} c_{1} + c_{0}, c_{0}^{2} + 4 b_{0} c_{1}, v_{4} c_{0} - b_{0}\right) \\
-& \qquad\text{with}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right) \neq 0 ,\; \left(c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}, 8 E + 1\right) \neq 0\label{ideal:3} \nonumber \\
 & \left(a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1, v_{4} c_{1} - b_{1}, b_{1} c_{0} - b_{0} c_{1}, v_{4} c_{0} - b_{0}\right) \\
-& \qquad\text{with}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \neq 0 ,\; \left(b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \neq 0\label{ideal:4} \nonumber
+& \qquad\text{minus:}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \nonumber \\
+& \qquad\text{minus:}\quad \left(b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \nonumber \\
+& \left(2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1, 4 v_{4} c_{1} + c_{0}, c_{0}^{2} + 4 b_{0} c_{1}, v_{4} c_{0} - b_{0}\right) \\
+& \qquad\text{minus:}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right) \nonumber \\
+& \qquad\text{minus:}\quad \left(c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}, 8 E + 1\right) \nonumber \\
+& \left(b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}, v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, v_{4}^{2} c_{1} - E b_{0}\right) \\
+& \qquad\text{minus:}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}\right) \nonumber \\
+& \qquad\text{minus:}\quad \left(c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}\right) \nonumber \\
+& \qquad\text{minus:}\quad \left(b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}, E\right) \nonumber \\
+& \left(c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E, v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}\right) \\
+& \qquad\text{minus:}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, E, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}\right) \nonumber \\
+& \qquad\text{minus:}\quad \left(c_{1}, b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, E, v_{1}^{2} + v_{2}^{2} + v_{3}^{2}\right) \nonumber
 \end{align}
 \end{subequations}
 
 and here is the same locus with simplified holes:
 
 \begin{subequations}
-\label{ideal}
 \begin{align}
-& \left(c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E, v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}\right) \\
-& \qquad\text{with}\quad a_{1} \neq 0\label{ideal:1} \nonumber \\
-& \left(b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}, v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, v_{4}^{2} c_{1} - E b_{0}\right) \\
-& \qquad\text{with}\quad a_{1} \neq 0\label{ideal:2} \nonumber \\
-& \left(2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1, 4 v_{4} c_{1} + c_{0}, c_{0}^{2} + 4 b_{0} c_{1}, v_{4} c_{0} - b_{0}\right) \\
-& \qquad\text{with}\quad b_{0} \neq 0\label{ideal:3} \nonumber \\
 & \left(a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1, v_{4} c_{1} - b_{1}, b_{1} c_{0} - b_{0} c_{1}, v_{4} c_{0} - b_{0}\right) \\
-& \qquad\text{with}\quad \left(b_{0}, b_{1}\right) \neq 0\label{ideal:4} \nonumber
+& \qquad\text{minus:}\quad \left(b_{0}, b_{1}\right) \nonumber \\
+& \left(2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1, 4 v_{4} c_{1} + c_{0}, c_{0}^{2} + 4 b_{0} c_{1}, v_{4} c_{0} - b_{0}\right) \\
+& \qquad\text{minus:}\quad \left(b_{0}\right) \nonumber \\
+& \left(b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}, v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, v_{4}^{2} c_{1} - E b_{0}\right) \\
+& \qquad\text{minus:}\quad \left(a_{1}\right) \nonumber \\
+& \left(c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E, v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}\right) \\
+& \qquad\text{minus:}\quad \left(a_{1}\right) \nonumber
 \end{align}
 \end{subequations}
-
 
 \vfill\eject
 \subsection{Scaling Symmetries}
@@ -2643,44 +2645,31 @@ on an AMD Ryzen 5 processor and produces 29 cells.  Performing the differential 
 decomposition pipeline on each of those cells takes another half hour and computes the following four solution varieties:
 
 A differential Thomas decomposition of ansatz \eqref{ansatz 5 plus} with ranking \eqref{ranking} produces 29 cells,
-and the algorithm of section \ref{sec:Solution Algorithm} then computes the following four solution varieties
-for PDE \eqref{schrodinger hydrogen 2}:
+and the algorithm of section \ref{sec:Solution Algorithm} then computes the following constructable set
+for the intermediate locus $V_\forall$:
 
 \begin{subequations}
 \label{ideal}
 \begin{align}
-& \left(-b_{1} c_{0} + b_{0} c_{1}, v_{4} c_{1} - b_{1}, v_{4} c_{0} - b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right)\label{ideal:1s} \\
-& \left(c_{0}^{2} + 4 b_{0} c_{1}, 4 v_{4} c_{1} + c_{0}, v_{4} c_{0} - b_{0}, 2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right)\label{ideal:2s} \\
-& \left(v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, -v_{4}^{2} c_{1} + E b_{0}, b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}\right)\label{ideal:classical} \\
-& \left(v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}, c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E\right)\label{ideal:parabolic}
+& \left(a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1, v_{4} c_{1} - b_{1}, b_{1} c_{0} - b_{0} c_{1}, v_{4} c_{0} - b_{0}\right)\label{ideal:1s} \\
+& \qquad\text{minus:}\quad \left(b_{0}, b_{1}\right) \nonumber \\
+& \left(2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1, 4 v_{4} c_{1} + c_{0}, c_{0}^{2} + 4 b_{0} c_{1}, v_{4} c_{0} - b_{0}\right)\label{ideal:2s} \\
+& \qquad\text{minus:}\quad \left(b_{0}\right) \nonumber \\
+& \left(b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}, v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, v_{4}^{2} c_{1} - E b_{0}\right)\label{ideal:classical} \\
+& \qquad\text{minus:}\quad \left(a_{1}\right) \nonumber \\
+& \left(c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E, v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}\right)\label{ideal:parabolic} \\
+& \qquad\text{minus:}\quad \left(a_{1}\right) \nonumber
 \end{align}
 \end{subequations}
 
-\begin{subequations}
-\label{ideal}
-\begin{align}
-& \left(-b_{1} c_{0} + b_{0} c_{1}, v_{4} c_{1} - b_{1}, v_{4} c_{0} - b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \\
-& \qquad\text{with}\quad v_{4} \neq 0 ,\; b_{1} \neq 0 ,\; b_{0} \neq 0\label{ideal:1} \nonumber \\
-& \left(v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, -v_{4}^{2} c_{1} + E b_{0}, b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}\right) \\
-& \qquad\text{with}\quad b_{0} \neq 0 ,\; v_{4} \neq 0\label{ideal:2} \nonumber \\
-& \left(c_{0}^{2} + 4 b_{0} c_{1}, 4 v_{4} c_{1} + c_{0}, v_{4} c_{0} - b_{0}, 2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right) \\
-& \qquad\text{with}\quad v_{4} \neq 0 ,\; c_{0} \neq 0 ,\; b_{0} \neq 0\label{ideal:3} \nonumber \\
-& \left(v_{4} c_{1} - b_{1}, c_{0}, b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \\
-& \qquad\text{with}\quad v_{4} \neq 0 ,\; b_{1} \neq 0\label{ideal:4} \nonumber \\
-& \left(v_{4} c_{0} - b_{0}, c_{1}, b_{1}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \\
-& \qquad\text{with}\quad v_{4} \neq 0 ,\; b_{0} \neq 0\label{ideal:5} \nonumber \\
-& \left(v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}, c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E\right) \\
-& \qquad\text{with}\quad b_{0} \neq 0 ,\; v_{4} \neq 0 ,\; \left(v_{1} v_{2}, v_{1} v_{3}, v_{2} v_{3}, v_{2}^{2} + v_{3}^{2}, v_{2}^{2} - v_{4}^{2}, v_{3}^{2} - v_{4}^{2}\right) \neq 0\label{ideal:6} \nonumber
-\end{align}
-\end{subequations}
-
+Each of these four locally closed sets can be identified with an ODE that solves \eqref{schrodinger hydrogen 2}.
 In brief,
 
 \begin{itemize}
-\item[\eqref{ideal:1s}] is a first-order solution for the 1s shell, and
-\item[\eqref{ideal:2s}] is a first-order solution for the 2s shell.
-\item[\eqref{ideal:classical}] corresponds to the classical radial solutions,
-\item[\eqref{ideal:parabolic}] is a solution in parabolic coordinates,
+\item[\eqref{ideal:1s}] corresponds to a first-order solution for the 1s shell,
+\item[\eqref{ideal:2s}] corresponds to a first-order solution for the 2s shell,
+\item[\eqref{ideal:classical}] corresponds to the classical radial solutions, and
+\item[\eqref{ideal:parabolic}] corresponds to a solution in parabolic coordinates.
 \end{itemize}
 
 We analyze these varieties by treating their generators as a system of equations, all set equal to zero.
