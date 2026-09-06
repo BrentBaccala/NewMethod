@@ -568,6 +568,16 @@ LATEX_OUT = '--latex' in sys.argv
 # Off by default: scaling a generator changes nothing about the ideal, but it
 # does mean the block no longer shows what the algorithms returned, and the
 # LaTeX should not silently differ from the text listing above it.
+#
+# The flag is visible only on the --basic union.  Both libraries work over Q --
+# neither is doing arithmetic over Z -- but they pick opposite representatives
+# of the same generator: primdec.lib's minAssGTZ returns the MONIC one (handed
+# `2*a1-b0, 8*E+1' it answers `a1-1/2*b0, E+1/8'), while grobcov.lib runs every
+# result through cleardenom, which clears denominators and divides out the
+# integer content (grobcov.lib's static proc cld, and the cleardenom calls in
+# Prep's path).  So the canonical levels arrive integral already and this flag
+# does nothing to them; the union's primes come straight from minAssGTZ and it
+# does everything to them.
 CLEAR_DENOMS = '--clear-denominators' in sys.argv
 # \label is opt-in.  The paper pastes several of these blocks and \ref's few
 # of them, so labelling every one by default produced duplicate-label warnings
