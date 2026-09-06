@@ -2628,6 +2628,29 @@ for reproducing the calculations of this paper.
 \end{tabularx}
 \end{center}
 
+Two of those switches, {\tt --clear-denominators} and
+{\tt --make-monic}, are not a matter of taste alone.  A generating
+set is not part of what the algorithms of \S\ref{sec:Solution Algorithm}
+produce --- their objects are ideals and varieties, and a generator of an
+ideal is fixed only up to a nonzero scalar --- and the two Singular libraries
+the script leans on resolve that freedom in opposite ways.  {\tt primdec.lib}'s
+$\mathrm{minAss}$ returns every generator monic, its leading coefficient
+scaled to $1$, which is the canonical choice for a reduced Gr\"obner basis
+over a field; the primes of a Basic union accordingly come back as
+$a_1 - \frac{1}{2} b_0$ and $E + \frac{1}{8}$.  {\tt grobcov.lib}, which
+supplies $\mathrm{Crep}$, $\mathrm{Prep}$ and $\mathrm{ConsLevels}$ and was
+written by one of the authors of \cite{BrunatMontes}, instead clears the
+denominators and divides out the integer content of everything it returns, so
+the Comprehensive levels arrive as $2 a_1 - b_0$ and $8E + 1$.  The same
+component thus prints two ways according to which algorithms computed it.
+{\tt --clear-denominators} and {\tt --make-monic} settle the display either
+way; they are mutually exclusive, and each is a no-op on the output the other
+library produced.  Nothing in \cite{BrunatMontes} distinguishes the two forms.
+The displays of \S\ref{sec:Example} carry integer coefficients throughout ---
+which, for the ones the Comprehensive algorithms computed, is simply how they
+arrive, and for the ones read off a Basic union is
+{\tt --clear-denominators}.
+
 
 %%\section*{An Example: The New Solution of Hydrogen}
 %%\section{Example: A New Pseudo-Solution of Hydrogen}
