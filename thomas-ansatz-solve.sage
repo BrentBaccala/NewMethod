@@ -5405,27 +5405,19 @@ def _component_generator(a, b, p, sol, atoms):
     return None
 
 
-def _multi_hole(a, b, primes, atoms, lower, max_atoms, budget):
+def _candidate_pool(b, primes, atoms, max_atoms):
     r"""
-    A several-generator compact hole, for when no principal one is available.
+    Candidate hole generators, PRE-FILTERED by `f \in \mathfrak{b}`.
 
-    There is no per-component theorem above one generator -- `k` equations
-    cut out an intersection of `k` hypersurfaces, which does not decompose
-    the way a product does -- so this is an honest search, and its failure
-    proves nothing.  What it does do is search a pool PRE-FILTERED by
-    `f \in \mathfrak{b}`, which :func:`_hole_ok` requires anyway: that test
-    is cheap ideal membership, and applying it first is what keeps the
-    combinatorics from exploding.
-
-    The pool is the atoms and their small products, the irreducible factors
-    of the components' generators, and `\mathfrak{b}`'s own generators --
-    the last guaranteeing the search has something to find, since they
-    generate `\mathfrak{b}` by definition.
-
-    ``lower`` is Krull's bound, the largest codimension among the
-    components; the loop starts there because nothing smaller can work.
+    The filter is what keeps the combinatorics finite: it is cheap ideal
+    membership, :func:`_hole_ok` requires it anyway, and it throws out most of
+    the atom products before any saturation is attempted.  The pool is the
+    atoms and their small products, the irreducible factors of the components'
+    own generators, and `\mathfrak{b}`'s generators -- the last guaranteeing
+    the pool is never empty, since they generate `\mathfrak{b}` by definition.
+    Sorted simplest first, so a search returns the tidiest representative
+    rather than merely the first one that works.
     """
-    R = a.ring()
     pool, seen = [], set()
 
     def add(f):
@@ -5452,7 +5444,59 @@ def _multi_hole(a, b, primes, atoms, lower, max_atoms, budget):
     for g in b.gens():
         add(g)
     pool.sort(key=lambda f: (f.total_degree(), len(str(f)), str(f)))
+    return pool
 
+
+def _single_candidate(a, b, primes, atoms, max_atoms, budget):
+    r"""
+    One polynomial cutting out the WHOLE hole, if a simple one does.
+
+    The per-component construction in :func:`principal_hole` is complete but
+    not minimal: it takes an `f_i` per component and multiplies, so when a
+    single polynomial already covers every component the product carries a
+    redundant factor.  On hydrogen/ansatz 5 that is the difference between
+    reporting `b_0` and reporting `b_0 c_0` -- both correct, one tidier -- and
+    the redundancy is invisible from inside a component, since the
+    quotient-generator branch answers for its own component and stops.
+
+    So this runs first: the pool sorted simplest-first, each candidate tested
+    with the FULL :func:`_hole_ok`, which demands `f \in \mathfrak{b}` and so
+    only accepts one that covers everything.  A miss costs a handful of
+    saturations and falls through to the per-component path, which keeps the
+    guarantees; a hit is verified, so this can only improve the answer, never
+    invalidate it.
+    """
+    spent = 0
+    for f in _candidate_pool(b, primes, atoms, max_atoms):
+        spent += 1
+        if spent > budget:
+            return None
+        if _hole_ok(a, b, [f]):
+            return f
+    return None
+
+
+def _multi_hole(a, b, primes, atoms, lower, max_atoms, budget):
+    r"""
+    A several-generator compact hole, for when no principal one is available.
+
+    There is no per-component theorem above one generator -- `k` equations
+    cut out an intersection of `k` hypersurfaces, which does not decompose
+    the way a product does -- so this is an honest search, and its failure
+    proves nothing.  What it does do is search a pool PRE-FILTERED by
+    `f \in \mathfrak{b}`, which :func:`_hole_ok` requires anyway: that test
+    is cheap ideal membership, and applying it first is what keeps the
+    combinatorics from exploding.
+
+    The pool is the atoms and their small products, the irreducible factors
+    of the components' generators, and `\mathfrak{b}`'s own generators --
+    the last guaranteeing the search has something to find, since they
+    generate `\mathfrak{b}` by definition.
+
+    ``lower`` is Krull's bound, the largest codimension among the
+    components; the loop starts there because nothing smaller can work.
+    """
+    pool = _candidate_pool(b, primes, atoms, max_atoms)
     spent = 0
     upper = min(len(pool), max(lower, a.dimension() + 1))
     for k in range(max(1, lower), upper + 1):
@@ -5568,6 +5612,9 @@ def principal_hole(a, primes, atoms=(), max_atoms=2, budget=4000):
     sol = _solved_form(a)
 
     if pure:
+        f = _single_candidate(a, b, primes, atoms, max_atoms, budget)
+        if f is not None:
+            return ([f], 'principal')
         fs, seen = [], set()
         for p in primes:
             f = _component_generator(a, b, p, sol, atoms)
