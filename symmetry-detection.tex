@@ -1,0 +1,750 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black,
+            citecolor=blue!50!black}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\Gm}{\mathbb{G}_m}
+\newcommand{\Ga}{\mathbb{G}_a}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\gl}{\mathfrak{gl}}
+\newcommand{\dprem}{\operatorname{d-prem}}
+
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}[proposition]{Lemma}
+\theoremstyle{definition}
+\newtheorem{criterion}[proposition]{Criterion}
+\theoremstyle{remark}
+\newtheorem{remark}[proposition]{Remark}
+
+\title{Detecting and spending symmetry in a parametric ansatz\\
+       {\large three tiers of algorithm, and a per-cell normalization criterion}}
+\author{}
+\date{6 September 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+A companion note to \emph{A New Method of Solving PDEs}, backing the
+\S\,Scaling Symmetries subsection. The parameter count of an ansatz is the
+dominant cost driver of the decomposition that follows it, so every dimension
+of symmetry that can be pinned is worth a parameter and its constancy
+equations. This note asks what can be \emph{detected algorithmically}, and
+answers in three tiers: diagonal (scaling) symmetries are an integer kernel
+computation and are complete for the torus; all \emph{linear} symmetries are a
+linear solve in $\gl_N$ and additionally capture the unipotent directions that
+a weight table is structurally blind to; general Lie point symmetries require
+the classical determining system of Olver, solved by the same differential
+elimination already in the pipeline. We then formulate a
+\emph{per-cell} normalization criterion --- at the moment a decomposition
+splits on $k \neq 0$, when may one set $k = 1$? --- give its exact condition,
+show that the available symmetry is \emph{non-decreasing} as one descends the
+decomposition tree (so per-cell normalization strictly dominates global
+normalization), and identify precisely which symmetries the criterion misses.
+The Tier-1 lattice is computed for the hydrogen / ansatz~5 system: the torus is
+$2$-dimensional, the energy $E$ is provably unpinnable, and five of the
+``obvious'' two-parameter normalizations --- including $a_0 = c_0 = 1$ ---
+silently produce a $d$-fold cover of the answer.
+\end{abstract}
+
+\section{Why this matters: parameters are the cost}
+\label{sec:cost}
+
+The ansatz contributes a fixed number of differential equations, but each
+parameter contributes a family of constancy equations --- one per (parameter,
+coordinate) pair. For hydrogen / ansatz~5 that is $30$ constancy equations for
+$10$ parameters, three apiece, against a fixed $9$ ansatz equations. Every
+dimension of symmetry that can be pinned is therefore worth exactly one
+parameter and its constancy equations, and the question of the present note is
+which of those dimensions a machine can find without being told.
+
+The stakes are not marginal. Table~\ref{tab:hydrogen5} gives the per-cell cost
+of the membership run for hydrogen / ansatz~5 completed on 6~September 2026
+(\code{hydrogen-5-membership.out}; \code{--pde hydrogen --ansatz 5 --locus
+membership --basic}).
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{r l r r r r}
+\toprule
+cell & vanishing set & \#ineq & $\dprem$ (s) & GTZ (s) & primes \\
+\midrule
+ 1 & (generic)                                 & 6 &  15.3 &    2.7 & 4 \\
+ 2 & $a_0$                                     & 3 &   9.8 &    0.4 & 4 \\
+ 3 & $v_4$                                     & 4 &   0.1 &    0.0 & 2 \\
+ 4 & $a_0, v_4$                                & 2 &   0.0 &    0.0 & 2 \\
+ 5 & $a_1$                                     & 3 &   0.9 &    0.1 & 1 \\
+ 6 & $a_1, v_4$                                & 2 &   0.0 &    0.0 & 1 \\
+ 7 & $a_0, a_1, v_4$                           & 4 &   1.8 &    0.1 & 2 \\
+ 8 & $a_0, a_1, b_0, v_4$                      & 2 &   0.4 &    0.0 & 2 \\
+ 9 & $a_0, a_1, b_1, v_4$                      & 2 &   0.0 &    0.0 & 1 \\
+10 & $a_0, a_1, b_0, b_1, c_0, c_1, v_4$       & 2 &   0.0 &    0.0 & --- \\
+11 & $\;\;\cdots, v_3, v_4$                    & 2 &   0.0 &    0.0 & --- \\
+12 & $\;\;\cdots, v_2, v_3, v_4$               & 1 &   0.0 &    0.0 & --- \\
+\textbf{13} & $\mathbf{a_0, a_1}$              & \textbf{7} & \textbf{476.4} & \textbf{1430.2} & 4 \\
+14 & $a_0, a_1, b_0$                           & 4 & 167.9 &    1.3 & 3 \\
+15 & $a_0, a_1, b_1$                           & 4 &   4.2 &    0.1 & 2 \\
+16 & $a_0, a_1, b_0, b_1, c_0, c_1$            & 3 &   0.9 &    0.2 & 1 \\
+\bottomrule
+\end{tabular}
+\caption{Per-cell cost, hydrogen / ansatz~5 membership run. The Thomas
+decomposition itself took $495.2$~s and produced these $16$ cells; the
+per-cell work totals $2112.8$~s. \textbf{Cell~13 alone is $90.2\,\%$ of the
+per-cell work} and $73\,\%$ of the run.}
+\label{tab:hydrogen5}
+\end{table}
+
+Two observations shape everything below. First, the cost is
+\emph{overwhelmingly concentrated}: one cell out of sixteen carries nine tenths
+of the work, and cells 13 and 14 together carry $98.2\,\%$. A normalization
+that helps the cheap cells is worthless; a normalization that helps cell~13 is
+the whole game. Second, cell~13 is not the generic cell. It is the stratum
+$a_0 = a_1 = 0$, on which the coefficient $(a_0 + a_1 v)$ of $\Psi''$ vanishes
+identically and the ansatz ODE \emph{degenerates from second order to first}.
+It carries the most surviving inequations of any cell ($7$), which is to say the
+most candidates for the criterion of \S\ref{sec:criterion}.
+
+\section{Two kinds of symmetry, and why the distinction is not cosmetic}
+\label{sec:twokinds}
+
+Write $P$ for the parameter space of an ansatz. It carries an action of a group
+$G$ that splits, as in \cite{ansatz25}, according to whether a transformation
+moves the solution set or only its description:
+
+\begin{itemize}
+\item $\Gamma$, the \textbf{gauge group}: the kernel of
+      $\text{parameters} \mapsto \text{solution}$. A $\Gamma$-orbit is a set of
+      parameter points describing \emph{the same} family of solutions ---
+      multiplying the ODE through by a constant is the archetype. Quotienting
+      by $\Gamma$ is lossless and incurs no obligation.
+\item $H$, the \textbf{form-preserving symmetries}: genuine point symmetries of
+      the PDE that carry the ansatz family to itself --- rotation, scaling of
+      the independent variable. These \emph{permute} solutions, so pinning one
+      computes a slice whose answer must afterwards be spread back over the
+      orbit.
+\end{itemize}
+
+Both are worth spending; they differ only in whether a transport step is owed
+at the end. As will be seen in \S\ref{sec:criterion}, the weight vector itself
+says which case one is in, so the distinction costs nothing to maintain.
+
+\section{Tier 1: diagonal (scaling) symmetries}
+\label{sec:tier1}
+
+\subsection{The algorithm}
+
+A scaling symmetry is a character of a torus, so the entire group is the kernel
+of an integer matrix and no search is involved.
+
+Assign an unknown weight $w_s \in \ZZ$ to every symbol $s$ --- independent
+variables, differential indeterminates, parameters, and the equation-multiplier.
+A derivative $\partial^j u / \partial x^j$ carries weight $w_u - j\,w_x$. A
+polynomial $f = \sum_\alpha c_\alpha z^\alpha$ is \emph{$w$-quasi-homogeneous}
+iff $\langle \alpha - \alpha_0, w\rangle = 0$ for every $\alpha \in
+\operatorname{supp} f$ and one fixed base exponent $\alpha_0$. Stack those rows
+over all generators to get a matrix $M$; the scaling symmetries are
+$\ker M$ over $\QQ$, and a Hermite normal form yields a $\ZZ$-basis. The
+computation is exact, complete for the torus, requires no Gr\"obner basis, and
+is instantaneous at the sizes that arise here.
+
+This is not a new construction. It is the algorithm of Hubert and Labahn
+\cite{HubertLabahnISSAC,HubertLabahnFoCM}, who show that the Hermite normal
+form of the weight matrix produces a change of variables separating the group
+directions from a complete generating set of rational invariants. (It is
+perhaps worth noting that this is the same Hubert of \cite{hubert,hubert2},
+already cited in the paper for triangular-set decomposition.)
+
+\subsection{The worked example of the \S\,Scaling Symmetries subsection}
+
+For $a\Psi'' + b\Psi' + c\Psi = 0$, with $w_x$, $w_\Psi$ and the parameter
+weights unknown, quasi-homogeneity of the single generator reads
+\[
+   w_a + w_\Psi - 2w_x \;=\; w_b + w_\Psi - w_x \;=\; w_c + w_\Psi ,
+\]
+i.e.\ $w_a = w_c + 2w_x$ and $w_b = w_c + w_x$. The weight $w_\Psi$ cancels
+identically --- the equation is linear homogeneous in $\Psi$ --- so it acts
+trivially on the parameters, and the effective torus on $(a,b,c)$ is
+\textbf{$2$-dimensional}, spanned by $w_c$ and $w_x$:
+\[
+  a : (1,2), \qquad b : (1,1), \qquad c : (1,0)
+  \qquad\text{in coordinates } (w_c, w_x).
+\]
+The two basis directions are exactly the two symmetries of the draft
+subsection: $(w_c, w_x) = (1,0)$ gives $(w_a,w_b,w_c) = (1,1,1)$, the overall
+multiplication by $\lambda$; and $(0,1)$ gives $(2,1,0)$, the scaling of the
+independent variable with coefficients scaled by $\lambda^2, \lambda, 1$. The
+rank being $2$, exactly two of the three constants may be pinned and one
+genuine modulus survives --- the classical fact that a second-order linear ODE
+has one invariant.
+
+\subsection{Unimodularity, and why it is not pedantry}
+\label{sec:unimodular}
+
+Pinning $k$ parameters kills $(\Gm)^k$ cleanly \emph{iff the corresponding
+$k \times k$ weight minor has determinant $\pm 1$}. If the determinant is $d$
+with $|d| > 1$, the map $(\Gm)^k \to (\Gm)^k$ is a $d$-fold isogeny: the slice
+meets each orbit $d$ times, and the decomposition returns $d$ copies of every
+component. Non-vanishing of the minor is \emph{not} the condition;
+unimodularity is.
+
+The example above already exhibits the trap. Of the three two-parameter pins:
+\[
+  \det\begin{pmatrix}1&2\\1&1\end{pmatrix} = -1 \;\;(a{=}b{=}1)\ \checkmark
+  \qquad
+  \det\begin{pmatrix}1&1\\1&0\end{pmatrix} = -1 \;\;(b{=}c{=}1)\ \checkmark
+\]
+\[
+  \det\begin{pmatrix}1&2\\1&0\end{pmatrix} = -2 \;\;(a{=}c{=}1)
+  \qquad\longleftarrow\ \textbf{defective}
+\]
+So the most symmetric-looking normalization, $\Psi'' + b\Psi' + \Psi = 0$, is
+a $2$-fold cover. The residual $\mu_2$ acts by $b \mapsto -b$, and indeed
+$\Psi'' + b\Psi' + \Psi$ and $\Psi'' - b\Psi' + \Psi$ are carried to one
+another by $x \mapsto -x$. The defect is real, it is invisible without the
+determinant check, and it doubles the component count of everything
+downstream.
+
+\subsection{Result: the hydrogen / ansatz 5 lattice}
+\label{sec:hydrogen}
+
+Applying the algorithm to the full system of \S\ref{sec:cost} --- nine ansatz
+equations, the Schr\"odinger PDE, and the two inequations --- yields a
+$3$-dimensional weight lattice with coordinates $(\Theta, \mu, P)$, where
+$\Theta$ is the ODE-multiplier direction, $\mu$ the scaling of the inner
+variable $v$, and $P$ the scaling of $\Psi$. Since $P$ acts trivially on
+parameters, the effective torus on parameter space is \textbf{$2$-dimensional}:
+
+\begin{center}
+\begin{tabular}{l c c c c c c c c}
+\toprule
+ & $v_1 \ldots v_4$ & $a_0$ & $a_1$ & $b_0$ & $b_1$ & $c_0$ & $c_1$ & $E$ \\
+\midrule
+$(\Theta, \mu)$ & $(0,1)$ & $(1,2)$ & $(1,1)$ & $(1,1)$ & $(1,0)$ & $(1,0)$ & $(1,-1)$ & $(0,0)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Every generator was checked individually
+(\code{symmetry-weights-check.py}, \S\ref{sec:checked}); the table reproduces
+the general formula of \cite{ansatz25} --- an affine coefficient pair
+$(x_0 + x_1 v)$ multiplying a jet monomial of derivative order $w_j$ carries
+$\mu$-weights $w_j$ and $w_j - 1$ --- which is an independent confirmation.
+
+Three consequences, all of them useful:
+
+\begin{enumerate}
+\item \textbf{$E$ has weight $(0,0)$ and is therefore never pinnable.} This is
+      forced, not chosen: the PDE term $\Psi$ (from the Coulomb $2\Psi/r$) and
+      the term $r\Psi_{xx}$ can only balance at $w_x = 0$, which kills the
+      spatial scaling and with it any weight on $E$. This is the correct and
+      physically necessary answer --- the energy eigenvalue is the output of
+      the computation, and an algorithm that offered to normalize it away would
+      be wrong. It is also the exact analogue of the $p_1 \ldots p_4$ situation
+      of \cite{ansatz25}, where zero gauge weight forced a pseudo-division
+      argument in place of a symmetry argument.
+\item \textbf{Two parameters may be pinned}, taking the count from $10$ to $8$
+      and removing $6$ of the $30$ constancy equations.
+\item \textbf{Five of the two-parameter pins are defective}, in the precise
+      sense of \S\ref{sec:unimodular}:
+      \begin{center}
+      \begin{tabular}{l l}
+      \toprule
+      pin & consequence \\
+      \midrule
+      $a_0 = b_1 = 1$ & $2$-fold cover \\
+      $a_0 = c_0 = 1$ & $2$-fold cover \\
+      $a_0 = c_1 = 1$ & $3$-fold cover \\
+      $a_1 = c_1 = 1$ & $2$-fold cover \\
+      $b_0 = c_1 = 1$ & $2$-fold cover \\
+      \bottomrule
+      \end{tabular}
+      \end{center}
+      $a_0 = c_0 = 1$ --- normalize the leading and trailing constant
+      coefficients, surely the first choice anyone would write down --- doubles
+      every component. Of the $55$ pairs, $32$ are clean and $18$ are
+      degenerate (rank $<2$), the latter including every pair involving $E$ and
+      the equal-weight pairs $\{a_1, b_0\}$ and $\{b_1, c_0\}$.
+\end{enumerate}
+
+\section{Tier 2: all linear symmetries}
+\label{sec:tier2}
+
+\subsection{The blind spot}
+
+A weight table is the character lattice of a maximal torus, and \emph{a
+unipotent element has no character}. Tier~1 is therefore not merely incomplete
+but incomplete in a specific, predictable direction, and the consequence has
+already been observed empirically. The normalization ladder for ansatz~25 was
+designed entirely from a weight table and consequently spent $6$ of the $9$
+available group dimensions, missing all three of
+\cite{ansatz25}:
+\[
+  \tau : s \mapsto s + c \;\;(\Ga), \qquad
+  \delta : \text{parabolic scaling} \;\;(\Gm), \qquad
+  \pi : p \mapsto p + f(t) \;\;(\Ga),
+\]
+worth three parameters and twelve constancy equations per rung, and --- unlike
+the rotation normal form the ladder \emph{did} spend --- each admitting a
+complete, exclusion-free chart cover. Two of the three missed generators are
+unipotent, which is exactly the shape a character table cannot see.
+
+\subsection{The remedy, and its cost}
+
+The missed directions are nonetheless \emph{linear} on parameter space. The
+$\tau$ action, for instance, sends an affine coefficient pair by
+\[
+  (x_0 + x_1 s) \;\longmapsto\; (x_0 + c\,x_1) + x_1 s ,
+  \qquad\text{i.e.}\qquad x_0 \mapsto x_0 + c\,x_1, \;\; x_1 \mapsto x_1 ,
+\]
+a single Jordan block --- linear, merely not diagonalizable. So widen the
+search from diagonal matrices to all of $\gl_N$: seek a vector field
+$X \in \gl(P)$ such that
+
+\begin{enumerate}
+\item[(i)] $X$ preserves the system: each $X \cdot f$ pseudo-reduces to zero
+           against the generators. This is \textbf{linear in the $N^2$ entries
+           of $X$}, the reduction supplying the coefficients.
+\item[(ii)] $X$ moves the coordinate of interest: $X k \not\equiv 0$ on the
+            cell --- an open condition.
+\end{enumerate}
+
+One solve then captures torus, unipotent and rotational directions together.
+For hydrogen / ansatz~5 that is $11$ parameters, hence $\approx 121$ unknowns
+and one reduction per generator per basis element: entirely negligible beside
+the $1906$~s of cell~13.
+
+\begin{remark}
+Tier~2 is complete for group actions that are \emph{linear on parameter space}.
+That covers $\tau$, $\pi$, $\delta$ and the rotations, but it is a modelling
+restriction rather than a theorem: parameters may in principle transform
+polynomially. Genuine completeness is Tier~3.
+\end{remark}
+
+\section{Tier 3: general Lie point symmetries}
+\label{sec:tier3}
+
+The complete answer is classical and is already cited in the paper: prolong a
+general vector field, impose the infinitesimal criterion that it annihilate the
+system modulo the system, and obtain an overdetermined linear PDE system --- the
+\emph{determining equations} --- for its coefficients \cite{Olver}. Solving
+that system is a differential-elimination problem, so the available software is
+Reid's \code{rifsimp}, Maple's \code{PDEtools[Infinitesimals]}, and the Thomas
+decomposition of \cite{ThomasDecomp}. The machinery that would compute the
+symmetries is the machinery the pipeline already runs.
+
+For the present purpose, however, the more directly relevant strand of Olver's
+work is the second one: \emph{moving frames}
+\cite{OlverEquivalence,FelsOlverI,FelsOlverII}. The normalization construction
+of \S\ref{sec:criterion} below is precisely a Fels--Olver moving frame ---
+choose a cross-section to the group orbits, solve the normalization equations
+for the group parameters, substitute back --- and the regularity conditions of
+that theory are exactly the trichotomy of Criterion~\ref{crit:setone}.
+
+\section{The per-cell criterion: when may one set $k = 1$?}
+\label{sec:criterion}
+
+\subsection{Statement}
+
+Consider the moment a decomposition splits, adding $k \neq 0$ to a cell's
+inequations. Rather than carry $k$ as a free nonzero parameter, one would like
+to pin $k = 1$.
+
+\begin{criterion}[set-it-to-one]
+\label{crit:setone}
+Let $C$ be a cell whose inequations include $k \neq 0$. Ask whether the
+quasi-homogeneity lattice of $C$ contains an integer weight vector $w$ with
+$w_k = 1$. There are three cases.
+\begin{itemize}
+\item[$w_k = 1$:] the $\Gm$ acts by $k \mapsto tk$, so $t = 1/k$ is the
+      \emph{unique} group element carrying a given point of $C$ to $\{k=1\}$.
+      The slice meets every orbit exactly once. \textbf{Clean pin}: no chart,
+      no cover, no residual.
+\item[$w_k = d$, $|d| > 1$, and no weight-$1$ vector:] $t^d k = 1$ has $d$
+      roots, the slice meets each orbit $d$ times, and the answer is a
+      $d$-fold cover. Usable only with an explicit $\mu_d$ quotient
+      (\S\ref{sec:unimodular}).
+\item[$w_k = 0$ forced:] no scaling moves $k$; it is a genuine modulus and
+      cannot be pinned by any Tier-1 argument.
+\end{itemize}
+\end{criterion}
+
+Two features make this attractive beyond the bare statement.
+
+\emph{The exclusion is free.} A normalization ordinarily buys a parameter at
+the price of a chart --- one must handle the excluded locus $k = 0$ separately.
+Here the split has \emph{already} excluded it: $k = 0$ is the sibling branch,
+which the decomposition was going to compute regardless. The pin spends a
+redundancy the algorithm has just handed over at no cost.
+
+\emph{The weight vector reports its own bookkeeping.} Inspect the components of
+$w$ on the differential indeterminates and independent variables, as opposed to
+those on the parameters and the equation-multiplier. If the former all vanish,
+the symmetry is gauge (\S\ref{sec:twokinds}): the solution set is
+\emph{literally identical}, and nothing is owed. If not, solutions move, and
+the answer at $k = 1$ must be transported over the $\Gm$-orbit --- but the
+transport is a substitution applied to the finished answer, never a
+recomputation. So the distinction of \S\ref{sec:twokinds} is decided
+mechanically, by reading off a sub-vector.
+
+\subsection{Correspondence with moving frames}
+
+Criterion~\ref{crit:setone} is the one-parameter case of the Fels--Olver
+regularity trichotomy, and it is worth recording the dictionary, both to place
+the construction in the literature and because the general theory then supplies
+the multi-parameter version for free:
+
+\begin{center}
+\begin{tabular}{l l}
+\toprule
+Criterion~\ref{crit:setone} & Fels--Olver \cite{FelsOlverI,FelsOlverII} \\
+\midrule
+$w_k = 1$ achievable      & action \textbf{free} $\Rightarrow$ global cross-section, unique normalization \\
+$w_k = d$, $|d| > 1$      & \textbf{locally free}, discrete isotropy $\mu_d$ $\Rightarrow$ local frame, quotient owed \\
+$w_k = 0$ forced          & not free in that direction $\Rightarrow$ no cross-section; genuine modulus \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The pin $k = 1$ is a cross-section; $t = 1/k$ is the moving frame $\rho$; and
+the invariants of the reduced problem are the invariantizations
+$\iota(F) = F(\rho \cdot z)$.
+
+\subsection{Can the criterion be tested rather than derived?}
+
+One would like to verify the symmetry empirically --- introduce an
+indeterminate $\lambda$, apply the scaling, and check that every transformed
+generator differential-pseudo-reduces to zero modulo the original system, and
+conversely. This is an ideal-equality test by reduction, and it is cheap with
+machinery the solver already has.
+
+It is worth doing as a check on a derived $w$, but it is \emph{not} an
+alternative route to one. Scaling $k$ alone is essentially never a symmetry; it
+closes only when every other symbol is rescaled in the matching way, and
+finding that matching companion scaling \emph{is} the weight computation. There
+is no test-only shortcut past the derivation --- but the derivation is one
+Hermite normal form.
+
+\section{Why per-cell strictly dominates global normalization}
+\label{sec:monotone}
+
+The ansatz-25 ladder \cite{ansatz25} normalizes once, globally, before the
+decomposition begins. Criterion~\ref{crit:setone} instead fires at each split.
+The following shows the latter is never worse and generally better.
+
+\begin{proposition}[monotonicity of available scaling]
+\label{prop:monotone}
+Let the input system be $w$-quasi-homogeneous. Then every cell of its Thomas
+decomposition is $w$-quasi-homogeneous, and the dimension of the scaling group
+available on a cell is non-decreasing along any root-to-leaf path.
+\end{proposition}
+
+\begin{proof}[Argument]
+Three observations.
+\begin{enumerate}
+\item Every operation the decomposition performs --- pseudo-division,
+      formation of initials and separants, resultants, and the differentiations
+      that generate prolongations --- preserves weights. Hence
+      $w$-quasi-homogeneity is inherited by every cell, and the root lattice is
+      available on every cell at no cost.
+\item A cell's \emph{new} equations arise as pseudo-remainders of its parents'
+      generators, and are therefore themselves $w$-quasi-homogeneous. The rows
+      they contribute to $M$ already lie in its row space, so they cannot
+      shrink $\ker M$.
+\item A cell's equations that \emph{set parameters to zero} delete monomials
+      from the surviving generators, hence delete rows from $M$. Deleting rows
+      can only enlarge the kernel.
+\end{enumerate}
+Combining (2) and (3), the kernel is non-decreasing as one descends. \qed
+\end{proof}
+
+\begin{remark}
+Proposition~\ref{prop:monotone} is the argument for building the criterion into
+the split rather than into the preprocessing: deep cells have \emph{at least
+as much}, and typically strictly more, normalization available than the root,
+and a global up-front pass leaves all of the excess unspent. Cell~13 of
+Table~\ref{tab:hydrogen5} is the case in point --- it has two parameters
+zeroed, so by (3) its lattice has grown, and it retains seven inequations, so
+it offers seven candidate pins. It is also, by an order of magnitude, the cell
+whose cost matters.
+\end{remark}
+
+\section{What the criterion does not catch}
+\label{sec:gap}
+
+Criterion~\ref{crit:setone} is a Tier-1 certificate with a per-cell trigger. It
+therefore inherits the blind spot of \S\ref{sec:tier2} in full, and it is worth
+being precise about how, because the trigger and the certificate fail
+\emph{differently}.
+
+\paragraph{The trigger generalizes; the certificate does not.} The question
+``is there a group element carrying every point of this branch to $k=1$?'' is
+group-agnostic and is the right question for any $G$. The test
+``$\exists\, w \in \ZZ^N$ with $w_k = 1$'' answers it correctly for a torus and
+returns \emph{no} for genuine unipotent symmetries that would have worked.
+
+\paragraph{Pure translations are never triggered at all.} A $\Ga$ acting by
+$k \mapsto k + c$ has a single orbit on the $k$-line, all of $\CC$. There is no
+invariant $\{k \neq 0\}$ locus for a split to produce, so no inequation ever
+fires the trigger. The natural normalization is $k = 0$, unconditional, with
+neither branch nor chart --- which is precisely the $\pi$ generator of
+\cite{ansatz25} (``$p_4 = 0$: lossless, no chart, no split''). This is
+\emph{cheaper} than any torus pin, and a criterion keyed to nonzero splits will
+never find it. It needs its own trigger.
+
+\paragraph{Unipotents on a plane are triggered on the wrong variable.} For
+$\tau : x_0 \mapsto x_0 + c\,x_1$, $x_1 \mapsto x_1$, the orbits are the lines
+$\{x_1 = \text{const}\}$ when $x_1 \neq 0$, and fixed points when $x_1 = 0$. So
+a branch \emph{does} license a pin --- but the inequation is on $x_1$ while the
+coordinate pinned is $x_0$. A criterion that looks for a pin on the variable
+the inequation is about is not merely unable to certify this case; it is not
+looking in the right place.
+
+\paragraph{The composite case, which is the cautionary one.} In ansatz~25,
+$\tau$ composed with the gauge renormalization $\kappa = 1/(1+g_1c)$ acts on
+$g_1$ by
+\[
+   g_1 \;\longmapsto\; \frac{g_1}{1 + c\,g_1} ,
+\]
+a M\"obius action whose orbits are exactly $\{0\}$ and $\CC^*$. That is
+indistinguishable in orbit structure from a scaling, and it is the origin of
+the proposed normalization $g_1 \in \{0,1\}$ of \cite{ansatz25}, \S6. So the
+trigger \emph{would} have fired correctly on $g_1$ --- and the weight-lattice
+certificate would have said \emph{no}, the action being neither diagonal nor
+even linear in that coordinate. The trigger was right and the certificate was
+wrong. This is the failure mode to design against.
+
+\paragraph{Consequent recommendation.} Tier~1 is attractive because it is a
+two-line Hermite normal form. But Tier~2 is also only linear algebra, is
+negligible against the cost it is meant to reduce (\S\ref{sec:tier2}), and the
+one case in this project where the analysis has been carried out by hand is a
+case in which \textbf{Tier~1 alone would have missed everything that was in
+fact missed}. The diagnostic should be built at Tier~2 from the start.
+
+\section{What is not a group at all}
+\label{sec:notagroup}
+
+A caveat belongs in any write-up of this material, since it bounds what
+\emph{any} symmetry algorithm at \emph{any} tier can deliver. Not every
+redundancy is a group action.
+
+Two linear ODE operators define the same solution family iff they generate the
+same left ideal in the Weyl algebra --- what matters is $D\cdot L$, not $L$.
+Restricted to a family with affine coefficients, that relation is a groupoid
+with jumping fibres rather than a group action: over a constant-coefficient
+operator the fibre $\{(1 + g_1 s)\cdot L\}$ is $1$-dimensional, while over a
+generic affine operator it is a point \cite{ansatz25}. The gauge generator
+$\kappa$ is only its degree-zero part. No normalization can pin the rest,
+because there is no group to quotient by, and a symmetry-detection algorithm
+that reported one would be in error.
+
+\section{Positioning with respect to the paper's Conclusion}
+\label{sec:positioning}
+
+The Conclusion of \emph{A New Method of Solving PDEs} draws a sharp line
+against symmetry methods:
+
+\begin{quote}
+\small
+\ldots complementary to the \emph{similarity-reduction} methods --- the
+classical Lie symmetry method \cite{Olver}, the Clarkson--Kruskal direct method,
+and the nonclassical (conditional) symmetries of Bluman and Cole --- which also
+reduce a PDE to an ODE without assuming a separable product form, but which are
+organized around the (classical or conditional) symmetries of the equation. Our
+reductions are instead organized around the differential-algebraic structure of
+the ansatz; \textbf{they do not presuppose any symmetry of the PDE}, and they
+carry the completeness guarantee of Theorem~1.
+\end{quote}
+
+A \S\,Scaling Symmetries subsection reintroduces symmetry, and a referee may
+read it as undercutting that claim. The defence is clean and should be stated
+explicitly rather than left to inference:
+
+\begin{quote}
+The similarity-reduction methods use symmetry \emph{constitutively} --- the
+symmetry group is what selects the reduction, so an equation with no symmetry
+admits no method. The present use is different in kind: symmetry normalizes the
+parameter space of an ansatz that was chosen on entirely other grounds. Delete
+the symmetry analysis and the method still runs, still correct and still
+complete, merely with more parameters and a slower decomposition. Symmetry here
+is an optimization, not a premise, and Theorem~1 is untouched either way.
+\end{quote}
+
+One sentence to this effect in the new subsection, with a cross-reference from
+the Conclusion, closes the gap.
+
+\section{Recommendations}
+\label{sec:recommendations}
+
+\begin{enumerate}
+\item \textbf{Adopt the unimodularity check immediately, before any pin.} It is
+      a determinant, and \S\ref{sec:hydrogen} shows the natural choice
+      $a_0 = c_0 = 1$ is defective in the very ansatz under study. A silent
+      $d$-fold cover is the worst class of error here: the run completes, the
+      output looks structurally correct, and every component is duplicated.
+\item \textbf{Build the diagnostic at Tier~2, not Tier~1} (\S\ref{sec:gap}).
+      Cost is comparable; coverage is not.
+\item \textbf{Add a separate trigger for translation directions}, which the
+      nonzero-split hook cannot reach and which are the cheapest pins available
+      (no chart, no split).
+\item \textbf{Run the criterion as a read-only diagnostic first.} For each cell,
+      report which inequations admit a clean pin, which give a $d$-cover, and
+      which are moduli. This measures the payoff --- concentrated, per
+      Table~\ref{tab:hydrogen5}, almost entirely in cell~13 --- without
+      perturbing the decomposition.
+\item \textbf{Retain an unpinned mode.} Pinning inside the decomposition means
+      the output is no longer the \emph{canonical} Thomas decomposition of the
+      original system. Disjointness and the partition identity survive;
+      canonicity and comparability against a reference run do not.
+\item \textbf{Consider the dual construction.} Since the Thomas decomposition is
+      canonical, a symmetry group \emph{permutes cells}. Where a $\Gm$ carries
+      cell $i$ to cell $j$, one does not pin --- one discards $j$ as a duplicate
+      and records the transport. Given the cost concentration of
+      Table~\ref{tab:hydrogen5}, this may be worth more than pinning. (Cells 1
+      and 2, and 3 and 4, return identical prime lists, which is suggestive;
+      but the likelier explanation is GTZ absorbing limit strata, and the
+      question should be settled before anything is claimed.)
+\end{enumerate}
+
+\section{What was checked, and how}
+\label{sec:checked}
+
+Following the discipline of \cite{ansatz25}, \S7, the computational claims here
+were executed rather than asserted.
+
+\begin{itemize}
+\item \textbf{The hydrogen / ansatz 5 weight table} was verified one
+      generator at a time by the script
+      \code{symmetry-weights-check.py} in this
+      directory: all nine ansatz equations, the PDE, and both inequations are
+      quasi-homogeneous under the stated weights, each with a single monomial
+      weight. The script also enumerates all $55$ two-parameter pins and
+      classifies them by $|\det|$, producing the $32$/$5$/$18$ split of
+      \S\ref{sec:hydrogen}.
+\item \textbf{$w_x = 0$ is forced} by the PDE: the monomials $r\Psi_{xx}$ and
+      $\Psi$ carry weights $w_\Psi - w_x$ and $w_\Psi$, which agree only at
+      $w_x = 0$; $w_E = -w_x = 0$ follows. Physically, the Coulomb term fixes a
+      length scale, so hydrogen at fixed charge has no spatial scaling
+      symmetry, and the eigenvalue is correspondingly unnormalizable.
+\item \textbf{Cross-validation against \cite{ansatz25}.} The computed
+      $\mu$-weights for $(a_0,a_1,b_0,b_1,c_0,c_1)$, namely
+      $(2,1,1,0,0,-1)$, reproduce that note's independently derived
+      general rule --- $\mu$-weights $w_j$ and $w_j - 1$ for the pair
+      multiplying a jet monomial of derivative order $w_j$ --- at
+      $w_j = 2, 1, 0$.
+\item \textbf{The $2$-fold cover of $\Psi'' + b\Psi' + \Psi$} was checked
+      directly: the residual subgroup is $\{t_x = \pm 1\}$ acting by
+      $b \mapsto \pm b$, realized by $x \mapsto -x$.
+\item \textbf{Timings} in Table~\ref{tab:hydrogen5} are read from
+      \code{hydrogen-5-membership.out}, the run of 5--6~September 2026 on
+      samsung.
+\end{itemize}
+
+\section{Gaps}
+\label{sec:gaps}
+
+\begin{itemize}
+\item \textbf{No Tier-2 computation has been performed for hydrogen /
+      ansatz~5.} The lattice of \S\ref{sec:hydrogen} is the torus only. Whether
+      that system admits unipotent directions analogous to ansatz~25's $\tau$
+      is open; the inner variable $v = v_1x + v_2y + v_3z + v_4r$ carries no
+      constant term, so the obvious $\tau$-analogue is \emph{not} available,
+      but this is an observation, not a proof of absence.
+\item \textbf{The payoff is projected, not measured.} No run has been made with
+      any pin. Two parameters and six constancy equations is exact arithmetic;
+      that this translates into a shorter cell~13 is a hypothesis. The same
+      caution applies as in \cite{ansatz25}, \S6, where it was noted that the
+      cost driver might be the structure of a stratum rather than raw parameter
+      count --- and cell~13, where the ODE degenerates in order, is exactly
+      such a structural stratum.
+\item \textbf{Pinning a polynomial rather than a parameter} is unimplemented.
+      Cell~13's seven inequations are in general polynomials, not bare
+      parameters. By Proposition~\ref{prop:monotone} they are $w$-homogeneous,
+      so the criterion applies verbatim; but pinning ``this polynomial $= 1$''
+      is a coordinate change rather than a substitution, and is more work.
+\item \textbf{Discrete symmetries are out of scope} at every tier. Tiers 1--3
+      compute connected groups; the reflection $x \mapsto -x$ of
+      \S\ref{sec:unimodular} appeared only as a residual isotropy, and nothing
+      here would have found it \emph{ab initio}.
+\item \textbf{The consistency-locus half is unfinished.} The companion
+      \code{--locus consistency} run for hydrogen / ansatz~5 was killed at
+      $1$h$06$m and $23.7$~GB, still inside the Thomas decomposition. The cost
+      figures of \S\ref{sec:cost} are for the membership locus only.
+\end{itemize}
+
+\begin{thebibliography}{99}
+
+\bibitem{ansatz25}
+\emph{The symmetry group of ansatz 25}, companion note, 2~September 2026,
+\nolinkurl{~/Papers/NewMethod/ansatz-25-symmetry-group.md}. [Lie-group analysis
+of the ansatz-25 parameter space: the $\Gamma \times H$ splitting, the weight
+table, the unimodularity criterion, the three unspent generators $\tau$,
+$\delta$, $\pi$, and the Weyl-algebra groupoid of \S\ref{sec:notagroup}.]
+
+\bibitem{Olver}
+P.~J. Olver, \emph{Applications of Lie Groups to Differential Equations}, second
+ed., Graduate Texts in Mathematics, vol.~107, Springer, New York, 1993.
+\url{https://doi.org/10.1007/978-1-4612-4350-2}. [Ch.~2: prolongation formula,
+infinitesimal criterion, determining equations --- Tier~3.]
+
+\bibitem{OlverEquivalence}
+P.~J. Olver, \emph{Equivalence, Invariants and Symmetry}, Cambridge University
+Press, 1995.
+
+\bibitem{FelsOlverI}
+M. Fels, P.~J. Olver, Moving coframes~I: a practical algorithm, \emph{Acta Appl.
+Math.} \textbf{51} (1998) 161--213.
+
+\bibitem{FelsOlverII}
+M. Fels, P.~J. Olver, Moving coframes~II: regularization and theoretical
+foundations, \emph{Acta Appl. Math.} \textbf{55} (1999) 127--208.
+[Freeness / local freeness / regularity --- the trichotomy of
+Criterion~\ref{crit:setone}.]
+
+\bibitem{HubertLabahnISSAC}
+\'E. Hubert, G. Labahn, Rational invariants of scalings from Hermite normal
+forms, in: \emph{Proc.\ ISSAC 2012}, ACM, pp.~219--226.
+
+\bibitem{HubertLabahnFoCM}
+\'E. Hubert, G. Labahn, Scaling invariants and symmetry reduction of dynamical
+systems, \emph{Found. Comput. Math.} \textbf{13} (2013) 479--516.
+[The Hermite-normal-form algorithm of \S\ref{sec:tier1}.]
+
+\bibitem{ThomasDecomp}
+T. B\"achler, V.~P. Gerdt, M. Lange-Hegermann, D. Robertz, Algorithmic Thomas
+decomposition of algebraic and differential systems, \emph{J. Symbolic Comput.}
+\textbf{47}(10) (2012) 1233--1266.
+\url{https://doi.org/10.1016/j.jsc.2011.12.043}.
+
+\bibitem{hubert}
+\'E. Hubert, Notes on triangular sets and triangulation-decomposition
+algorithms~I: Polynomial systems, LNCS vol.~2630, Springer, 2003, pp.~1--39.
+
+\bibitem{hubert2}
+\'E. Hubert, Notes on triangular sets and triangulation-decomposition
+algorithms~II: Differential systems, LNCS vol.~2630, Springer, 2003,
+pp.~40--87.
+
+\end{thebibliography}
+
+\bigskip
+\noindent\emph{Prepared as computational and literature backing for the
+\S\,Scaling Symmetries subsection of} A New Method of Solving PDEs. \emph{The
+Tier-1 lattice of \S\ref{sec:hydrogen} and the pin classification were computed
+and verified live; see \S\ref{sec:checked}. Written by Claude (Opus~5) in an
+interactive session of 6~September 2026 --- reviewed and edited by the author;
+see} \code{AI-CONTRIBUTIONS.md}.
+
+\end{document}
