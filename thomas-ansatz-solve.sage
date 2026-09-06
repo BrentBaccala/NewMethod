@@ -4762,82 +4762,209 @@ def _hole_ok(a, b, gens):
     return (a + J).saturation(b)[0].is_one()
 
 
-def principal_hole(a, b, atoms, max_atoms=2, max_gens=None, budget=4000):
+def _substitute(sol, f):
     r"""
-    A compact hole equivalent to ``b`` over the top ``a`` -- principal if one exists.
+    Apply a triangular solution to a polynomial.
 
-    The represented set `V(\mathfrak{a}) \setminus V(\mathfrak{b})` is unchanged
-    by any `\mathfrak{b}'` with `\sqrt{\mathfrak{a} + \mathfrak{b}'} =
-    \sqrt{\mathfrak{a} + \mathfrak{b}}`, so the hole may be ENLARGED freely as
-    long as the extra points miss the top.  Brunat-Montes take the smallest such
-    ideal, which is what forces every hole to carry the top's generators; this
-    goes the other way and reports the simplest representative instead.
-
-    Whether a PRINCIPAL one exists is not a matter of searching hard enough.
-    By Krull, `V(\mathfrak{a}) \cap V(f)` is pure codimension 1, so a hole whose
-    minimal primes have different dimensions cannot be cut out by any single
-    `f`; two generators then suffice, an ideal of two elements being free to
-    have components of codimension 1 and 2 at once.  Pure codimension 1 is
-    necessary but not sufficient in general -- the obstruction lives in the
-    divisor class group of `R/\mathfrak{a}`, and vanishes when that ring is a
-    UFD -- so a failed search is informative rather than inconclusive.
-
-    INPUT:
-
-    - ``a``, ``b`` -- the top and the hole of one component
-
-    - ``atoms`` -- the search space, from :func:`hole_atoms`
-
-    - ``max_atoms`` -- how many atoms may be multiplied into one candidate.
-      Products only ever help a SINGLE-generator hole, where the removed locus
-      is a union of atom hypersurfaces cut by one equation; a multi-generator
-      search uses the bare atoms, which keeps it from blowing up
-      combinatorially.
-
-    - ``budget`` -- give up after this many candidate tests
-
-    - ``max_gens`` -- how many candidates may generate the hole.  Defaults to
-      the codimension of the removed locus in the top, which is the least a
-      generating set can have (Krull) and enough whenever the locus is a
-      set-theoretic complete intersection.  It is not a bound in general:
-      Eisenbud-Evans gives `\dim V(\mathfrak{a}) + 1`, and raising this is the
-      thing to try when the search exhausts.
-
-    OUTPUT: the generators, simplest first, or ``None`` if the search exhausts
+    ``sol`` sends variables to polynomials in the UNSOLVED variables, so a
+    single pass suffices; :func:`_solved_form` maintains that invariant as
+    it builds the map.
 
     EXAMPLES::
 
-        sage: R4.<u,v,w> = PolynomialRing(QQ)
-        sage: a = R4.ideal(w)
-        sage: b = (a + R4.ideal(u*v)).radical()
-        sage: [str(f) for f in principal_hole(a, b, [u, v, w])]
-        ['u*v']
+        sage: R5.<u,v,w> = PolynomialRing(QQ)
+        sage: _substitute({w: u*v}, w - u*v)
+        0
+    """
+    return f.subs(sol) if sol else f
 
-    A hole already equal to the top has nothing to report::
 
-        sage: principal_hole(a, R4.ideal(R4.one()), [u, v]) is None
+def _solved_form(a):
+    r"""
+    A triangular solution of ``a``, or ``None`` when it has none.
+
+    Returns a dict sending some variables to polynomials in the others such
+    that substituting it kills every generator of ``a``.  When one exists,
+    `A = R/\mathfrak{a}` is a polynomial ring on the unsolved variables --
+    hence a UFD, which is what turns the quotient-generator branch of
+    :func:`_component_generator` into a decision procedure rather than a
+    search.  The empty dict is a legitimate answer, for `\mathfrak{a} = (0)`.
+
+    The test is greedy and syntactic: a generator linear in some variable
+    with a CONSTANT coefficient solves for it.  It is sufficient, not
+    necessary -- a factorial quotient need not be a polynomial ring, and
+    recognizing factoriality in general is its own hard problem -- so
+    ``None`` means "no certainty available here", not "not a UFD".
+
+    EXAMPLES::
+
+        sage: R5.<u,v,w> = PolynomialRing(QQ)
+        sage: _solved_form(R5.ideal(w - u*v))
+        {w: u*v}
+
+    The quadric cone is not solvable this way, and indeed is not a UFD --
+    its divisor class group is nontrivial, so a height-one prime on it need
+    not be principal::
+
+        sage: _solved_form(R5.ideal(u*v - w^2)) is None
         True
     """
-    if b.is_one() or b.is_zero():
-        return None
-    if max_gens is None:
-        max_gens = max(1, a.dimension() - b.dimension())
-    products, seen = [], set()
+    K = a.ring().base_ring()
+    sol = {}
+    pending = [g for g in a.gens() if not g.is_zero()]
+    progress = True
+    while progress:
+        progress, rest = False, []
+        for g in pending:
+            g = _substitute(sol, g)
+            if g.is_zero():
+                continue
+            x = None
+            for y in g.variables():
+                if g.degree(y) != 1:
+                    continue
+                c = g.coefficient({y: 1})
+                if c.is_constant() and not c.is_zero():
+                    x = y
+                    break
+            if x is None:
+                rest.append(g)
+                continue
+            c = K(g.coefficient({x: 1}))
+            new = (c * x - g) * (1 / c)
+            sol = dict((y, _substitute({x: new}, e)) for y, e in sol.items())
+            sol[x] = new
+            progress = True
+        pending = rest
+    return None if pending else sol
+
+
+def _cuts(a, b, f):
+    r"""
+    True when `V(\mathfrak{a}) \cap V(f) \subseteq V(\mathfrak{b})`.
+
+    The per-component half of :func:`_hole_ok`.  It drops that function's
+    containment test `f \in \mathfrak{b}`, which no single component's
+    generator satisfies -- the PRODUCT across the components is what lands
+    in `\mathfrak{b}`.
+
+    EXAMPLES::
+
+        sage: R5.<u,v,w> = PolynomialRing(QQ)
+        sage: _cuts(R5.ideal(w - u*v), R5.ideal(w, u), u)
+        True
+        sage: _cuts(R5.ideal(R5.zero()), R5.ideal(u), v)
+        False
+    """
+    return (a + a.ring().ideal(f)).saturation(b)[0].is_one()
+
+
+def _component_generator(a, b, p, sol, atoms):
+    r"""
+    An `f_i \in \mathfrak{p}` with `V(\mathfrak{a}) \cap V(f_i) \subseteq V(\mathfrak{b})`.
+
+    The per-component subproblem of :func:`principal_hole`.  Three sources,
+    cheapest first:
+
+    (a) the QUOTIENT GENERATOR.  When ``sol`` is a triangular solution of
+        the top, `A = R/\mathfrak{a}` is a polynomial ring; the caller's
+        purity screen makes `\mathfrak{p}/\mathfrak{a}` height one; and a
+        UFD's height-one primes are principal.  So the generator EXISTS,
+        and is the gcd of `\mathfrak{p}`'s generators read in `A`.  This
+        branch decides -- it does not search.
+
+    (b) the irreducible factors of `\mathfrak{p}`'s own generators that lie
+        in `\mathfrak{p}`.  Legitimate because `\mathfrak{p}` is prime, so
+        some factor of any member is itself a member.  This is what finds
+        the cases (a) cannot: on the quadric cone `uv = w^2` the line
+        `(u,w)` is not principal in `A`, and yet `V(u)` meets the cone in
+        exactly that line, doubled -- multiplicity being free to us, since
+        only the set matters -- so `f = u` serves.
+
+    (c) the run's hole atoms, filtered to `\mathfrak{p}`.
+
+    (b) and (c) are searches over finite handpicked pools, so their failure
+    is inconclusive; only (a) proves anything.
+
+    EXAMPLES::
+
+        sage: R5.<u,v,w> = PolynomialRing(QQ)
+        sage: a = R5.ideal(u*v - w^2); b = (a + R5.ideal(u)).radical()
+        sage: _component_generator(a, b, b, None, [])
+        u
+    """
+    if sol is not None:
+        imgs = [g for g in (_substitute(sol, x) for x in p.gens())
+                if not g.is_zero()]
+        if imgs:
+            f = imgs[0]
+            for g in imgs[1:]:
+                f = f.gcd(g)
+            if not f.is_constant() and f in p and _cuts(a, b, f):
+                return f
+    for g in p.gens():
+        if g.is_zero():
+            continue
+        for fac, _m in g.factor():
+            if not fac.is_unit() and fac in p and _cuts(a, b, fac):
+                return fac
+    for fac in atoms:
+        if fac in p and _cuts(a, b, fac):
+            return fac
+    return None
+
+
+def _multi_hole(a, b, primes, atoms, lower, max_atoms, budget):
+    r"""
+    A several-generator compact hole, for when no principal one is available.
+
+    There is no per-component theorem above one generator -- `k` equations
+    cut out an intersection of `k` hypersurfaces, which does not decompose
+    the way a product does -- so this is an honest search, and its failure
+    proves nothing.  What it does do is search a pool PRE-FILTERED by
+    `f \in \mathfrak{b}`, which :func:`_hole_ok` requires anyway: that test
+    is cheap ideal membership, and applying it first is what keeps the
+    combinatorics from exploding.
+
+    The pool is the atoms and their small products, the irreducible factors
+    of the components' generators, and `\mathfrak{b}`'s own generators --
+    the last guaranteeing the search has something to find, since they
+    generate `\mathfrak{b}` by definition.
+
+    ``lower`` is Krull's bound, the largest codimension among the
+    components; the loop starts there because nothing smaller can work.
+    """
+    R = a.ring()
+    pool, seen = [], set()
+
+    def add(f):
+        if f.is_zero() or f.is_constant() or str(f) in seen:
+            return
+        if f not in b:
+            return
+        seen.add(str(f))
+        pool.append(f)
+
     for k in range(1, max_atoms + 1):
         for S in itertools.combinations(atoms, k):
             f = S[0]
             for g in S[1:]:
                 f = f * g
-            if str(f) not in seen:
-                seen.add(str(f))
-                products.append(f)
-    products.sort(key=lambda f: (f.total_degree(), len(str(f)), str(f)))
+            add(f)
+    for p in primes:
+        for g in p.gens():
+            if g.is_zero():
+                continue
+            for fac, _m in g.factor():
+                if not fac.is_unit():
+                    add(fac)
+    for g in b.gens():
+        add(g)
+    pool.sort(key=lambda f: (f.total_degree(), len(str(f)), str(f)))
+
     spent = 0
-    for k in range(1, max_gens + 1):
-        # products for the principal case, bare atoms above it: C(105, 4) is
-        # millions of tests where C(14, 4) is a thousand, and a product can
-        # only ever substitute for one generator anyway.
-        pool = products if k == 1 else atoms
+    upper = min(len(pool), max(lower, a.dimension() + 1))
+    for k in range(max(1, lower), upper + 1):
         for S in itertools.combinations(pool, k):
             spent += 1
             if spent > budget:
@@ -4845,6 +4972,132 @@ def principal_hole(a, b, atoms, max_atoms=2, max_gens=None, budget=4000):
             if _hole_ok(a, b, S):
                 return list(S)
     return None
+
+
+def principal_hole(a, primes, atoms=(), max_atoms=2, budget=4000):
+    r"""
+    A compact hole equivalent to `\bigcap \mathfrak{p}_i` over the top ``a``.
+
+    The set `V(\mathfrak{a}) \setminus V(\mathfrak{b})` is unchanged by any
+    `\mathfrak{b}'` with `\sqrt{\mathfrak{a} + \mathfrak{b}'} =
+    \sqrt{\mathfrak{a} + \mathfrak{b}}`, so the hole may be ENLARGED freely
+    as long as the extra points miss the top.  Writing `\mathfrak{b}' =
+    \mathfrak{b} \cap \mathfrak{c}`, the condition on the enlargement is
+    `V(\mathfrak{a}) \cap V(\mathfrak{c}) \subseteq V(\mathfrak{b})`, and
+    every valid `\mathfrak{b}'` is of that shape -- Crep gives
+    `\mathfrak{b} \supseteq \mathfrak{a}`, so no valid hole can omit part
+    of `V(\mathfrak{b})`.  Brunat-Montes take the SMALLEST such ideal,
+    which is what forces every canonical hole to carry the top's
+    generators; this goes the other way and reports the simplest one.
+
+    Since `R` is a polynomial ring, hence a UFD, `V(\mathfrak{b}) \cup
+    V(\mathfrak{c})` is a hypersurface exactly when it is pure codimension
+    one, so `\mathfrak{c}`'s only job is to fatten each component up to a
+    hypersurface without meeting the top anywhere new.  That decomposes,
+    exactly:
+
+        a principal hole exists  <=>  for every minimal prime
+        `\mathfrak{p}_i` of `\mathfrak{b}` there is an irreducible
+        `f_i \in \mathfrak{p}_i` with `(\mathfrak{a} + (f_i)) :
+        \mathfrak{b}^\infty = (1)`;  and then `f = \prod_i f_i`.
+
+    (=>) factor `f`; each `Z_i` is irreducible and lies in `V(f) = \bigcup
+    V(f_k)`, hence in one of them, which inherits the saturation condition.
+    (<=) each `V(f_i)` meets the top inside `V(\mathfrak{b})`, so their
+    union does, and `f \in \bigcap \mathfrak{p}_i = \mathfrak{b}`.
+
+    WHAT IS AND IS NOT DECIDED.  The Krull screen and the quotient-generator
+    branch are theorems; the rest is search.  By Krull, `V(\mathfrak{a})
+    \cap V(f)` is PURE codimension one in `V(\mathfrak{a})` -- every
+    component drops by exactly one -- so a hole with components of
+    differing dimension admits no principal form at all, whatever the
+    search would say.  Conversely, if the top has a triangular solution
+    then `R/\mathfrak{a}` is a polynomial ring and the screen's survivors
+    are principal in it, so screen plus quotient generator DECIDE.  Outside
+    that class the question is whether some effective divisor supported on
+    `V(\mathfrak{b})` is principal on `V(\mathfrak{a})`, i.e. whether
+    `\sum n_i [D_i] = 0` in `Cl(R/\mathfrak{a})` with every `n_i \ge 1`.
+    Given the class group that is a linear Diophantine feasibility question
+    and decidable, but there is no general algorithm for computing the
+    class group of an affine domain -- so a failed search there is
+    reported as inconclusive, never as a proof of nonexistence.
+
+    INPUT:
+
+    - ``a`` -- the top of one P-representation component, prime
+
+    - ``primes`` -- its canonical prime holes, as Prep produced them.  They
+      are NOT re-derived from an intersected ideal: the decomposition is
+      the expensive part and the caller already has it.
+
+    - ``atoms`` -- extra candidates, from :func:`hole_atoms`
+
+    - ``max_atoms`` -- how many atoms may be multiplied into one candidate
+
+    - ``budget`` -- give up after this many several-generator tests
+
+    OUTPUT:
+
+    a pair ``(gens, status)``, where ``status`` is
+
+    - ``'principal'`` -- ``gens`` is a single verified generator
+    - ``'multiple'`` -- ``gens`` is a verified several-generator hole
+    - ``'no-principal'`` -- ``gens`` is ``None``; no principal hole exists,
+      by Krull, and the several-generator search came up empty
+    - ``'inconclusive'`` -- ``gens`` is ``None`` and nothing is proved
+
+    EXAMPLES::
+
+        sage: R5.<u,v,w> = PolynomialRing(QQ)
+        sage: a = R5.ideal(w - u*v)
+        sage: principal_hole(a, [(a + R5.ideal(u)).radical()])
+        ([u], 'principal')
+
+    A hole of mixed dimension is refused by Krull rather than by searching,
+    and the fallback then supplies two generators -- which is minimal here,
+    a codimension-two component needing at least two::
+
+        sage: gens, status = principal_hole(R5.ideal(R5.zero()),
+        ....:                               [R5.ideal(u), R5.ideal(v, w)])
+        sage: sorted(str(g) for g in gens), status
+        (['u*v', 'u*w'], 'multiple')
+    """
+    primes = [p for p in primes if not p.is_one()]
+    if not primes:
+        return (None, 'inconclusive')
+    b = primes[0]
+    for p in primes[1:]:
+        b = b.intersection(p)
+    if b.is_one() or b.is_zero():
+        return (None, 'inconclusive')
+
+    da = a.dimension()
+    dims = [p.dimension() for p in primes]
+    pure = all(d == da - 1 for d in dims)
+    sol = _solved_form(a)
+
+    if pure:
+        fs, seen = [], set()
+        for p in primes:
+            f = _component_generator(a, b, p, sol, atoms)
+            if f is None:
+                fs = None
+                break
+            if str(f) not in seen:
+                seen.add(str(f))
+                fs.append(f)
+        if fs:
+            f = fs[0]
+            for g in fs[1:]:
+                f = f * g
+            if _hole_ok(a, b, [f]):
+                return ([f], 'principal')
+
+    lower = da - min(dims)
+    gens = _multi_hole(a, b, primes, atoms, lower, max_atoms, budget)
+    if gens is not None:
+        return (gens, 'multiple')
+    return (None, 'inconclusive' if pure else 'no-principal')
 
 
 def comprehensive(union_primes, title):
@@ -4941,14 +5194,18 @@ def comprehensive(union_primes, title):
         lvl = []
         print("\n  Level %d  (dim %d):" % (2 * l + 1, a.dimension()))
         for top, holes in comps:
-            compact = None
+            compact, note = None, None
             if holes:
-                hb = holes[0]
-                for h in holes[1:]:
-                    hb = hb.intersection(h)
-                g = principal_hole(top, hb, atoms)
+                g, status = principal_hole(top, holes, atoms)
                 if g is not None:
                     compact = [_tidy_cond(x) for x in g]
+                elif status == 'no-principal':
+                    note = ("no principal hole exists -- the canonical holes "
+                            "are not of pure codimension 1 in the top (Krull) "
+                            "-- and no several-generator form was found")
+                else:
+                    note = ("no compact hole found; INCONCLUSIVE, not a proof "
+                            "that none exists")
             lvl.append((top, holes, compact))
             print("     V: %s" % fmt_ideal(top))
             if compact is not None:
@@ -4962,10 +5219,9 @@ def comprehensive(union_primes, title):
             else:
                 for h in holes:
                     print("        minus V: %s" % fmt_ideal(h))
-                if holes:
-                    print("        (no compact hole in <= %d generator(s); the "
-                          "canonical prime hole(s) above are the report)"
-                          % max(1, top.dimension() - hb.dimension()))
+                if note:
+                    print("        (%s; the canonical prime hole(s) above are "
+                          "the report)" % note)
         out.append(lvl)
     return out
 
