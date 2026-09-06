@@ -259,8 +259,24 @@ Output
                      form the paper uses, denominators cleared.  It renders
                      whatever the mode above selected, so the paper carries
                      the same object the run reported.
-  --latex-label NAME emit LaTeX \label commands, tagged NAME: the block gets
-                     \label{NAME} and the i-th component \label{NAME:i}.
+  --latex-label SPEC emit LaTeX \label commands.  SPEC is either a single
+                     NAME -- the block gets \label{NAME} and the i-th
+                     component \label{NAME:i} -- or a comma-separated list
+                     naming the components one by one, in the order they are
+                     RENDERED (so after --sort-order), whose first entry
+                     names the block as well:
+
+                         --latex-label ideal:1s,2s,classical,parabolic
+
+                     labels the block \label{ideal} and its four components
+                     \label{ideal:1s} ... \label{ideal:parabolic}.  A later
+                     entry may carry a prefix of its own, which overrides.
+                     The list must hold exactly one entry per component the
+                     run produced, with no duplicates; anything else is
+                     refused rather than labelling the wrong row.  Named
+                     tags are what a \ref in the paper wants: the tag still
+                     means that component after a change of --sort-order,
+                     where :i means whatever moved into that place.
                      Omitted -- the default -- no \label is emitted at all,
                      which is what a block the paper never \ref's wants, and
                      what keeps several pasted blocks from colliding on the
@@ -364,6 +380,81 @@ def _argval(flag, default=None):
     """
     return sys.argv[sys.argv.index(flag) + 1] if flag in sys.argv else default
 
+
+def parse_latex_label(arg):
+    r"""
+    Split ``--latex-label``'s argument into the block label and the row tags.
+
+    Two forms.  A single ``NAME`` labels the block ``\label{NAME}`` and
+    numbers the rows ``NAME:1``, ``NAME:2``, ...  A comma-separated list
+    names the rows one by one instead, in the order they are RENDERED --
+    after ``--sort-order`` -- and its first entry names the block as well:
+    ``ideal:1s,2s,classical`` is ``\label{ideal}`` on the block and
+    ``\label{ideal:1s}``, ``\label{ideal:2s}``, ``\label{ideal:classical}``
+    on the rows.  A later entry carrying a colon of its own keeps its own
+    prefix rather than taking the block's.
+
+    Named rows exist because a ``\ref`` in the paper does not mean a
+    position: ``\ref{ideal:classical}`` still points at the classical
+    component after a change of ``--sort-order``, where ``\ref{ideal:3}``
+    silently points at whatever moved into third place.
+
+    INPUT:
+
+    - ``arg`` -- the argument string, or ``None`` when ``--latex-label`` was
+      not given
+
+    OUTPUT: a pair ``(block, tags)``: the block's label or ``None``, and the
+    per-row labels as a list of fully-qualified tags, empty for the single-
+    ``NAME`` form (which numbers the rows instead)
+
+    EXAMPLES::
+
+        sage: parse_latex_label(None)
+        (None, [])
+        sage: parse_latex_label('ideal')
+        ('ideal', [])
+        sage: parse_latex_label('ideal:1s,2s,classical,parabolic')
+        ('ideal',
+         ['ideal:1s', 'ideal:2s', 'ideal:classical', 'ideal:parabolic'])
+
+    A later entry with a prefix of its own keeps it, and spaces after the
+    commas are allowed::
+
+        sage: parse_latex_label('ideal:1s, other:2s')
+        ('ideal', ['ideal:1s', 'other:2s'])
+    """
+    if not arg:
+        return None, []
+    entries = [e.strip() for e in arg.split(',')]
+    def _refuse(msg):
+        r"""Report a malformed --latex-label and stop the run."""
+        sys.stdout.write("--latex-label %s\n" % msg)
+        sys.stdout.flush()
+        # os._exit, not sys.exit: the sage runner swallows SystemExit (see
+        # --help).  This has to stop the run before the hour of compute.
+        os._exit(2)
+    if any(not e for e in entries):
+        _refuse("has an empty entry in %r; the list is comma-separated, e.g. "
+                "--latex-label ideal:1s,2s,classical" % arg)
+    if len(entries) == 1 and ':' not in entries[0]:
+        return entries[0], []
+    if ':' not in entries[0]:
+        _refuse("takes a list whose FIRST entry names the block and the first "
+                "row, e.g. --latex-label ideal:1s,2s,classical; got %r"
+                % entries[0])
+    block = entries[0].split(':', 1)[0]
+    if not block:
+        _refuse("has an empty block name in %r" % entries[0])
+    tags = [e if ':' in e else '%s:%s' % (block, e) for e in entries]
+    dups = sorted(set(t for t in tags if tags.count(t) > 1))
+    if dups:
+        # Duplicate tags are the failure this switch was made opt-in to avoid
+        # (NewMethod.tex already carries four blocks all labelled `ideal').
+        _refuse("would emit the duplicate label(s) %s" % ", ".join(dups))
+    return block, tags
+
+
 PDE_NAME = _argval('--pde', 'hydrogen')
 ANSATZ = _argval('--ansatz', '5')
 ANSATZ = float(ANSATZ) if '.' in str(ANSATZ) else int(ANSATZ)
@@ -460,8 +551,11 @@ LATEX_OUT = '--latex' in sys.argv
 # \label is opt-in.  The paper pastes several of these blocks and \ref's few
 # of them, so labelling every one by default produced duplicate-label warnings
 # and tags nothing pointed at.  Naming the tag and asking for labels at all is
-# the same decision, hence one switch rather than two.
-LATEX_LABEL = _argval('--latex-label')
+# the same decision, hence one switch rather than two.  The argument either
+# names the block alone (rows numbered NAME:1, NAME:2, ...) or names every row,
+# `ideal:1s,2s,classical' -- see parse_latex_label.  Parsed here, like
+# --sort-order, so a malformed list fails before the compute rather than after.
+LATEX_LABEL, LATEX_TAGS = parse_latex_label(_argval('--latex-label'))
 # --sort-order permutes the canonical order; see canonical_ideal_key and
 # apply_sort_order.  Parsed here so a typo fails before the hour of compute.
 _sort_arg = _argval('--sort-order')
@@ -2139,6 +2233,60 @@ def apply_sort_order(items, what='component'):
     return [items[i - 1] for i in SORT_ORDER]
 
 
+def latex_row_labels(block, tags, n, what='component'):
+    r"""
+    The ``\label`` string to attach to each of ``n`` rendered rows.
+
+    The one place the two ``--latex-label`` forms are resolved, so that
+    :func:`latex_union` and :func:`latex_levels` label their rows the same
+    way.  With no block label there are no labels at all; with a block label
+    alone the rows are numbered; with row tags they are named, and there must
+    be exactly one tag per row.
+
+    A wrong tag COUNT is refused rather than absorbed: padding with numbered
+    tags would put a ``\ref`` on a component the caller never named, and
+    truncating would drop one, both silently.  The count is only knowable
+    here, after the run has produced its components, which is why this check
+    cannot join the parse in :func:`parse_latex_label`.
+
+    INPUT:
+
+    - ``block`` -- the block's label, or ``None`` for no labels
+
+    - ``tags`` -- the fully-qualified per-row labels, or an empty list to
+      number the rows ``block:1 .. block:n``
+
+    - ``n`` -- the number of rows the block will render
+
+    - ``what`` -- string naming one row, used in the error message
+
+    OUTPUT: a list of ``n`` strings, each either a ``\label{...}`` or empty
+
+    EXAMPLES::
+
+        sage: latex_row_labels(None, [], 2)
+        ['', '']
+        sage: latex_row_labels('ex', [], 2)
+        ['\\label{ex:1}', '\\label{ex:2}']
+        sage: latex_row_labels('ideal', ['ideal:1s', 'ideal:2s'], 2)
+        ['\\label{ideal:1s}', '\\label{ideal:2s}']
+    """
+    if not block:
+        return [""] * n
+    if not tags:
+        return [r"\label{%s:%d}" % (block, i) for i in range(1, n + 1)]
+    if len(tags) != n:
+        sys.stdout.flush()
+        sys.stderr.write(
+            "--latex-label names %d %s(s) (%s) but this run produced %d.\n"
+            % (len(tags), what, ",".join(tags), n))
+        sys.stderr.flush()
+        # os._exit for the reason --help gives: the sage runner swallows
+        # SystemExit.
+        os._exit(2)
+    return [r"\label{%s}" % t for t in tags]
+
+
 def fmt_ideal(P):
     r"""
     An ideal as its generators alone -- ``Ideal (g1, ..., gk)``.
@@ -3423,7 +3571,7 @@ def clear_denominators(g):
     return g * lcm(dens) if dens else g
 
 
-def latex_union(d, label=None):
+def latex_union(d, label=None, tags=None):
     r"""
     Print a bucket of solution varieties as a LaTeX ``subequations`` block.
 
@@ -3443,6 +3591,10 @@ def latex_union(d, label=None):
     - ``label`` -- string or ``None`` (default: ``None``); when a string, the
       ``\label`` prefix, also used as the block's own ``\label``.  ``None``
       emits no ``\label`` at all, leaving the numbering unchanged
+
+    - ``tags`` -- the per-row labels from ``--latex-label``'s list form, or
+      ``None``/``[]`` to number the rows ``label:1 ...`` (see
+      :func:`latex_row_labels`)
 
     OUTPUT: ``None`` (the block is printed)
 
@@ -3477,9 +3629,10 @@ def latex_union(d, label=None):
     # happened to arrive in.  See canonical_ideal_key.
     items = apply_sort_order(
         sorted(d.items(), key=lambda kv: canonical_ideal_key(kv[1][0])), 'prime')
+    labs = latex_row_labels(label, tags, len(items), 'prime')
     rows = []
     for i, (key, (P, _cells)) in enumerate(items, 1):
-        lab = (r"\label{%s:%d}" % (label, i)) if label else ""
+        lab = labs[i - 1]
         gens = ", ".join(latex(clear_denominators(g)) for g in P.gens())
         # The (p, hfrak) pair, not p alone -- see the comment in dump_union.
         conds = piece_conditions(P, key)
@@ -6048,7 +6201,7 @@ def canonicalize(pairs, title, polish=True):
     return out
 
 
-def latex_levels(levels, label=None):
+def latex_levels(levels, label=None, tags=None):
     r"""
     Print the Comprehensive algorithms' canonical levels as a LaTeX block.
 
@@ -6078,6 +6231,11 @@ def latex_levels(levels, label=None):
       ``\label{<label>}`` and row ``i`` gets ``\label{<label>:i}``.  ``None``
       emits no ``\label`` at all, and changes nothing else -- the numbering is
       identical either way.
+
+    - ``tags`` -- the per-row labels from ``--latex-label``'s list form (e.g.
+      ``ideal:1s,2s,classical``), or ``None``/``[]`` to number the rows.  One
+      tag per component, in the order rendered -- so after ``--sort-order``.
+      See :func:`latex_row_labels`.
 
     OUTPUT: ``None`` (the block is printed)
 
@@ -6127,7 +6285,24 @@ def latex_levels(levels, label=None):
         & \qquad\text{minus:}\quad \left(v\right)\label{ex:1} \nonumber
         \end{align}
         \end{subequations}
+
+    Named rows label each component instead of numbering it, which is what a
+    ``\ref`` in the paper wants -- the tag goes on saying which component it
+    means after a change of ``--sort-order``::
+
+        sage: latex_levels([[(R4.ideal(u), [], None),
+        ....:                (R4.ideal(v), [], None)]],
+        ....:              label='ideal',
+        ....:              tags=['ideal:classical', 'ideal:parabolic'])
+        \begin{subequations}
+        \label{ideal}
+        \begin{align}
+        & \left(u\right)\label{ideal:classical} \\
+        & \left(v\right)\label{ideal:parabolic}
+        \end{align}
+        \end{subequations}
     """
+    labs = latex_row_labels(label, tags, sum(len(comps) for comps in levels))
     rows = []
     i = 0
     for l, comps in enumerate(levels):
@@ -6135,7 +6310,7 @@ def latex_levels(levels, label=None):
             rows.append("%% Level %d" % (2 * l + 1))
         for top, holes, compact in comps:
             i += 1
-            lab = (r"\label{%s:%d}" % (label, i)) if label else ""
+            lab = labs[i - 1]
             gens = ", ".join(latex(clear_denominators(g)) for g in top.gens())
             # One `minus:' line per hole, each rendered exactly like the top
             # line above it -- the text listing's `minus V: Ideal (...)', in
@@ -6215,7 +6390,7 @@ def main():
         if LATEX_OUT and levels:
             print("\n" + "-" * 72)
             print("Canonical levels, LaTeX (paper) form:\n")
-            latex_levels(levels, label=LATEX_LABEL)
+            latex_levels(levels, label=LATEX_LABEL, tags=LATEX_TAGS)
         print("\n" + "=" * 72)
         print_total_time()
         return
@@ -6257,11 +6432,11 @@ def main():
             if solution_primes:
                 print("\n" + "-" * 72)
                 print("Solution varieties, LaTeX (paper) form:\n")
-                latex_union(solution_primes, label=LATEX_LABEL)
+                latex_union(solution_primes, label=LATEX_LABEL, tags=LATEX_TAGS)
         elif levels:
             print("\n" + "-" * 72)
             print("Canonical levels, LaTeX (paper) form:\n")
-            latex_levels(levels, label=LATEX_LABEL)
+            latex_levels(levels, label=LATEX_LABEL, tags=LATEX_TAGS)
         else:
             print("\n" + "-" * 72)
             print("No canonical levels to render; --latex has nothing to "
