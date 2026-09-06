@@ -256,9 +256,22 @@ Output
                      to disable).  ConsLevels enumerates the power set of its
                      input, so the piece count is the binding cost.
   --latex            re-print the result as a LaTeX subequations block in the
-                     form the paper uses, denominators cleared.  It renders
-                     whatever the mode above selected, so the paper carries
-                     the same object the run reported.
+                     form the paper uses.  It renders whatever the mode above
+                     selected, so the paper carries the same object the run
+                     reported.
+  --clear-denominators
+                     scale every rendered generator by the lcm of its
+                     coefficient denominators, so that the block carries
+                     integer coefficients: `a1 - 1/2*b0' prints as
+                     2 a_{1} - b_{0}, and `E + 1/8' as 8 E + 1, which is how
+                     NewMethod.tex writes them.  The fractions are there
+                     because minAss and the Groebner bases return MONIC
+                     generators -- over a field that is the canonical form --
+                     and scaling one changes nothing about the ideal.  Off by
+                     default all the same: cleared generators are no longer
+                     the ones the algorithms returned, and the LaTeX block
+                     should not quietly disagree with the text listing above
+                     it.  --latex only.
   --latex-label SPEC emit LaTeX \label commands.  SPEC is either a single
                      NAME -- the block gets \label{NAME} and the i-th
                      component \label{NAME:i} -- or a comma-separated list
@@ -514,8 +527,7 @@ REFINE_BUDGET = int(_argval('--refine-budget', '20000'))
 PRUNE_ENCLOSED = '--keep-enclosed' not in sys.argv
 # Re-print the final union as a LaTeX `subequations`/`align` block, in
 # the form the paper uses (one \left(...\right) per prime, and under
-# --latex-label one \label per row).  Coefficients are cleared of denominators
-# first, so `a1 - 1/2*b0` prints as `2 a_{1} - b_{0}`.
+# --latex-label one \label per row).
 # Three mutually exclusive output modes, one switch each and a default.
 #
 #   --basic          the Basic algorithms alone -- the union bucket as the
@@ -548,6 +560,15 @@ MODE = (MODE_BASIC if '--basic' in sys.argv else
 # 0 disables the guard.
 CONSLEVELS_MAX = int(_argval('--conslevels-max', '8'))
 LATEX_OUT = '--latex' in sys.argv
+# Scale each rendered generator to integer coefficients.  minAss and every
+# Groebner basis hand back MONIC generators -- over a field the leading-
+# coefficient-1 form is the canonical one -- so the primes arrive carrying
+# fractions: `a1 - 1/2*b0', `E + 1/8'.  Under this flag they print as
+# `2 a_{1} - b_{0}' and `8 E + 1', which is how NewMethod.tex writes them.
+# Off by default: scaling a generator changes nothing about the ideal, but it
+# does mean the block no longer shows what the algorithms returned, and the
+# LaTeX should not silently differ from the text listing above it.
+CLEAR_DENOMS = '--clear-denominators' in sys.argv
 # \label is opt-in.  The paper pastes several of these blocks and \ref's few
 # of them, so labelling every one by default produced duplicate-label warnings
 # and tags nothing pointed at.  Naming the tag and asking for labels at all is
@@ -3571,6 +3592,36 @@ def clear_denominators(g):
     return g * lcm(dens) if dens else g
 
 
+def latex_gen(g, clear=None):
+    r"""
+    One generator as LaTeX, scaled to integer coefficients only on request.
+
+    The single point where the LaTeX renderers turn a polynomial into text,
+    so that ``--clear-denominators`` reaches every generator of a block --
+    tops, holes and the non-vanishing conditions alike -- or none of them.
+
+    INPUT:
+
+    - ``g`` -- a polynomial
+
+    - ``clear`` -- boolean or ``None`` (default: ``None``, meaning the global
+      ``CLEAR_DENOMS``, i.e. whether ``--clear-denominators`` was given)
+
+    OUTPUT: a LaTeX string
+
+    EXAMPLES::
+
+        sage: R.<a1,b0> = PolynomialRing(QQ)
+        sage: latex_gen(a1 - 1/2*b0, clear=False)
+        a_{1} - \frac{1}{2} b_{0}
+        sage: latex_gen(a1 - 1/2*b0, clear=True)
+        2 a_{1} - b_{0}
+    """
+    if clear is None:
+        clear = CLEAR_DENOMS
+    return latex(clear_denominators(g) if clear else g)
+
+
 def latex_union(d, label=None, tags=None):
     r"""
     Print a bucket of solution varieties as a LaTeX ``subequations`` block.
@@ -3580,8 +3631,8 @@ def latex_union(d, label=None, tags=None):
     restricted piece adds an unnumbered continuation line carrying its
     non-vanishing conditions (``\qquad\text{with}\quad ...``).  The
     ``\label`` rides the NUMBERED line -- see :func:`latex_levels` for why it
-    cannot ride the continuation.  Coefficients are cleared of denominators
-    by :func:`clear_denominators`.
+    cannot ride the continuation.  Generators are rendered by
+    :func:`latex_gen`, so ``--clear-denominators`` reaches them.
 
     INPUT:
 
@@ -3633,7 +3684,7 @@ def latex_union(d, label=None, tags=None):
     rows = []
     for i, (key, (P, _cells)) in enumerate(items, 1):
         lab = labs[i - 1]
-        gens = ", ".join(latex(clear_denominators(g)) for g in P.gens())
+        gens = ", ".join(latex_gen(g) for g in P.gens())
         # The (p, hfrak) pair, not p alone -- see the comment in dump_union.
         conds = piece_conditions(P, key)
         disj = ""
@@ -3641,9 +3692,9 @@ def latex_union(d, label=None, tags=None):
             def _one(cs):
                 r"""Render one coefficient set as a LaTeX non-vanishing condition."""
                 if len(cs) == 1:
-                    return r"%s \neq 0" % latex(clear_denominators(cs[0]))
+                    return r"%s \neq 0" % latex_gen(cs[0])
                 return (r"\left(%s\right) \neq 0"
-                        % ", ".join(latex(clear_denominators(g)) for g in cs))
+                        % ", ".join(latex_gen(g) for g in cs))
             disj = r" \;\text{ or }\; ".join(
                 r" ,\; ".join(_one(cs) for cs in cell_clause)
                 for _num, cell_clause in conds)
@@ -6319,17 +6370,17 @@ def latex_levels(levels, label=None, tags=None):
         for top, holes, compact in comps:
             i += 1
             lab = labs[i - 1]
-            gens = ", ".join(latex(clear_denominators(g)) for g in top.gens())
+            gens = ", ".join(latex_gen(g) for g in top.gens())
             # One `minus:' line per hole, each rendered exactly like the top
             # line above it -- the text listing's `minus V: Ideal (...)', in
             # LaTeX.  Where a compact representative was found it is the single
             # hole; otherwise the canonical prime holes, one line each, which
             # is the same set written as an intersection of complements.
             if compact is not None and compact:
-                hole_gens = [", ".join(latex(clear_denominators(g))
+                hole_gens = [", ".join(latex_gen(g)
                                        for g in compact)]
             else:
-                hole_gens = [", ".join(latex(clear_denominators(g))
+                hole_gens = [", ".join(latex_gen(g)
                                        for g in h.gens()) for h in holes]
             if hole_gens:
                 # The generators keep the row number and the label; every

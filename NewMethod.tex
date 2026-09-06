@@ -2558,9 +2558,16 @@ for reproducing the calculations of this paper.
     \S\ref{sec:constructable-set} --- the same sets as {\tt --comprehensive},
     different representatives for the holes \\[3pt]
 {\tt --latex}
-  & re-print the result as the {\tt subequations} block this paper uses,
-    denominators cleared.  The displays of \S\ref{sec:Example} were produced
-    this way \\[3pt]
+  & re-print the result as the {\tt subequations} block this paper uses.  The
+    displays of \S\ref{sec:Example} were produced this way \\[3pt]
+{\tt --clear-denominators}
+  & scale every rendered generator by the lcm of its coefficient
+    denominators, so that the display carries integer coefficients.  The
+    fractions are there because $\mathrm{minAss}$ and the Gr\"obner bases
+    return monic generators; scaling one changes nothing about the ideal, and
+    $E + \frac{1}{8}$ becomes the $8E + 1$ of \eqref{ideal:2s}.  Off by
+    default, the block otherwise no longer showing what the algorithms
+    returned \\[3pt]
 {\tt --latex-label SPEC}
   & emit {\tt \textbackslash label} commands, off by default.  A single name
     numbers the components ({\tt ideal:1}, {\tt ideal:2}, \ldots); a list
