@@ -2562,12 +2562,19 @@ for reproducing the calculations of this paper.
     displays of \S\ref{sec:Example} were produced this way \\[3pt]
 {\tt --clear-denominators}
   & scale every rendered generator by the lcm of its coefficient
-    denominators, so that the display carries integer coefficients.  The
-    fractions are there because $\mathrm{minAss}$ and the Gr\"obner bases
-    return monic generators; scaling one changes nothing about the ideal, and
+    denominators, so that the display carries integer coefficients:
     $E + \frac{1}{8}$ becomes the $8E + 1$ of \eqref{ideal:2s}.  Off by
     default, the block otherwise no longer showing what the algorithms
     returned \\[3pt]
+{\tt --make-monic}
+  & divide every rendered generator by its leading coefficient instead --- the
+    opposite normalization, and mutually exclusive with it.  Which of the two
+    has any effect depends on the mode: $\mathrm{minAss}$ returns monic
+    generators, so the Basic union arrives carrying fractions, while the
+    Comprehensive levels reach us through {\tt grobcov.lib}, which clears
+    denominators internally, and arrive integral.  Neither normalization is
+    called for by \cite{BrunatMontes}, whose objects are ideals and varieties:
+    a generator is fixed only up to a nonzero scalar \\[3pt]
 {\tt --latex-label SPEC}
   & emit {\tt \textbackslash label} commands, off by default.  A single name
     numbers the components ({\tt ideal:1}, {\tt ideal:2}, \ldots); a list

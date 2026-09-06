@@ -272,6 +272,24 @@ Output
                      the ones the algorithms returned, and the LaTeX block
                      should not quietly disagree with the text listing above
                      it.  --latex only.
+  --make-monic       divide every rendered generator by its leading
+                     coefficient, the opposite normalization and mutually
+                     exclusive with it: `2*a1 - b0' prints as
+                     a_{1} - \frac{1}{2} b_{0} and `8 E + 1' as
+                     E + \frac{1}{8}.  Monic is what a reduced Groebner basis
+                     over a field is defined to carry, and what minAssGTZ
+                     returns.  LEADING means leading in the ring's degrevlex
+                     order, the order Singular used.
+                     Which of the two switches bites depends on the mode.  A
+                     --basic union comes straight from minAssGTZ, already
+                     monic, so --clear-denominators is the operative one
+                     there.  The Comprehensive levels come through
+                     grobcov.lib, which runs everything through cleardenom, so
+                     they arrive integral and --make-monic is the operative
+                     one.  Nothing in Brunat-Montes asks for either: every
+                     object the paper defines is an ideal or a variety, and a
+                     generator is fixed only up to a nonzero scalar.
+                     --latex only.
   --latex-label SPEC emit LaTeX \label commands.  SPEC is either a single
                      NAME -- the block gets \label{NAME} and the i-th
                      component \label{NAME:i} -- or a comma-separated list
@@ -569,16 +587,31 @@ LATEX_OUT = '--latex' in sys.argv
 # does mean the block no longer shows what the algorithms returned, and the
 # LaTeX should not silently differ from the text listing above it.
 #
-# The flag is visible only on the --basic union.  Both libraries work over Q --
-# neither is doing arithmetic over Z -- but they pick opposite representatives
-# of the same generator: primdec.lib's minAssGTZ returns the MONIC one (handed
-# `2*a1-b0, 8*E+1' it answers `a1-1/2*b0, E+1/8'), while grobcov.lib runs every
-# result through cleardenom, which clears denominators and divides out the
-# integer content (grobcov.lib's static proc cld, and the cleardenom calls in
-# Prep's path).  So the canonical levels arrive integral already and this flag
-# does nothing to them; the union's primes come straight from minAssGTZ and it
-# does everything to them.
+#
+# --make-monic is the mirror image: divide through by the leading coefficient.
+#
+# Which of the two is the operative one depends on where the generators came
+# from.  Both libraries work over Q -- neither is doing arithmetic over Z --
+# but they pick opposite representatives of the same generator.  primdec.lib's
+# minAssGTZ returns the MONIC one (handed `2*a1-b0, 8*E+1' it answers
+# `a1-1/2*b0, E+1/8'), so --clear-denominators is what changes a --basic union
+# and --make-monic leaves it alone.  grobcov.lib runs its results through
+# cleardenom, which clears denominators and divides out the integer content
+# (static proc cld, and the cleardenom calls on Prep's path), so the
+# Comprehensive levels arrive integral: there --make-monic is the operative
+# switch and --clear-denominators does nothing.
+#
+# Nothing in Brunat-Montes asks for either.  The paper works in Q[x] and every
+# object it defines -- Crep's [a, b], Prep's primes, the canonical levels -- is
+# an ideal or a variety, canonical "in the sense that it does not depend on how
+# the locally closed set S is given".  A generator is defined only up to a
+# nonzero scalar, and neither normalization is visible to any statement in it.
+# cleardenom is grobcov.lib's own convention, not the paper's.
 CLEAR_DENOMS = '--clear-denominators' in sys.argv
+MAKE_MONIC = '--make-monic' in sys.argv
+if CLEAR_DENOMS and MAKE_MONIC:
+    sys.exit("--clear-denominators and --make-monic are opposite "
+             "normalizations; give at most one.")
 # \label is opt-in.  The paper pastes several of these blocks and \ref's few
 # of them, so labelling every one by default produced duplicate-label warnings
 # and tags nothing pointed at.  Naming the tag and asking for labels at all is
@@ -3602,13 +3635,42 @@ def clear_denominators(g):
     return g * lcm(dens) if dens else g
 
 
-def latex_gen(g, clear=None):
+def make_monic(g):
+    r"""
+    Scale a polynomial by the inverse of its leading coefficient.
+
+    The other half of :func:`clear_denominators`: where that one picks the
+    primitive integral representative of a generator, this picks the monic
+    one, which is what a reduced Groebner basis over a field is defined to
+    carry and what ``minAssGTZ`` returns.  LEADING is leading in
+    :data:`PolyRing`'s order, degrevlex, the same order Singular used.
+
+    Scaling by a nonzero constant does not change the ideal, so this is a
+    presentation choice and nothing more.  The zero polynomial has no leading
+    coefficient and is returned unchanged.
+
+    EXAMPLES::
+
+        sage: R.<a1,b0,E> = PolynomialRing(QQ)
+        sage: make_monic(2*a1 - b0)
+        a1 - 1/2*b0
+        sage: make_monic(8*E + 1)
+        E + 1/8
+        sage: make_monic(R.zero())
+        0
+    """
+    return g if g.is_zero() else g * (1 / g.lc())
+
+
+def latex_gen(g, clear=None, monic=None):
     r"""
     One generator as LaTeX, scaled to integer coefficients only on request.
 
     The single point where the LaTeX renderers turn a polynomial into text,
-    so that ``--clear-denominators`` reaches every generator of a block --
-    tops, holes and the non-vanishing conditions alike -- or none of them.
+    so that ``--clear-denominators`` and ``--make-monic`` reach every
+    generator of a block -- tops, holes and the non-vanishing conditions
+    alike -- or none of them.  The two are opposite normalizations and the
+    command line refuses both at once; here ``clear`` wins if both are passed.
 
     INPUT:
 
@@ -3617,19 +3679,30 @@ def latex_gen(g, clear=None):
     - ``clear`` -- boolean or ``None`` (default: ``None``, meaning the global
       ``CLEAR_DENOMS``, i.e. whether ``--clear-denominators`` was given)
 
+    - ``monic`` -- boolean or ``None`` (default: ``None``, meaning the global
+      ``MAKE_MONIC``, i.e. whether ``--make-monic`` was given)
+
     OUTPUT: a LaTeX string
 
     EXAMPLES::
 
         sage: R.<a1,b0> = PolynomialRing(QQ)
-        sage: latex_gen(a1 - 1/2*b0, clear=False)
+        sage: latex_gen(a1 - 1/2*b0, clear=False, monic=False)
         a_{1} - \frac{1}{2} b_{0}
         sage: latex_gen(a1 - 1/2*b0, clear=True)
         2 a_{1} - b_{0}
+        sage: latex_gen(2*a1 - b0, monic=True)
+        a_{1} - \frac{1}{2} b_{0}
     """
     if clear is None:
         clear = CLEAR_DENOMS
-    return latex(clear_denominators(g) if clear else g)
+    if monic is None:
+        monic = MAKE_MONIC
+    if clear:
+        g = clear_denominators(g)
+    elif monic:
+        g = make_monic(g)
+    return latex(g)
 
 
 def latex_union(d, label=None, tags=None):
