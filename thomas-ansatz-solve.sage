@@ -116,7 +116,7 @@
 #
 # Author: Brent Baccala (AI assistant: Claude).  July-August 2026.
 
-import hashlib, itertools, os, re, shutil, signal, subprocess, sys, time
+import ast, hashlib, itertools, os, re, shutil, signal, subprocess, sys, time
 
 USAGE = r"""usage: sage thomas-ansatz-solve.sage [--pde NAME] [--ansatz N] [options]
 
@@ -259,6 +259,21 @@ Output
                      form the paper uses, denominators cleared.  It renders
                      whatever the mode above selected, so the paper carries
                      the same object the run reported.
+  --resume-log PATH  append a record for each completed stage to PATH, and on
+                     a later run with the same flag resume from the furthest
+                     one present.  A record is written only when its stage
+                     finishes, so a killed run loses just the stage it was in;
+                     a truncated tail is ignored on read.  Each record carries
+                     a wall-clock timestamp, its own duration and the elapsed
+                     time, so the log doubles as the run's timing record.  The
+                     `#problem' header is matched on read and a mismatch is
+                     fatal.  Stages: cells (the Thomas decomposition -- by far
+                     the most expensive), union, levels.  GTZ results are NOT
+                     a stage: --gtz-subprocess already caches them on disk
+                     keyed by a content hash of the ideal, which survives cell
+                     renumbering in a way a positional journal would not; the
+                     log records that cache's directory in its header.
+  --resume-restart   discard an existing --resume-log and start it over.
   --cells-out PATH   write the raw cells to PATH.  Omitted, no cells file is
                      written; nothing reads one back, so it is a debugging
                      artifact rather than an output.
@@ -445,6 +460,188 @@ if CELLS_OUT:
     os.makedirs(os.path.dirname(os.path.abspath(CELLS_OUT)), exist_ok=True)
 if GTZ_SUBPROCESS:
     os.makedirs(GTZ_DIR, exist_ok=True)
+
+
+# ===========================================================================
+# The resume log: an append-only journal of completed stages
+# ===========================================================================
+# A long run passes through a few expensive stages -- the Thomas decomposition,
+# the Basic locus, ConsLevels -- and until now a run killed part-way through
+# left nothing behind.  The consistency locus on hydrogen/5 was killed at 66
+# minutes still inside its decomposition, and every second of that was lost.
+#
+# One record per completed stage, appended the moment the stage finishes:
+#
+#     #resume-log 1
+#     #problem pde=hydrogen ansatz=5 ranking=orderly locus=membership generic=0
+#     #gtz-dir /home/claude/thomas-experiments/gtz/hydrogen_ansatz5
+#     #stage cells prev=- start=2026-09-05T23:40:12 wall=313.0 elapsed=471.2
+#     --- cell 1 ---
+#     EQS: ['Psi[x] - v[x]*DPsi', ...]
+#     INEQS: [...]
+#     #end cells sha=3f9a...
+#
+# Three properties earn their keep:
+#
+# - A record without its ``#end`` is IGNORED, so a run killed mid-write loses
+#   only the stage it was writing.
+# - ``prev=`` chains each record to the one before, so a stage cannot be
+#   silently paired with an earlier stage from a different run.
+# - The ``#problem`` header is checked on read, so an ansatz-5 log cannot be
+#   fed to an ansatz-1 run.
+#
+# GTZ is deliberately NOT a stage.  Its results are many (hundreds of minAss
+# calls) and independent, and --gtz-subprocess already caches them on disk
+# keyed by a content hash of the ideal -- addressing that survives cell
+# renumbering and partial runs, which a positional journal would not.  The
+# header records the cache's directory so a resumed run points at the same one.
+
+RESUME_LOG = _argval('--resume-log')
+RESUME_RESTART = '--resume-restart' in sys.argv
+
+_RESUME_STAGES = {}          # stage name -> list of payload lines
+_RESUME_TIP = '-'            # sha of the last complete record, for the chain
+_RESUME_VERSION = '1'
+
+
+def _resume_problem_line():
+    r"""
+    The ``#problem`` header for this run, the key a log is matched on.
+
+    EXAMPLES::
+
+        sage: _resume_problem_line().startswith('#problem pde=')
+        True
+    """
+    return ('#problem pde=%s ansatz=%s ranking=%s locus=%s generic=%d'
+            % (PDE_NAME, ANSATZ, RANKING, LOCUS, 1 if GENERIC_CELL else 0))
+
+
+def _resume_sha(prev, lines):
+    r"""
+    The chain hash of a record: ``sha256(prev + payload)``, first 16 hex digits.
+
+    EXAMPLES::
+
+        sage: _resume_sha('-', ['a']) == _resume_sha('-', ['a'])
+        True
+        sage: _resume_sha('-', ['a']) == _resume_sha('x', ['a'])
+        False
+    """
+    h = hashlib.sha256()
+    h.update(prev.encode())
+    for l in lines:
+        h.update(l.encode())
+        h.update(b'\n')
+    return h.hexdigest()[:16]
+
+
+def resume_load():
+    r"""
+    Read the resume log, if one was asked for and exists.
+
+    Populates :data:`_RESUME_STAGES` with the payload of every COMPLETE record
+    -- one whose ``#end`` line is present and whose chain hash checks out --
+    and leaves :data:`_RESUME_TIP` at the last of them.  A truncated tail is
+    dropped silently, that being the normal state of a log whose run was
+    killed.  A ``#problem`` mismatch is fatal rather than ignored: continuing
+    from another problem's cells would produce confident nonsense.
+
+    OUTPUT: nothing; sets module state and prints what it found
+    """
+    global _RESUME_STAGES, _RESUME_TIP
+    if not RESUME_LOG:
+        return
+    if RESUME_RESTART and os.path.exists(RESUME_LOG):
+        os.remove(RESUME_LOG)
+        print("--resume-restart: discarded the existing %s" % RESUME_LOG,
+              flush=True)
+    if not os.path.exists(RESUME_LOG):
+        return
+
+    want = _resume_problem_line()
+    got_problem = None
+    stages, tip = {}, '-'
+    cur, payload, cur_prev = None, [], '-'
+    for raw in open(RESUME_LOG):
+        line = raw.rstrip('\n')
+        if line.startswith('#problem '):
+            got_problem = line
+        elif line.startswith('#stage '):
+            f = dict(p.split('=', 1) for p in line.split()[2:] if '=' in p)
+            cur, payload, cur_prev = line.split()[1], [], f.get('prev', '-')
+        elif line.startswith('#end '):
+            parts = line.split()
+            name = parts[1]
+            f = dict(p.split('=', 1) for p in parts[2:] if '=' in p)
+            if cur == name and f.get('sha') == _resume_sha(cur_prev, payload):
+                stages[name] = payload
+                tip = f['sha']
+            cur, payload = None, []
+        elif cur is not None:
+            payload.append(line)
+
+    if got_problem is not None and got_problem != want:
+        sys.exit("resume log %s is for a different problem:\n  log:  %s\n  run:  %s\n"
+                 "Use --resume-restart to discard it, or a different --resume-log."
+                 % (RESUME_LOG, got_problem, want))
+    _RESUME_STAGES, _RESUME_TIP = stages, tip
+    if stages:
+        print("Resume log %s: %s available."
+              % (RESUME_LOG, ", ".join(sorted(stages))), flush=True)
+
+
+def resume_have(stage):
+    r"""
+    The payload lines of ``stage`` if the log carries it, else ``None``.
+
+    EXAMPLES::
+
+        sage: resume_have('no-such-stage') is None
+        True
+    """
+    return _RESUME_STAGES.get(stage)
+
+
+def resume_save(stage, lines, wall):
+    r"""
+    Append one complete record for ``stage``.
+
+    Written only when a log was asked for and the stage did not come FROM the
+    log -- a resumed stage must not rewrite itself, both to keep the chain
+    intact and so the recorded wall time stays that of the run that paid it.
+
+    INPUT:
+
+    - ``stage`` -- the stage name
+
+    - ``lines`` -- the payload, a list of strings without newlines
+
+    - ``wall`` -- seconds this stage took, for the record's ``wall=``
+    """
+    global _RESUME_TIP
+    if not RESUME_LOG or stage in _RESUME_STAGES:
+        return
+    fresh = not os.path.exists(RESUME_LOG)
+    sha = _resume_sha(_RESUME_TIP, lines)
+    with open(RESUME_LOG, 'a') as fh:
+        if fresh:
+            fh.write('#resume-log %s\n' % _RESUME_VERSION)
+            fh.write('%s\n' % _resume_problem_line())
+            fh.write('#gtz-dir %s\n' % GTZ_DIR)
+        fh.write('#stage %s prev=%s start=%s wall=%.1f elapsed=%.1f\n'
+                 % (stage, _RESUME_TIP,
+                    time.strftime('%Y-%m-%dT%H:%M:%S'), wall,
+                    time.time() - _T_START))
+        for l in lines:
+            fh.write('%s\n' % l)
+        fh.write('#end %s sha=%s\n' % (stage, sha))
+    _RESUME_STAGES[stage] = list(lines)
+    _RESUME_TIP = sha
+    print("  [resume] wrote stage '%s' to %s (%.1fs)" % (stage, RESUME_LOG, wall),
+          flush=True)
+
+resume_load()
 
 
 def patch_latex_varify():
@@ -946,7 +1143,43 @@ def build_system_of_equations(eqn, constants):
 # Everything downstream touches a cell only through these two functions, so a
 # cell can be anything that answers them -- a differential system from the
 # decomposition, or the hand-built GenericCell below.
-class GenericCell(object):
+class PlainCell(object):
+    r"""
+    A cell as nothing but its equations and its inequations.
+
+    Everything downstream reads a cell through :func:`cell_eqs` and
+    :func:`cell_ineqs` and never touches the differential system itself, so a
+    cell does not have to BE one.  That is what lets the resume log store cells
+    as text and read them back: a reloaded cell is a bag of polynomials, and
+    the pipeline cannot tell the difference.
+
+    The converse is the constraint it imposes.  A ``PlainCell`` carries no
+    Janet trees, so anything wanting ``differential_system_normal_form`` or
+    ``differential_system_reduce`` on a cell would have to re-form the chain
+    first.  Nothing does today, and this class is the reason to keep it that
+    way.
+
+    EXAMPLES::
+
+        sage: c = PlainCell([1, 2], [3])
+        sage: c.eqs, c.ineqs
+        ([1, 2], [3])
+    """
+
+    def __init__(self, eqs, ineqs):
+        r"""
+        Initialize the cell from its equations and inequations.
+
+        EXAMPLES::
+
+            sage: PlainCell([1], []).eqs
+            [1]
+        """
+        self.eqs = list(eqs)
+        self.ineqs = list(ineqs)
+
+
+class GenericCell(PlainCell):
     r"""
     The ansatz's own generic cell, built without decomposing anything.
 
@@ -1032,7 +1265,7 @@ def cell_eqs(ds):
         sage: cell_eqs(GenericCell([1, 2], [3]))
         [1, 2]
     """
-    if isinstance(ds, GenericCell):
+    if isinstance(ds, PlainCell):
         return list(ds.eqs)
     return list(dt.differential_system_equations(ds))
 
@@ -1055,7 +1288,7 @@ def cell_ineqs(ds):
         sage: cell_ineqs(GenericCell([1, 2], [3]))
         [3]
     """
-    if isinstance(ds, GenericCell):
+    if isinstance(ds, PlainCell):
         return list(ds.ineqs)
     return list(dt.differential_system_inequations(ds))
 
@@ -1185,6 +1418,11 @@ def decompose_ansatz():
         sage: len(cells)                         # not tested
         16
     """
+    _resumed = resume_cells()
+    if _resumed is not None:
+        return check_and_dump_cells(_resumed)
+
+    _wall = 0.0
     if GENERIC_CELL:
         print("\n--generic-cell: skipping the differential Thomas decomposition; "
               "building the ansatz's generic cell (%d ansatz + %d constancy eqs) ..."
@@ -1220,10 +1458,72 @@ def decompose_ansatz():
         print("-> %d cells in %.1fs\n" % (len(cells_ds), _wall) + "=" * 72, flush=True)
 
 
-    return check_and_dump_cells(cells_ds)
+    return check_and_dump_cells(cells_ds, _wall)
 
 
-def check_and_dump_cells(cells_ds):
+def _cells_to_lines(cells_ds):
+    r"""
+    A resume-log payload for the decomposition's cells.
+
+    The same ``EQS:``/``INEQS:`` shape ``--cells-out`` writes, and for the same
+    reason it is bracket form: :func:`to_bracket` was chosen to make the cells
+    file readable, and it happens to be the ONLY form the differential ring
+    parses back.  ``R(str(e))`` -- the underscore form -- raises inside BLAD;
+    ``R(to_bracket(e)) == e`` holds.  So the display choice made the writer
+    correct for reload by accident, and this shares it rather than inventing a
+    second serialization that could drift from it.
+    """
+    lines = []
+    for i, ds in enumerate(cells_ds, 1):
+        lines.append('--- cell %d ---' % i)
+        lines.append('EQS: %s' % [to_bracket(e) for e in cell_eqs(ds)])
+        lines.append('INEQS: %s' % [to_bracket(q) for q in cell_ineqs(ds)])
+    return lines
+
+
+def _cells_from_lines(lines):
+    r"""
+    Rebuild cells from a resume-log payload, as :class:`PlainCell` objects.
+
+    No Janet trees and no ``create_differential_system``: the decomposition is
+    not re-decided, nor even re-formed.  Everything downstream reads a cell
+    through :func:`cell_eqs` / :func:`cell_ineqs`, which dispatch on
+    :class:`PlainCell`, so a bag of parsed polynomials is indistinguishable
+    from the differential system it came from.
+    """
+    R = prob['R']
+    cells, eqs = [], None
+    for line in lines:
+        if line.startswith('EQS: '):
+            eqs = [R(t) for t in ast.literal_eval(line[len('EQS: '):])]
+        elif line.startswith('INEQS: '):
+            ineqs = [R(t) for t in ast.literal_eval(line[len('INEQS: '):])]
+            cells.append(PlainCell(eqs, ineqs))
+            eqs = None
+    return cells
+
+
+def resume_cells():
+    r"""
+    The cells from the resume log, or ``None`` when the log has none.
+
+    Called at the top of both decomposition entry points.  This is the stage
+    worth the most: the Thomas decomposition is where the wall time goes --
+    313 s for hydrogen/5's membership run, and the consistency variant was
+    still inside it at 66 minutes and 23.7 GB when it had to be killed.
+    """
+    lines = resume_have('cells')
+    if lines is None:
+        return None
+    _t = time.time()
+    cells = _cells_from_lines(lines)
+    print("\nResumed %d cell(s) from %s in %.1fs -- skipping the differential "
+          "Thomas decomposition.\n" % (len(cells), RESUME_LOG, time.time() - _t)
+          + "=" * 72, flush=True)
+    return cells
+
+
+def check_and_dump_cells(cells_ds, wall=0.0):
     r"""
     Check each component is triangular, honour ``--cells-out``, return them.
 
@@ -1266,6 +1566,7 @@ def check_and_dump_cells(cells_ds):
             print("Wrote raw cells to", CELLS_OUT, flush=True)
         except Exception as ex:
             print("(could not write cells file: %s)" % ex, flush=True)
+    resume_save('cells', _cells_to_lines(cells_ds), wall)
     return cells_ds
 
 
@@ -1321,6 +1622,10 @@ def decompose_combined():
         print_total_time()
         os._exit(2)
 
+    _resumed = resume_cells()
+    if _resumed is not None:
+        return check_and_dump_cells(_resumed)
+
     # Same treatment of Q as decompose_ansatz: one inequation, the product,
     # skipped entirely when there is none.
     decompose_ineqs = [Q_INEQ] if ALL_INEQS else []
@@ -1337,7 +1642,7 @@ def decompose_combined():
     _wall = time.time() - _t0
     print("-> %d cells in %.1fs\n" % (len(cells_ds), _wall) + "=" * 72, flush=True)
 
-    return check_and_dump_cells(cells_ds)
+    return check_and_dump_cells(cells_ds, _wall)
 
 
 def print_total_time():
@@ -5127,6 +5432,51 @@ def principal_hole(a, primes, atoms=(), max_atoms=2, budget=4000):
     return (None, 'inconclusive' if pure else 'no-principal')
 
 
+def _pairs_to_lines(pairs):
+    r"""
+    A resume-log payload for a list of `(\mathfrak{a}, \mathfrak{b})` pairs.
+
+    Serves both the ``union`` stage (the Basic locus's pieces) and the
+    ``levels`` stage (ConsLevels's output), because after
+    :func:`to_const_ring` the two are the same kind of thing: pairs of ideals
+    over the ten constants.  The ``#consts`` line records the variable names
+    so a reader can refuse a log written under a different ansatz's ring
+    rather than silently coercing generators into the wrong variables.
+    """
+    C = const_ring()
+    lines = ['#consts %s' % ' '.join(str(v) for v in C.gens())]
+    for a, b in pairs:
+        lines.append('TOP: %s' % [str(g) for g in a.gens()])
+        lines.append('HOLE: %s' % [str(g) for g in b.gens()])
+    return lines
+
+
+def _pairs_from_lines(lines):
+    r"""
+    Read back what :func:`_pairs_to_lines` wrote, into the current const ring.
+
+    A ``#consts`` mismatch is fatal for the same reason a ``#problem``
+    mismatch is: the generators would parse, in the wrong variables, and
+    everything downstream would be confidently wrong.
+    """
+    C = const_ring()
+    want = ' '.join(str(v) for v in C.gens())
+    pairs, a = [], None
+    for line in lines:
+        if line.startswith('#consts '):
+            got = line[len('#consts '):]
+            if got != want:
+                sys.exit("resume log's constants do not match this run:\n"
+                         "  log: %s\n  run: %s" % (got, want))
+        elif line.startswith('TOP: '):
+            a = C.ideal([C(t) for t in ast.literal_eval(line[len('TOP: '):])])
+        elif line.startswith('HOLE: '):
+            b = C.ideal([C(t) for t in ast.literal_eval(line[len('HOLE: '):])])
+            pairs.append((a, b))
+            a = None
+    return pairs
+
+
 def comprehensive(union_primes, title, polish=True):
     r"""
     The canonicalization tail shared by both Comprehensive algorithms.
@@ -5173,6 +5523,7 @@ def comprehensive(union_primes, title, polish=True):
     if not union_primes:
         return []
 
+    _t_union = time.time()
     C = const_ring()
     pairs = []
     for key, entry in sorted(union_primes.items(), key=lambda kv: str(kv[0])):
@@ -5186,6 +5537,36 @@ def comprehensive(union_primes, title, polish=True):
         else:
             b = C.ideal(C.one())
         pairs.append((a, b))
+    resume_save('union', _pairs_to_lines(pairs), time.time() - _t_union)
+
+    return canonicalize(pairs, title, polish)
+
+
+def canonicalize(pairs, title, polish=True):
+    r"""
+    Canonicalize a list of `(\mathfrak{a}, \mathfrak{b})` pairs into levels.
+
+    The half of the Comprehensive algorithms that depends on its input only
+    through the SET that input represents -- which is why it is a function of
+    the pairs alone, and why the ``union`` resume stage can feed it directly
+    without the decomposition or the locus having run at all.
+
+    INPUT:
+
+    - ``pairs`` -- the pieces, as ideals over the constants
+
+    - ``title``, ``polish`` -- as for :func:`comprehensive`
+
+    OUTPUT: as for :func:`comprehensive`
+
+    EXAMPLES::
+
+        sage: canonicalize([], 'V_test')
+        []
+    """
+    if not pairs:
+        return []
+    C = const_ring()
 
     print("\n" + "=" * 72)
     print("%s, canonical levels (Algorithm %s, Comprehensive)%s\n"
@@ -5214,12 +5595,19 @@ def comprehensive(union_primes, title, polish=True):
               % (len(creps), len(creps)))
         return []
 
-    print("  ConsLevels on %d piece(s) (2^%d subsets) ..."
-          % (len(creps), len(creps)), flush=True)
-    _t = time.time()
-    levels = cons_levels(creps)
-    print("  ConsLevels %.1fs -> %d level(s)" % (time.time() - _t, len(levels)),
-          flush=True)
+    _saved = resume_have('levels')
+    if _saved is not None:
+        levels = _pairs_from_lines(_saved)
+        print("  ConsLevels skipped: %d level(s) resumed from %s"
+              % (len(levels), RESUME_LOG), flush=True)
+    else:
+        print("  ConsLevels on %d piece(s) (2^%d subsets) ..."
+              % (len(creps), len(creps)), flush=True)
+        _t = time.time()
+        levels = cons_levels(creps)
+        print("  ConsLevels %.1fs -> %d level(s)" % (time.time() - _t, len(levels)),
+              flush=True)
+        resume_save('levels', _pairs_to_lines(levels), time.time() - _t)
 
     atoms = hole_atoms(creps) if polish else []
     if atoms:
@@ -5383,6 +5771,26 @@ def main():
         sage: main()                             # not tested (this is the script)
     """
     consistency = (LOCUS == 'consistency')
+    # The union stage makes the decomposition AND the locus skippable: the
+    # canonicalization depends on the pieces alone.  --basic never reaches
+    # this far, so it always recomputes -- which is right, the union being
+    # what it exists to print.
+    _title = {'consistency': 'V_exists', 'membership': 'V_forall',
+              'intermediate': 'V_{exists-forall}'}[LOCUS]
+    if MODE != MODE_BASIC and resume_have('union') is not None:
+        _pairs = _pairs_from_lines(resume_have('union'))
+        print("\nResumed %d union piece(s) from %s -- skipping the "
+              "decomposition and the locus.\n" % (len(_pairs), RESUME_LOG)
+              + "=" * 72, flush=True)
+        levels = canonicalize(_pairs, _title, polish=(MODE == MODE_HEURISTIC))
+        if LATEX_OUT and levels:
+            print("\n" + "-" * 72)
+            print("Canonical levels, LaTeX (paper) form:\n")
+            latex_levels(levels)
+        print("\n" + "=" * 72)
+        print_total_time()
+        return
+
     cells_ds = decompose_combined() if consistency else decompose_ansatz()
 
     if DECOMPOSE_ONLY:
@@ -5401,10 +5809,7 @@ def main():
 
     levels = None
     if MODE != MODE_BASIC:
-        levels = comprehensive(solution_primes,
-                               {'consistency': 'V_exists',
-                                'membership': 'V_forall',
-                                'intermediate': 'V_{exists-forall}'}[LOCUS],
+        levels = comprehensive(solution_primes, _title,
                                polish=(MODE == MODE_HEURISTIC))
 
     # The LaTeX block renders whatever the mode selected -- never a different
