@@ -3578,10 +3578,10 @@ def latex_union(d, label=None, tags=None):
     Each prime becomes one ``align`` row, ``& \left(g_1, \ldots, g_k\right)``,
     numbered ``1..n`` in the same order :func:`dump_union` prints them.  A
     restricted piece adds an unnumbered continuation line carrying its
-    non-vanishing conditions (``\qquad\text{with}\quad ...``), and it is that
-    line that holds ``\label{<label>:N}`` -- with the row's own number already
-    emitted above it, the label still resolves to the equation.  Coefficients
-    are cleared of denominators by :func:`clear_denominators`.
+    non-vanishing conditions (``\qquad\text{with}\quad ...``).  The
+    ``\label`` rides the NUMBERED line -- see :func:`latex_levels` for why it
+    cannot ride the continuation.  Coefficients are cleared of denominators
+    by :func:`clear_denominators`.
 
     INPUT:
 
@@ -3618,8 +3618,8 @@ def latex_union(d, label=None, tags=None):
         \begin{subequations}
         \label{ex}
         \begin{align}
-        & \left(u\right) \\
-        & \qquad\text{with}\quad v \neq 0\label{ex:1} \nonumber
+        & \left(u\right)\label{ex:1} \\
+        & \qquad\text{with}\quad v \neq 0 \nonumber
         \end{align}
         \end{subequations}
         sage: piece_excl.clear()
@@ -3650,10 +3650,10 @@ def latex_union(d, label=None, tags=None):
         if disj:
             # The conditions get their own line, unnumbered: the generators
             # keep the row number, `\nonumber` suppresses the continuation's,
-            # and `\label` there still resolves to the number just emitted.
-            rows.append("& \\left(%s\\right) \\\\\n"
-                        "& \\qquad\\text{with}\\quad %s%s \\nonumber"
-                        % (gens, disj, lab))
+            # and the `\label` stays on the numbered line with it.
+            rows.append("& \\left(%s\\right)%s \\\\\n"
+                        "& \\qquad\\text{with}\\quad %s \\nonumber"
+                        % (gens, lab, disj))
         else:
             rows.append(r"& \left(%s\right)%s" % (gens, lab))
     print(r"\begin{subequations}")
@@ -6221,6 +6221,15 @@ def latex_levels(levels, label=None, tags=None):
     level (the locally closed case) is not, there being nothing to
     distinguish.
 
+    THE ``\label`` GOES ON THE NUMBERED LINE, the one carrying the
+    generators, never on a ``minus:`` continuation.  amsmath resolves a
+    ``\label`` on a ``\nonumber`` row of an ``align`` to the number of the
+    NEXT numbered row -- so a label on the last ``minus:`` line of component
+    i comes out as component i+1's number, and as ``??`` for the last
+    component, which has no next row.  Verified with pdflatex; it is not
+    the "the number was already emitted above, so the label still resolves
+    to it" that the placement was first written on.
+
     INPUT:
 
     - ``levels`` -- the return value of :func:`comprehensive`: a list of
@@ -6266,23 +6275,22 @@ def latex_levels(levels, label=None, tags=None):
         \begin{subequations}
         \label{ex}
         \begin{align}
-        & \left(u\right) \\
-        & \qquad\text{minus:}\quad \left(v\right)\label{ex:1} \nonumber
+        & \left(u\right)\label{ex:1} \\
+        & \qquad\text{minus:}\quad \left(v\right) \nonumber
         \end{align}
         \end{subequations}
 
-    Several canonical prime holes become several lines, the last carrying the
-    label -- the row number was emitted with the generators, so it still
-    resolves to the equation::
+    Several canonical prime holes become several lines; the label stays with
+    the generators, the only line of the row amsmath numbers::
 
         sage: latex_levels([[(R4.ideal(u*v), [R4.ideal(u), R4.ideal(v)], None)]],
         ....:              label='ex')
         \begin{subequations}
         \label{ex}
         \begin{align}
-        & \left(u v\right) \\
+        & \left(u v\right)\label{ex:1} \\
         & \qquad\text{minus:}\quad \left(u\right) \nonumber \\
-        & \qquad\text{minus:}\quad \left(v\right)\label{ex:1} \nonumber
+        & \qquad\text{minus:}\quad \left(v\right) \nonumber
         \end{align}
         \end{subequations}
 
@@ -6324,14 +6332,14 @@ def latex_levels(levels, label=None, tags=None):
                 hole_gens = [", ".join(latex(clear_denominators(g))
                                        for g in h.gens()) for h in holes]
             if hole_gens:
-                # The generators keep the row number; every `minus:' line is
-                # \nonumber, and the label rides the last of them, where it
-                # still resolves to the number emitted above.
-                lines = [r"& \left(%s\right)" % gens]
-                for j, hg in enumerate(hole_gens):
+                # The generators keep the row number and the label; every
+                # `minus:' line is \nonumber, and a \label on one of those
+                # would resolve to the NEXT component's number (see above).
+                lines = [r"& \left(%s\right)%s" % (gens, lab)]
+                for hg in hole_gens:
                     lines.append(
-                        r"& \qquad\text{minus:}\quad \left(%s\right)%s \nonumber"
-                        % (hg, lab if j == len(hole_gens) - 1 else ""))
+                        r"& \qquad\text{minus:}\quad \left(%s\right) \nonumber"
+                        % hg)
                 rows.append(" \\\\\n".join(lines))
             else:
                 rows.append(r"& \left(%s\right)%s" % (gens, lab))
