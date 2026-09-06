@@ -237,22 +237,28 @@ Output
                      prints only the maximal (enclosing) ones, since a smaller
                      prime surfacing from a second cell is usually the same
                      solution family seen again.
-  --comprehensive    after computing the locus, run the Comprehensive version
-                     of the same algorithm: canonicalize the union into
-                     Brunat-Montes levels and print each level's
-                     P-representation (prime tops, prime holes).  The result
-                     depends only on the locus as a SET -- not on the
-                     decomposition, nor on the order the pieces came out in.
-  --conslevels-max N refuse --comprehensive above N pieces (default 8, 0 to
-                     disable).  ConsLevels enumerates the power set of its
+  --basic            the Basic algorithms alone.  Print the union of pieces
+                     as the locus produced it, with no canonicalization: the
+                     output depends on the decomposition and on the order the
+                     pieces came out in.
+  --comprehensive    the Comprehensive algorithms, reported exactly as
+                     Brunat-Montes define them.  Canonicalize the union into
+                     levels and print each level's P-representation -- prime
+                     tops, prime holes -- and nothing else.  The result
+                     depends only on the locus as a SET.
+  (neither)          the default: the Comprehensive algorithms as above, plus
+                     the compact-hole heuristic.  The canonical prime holes
+                     carry all of their top's generators, so each is reported
+                     by the simplest verified equivalent -- often a single
+                     polynomial.  Same sets as --comprehensive; different, and
+                     non-canonical, representatives for the holes.
+  --conslevels-max N refuse the canonicalization above N pieces (default 8, 0
+                     to disable).  ConsLevels enumerates the power set of its
                      input, so the piece count is the binding cost.
-                     Each level's holes are also reported compactly: the
-                     canonical prime holes carry all of their top's generators,
-                     so a compact equivalent -- often a single polynomial -- is
-                     searched for among the original inequations' factors and
-                     printed as a `where ... != 0' condition.
-  --latex            re-print the union as a LaTeX subequations block in the
-                     form the paper uses, denominators cleared.
+  --latex            re-print the result as a LaTeX subequations block in the
+                     form the paper uses, denominators cleared.  It renders
+                     whatever the mode above selected, so the paper carries
+                     the same object the run reported.
   --cells-out PATH   write the raw cells to PATH.  Omitted, no cells file is
                      written; nothing reads one back, so it is a debugging
                      artifact rather than an output.
@@ -262,6 +268,7 @@ Examples
   sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5
   sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 --latex
   sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 --locus consistency --comprehensive
+  sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 1 --basic --latex
   sage thomas-ansatz-solve.sage --pde navier-stokes-nd --ansatz 25.34
   sage thomas-ansatz-solve.sage --pde navier-stokes --ansatz 25.3 --generic-cell
   sage thomas-ansatz-solve.sage --pde helium --ansatz 15 --decompose-only
@@ -383,12 +390,32 @@ PRUNE_ENCLOSED = '--keep-enclosed' not in sys.argv
 # the form the paper uses (one \left(...\right) per prime, each \label'd
 # `ideal:N`).  Coefficients are cleared of denominators first, so `a1 - 1/2*b0`
 # prints as `2 a_{1} - b_{0}`.
-# Run the COMPREHENSIVE version of whichever locus --locus selects: the Basic
-# algorithm, then the canonicalization tail of NewMethod.tex's Algorithms
-# ConsistencyLocus (Comprehensive) / MembershipLocus (Comprehensive) --
-# Crep each piece, drop the empty ones, ConsLevels, Prep each level.  Opt-in
-# because ConsLevels enumerates the power set of its input; see comprehensive().
-COMPREHENSIVE = '--comprehensive' in sys.argv
+# Three mutually exclusive output modes, one switch each and a default.
+#
+#   --basic          the Basic algorithms alone -- the union bucket as the
+#                    locus produced it, no canonicalization at all.
+#   --comprehensive  the Comprehensive algorithms reported as Brunat-Montes
+#                    define them: the canonicalization tail of NewMethod.tex's
+#                    Algorithms ConsistencyLocus / MembershipLocus
+#                    (Comprehensive) -- Crep each piece, drop the empty ones,
+#                    ConsLevels, Prep each level -- and stop there.  Prime
+#                    tops, prime holes, nothing added.
+#   MODE_HEURISTIC   the default: the same levels, with the compact-hole
+#                    heuristic on top (see principal_hole).  The sets are
+#                    identical; the holes are reported by a verified equivalent
+#                    rather than by their minimal primes, which is why it is
+#                    NOT what --comprehensive prints.
+#
+# The canonicalization is opt-out rather than opt-in now, but the cost that
+# made it opt-in has not changed: ConsLevels enumerates the power set of its
+# input, so --conslevels-max still guards it, and --basic is the way past it.
+MODE_BASIC, MODE_CANONICAL, MODE_HEURISTIC = 'basic', 'comprehensive', 'heuristic'
+if '--basic' in sys.argv and '--comprehensive' in sys.argv:
+    sys.exit("--basic and --comprehensive are mutually exclusive; omit both "
+             "for the compact-hole default.")
+MODE = (MODE_BASIC if '--basic' in sys.argv else
+        MODE_CANONICAL if '--comprehensive' in sys.argv else
+        MODE_HEURISTIC)
 # Refuse to call ConsLevels on more than this many pieces.  Four is comfortable
 # and five is already minutes-to-hours on measured instances, so the default
 # leaves headroom without letting a membership run (tens of pieces) wedge.
@@ -4462,8 +4489,8 @@ def consistency_locus(cells_ds):
 # (Comprehensive) and MembershipLocus (Comprehensive).  Both are "run the
 # Basic algorithm, then canonicalize", and the canonicalization is the same
 # for either, because it depends on its input only through the SET that input
-# represents.  So one implementation serves both, and --comprehensive turns it
-# on for whichever --locus was selected.
+# represents.  So one implementation serves both, for whichever --locus was
+# selected, and --basic is what turns it off.
 # ---------------------------------------------------------------------------
 
 _CONST_RING = None
@@ -5100,7 +5127,7 @@ def principal_hole(a, primes, atoms=(), max_atoms=2, budget=4000):
     return (None, 'inconclusive' if pure else 'no-principal')
 
 
-def comprehensive(union_primes, title):
+def comprehensive(union_primes, title, polish=True):
     r"""
     The canonicalization tail shared by both Comprehensive algorithms.
 
@@ -5127,7 +5154,16 @@ def comprehensive(union_primes, title):
 
     - ``title`` -- string naming the locus, for the heading
 
-    OUTPUT: the list of levels, each a list of ``(top, [holes])`` components
+    - ``polish`` -- whether to report each hole by a compact equivalent
+      (:func:`principal_hole`) instead of by its minimal primes.  False is
+      ``--comprehensive``: Brunat-Montes's own output, canonical, holes given
+      as prime holes.  True is the default mode: the same sets, the holes
+      rendered by a verified representative that is usually far shorter.  The
+      canonicity claim then attaches to the levels and the tops only, which is
+      exactly why the two are separate switches.
+
+    OUTPUT: the list of levels, each a list of ``(top, [holes], compact)``
+    triples, ``compact`` being ``None`` unless ``polish`` found one
 
     EXAMPLES::
 
@@ -5152,9 +5188,10 @@ def comprehensive(union_primes, title):
         pairs.append((a, b))
 
     print("\n" + "=" * 72)
-    print("%s, canonical levels (Algorithm %s, Comprehensive)\n"
+    print("%s, canonical levels (Algorithm %s, Comprehensive)%s\n"
           % (title, 'ConsistencyLocus' if LOCUS == 'consistency'
-                    else 'MembershipLocus'))
+                    else 'MembershipLocus',
+             ", compact holes" if polish else ""))
 
     creps, dropped = [], 0
     for a, b in pairs:
@@ -5184,7 +5221,7 @@ def comprehensive(union_primes, title):
     print("  ConsLevels %.1fs -> %d level(s)" % (time.time() - _t, len(levels)),
           flush=True)
 
-    atoms = hole_atoms(creps)
+    atoms = hole_atoms(creps) if polish else []
     if atoms:
         print("  hole atoms: %s" % ", ".join(str(f) for f in atoms))
 
@@ -5195,7 +5232,7 @@ def comprehensive(union_primes, title):
         print("\n  Level %d  (dim %d):" % (2 * l + 1, a.dimension()))
         for top, holes in comps:
             compact, note = None, None
-            if holes:
+            if holes and polish:
                 g, status = principal_hole(top, holes, atoms)
                 if g is not None:
                     compact = [_tidy_cond(x) for x in g]
@@ -5236,7 +5273,9 @@ def latex_levels(levels, label='ideal'):
     :data:`piece_excl` -- this renders the canonical levels: one row per
     P-representation component, its hole rendered from the compact
     representative when one was found and from the canonical prime holes
-    when it was not.
+    when it was not.  Under ``--comprehensive`` none is ever sought, so
+    every hole renders as its minimal primes; that is the mode's whole
+    point, and the rendering follows the mode rather than deciding it.
 
     Rows are numbered straight through, across levels, so ``\ref`` targets
     do not shift when a level gains or loses a component.  When there is
@@ -5361,22 +5400,31 @@ def main():
                        'intermediate': intermediate_locus}[LOCUS](cells_ds)
 
     levels = None
-    if COMPREHENSIVE:
+    if MODE != MODE_BASIC:
         levels = comprehensive(solution_primes,
                                {'consistency': 'V_exists',
                                 'membership': 'V_forall',
-                                'intermediate': 'V_{exists-forall}'}[LOCUS])
+                                'intermediate': 'V_{exists-forall}'}[LOCUS],
+                               polish=(MODE == MODE_HEURISTIC))
 
-    if LATEX_OUT and levels:
-        # --comprehensive computed a canonical form; that, not the Basic
-        # algorithm's bucket, is what the paper should carry.
-        print("\n" + "-" * 72)
-        print("Canonical levels, LaTeX (paper) form:\n")
-        latex_levels(levels)
-    elif LATEX_OUT and solution_primes:
-        print("\n" + "-" * 72)
-        print("Solution varieties, LaTeX (paper) form:\n")
-        latex_union(solution_primes)
+    # The LaTeX block renders whatever the mode selected -- never a different
+    # object from the one printed above -- so the paper carries what the run
+    # reported.  --basic gets the union; the other two get the levels, with or
+    # without the compact holes according to the mode comprehensive() ran in.
+    if LATEX_OUT:
+        if MODE == MODE_BASIC:
+            if solution_primes:
+                print("\n" + "-" * 72)
+                print("Solution varieties, LaTeX (paper) form:\n")
+                latex_union(solution_primes)
+        elif levels:
+            print("\n" + "-" * 72)
+            print("Canonical levels, LaTeX (paper) form:\n")
+            latex_levels(levels)
+        else:
+            print("\n" + "-" * 72)
+            print("No canonical levels to render; --latex has nothing to "
+                  "print in this mode.  Re-run with --basic for the union.")
 
     print("\n" + "=" * 72)
     print_total_time()
