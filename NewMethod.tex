@@ -2390,6 +2390,29 @@ The P-representation of the holes is somewhat inconvenient, however, as the hole
 are strict subsets of the tops, and therefore contain all of the top's generators.
 
 \vfill\eject
+\subsection{Scaling Symmetries}
+
+A moment's consideration is enough to realize that the number of free parameters
+can be reduced by considering certain simple scaling symmetries.  For example,
+given an ODE:
+
+\[
+a \Psi'' + b \Psi' + c \Psi = 0
+\]
+
+The equation will not be altered in any material way by multiplying all
+three constants by a non-zero constant $\lambda$.
+
+The independent variable of the ODE can be likewise scaled by a non-zero constant $\lambda$
+with no additional impact beyond having to scale the coefficients $a$, $b$, and $c$
+by $\lambda^2$, $\lambda$, and 1.
+
+Equations, especially those arising from physics, often exhibit symmetries.  Rotational
+symmetry allows coordinates systems to be oriented in an arbitrary direction;
+often a preferred direction can be selected that can then be rotated to find
+other solutions.
+
+\vfill\eject
 \section{Software}
 \label{sec:Software}
 
@@ -3515,6 +3538,19 @@ can it use memory spread out over a cluster.
 
 \section{Conclusion}
 \label{sec:Conclusion}
+
+The applications of Gr\"bner basis algorithms such as Buchberger's and Fauvere's
+continue to grow.  The present work would be impossible without the GTZ algorithm and the
+Gr\"obner basis calculations that underlie it.  \cite{Grobner example} was something
+of a shot across the bow; it is now clear that these algorithms are capable
+of solving systems of differential equations as well as systems of polynomial equations.
+
+Singular remains in an alarming state - single threaded and tied to its array implementation.
+
+Consistency is a bigger concept in differential algebra that it first appears.  A great deal of the structure
+of the constant solution space is contained in the consistency locus.  We don't
+need any analysis at this point, just algebra; we just exclude solutions that would let us
+establish $1 = 0$.
 
 The algorithm presented above can be used to check any PDE to see if any of its solutions
 can be expressed using an ODE structured according to a specific ansatz, defined by
