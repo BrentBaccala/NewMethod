@@ -2388,6 +2388,39 @@ and it is what Algorithm~\ref{alg:consistency-basic}'s output lacks.
 
 The P-representation of the holes is somewhat inconvenient, however, as the holes
 are strict subsets of the tops, and therefore contain all of the top's generators.
+For example, here is the P-representation of the membership locus of the
+example from section \ref{sec:Example}:
+
+\begin{subequations}
+\label{ideal}
+\begin{align}
+& \left(c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E, v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}\right) \\
+& \qquad\text{with}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, E, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}\right) \neq 0 ,\; \left(c_{1}, b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, E, v_{1}^{2} + v_{2}^{2} + v_{3}^{2}\right) \neq 0\label{ideal:1} \nonumber \\
+& \left(b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}, v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, v_{4}^{2} c_{1} - E b_{0}\right) \\
+& \qquad\text{with}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}\right) \neq 0 ,\; \left(c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}\right) \neq 0 ,\; \left(b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}, E\right) \neq 0\label{ideal:2} \nonumber \\
+& \left(2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1, 4 v_{4} c_{1} + c_{0}, c_{0}^{2} + 4 b_{0} c_{1}, v_{4} c_{0} - b_{0}\right) \\
+& \qquad\text{with}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1\right) \neq 0 ,\; \left(c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}, 8 E + 1\right) \neq 0\label{ideal:3} \nonumber \\
+& \left(a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1, v_{4} c_{1} - b_{1}, b_{1} c_{0} - b_{0} c_{1}, v_{4} c_{0} - b_{0}\right) \\
+& \qquad\text{with}\quad \left(c_{1}, c_{0}, b_{1}, b_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \neq 0 ,\; \left(b_{1}, b_{0}, a_{1}, a_{0}, v_{4}, v_{3}, v_{2}, v_{1}, 2 E + 1\right) \neq 0\label{ideal:4} \nonumber
+\end{align}
+\end{subequations}
+
+and here is the same locus with simplified holes:
+
+\begin{subequations}
+\label{ideal}
+\begin{align}
+& \left(c_{1}, b_{1}, a_{1} - b_{0}, a_{0}, E, v_{4} c_{0} - b_{0}, v_{1}^{2} + v_{2}^{2} + v_{3}^{2} - v_{4}^{2}\right) \\
+& \qquad\text{with}\quad a_{1} \neq 0\label{ideal:1} \nonumber \\
+& \left(b_{1}, 2 a_{1} - b_{0}, a_{0}, v_{3}, v_{2}, v_{1}, v_{4} c_{0} - b_{0}, E c_{0} - v_{4} c_{1}, v_{4}^{2} c_{1} - E b_{0}\right) \\
+& \qquad\text{with}\quad a_{1} \neq 0\label{ideal:2} \nonumber \\
+& \left(2 b_{1} + c_{0}, a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 8 E + 1, 4 v_{4} c_{1} + c_{0}, c_{0}^{2} + 4 b_{0} c_{1}, v_{4} c_{0} - b_{0}\right) \\
+& \qquad\text{with}\quad b_{0} \neq 0\label{ideal:3} \nonumber \\
+& \left(a_{1}, a_{0}, v_{3}, v_{2}, v_{1}, 2 E + 1, v_{4} c_{1} - b_{1}, b_{1} c_{0} - b_{0} c_{1}, v_{4} c_{0} - b_{0}\right) \\
+& \qquad\text{with}\quad \left(b_{0}, b_{1}\right) \neq 0\label{ideal:4} \nonumber
+\end{align}
+\end{subequations}
+
 
 \vfill\eject
 \subsection{Scaling Symmetries}
