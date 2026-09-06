@@ -2500,6 +2500,120 @@ The script that used these packages to perform the calculations in this paper is
 {\tt thomas-ansatz-solve.sage} is verified to work with Sage 10.6
 and the two libraries described above.
 
+The script is driven entirely from the command line, and {\tt --help} lists
+every option it accepts.  The three tables below collect the ones that matter
+for reproducing the calculations of this paper.
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\hline
+\multicolumn{2}{@{}l}{\bf Choosing the problem and the algorithm} \\
+\hline
+{\tt --pde NAME}
+  & which equation: {\tt hydrogen}, {\tt helium}, {\tt navier-stokes}, or
+    {\tt navier-stokes-nd}, the nondimensional $\rho = \mu = 1$ variant
+    (default {\tt hydrogen}) \\[3pt]
+{\tt --ansatz N}
+  & which ansatz, from the catalogue in {\tt ansatz-library.sage}; integers
+    and decimal variants alike ({\tt 5}, {\tt 20.1}, {\tt 25.34}), default
+    {\tt 5} \\[3pt]
+{\tt --locus NAME}
+  & which of the three constant loci of \S\ref{sec:Solution Algorithm} to
+    compute: {\tt intermediate} ($V_{\exists\forall}$, the default),
+    {\tt consistency} ($V_\exists$), or {\tt membership} ($V_\forall$) \\[3pt]
+{\tt --ranking NAME}
+  & the ranking used for the differential Thomas decomposition:
+    {\tt orderly} (default) or {\tt elimination}, a block ranking that
+    changes the decomposition and costs considerably more \\[3pt]
+{\tt --generic-cell}
+  & skip the decomposition and run the pipeline on the ansatz's generic cell
+    alone.  The way to get a locus out of an ansatz whose decomposition does
+    not terminate, at the price of covering only the stratum on which no
+    initial vanishes \\[3pt]
+{\tt --decompose-only}
+  & stop after the decomposition, before the prime pipeline: a cheap test of
+    whether a decomposition terminates at all, and in what memory \\[3pt]
+\hline
+\end{tabularx}
+\end{center}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\hline
+\multicolumn{2}{@{}l}{\bf Reporting the result} \\
+\hline
+{\tt --basic}
+  & the Basic algorithms alone --- the union of pieces as the locus produced
+    it, with no canonicalization, so the output depends on the decomposition
+    and on the order the pieces came out in \\[3pt]
+{\tt --comprehensive}
+  & the Comprehensive algorithms, reported exactly as \cite{BrunatMontes}
+    define them: the canonical levels, each printed as a P-representation of
+    prime tops with prime holes.  Depends only on the locus as a set \\[3pt]
+(neither)
+  & the default: the same canonical levels, with each hole reported by the
+    simplest verified equivalent found by the polishing of
+    \S\ref{sec:constructable-set} --- the same sets as {\tt --comprehensive},
+    different representatives for the holes \\[3pt]
+{\tt --latex}
+  & re-print the result as the {\tt subequations} block this paper uses,
+    denominators cleared.  The displays of \S\ref{sec:Example} were produced
+    this way \\[3pt]
+{\tt --latex-label SPEC}
+  & emit {\tt \textbackslash label} commands, off by default.  A single name
+    numbers the components ({\tt ideal:1}, {\tt ideal:2}, \ldots); a list
+    names them one by one, as in
+    {\tt --latex-label ideal:1s,2s,classical,parabolic} \\[3pt]
+{\tt --sort-order LIST}
+  & render the components in a chosen order.  The entries are positions in
+    the canonical order, which is keyed on each component's reduced
+    Gr\"obner basis and is therefore the same on every run \\[3pt]
+{\tt --keep-enclosed}
+  & keep a piece contained in another piece; the default prints only the
+    maximal ones, a smaller prime surfacing from a second cell usually being
+    the same solution family seen again \\[3pt]
+\hline
+\end{tabularx}
+\end{center}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\hline
+\multicolumn{2}{@{}l}{\bf Checkpointing and diagnostics} \\
+\hline
+{\tt --resume-log PATH}
+  & append a record to {\tt PATH} as each stage (decomposition, union,
+    levels) completes, and on a later run with the same flag resume from the
+    furthest record present.  A killed run loses only the stage it was in \\[3pt]
+{\tt --resume-restart}
+  & discard an existing resume log and start it over \\[3pt]
+{\tt --gtz-subprocess}
+  & compute $\mathrm{minAss}$ in a standalone Singular subprocess under
+    {\tt option(prot)} rather than in process, which is silent.  Gives a
+    protocol log per ideal, a killable child process, and results cached on
+    disk, so a re-run skips every call that already finished \\[3pt]
+{\tt --gtz-timeout SECS}
+  & abandon a $\mathrm{minAss}$ call after {\tt SECS} and report the log path
+    (default 0, no limit) \\[3pt]
+{\tt --conslevels-max N}
+  & refuse the canonicalization above {\tt N} pieces (default 8):
+    $\mathrm{ConsLevels}$ enumerates the power set of its input, so the piece
+    count is the binding cost \\[3pt]
+{\tt --refine-budget N}
+  & cap the number of pieces $\mathrm{RefiningPartition}$ may hold across all
+    parts (default 20000), the refinement being exponential in the worst
+    case.  {\tt --locus membership} only \\[3pt]
+{\tt --max-cells N}
+  & process only the first {\tt N} cells of the decomposition \\[3pt]
+{\tt --verbose-remainder}
+  & print each equation's remainder for every cell \\[3pt]
+\hline
+\end{tabularx}
+\end{center}
+
 
 %%\section*{An Example: The New Solution of Hydrogen}
 %%\section{Example: A New Pseudo-Solution of Hydrogen}
