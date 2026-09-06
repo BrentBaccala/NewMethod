@@ -513,8 +513,37 @@ def _resume_problem_line():
         sage: _resume_problem_line().startswith('#problem pde=')
         True
     """
-    return ('#problem pde=%s ansatz=%s ranking=%s locus=%s generic=%d'
-            % (PDE_NAME, ANSATZ, RANKING, LOCUS, 1 if GENERIC_CELL else 0))
+    return ('#problem pde=%s ansatz=%s ranking=%s decomp=%s generic=%d'
+            % (PDE_NAME, ANSATZ, RANKING, _decomp_kind(),
+               1 if GENERIC_CELL else 0))
+
+
+# Stages that depend only on the DECOMPOSITION, not on which locus was asked
+# for.  intermediate_locus and membership_locus both run on decompose_ansatz's
+# cells -- membership does not call intermediate, it rebuilds the
+# exists-forall union itself from the same cell_data records -- so their cells
+# are the same object and a log written by one may be resumed by the other.
+# consistency_locus is the exception: decompose_combined folds the target
+# equations in, so its cells are different, which is what `decomp' in the
+# #problem header separates.  union and levels ARE locus-specific and carry
+# their locus on the #stage line.
+_LOCUS_FREE_STAGES = ('cells', 'celldata')
+
+
+def _decomp_kind():
+    r"""
+    Which decomposition this run's cells come from: ``'combined'`` or ``'ansatz'``.
+
+    The `#problem` header records this rather than the locus, because it is
+    what actually decides whether stored cells are valid for a run -- see
+    :data:`_LOCUS_FREE_STAGES`.
+
+    EXAMPLES::
+
+        sage: _decomp_kind() in ('ansatz', 'combined')
+        True
+    """
+    return 'combined' if LOCUS == 'consistency' else 'ansatz'
 
 
 def _resume_sha(prev, lines):
@@ -561,8 +590,8 @@ def resume_load():
 
     want = _resume_problem_line()
     got_problem = None
-    stages, tip = {}, '-'
-    cur, payload, cur_prev = None, [], '-'
+    stages, tip, skipped = {}, '-', []
+    cur, payload, cur_prev, cur_locus = None, [], '-', LOCUS
     for raw in open(RESUME_LOG):
         line = raw.rstrip('\n')
         if line.startswith('#problem '):
@@ -570,13 +599,19 @@ def resume_load():
         elif line.startswith('#stage '):
             f = dict(p.split('=', 1) for p in line.split()[2:] if '=' in p)
             cur, payload, cur_prev = line.split()[1], [], f.get('prev', '-')
+            cur_locus = f.get('locus', LOCUS)
         elif line.startswith('#end '):
             parts = line.split()
             name = parts[1]
             f = dict(p.split('=', 1) for p in parts[2:] if '=' in p)
             if cur == name and f.get('sha') == _resume_sha(cur_prev, payload):
-                stages[name] = payload
+                # The chain advances on every valid record, so a stage skipped
+                # for being another locus's still links the ones after it.
                 tip = f['sha']
+                if name in _LOCUS_FREE_STAGES or cur_locus == LOCUS:
+                    stages[name] = payload
+                else:
+                    skipped.append('%s (locus=%s)' % (name, cur_locus))
             cur, payload = None, []
         elif cur is not None:
             payload.append(line)
@@ -587,8 +622,11 @@ def resume_load():
                  % (RESUME_LOG, got_problem, want))
     _RESUME_STAGES, _RESUME_TIP = stages, tip
     if stages:
-        print("Resume log %s: %s available."
-              % (RESUME_LOG, ", ".join(sorted(stages))), flush=True)
+        print("Resume log %s: %s available." % (RESUME_LOG, ", ".join(sorted(stages))),
+              flush=True)
+    if skipped:
+        print("  (skipping %s -- this run is locus=%s)"
+              % (", ".join(skipped), LOCUS), flush=True)
 
 
 def resume_have(stage):
@@ -629,8 +667,8 @@ def resume_save(stage, lines, wall):
             fh.write('#resume-log %s\n' % _RESUME_VERSION)
             fh.write('%s\n' % _resume_problem_line())
             fh.write('#gtz-dir %s\n' % GTZ_DIR)
-        fh.write('#stage %s prev=%s start=%s wall=%.1f elapsed=%.1f\n'
-                 % (stage, _RESUME_TIP,
+        fh.write('#stage %s prev=%s locus=%s start=%s wall=%.1f elapsed=%.1f\n'
+                 % (stage, _RESUME_TIP, LOCUS,
                     time.strftime('%Y-%m-%dT%H:%M:%S'), wall,
                     time.time() - _T_START))
         for l in lines:
@@ -5520,10 +5558,33 @@ def comprehensive(union_primes, title, polish=True):
         sage: comprehensive({}, 'V_test')
         []
     """
+    return canonicalize(union_pairs(union_primes), title, polish)
+
+
+def union_pairs(union_primes):
+    r"""
+    The Basic locus's bucket as `(\mathfrak{a}, \mathfrak{b})` pairs over the constants.
+
+    Split out of :func:`comprehensive` so that EVERY mode can record the union
+    stage, ``--basic`` included.  That mode does not canonicalize, so it never
+    reaches :func:`comprehensive` -- and it is precisely the mode whose entire
+    output is the union, so it is the one whose result is most worth keeping.
+    A ``--basic`` run now leaves the pieces on disk for a later
+    ``--comprehensive`` resume, which is the workflow the log exists for.
+
+    INPUT:
+
+    - ``union_primes`` -- the bucket ``{prime_key: (P, [cell numbers])}``
+
+    OUTPUT: a list of ``(a, b)`` pairs of ideals in :func:`const_ring`
+
+    EXAMPLES::
+
+        sage: union_pairs({})
+        []
+    """
     if not union_primes:
         return []
-
-    _t_union = time.time()
     C = const_ring()
     pairs = []
     for key, entry in sorted(union_primes.items(), key=lambda kv: str(kv[0])):
@@ -5537,9 +5598,7 @@ def comprehensive(union_primes, title, polish=True):
         else:
             b = C.ideal(C.one())
         pairs.append((a, b))
-    resume_save('union', _pairs_to_lines(pairs), time.time() - _t_union)
-
-    return canonicalize(pairs, title, polish)
+    return pairs
 
 
 def canonicalize(pairs, title, polish=True):
@@ -5803,14 +5862,21 @@ def main():
         print_total_time()
         sys.exit(0)
 
+    _t_locus = time.time()
     solution_primes = {'consistency': consistency_locus,
                        'membership': membership_locus,
                        'intermediate': intermediate_locus}[LOCUS](cells_ds)
+    _wall_locus = time.time() - _t_locus
+
+    # Recorded in EVERY mode, --basic included: the union is what --basic
+    # exists to produce, and a later --comprehensive run resumes from it.
+    _pairs = union_pairs(solution_primes)
+    if _pairs:
+        resume_save('union', _pairs_to_lines(_pairs), _wall_locus)
 
     levels = None
     if MODE != MODE_BASIC:
-        levels = comprehensive(solution_primes, _title,
-                               polish=(MODE == MODE_HEURISTIC))
+        levels = canonicalize(_pairs, _title, polish=(MODE == MODE_HEURISTIC))
 
     # The LaTeX block renders whatever the mode selected -- never a different
     # object from the one printed above -- so the paper carries what the run
