@@ -259,6 +259,26 @@ Output
                      form the paper uses, denominators cleared.  It renders
                      whatever the mode above selected, so the paper carries
                      the same object the run reported.
+  --latex-label NAME emit LaTeX \label commands, tagged NAME: the block gets
+                     \label{NAME} and the i-th component \label{NAME:i}.
+                     Omitted -- the default -- no \label is emitted at all,
+                     which is what a block the paper never \ref's wants, and
+                     what keeps several pasted blocks from colliding on the
+                     same tag.  Equation NUMBERING is identical either way;
+                     only the labels appear or do not.
+  --sort-order LIST  render the components in this order, e.g. --sort-order
+                     4,3,2,1.  The entries are positions in the CANONICAL
+                     order -- the order that runs by default, keyed on each
+                     component's reduced Groebner basis so that it is the
+                     same on every rerun -- and the list must be a
+                     permutation of 1..N for the N components the run
+                     produced; anything else is refused rather than silently
+                     dropping a component.  It orders the canonical levels
+                     in the text listing and the LaTeX block alike -- they
+                     have to agree for the positions to mean anything -- and
+                     the --basic union in the LaTeX block.  Necessarily
+                     specific to one PDE/ansatz: which order reads well in a
+                     paper is not something an algorithm can decide.
   --resume-log PATH  append a record for each completed stage to PATH, and on
                      a later run with the same flag resume from the furthest
                      one present.  A record is written only when its stage
@@ -402,9 +422,9 @@ REFINE_BUDGET = int(_argval('--refine-budget', '20000'))
 # algorithms would likely do all of this".
 PRUNE_ENCLOSED = '--keep-enclosed' not in sys.argv
 # Re-print the final union as a LaTeX `subequations`/`align` block, in
-# the form the paper uses (one \left(...\right) per prime, each \label'd
-# `ideal:N`).  Coefficients are cleared of denominators first, so `a1 - 1/2*b0`
-# prints as `2 a_{1} - b_{0}`.
+# the form the paper uses (one \left(...\right) per prime, and under
+# --latex-label one \label per row).  Coefficients are cleared of denominators
+# first, so `a1 - 1/2*b0` prints as `2 a_{1} - b_{0}`.
 # Three mutually exclusive output modes, one switch each and a default.
 #
 #   --basic          the Basic algorithms alone -- the union bucket as the
@@ -437,6 +457,22 @@ MODE = (MODE_BASIC if '--basic' in sys.argv else
 # 0 disables the guard.
 CONSLEVELS_MAX = int(_argval('--conslevels-max', '8'))
 LATEX_OUT = '--latex' in sys.argv
+# \label is opt-in.  The paper pastes several of these blocks and \ref's few
+# of them, so labelling every one by default produced duplicate-label warnings
+# and tags nothing pointed at.  Naming the tag and asking for labels at all is
+# the same decision, hence one switch rather than two.
+LATEX_LABEL = _argval('--latex-label')
+# --sort-order permutes the canonical order; see canonical_ideal_key and
+# apply_sort_order.  Parsed here so a typo fails before the hour of compute.
+_sort_arg = _argval('--sort-order')
+if _sort_arg:
+    try:
+        SORT_ORDER = [int(x) for x in _sort_arg.replace(' ', '').split(',') if x]
+    except ValueError:
+        sys.exit("--sort-order takes a comma-separated list of 1-based "
+                 "positions, e.g. --sort-order 4,3,2,1")
+else:
+    SORT_ORDER = []
 # Run the minimal-associated-primes step in a standalone Singular subprocess
 # (option(prot), killable, cached) rather than in-process through libsingular.
 # See minimal_associated_primes_gtz for why the in-process call cannot be made
@@ -1987,6 +2023,122 @@ def prime_key(P):
     return tuple(sorted(str(g) for g in P.gens()))
 
 
+# ===========================================================================
+# A canonical order for the rendered components
+# ===========================================================================
+# The order components come out of the pipeline in is an accident of the
+# computation: minAssGTZ returns primes in whatever order its own recursion
+# reached them, and prep(), the buckets and the levels all inherit that.  For a
+# paper that will not do -- \ref{ideal:3} has to name the same component on
+# every rerun, and --sort-order below is unusable if the positions it addresses
+# can move underneath it -- so both renderers sort first, on a key computed
+# from the ideal itself.
+#
+# The key is built on the REDUCED Groebner basis, which is the one canonical
+# form an ideal has: in a fixed monomial ordering two ideals are equal exactly
+# when their reduced bases agree term by term.  Sorting on the given generators
+# would not be canonical -- the same ideal arrives with different generators
+# depending on which saturation or intersection produced it -- and sorting on
+# str() of them would make the order depend on the variable NAMES as well.
+#
+# Ties cannot reach the third key component: equal reduced bases mean equal
+# ideals, and the tops of a P-representation are pairwise distinct.
+
+def _poly_canon(f):
+    r"""
+    A polynomial as a sortable key that does not depend on its presentation.
+
+    Its terms as ``(exponent tuple, coefficient)`` pairs in a fixed order, so
+    equal polynomials give equal keys and the comparison never goes through
+    ``str()`` -- which would order by variable name.
+
+    INPUT:
+
+    - ``f`` -- a multivariate polynomial
+
+    OUTPUT: a tuple of ``(tuple of ints, Rational)`` pairs
+
+    EXAMPLES::
+
+        sage: R4.<u,v> = PolynomialRing(QQ)
+        sage: _poly_canon(u + v) == _poly_canon(v + u)
+        True
+        sage: _poly_canon(u) < _poly_canon(v)     # (0,1) sorts before (1,0)
+        False
+    """
+    return tuple(sorted((tuple(e), QQ(c)) for e, c in f.dict().items()))
+
+
+def canonical_ideal_key(I):
+    r"""
+    A canonical sort key for an ideal: dimension, then its reduced basis.
+
+    Bigger components first (hence ``-dimension()``), then the shorter reduced
+    Groebner basis, then that basis compared term by term via
+    :func:`_poly_canon`.  Every part is an invariant of the ideal, so the
+    resulting order is reproducible across runs and across the different
+    presentations the same ideal reaches the renderers in.
+
+    INPUT:
+
+    - ``I`` -- an ideal in a multivariate polynomial ring
+
+    OUTPUT: a tuple, comparable against other keys from the same ring
+
+    EXAMPLES::
+
+        sage: R4.<u,v> = PolynomialRing(QQ)
+        sage: canonical_ideal_key(R4.ideal(u)) < canonical_ideal_key(R4.ideal(u, v))
+        True
+
+    Presentation does not enter it::
+
+        sage: (canonical_ideal_key(R4.ideal(u, v))
+        ....:  == canonical_ideal_key(R4.ideal(u + v, u - v)))
+        True
+    """
+    gb = tuple(I.groebner_basis())
+    return (-I.dimension(), len(gb), tuple(sorted(_poly_canon(f) for f in gb)))
+
+
+def apply_sort_order(items, what='component'):
+    r"""
+    Reorder ``items`` as ``--sort-order`` asks, or return them unchanged.
+
+    The switch addresses positions in the canonical order, 1-based.  It must be
+    a permutation of ``1..len(items)``: a short list would drop components from
+    the paper and a repeated entry would duplicate one, and both would do it
+    quietly, so neither is accepted.
+
+    INPUT:
+
+    - ``items`` -- the canonically sorted list
+
+    - ``what`` -- string naming one element, used in the error message
+
+    OUTPUT: the reordered list
+
+    EXAMPLES::
+
+        sage: apply_sort_order(['a', 'b', 'c'])    # no --sort-order given
+        ['a', 'b', 'c']
+    """
+    if not SORT_ORDER:
+        return list(items)
+    n = len(items)
+    if sorted(SORT_ORDER) != list(range(1, n + 1)):
+        sys.stdout.flush()
+        sys.stderr.write(
+            "--sort-order %s is not a permutation of 1..%d: this run produced "
+            "%d %s(s).\n"
+            % (",".join(map(str, SORT_ORDER)), n, n, what))
+        sys.stderr.flush()
+        # os._exit for the reason --help gives: the sage runner swallows
+        # SystemExit, and this needs to stop the run.
+        os._exit(2)
+    return [items[i - 1] for i in SORT_ORDER]
+
+
 def fmt_ideal(P):
     r"""
     An ideal as its generators alone -- ``Ideal (g1, ..., gk)``.
@@ -3271,7 +3423,7 @@ def clear_denominators(g):
     return g * lcm(dens) if dens else g
 
 
-def latex_union(d, label='ideal'):
+def latex_union(d, label=None):
     r"""
     Print a bucket of solution varieties as a LaTeX ``subequations`` block.
 
@@ -3288,8 +3440,9 @@ def latex_union(d, label='ideal'):
     - ``d`` -- a bucket ``{key: (P, cells)}`` (see :func:`prune_enclosed`) --
       normally the pruned union returned by :func:`dump_union`
 
-    - ``label`` -- string (default: ``'ideal'``); the ``\label`` prefix, also
-      used as the block's own ``\label``
+    - ``label`` -- string or ``None`` (default: ``None``); when a string, the
+      ``\label`` prefix, also used as the block's own ``\label``.  ``None``
+      emits no ``\label`` at all, leaving the numbering unchanged
 
     OUTPUT: ``None`` (the block is printed)
 
@@ -3319,9 +3472,14 @@ def latex_union(d, label='ideal'):
         \end{subequations}
         sage: piece_excl.clear()
     """
-    items = sorted(d.items(), key=lambda kv: str(kv[0]))
+    # Canonically, not by str(key): the key is built from the generators as
+    # printed, so ordering on it would depend on the presentation the primes
+    # happened to arrive in.  See canonical_ideal_key.
+    items = apply_sort_order(
+        sorted(d.items(), key=lambda kv: canonical_ideal_key(kv[1][0])), 'prime')
     rows = []
     for i, (key, (P, _cells)) in enumerate(items, 1):
+        lab = (r"\label{%s:%d}" % (label, i)) if label else ""
         gens = ", ".join(latex(clear_denominators(g)) for g in P.gens())
         # The (p, hfrak) pair, not p alone -- see the comment in dump_union.
         conds = piece_conditions(P, key)
@@ -3341,12 +3499,13 @@ def latex_union(d, label='ideal'):
             # keep the row number, `\nonumber` suppresses the continuation's,
             # and `\label` there still resolves to the number just emitted.
             rows.append("& \\left(%s\\right) \\\\\n"
-                        "& \\qquad\\text{with}\\quad %s\\label{%s:%d} \\nonumber"
-                        % (gens, disj, label, i))
+                        "& \\qquad\\text{with}\\quad %s%s \\nonumber"
+                        % (gens, disj, lab))
         else:
-            rows.append(r"& \left(%s\right)\label{%s:%d}" % (gens, label, i))
+            rows.append(r"& \left(%s\right)%s" % (gens, lab))
     print(r"\begin{subequations}")
-    print(r"\label{%s}" % label)
+    if label:
+        print(r"\label{%s}" % label)
     print(r"\begin{align}")
     print(" \\\\\n".join(rows))
     print(r"\end{align}")
@@ -4447,7 +4606,7 @@ def _fmt_piece(a, F):
         sage: _fmt_piece(R4.ideal(x), ())
         'V(x)'
         sage: _fmt_piece(R4.ideal(x), (R4.ideal(y),))
-        'V(x) \\ V(y)'
+        'V(x) \\ (V(y))'
     """
     head = "C^n" if all(g.is_zero() for g in a.gens()) else \
            "V(%s)" % ", ".join(str(g) for g in a.gens())
@@ -5840,12 +5999,23 @@ def canonicalize(pairs, title, polish=True):
     if atoms:
         print("  hole atoms: %s" % ", ".join(str(f) for f in atoms))
 
+    # Canonical order BEFORE anything is printed, so the text listing and the
+    # LaTeX block number the components the same way -- which is what makes
+    # --sort-order and \ref{...:N} address the same thing.  --sort-order then
+    # permutes the flat sequence across all levels; the levels still print as
+    # levels, each holding its own members in the requested relative order.
+    flat = []
+    for l, (a, b) in enumerate(levels):
+        for top, holes in sorted(prep(a, b),
+                                 key=lambda th: canonical_ideal_key(th[0])):
+            flat.append((l, top, holes))
+    flat = apply_sort_order(flat)
+
     out = []
     for l, (a, b) in enumerate(levels):
-        comps = prep(a, b)
         lvl = []
         print("\n  Level %d  (dim %d):" % (2 * l + 1, a.dimension()))
-        for top, holes in comps:
+        for _l, top, holes in [it for it in flat if it[0] == l]:
             compact, note = None, None
             if holes and polish:
                 g, status = principal_hole(top, holes, atoms)
@@ -5878,7 +6048,7 @@ def canonicalize(pairs, title, polish=True):
     return out
 
 
-def latex_levels(levels, label='ideal'):
+def latex_levels(levels, label=None):
     r"""
     Print the Comprehensive algorithms' canonical levels as a LaTeX block.
 
@@ -5903,7 +6073,11 @@ def latex_levels(levels, label='ideal'):
     - ``levels`` -- the return value of :func:`comprehensive`: a list of
       levels, each a list of ``(top, holes, compact)`` triples
 
-    - ``label`` -- string (default: ``'ideal'``); the ``\label`` prefix
+    - ``label`` -- string or ``None`` (default: ``None``); when a string, the
+      ``\label`` prefix, and labels are emitted: the block gets
+      ``\label{<label>}`` and row ``i`` gets ``\label{<label>:i}``.  ``None``
+      emits no ``\label`` at all, and changes nothing else -- the numbering is
+      identical either way.
 
     OUTPUT: ``None`` (the block is printed)
 
@@ -5918,14 +6092,39 @@ def latex_levels(levels, label='ideal'):
         \end{align}
         \end{subequations}
 
-    A component with a compact hole carries it as a non-vanishing condition::
+    Without a label, the same block, unlabelled and numbered the same::
+
+        sage: latex_levels([[(R4.ideal(u), [], None)]])
+        \begin{subequations}
+        \begin{align}
+        & \left(u\right)
+        \end{align}
+        \end{subequations}
+
+    A hole gets its own line, reading ``minus:`` and then the ideal in the
+    format the top line above it uses::
 
         sage: latex_levels([[(R4.ideal(u), [R4.ideal(u, v)], [v])]], label='ex')
         \begin{subequations}
         \label{ex}
         \begin{align}
         & \left(u\right) \\
-        & \qquad\text{with}\quad v \neq 0\label{ex:1} \nonumber
+        & \qquad\text{minus:}\quad \left(v\right)\label{ex:1} \nonumber
+        \end{align}
+        \end{subequations}
+
+    Several canonical prime holes become several lines, the last carrying the
+    label -- the row number was emitted with the generators, so it still
+    resolves to the equation::
+
+        sage: latex_levels([[(R4.ideal(u*v), [R4.ideal(u), R4.ideal(v)], None)]],
+        ....:              label='ex')
+        \begin{subequations}
+        \label{ex}
+        \begin{align}
+        & \left(u v\right) \\
+        & \qquad\text{minus:}\quad \left(u\right) \nonumber \\
+        & \qquad\text{minus:}\quad \left(v\right)\label{ex:1} \nonumber
         \end{align}
         \end{subequations}
     """
@@ -5936,31 +6135,34 @@ def latex_levels(levels, label='ideal'):
             rows.append("%% Level %d" % (2 * l + 1))
         for top, holes, compact in comps:
             i += 1
+            lab = (r"\label{%s:%d}" % (label, i)) if label else ""
             gens = ", ".join(latex(clear_denominators(g)) for g in top.gens())
+            # One `minus:' line per hole, each rendered exactly like the top
+            # line above it -- the text listing's `minus V: Ideal (...)', in
+            # LaTeX.  Where a compact representative was found it is the single
+            # hole; otherwise the canonical prime holes, one line each, which
+            # is the same set written as an intersection of complements.
             if compact is not None and compact:
-                if len(compact) == 1:
-                    disj = r"%s \neq 0" % latex(clear_denominators(compact[0]))
-                else:
-                    disj = (r"\left(%s\right) \neq 0"
-                            % ", ".join(latex(clear_denominators(g))
-                                        for g in compact))
-            elif holes:
-                # No compact representative: say the point is on none of the
-                # canonical prime holes, one conjunct per hole.
-                disj = r" ,\; ".join(
-                    r"\left(%s\right) \neq 0"
-                    % ", ".join(latex(clear_denominators(g)) for g in h.gens())
-                    for h in holes)
+                hole_gens = [", ".join(latex(clear_denominators(g))
+                                       for g in compact)]
             else:
-                disj = ""
-            if disj:
-                rows.append("& \\left(%s\\right) \\\\\n"
-                            "& \\qquad\\text{with}\\quad %s\\label{%s:%d} \\nonumber"
-                            % (gens, disj, label, i))
+                hole_gens = [", ".join(latex(clear_denominators(g))
+                                       for g in h.gens()) for h in holes]
+            if hole_gens:
+                # The generators keep the row number; every `minus:' line is
+                # \nonumber, and the label rides the last of them, where it
+                # still resolves to the number emitted above.
+                lines = [r"& \left(%s\right)" % gens]
+                for j, hg in enumerate(hole_gens):
+                    lines.append(
+                        r"& \qquad\text{minus:}\quad \left(%s\right)%s \nonumber"
+                        % (hg, lab if j == len(hole_gens) - 1 else ""))
+                rows.append(" \\\\\n".join(lines))
             else:
-                rows.append(r"& \left(%s\right)\label{%s:%d}" % (gens, label, i))
+                rows.append(r"& \left(%s\right)%s" % (gens, lab))
     print(r"\begin{subequations}")
-    print(r"\label{%s}" % label)
+    if label:
+        print(r"\label{%s}" % label)
     print(r"\begin{align}")
     print(" \\\\\n".join(rows))
     print(r"\end{align}")
@@ -6013,7 +6215,7 @@ def main():
         if LATEX_OUT and levels:
             print("\n" + "-" * 72)
             print("Canonical levels, LaTeX (paper) form:\n")
-            latex_levels(levels)
+            latex_levels(levels, label=LATEX_LABEL)
         print("\n" + "=" * 72)
         print_total_time()
         return
@@ -6055,11 +6257,11 @@ def main():
             if solution_primes:
                 print("\n" + "-" * 72)
                 print("Solution varieties, LaTeX (paper) form:\n")
-                latex_union(solution_primes)
+                latex_union(solution_primes, label=LATEX_LABEL)
         elif levels:
             print("\n" + "-" * 72)
             print("Canonical levels, LaTeX (paper) form:\n")
-            latex_levels(levels)
+            latex_levels(levels, label=LATEX_LABEL)
         else:
             print("\n" + "-" * 72)
             print("No canonical levels to render; --latex has nothing to "
