@@ -529,6 +529,11 @@ def _resume_problem_line():
 # their locus on the #stage line.
 _LOCUS_FREE_STAGES = ('cells', 'celldata')
 
+# Stages whose records ACCUMULATE rather than replace.  celldata is written
+# once per cell, as that cell's differential_prem and GTZ finish, so a run
+# killed inside cell 13 keeps cells 1-12; the reader concatenates them.
+_ACCUMULATING_STAGES = ('celldata',)
+
 
 def _decomp_kind():
     r"""
@@ -609,7 +614,10 @@ def resume_load():
                 # for being another locus's still links the ones after it.
                 tip = f['sha']
                 if name in _LOCUS_FREE_STAGES or cur_locus == LOCUS:
-                    stages[name] = payload
+                    if name in _ACCUMULATING_STAGES:
+                        stages.setdefault(name, []).extend(payload)
+                    else:
+                        stages[name] = payload
                 else:
                     skipped.append('%s (locus=%s)' % (name, cur_locus))
             cur, payload = None, []
@@ -658,7 +666,9 @@ def resume_save(stage, lines, wall):
     - ``wall`` -- seconds this stage took, for the record's ``wall=``
     """
     global _RESUME_TIP
-    if not RESUME_LOG or stage in _RESUME_STAGES:
+    if not RESUME_LOG:
+        return
+    if stage in _RESUME_STAGES and stage not in _ACCUMULATING_STAGES:
         return
     fresh = not os.path.exists(RESUME_LOG)
     sha = _resume_sha(_RESUME_TIP, lines)
@@ -674,10 +684,14 @@ def resume_save(stage, lines, wall):
         for l in lines:
             fh.write('%s\n' % l)
         fh.write('#end %s sha=%s\n' % (stage, sha))
-    _RESUME_STAGES[stage] = list(lines)
+    if stage in _ACCUMULATING_STAGES:
+        _RESUME_STAGES.setdefault(stage, []).extend(lines)
+    else:
+        _RESUME_STAGES[stage] = list(lines)
     _RESUME_TIP = sha
-    print("  [resume] wrote stage '%s' to %s (%.1fs)" % (stage, RESUME_LOG, wall),
-          flush=True)
+    if stage not in _ACCUMULATING_STAGES:
+        print("  [resume] wrote stage '%s' to %s (%.1fs)" % (stage, RESUME_LOG, wall),
+              flush=True)
 
 resume_load()
 
@@ -3887,6 +3901,106 @@ def refining_partition(family, supersets=None, budget=0, label=None, ring=None):
     return [(B, iota) for B, iota in parts if iota]
 
 
+# --- the celldata stage: one record per cell, appended as each finishes ----
+
+_CELLDATA = None                 # cache_key hash -> strata_cache entry
+
+
+def _celldata_keyhash(cache_key):
+    r"""
+    The stored identity of a :func:`cell_data` ``strata_cache`` key.
+
+    The key itself is the tuple of the cell's differential equations as
+    strings, which is long and already written out by the ``cells`` stage, so
+    the record stores a hash of it instead.  Lookup is all it is used for: the
+    equations are reloaded from ``cells``, rehashed, and matched.
+
+    EXAMPLES::
+
+        sage: _celldata_keyhash(('a', 'b')) == _celldata_keyhash(('a', 'b'))
+        True
+        sage: _celldata_keyhash(('a',)) == _celldata_keyhash(('b',))
+        False
+    """
+    h = hashlib.sha256()
+    for part in cache_key:
+        h.update(part.encode())
+        h.update(b'\0')
+    return h.hexdigest()[:16]
+
+
+def _celldata_parse():
+    r"""
+    The resumed ``strata_cache`` entries, parsed once and memoized.
+
+    OUTPUT: a dict from key hash to the ``dict(spec_len, rems, eqns, primes)``
+    that :func:`cell_data` would have computed
+    """
+    global _CELLDATA
+    if _CELLDATA is not None:
+        return _CELLDATA
+    _CELLDATA = {}
+    lines = resume_have('celldata')
+    if lines is None:
+        return _CELLDATA
+    cur = None
+    for line in lines:
+        if line.startswith('KEYHASH: '):
+            cur = line[len('KEYHASH: '):]
+            _CELLDATA[cur] = dict(spec_len=0, rems=[], eqns=(), primes=[])
+        elif cur is None:
+            continue
+        elif line.startswith('SPEC_LEN: '):
+            _CELLDATA[cur]['spec_len'] = int(line[len('SPEC_LEN: '):])
+        elif line.startswith('REMS: '):
+            _CELLDATA[cur]['rems'] = [PolyRing(t) for t in
+                                      ast.literal_eval(line[len('REMS: '):])]
+        elif line.startswith('EQNS: '):
+            _CELLDATA[cur]['eqns'] = tuple(PolyRing(t) for t in
+                                           ast.literal_eval(line[len('EQNS: '):]))
+        elif line.startswith('PRIME: '):
+            _CELLDATA[cur]['primes'].append(
+                PolyRing.ideal([PolyRing(t) for t in
+                                ast.literal_eval(line[len('PRIME: '):])]))
+    return _CELLDATA
+
+
+def celldata_lookup(cache_key):
+    r"""
+    A cell's stored ``differential_prem`` + GTZ results, or ``None``.
+
+    This is the stage that matters most per unit of code.  ``cell_data``'s
+    per-cell work is one differential pseudo-reduction against the cell's own
+    equations followed by a minimal-associated-primes call, and on
+    hydrogen/ansatz 5 cell 13 alone spends 476 s in the first and then enters
+    the second with 1131 generators.  Everything else in the record --
+    :func:`adapt_cell`'s partition, `E_i`, `h_i`, the survivors -- is derived
+    from those in negligible time, which is why the record stores the cache
+    entry rather than the whole thing.  It also keeps the record free of BLAD
+    elements: ``cp['jet_ineqs']`` is rebuilt from the reloaded cells.
+    """
+    return _celldata_parse().get(_celldata_keyhash(cache_key))
+
+
+def celldata_record(cache_key, sc, wall):
+    r"""
+    Append one cell's results to the resume log.
+
+    Appended per cell rather than once per stage, so a run killed in cell 13
+    keeps cells 1-12.  That is the difference between losing an hour and
+    losing a few minutes, and it is why ``celldata`` accumulates where the
+    other stages replace.
+    """
+    if not RESUME_LOG:
+        return
+    lines = ['KEYHASH: %s' % _celldata_keyhash(cache_key),
+             'SPEC_LEN: %d' % sc['spec_len'],
+             'REMS: %s' % [str(r) for r in sc['rems']],
+             'EQNS: %s' % [str(e) for e in sc['eqns']]]
+    for P in sc['primes']:
+        lines.append('PRIME: %s' % [str(g) for g in P.gens()])
+    resume_save('celldata', lines, wall)
+
 def cell_data(cells_ds):
     r"""
     The per-component data of Algorithm MembershipLocus, lines 2-12.
@@ -3972,6 +4086,12 @@ def cell_data(cells_ds):
         # parametric stratum Zkey), since the reduction now depends on the full cell.
         ce = cell_eqs(ds)
         cache_key = tuple(sorted(str(e) for e in ce))
+        _stored = celldata_lookup(cache_key) if cache_key not in strata_cache else None
+        if _stored is not None:
+            strata_cache[cache_key] = _stored
+            print("\n  [cell %d] resumed from %s: differential_prem and GTZ "
+                  "skipped (%d prime(s))"
+                  % (num, RESUME_LOG, len(_stored['primes'])), flush=True)
         if cache_key not in strata_cache:
             # pconst dropped: cell_eqs already carries the (triangularized) constancy
             # relations, so `+ pconst` was redundant reductors (extra per-pass cost).
@@ -4024,6 +4144,7 @@ def cell_data(cells_ds):
             print("  [cell %d] GTZ %.1fs -> %d primes" % (num, t_gtz, len(primes)), flush=True)
             strata_cache[cache_key] = dict(spec_len=len(reductors), rems=rems, eqns=eqns,
                                            primes=primes)
+            celldata_record(cache_key, strata_cache[cache_key], t_prem + t_gtz)
 
         sc = strata_cache[cache_key]
         # W_i = ( <J_i U E_i>, hfrak_i )  -- Algorithm MembershipLocus, line 12.
