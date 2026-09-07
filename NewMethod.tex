@@ -3942,21 +3942,21 @@ classical solution, and so to be used for testing the software.  The appearance 
 was not anticipated, as the solutions was previously unknown,
 and serves to illustrate the mysterious nature of these ans\"atze.
 
-%%\section*{Current Implementation Status}
-%%\subsection{Current Implementation Status}
-\section{Future Work}
-\label{sec:Future Work}
+%I've developed working software that can parallize the computation
+%of the minimal associated prime ideals through factorization and monotone dualization,
+%but it's inefficient, so
+%I've been devoting more of my recent efforts towards more efficient algorithms.
 
-The difficulties of selecting an ansatz have already be touched upon.
-One possible approach to ansatz selection would be to impose boundary
-conditions (or the like) prior to any kind of analysis with differential algebra.
-In the case of quantum mechanics, imposing $H^2(\Omega)$, where $\Omega$ is the state space
-of whatever physical system we're analyzing, is an obvious restriction.
-Some kind of theoretical analysis, exploring what restrictions must be placed
-on ans\"atze to force the functions into $H^2(\Omega)$, might yield
-useful techniques to better select ans\"atze.
+\section{Conclusion}
+\label{sec:Conclusion}
 
-What relationship is there between the constant ideals and the function space?
+The applications of Gr\"obner basis algorithms such as Buchberger's and Fauvere's
+continue to grow.  The present work would be impossible without the GTZ algorithm and the
+Gr\"obner basis calculations that underlie it.  \cite{Chaharbashloo2013} was something
+of a shot across the bow; it is now clear that Gr\"obner basis algorithms are capable
+of solving systems of differential equations as well as systems of polynomial equations.
+
+Singular remains in an alarming state - single threaded and tied to its array implementation.
 
 The utility of this algorithm is currently limited by our Gr\"obner basis software.
 For example, I have formed a system of 1570 equations with 1,296,960 terms
@@ -3968,26 +3968,21 @@ but the software lacks the ability to
 fall back effectively on mass storage when RAM is exhausted, nor
 can it use memory spread out over a cluster.
 
-%I've developed working software that can parallize the computation
-%of the minimal associated prime ideals through factorization and monotone dualization,
-%but it's inefficient, so
-%I've been devoting more of my recent efforts towards more efficient algorithms.
-
-\section{Conclusion}
-\label{sec:Conclusion}
-
-The applications of Gr\"bner basis algorithms such as Buchberger's and Fauvere's
-continue to grow.  The present work would be impossible without the GTZ algorithm and the
-Gr\"obner basis calculations that underlie it.  \cite{Chaharbashloo2013} was something
-of a shot across the bow; it is now clear that these algorithms are capable
-of solving systems of differential equations as well as systems of polynomial equations.
-
-Singular remains in an alarming state - single threaded and tied to its array implementation.
-
-Consistency is a bigger concept in differential algebra that it first appears.  A great deal of the structure
-of the constant solution space is contained in the consistency locus.  We don't
+Consistency is a bigger concept in differential algebra that it first appears.  A great deal of information
+about the constant solution space is contained in the consistency locus alone.  We don't
 need any analysis at this point, just algebra; we just exclude solutions that would let us
-establish $1 = 0$.
+establish $1 = 0$ using simple polynomial operations and differentiation.  Everything else is {\it consistent}.
+
+The difficulties of selecting an ansatz have already be touched upon.
+One possible approach to ansatz selection would be to impose boundary
+conditions (or the like) prior to any kind of analysis with differential algebra.
+In the case of quantum mechanics, imposing $H^2(\Omega)$, where $\Omega$ is the state space
+of whatever physical system we're analyzing, is an obvious restriction.
+Some kind of theoretical analysis, exploring what restrictions must be placed
+on ans\"atze to force the functions into $H^2(\Omega)$, might yield
+useful techniques to better select ans\"atze.
+
+What relationship is there between the constant ideals and the function space?
 
 The algorithm presented above can be used to check any PDE to see if any of its solutions
 can be expressed using an ODE structured according to a specific ansatz, defined by
