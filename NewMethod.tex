@@ -40,6 +40,28 @@
 \usepackage{xcolor}
 \usepackage{comment}
 
+% ---------------------------------------------------------------------
+% Draft switch: the second example (incompressible Navier--Stokes).
+%
+%   \NSexampletrue    include Section \ref{sec:NavierStokes}
+%   \NSexamplefalse   omit it, and every cross-reference to it
+%
+% The section itself is wrapped in the nsexample environment defined
+% below, so when the switch is off its body is discarded line-by-line
+% and never seen by TeX's parser.  The handful of sentences elsewhere
+% that point at the section -- and the figure-notation paragraph that
+% only Figure \ref{normalized ansatz figure} needs -- are guarded by
+% \ifNSexample ... \fi.
+% ---------------------------------------------------------------------
+\newif\ifNSexample
+\NSexamplefalse
+
+\ifNSexample
+  \includecomment{nsexample}
+\else
+  \excludecomment{nsexample}
+\fi
+
 \usepackage[hidelinks]{hyperref}
 
 \usepackage{tabularx}
@@ -243,7 +265,7 @@ polynomials is not severe; most elementary and special functions
 can be easily modeled, as will be shown below.  Nothing in the development
 requires the system to consist of partial differential equations, nor to
 contain more than one of them: a single PDE is the case treated in
-\S\ref{sec:Example}, a system of four in \S\ref{sec:NavierStokes}.
+\S\ref{sec:Example}\ifNSexample, a system of four in \S\ref{sec:NavierStokes}\fi.
 
 In short, to solve the system, we restrict our attention to a subset of the function
 space, parameterized by a finite number of constants
@@ -595,6 +617,7 @@ separated by a slash denote a rational function.  For example, 2/2 denotes
 a rational function with a second degree numerator and a second degree
 denominator.
 
+\ifNSexample
 Two refinements of this notation are used in Figure
 \ref{normalized ansatz figure}, where an ansatz has been normalized and its
 polynomials are consequently not free.  Where only some of a polynomial's
@@ -607,6 +630,7 @@ may appear to that degree.  A polynomial confined to some of the generators
 --- an inner variable built from two of the four coordinates, say --- carries
 no number, because no degree bound describes it; the form written out in its
 box is the description.
+\fi
 
 \vfill\eject
 
@@ -1152,8 +1176,10 @@ See Figure \ref{nonlinear ansatz figure}.
 
 This time, rather than use $\Psi$ to solve a single PDE,
 we define differential polynomials $u,v,w,p$ that will be used to write a system of PDEs.
+\ifNSexample
 Section \ref{sec:NavierStokes} carries this ansatz through the
 incompressible Navier--Stokes equations.
+\fi
 
 \begin{equation}
 \label{ansatz 18}
@@ -2671,8 +2697,10 @@ and we use Hartree atomic units to render the equation dimensionless.
 This is the case $t = 1$ of \S\ref{sec:Solution Algorithm}: the system
 $\mathcal{P}^=$ has the single element obtained by clearing the denominator in
 \eqref{schrodinger hydrogen 2}, and we write $P$ for it throughout this section.
+\ifNSexample
 The Navier--Stokes example of \S\ref{sec:NavierStokes} exercises the general
 case.
+\fi
 %, though for our purposes we can
 %ignore any physical interpretation of the problem and treat it simply as an equation to be solved.
 
@@ -3070,6 +3098,7 @@ future work.
 
 \end{comment}
 
+\begin{nsexample}
 \section{Example: Incompressible Navier--Stokes}
 \label{sec:NavierStokes}
 
@@ -3530,6 +3559,7 @@ elements --- several extensions adjoined in parallel, in the sense of
 \S\ref{sec:Generalization of the Algorithm} --- is what an ansatz would need in
 order to reach a flow whose nonlinearity is active.
 
+\end{nsexample}
 \section{Generalization of the Algorithm}
 \label{sec:Generalization of the Algorithm}
 
