@@ -1000,6 +1000,80 @@ print("ansatz (%d eqs):" % len(ansatz0))
 for s in prob['ansatz_eqs_str']:
     print("   ", to_bracket(s))
 print("params:", ", ".join(PARAMS))
+
+
+# --- the ranking, spelled out ---------------------------------------------
+# `--ranking NAME` names one of two rankings; the ranking ITSELF is the order
+# it induces on the jets, and that is what the problem statement has to carry.
+# A differential ranking orders infinitely many derivative jets, so it cannot
+# be listed -- but it is determined by three finite things, and those are what
+# is printed: the independents (whose ORDER is the degrevlex tie-break), the
+# dependents highest-first (or the block layout, for the elimination ranking),
+# and the comparison rule that combines them.  Read straight off the Ranking
+# object built by ansatz-library, so it reports what the run actually used
+# rather than what `--ranking` asked for.
+
+
+def describe_ranking(rk, name=None):
+    r"""
+    The ranking ``rk`` as printable lines: what it is, on what, by what rule.
+
+    A differential ranking is a total order on the (infinitely many)
+    derivative jets, so what is printable is the DATA that determines it.
+    :class:`differentialthomas.ranking.Ranking` holds exactly that: ``ivar``
+    (the independents, in the order the degrevlex tie-break reads them),
+    ``dvar`` (the dependents, highest first), ``_blocks`` (the block layout,
+    or ``None`` for a one-block ranking) and ``_mode`` (``'degrevlex'`` or
+    ``'matrix'``).
+
+    The comparison rule reported for each mode is the one
+    ``Ranking.compare`` implements:
+
+    - ``degrevlex`` -- total differentiation order, then reverse-lex on the
+      derivative multi-index, then the dependent's position in ``dvar``;
+    - ``matrix`` (what a block layout builds) -- block membership first, so
+      elimination between blocks, then the same degrevlex comparison inside
+      a block, then position within the block.
+
+    INPUT:
+
+    - ``rk`` -- a ``Ranking`` (``prob['rk']``)
+    - ``name`` -- optional str, the ``--ranking`` name that asked for it
+
+    OUTPUT: a list of strings (no trailing newlines)
+
+    EXAMPLES::
+
+        sage: describe_ranking(prob['rk'], 'orderly')[0]   # not tested (needs a problem)
+        'ranking: orderly -- DegRevLex, one block'
+    """
+    blocks = getattr(rk, '_blocks', None)
+    kind = ('block/matrix, %d blocks' % len(blocks)) if blocks else \
+           'DegRevLex, one block'
+    head = 'ranking: %s -- %s' % (name, kind) if name else 'ranking: %s' % kind
+    out = [head,
+           '    independents (in the order the tie-break reads them): %s'
+           % ', '.join(rk.ivar)]
+    if blocks:
+        out.append('    blocks, highest first (>> is elimination between blocks):')
+        out.append('        ' + ' >> '.join('{%s}' % ', '.join(b) for b in blocks))
+        out.append('    a jet of an earlier block outranks EVERY jet of a later'
+                   ' one, whatever its order;')
+        out.append('    within a block: total differentiation order, then'
+                   ' reverse-lex on the derivative')
+        out.append('    multi-index, then position in the block.')
+    else:
+        out.append('    dependents, highest first: %s' % ' > '.join(rk.dvar))
+        out.append('    u[I] vs w[J]: total differentiation order |I| vs |J|'
+                   ' first, then reverse-lex')
+        out.append('    on the multi-index, then the position of u vs w above'
+                   ' -- so the dependent')
+        out.append('    order only breaks ties between jets of EQUAL order.')
+    return out
+
+
+for _line in describe_ranking(prob['rk'], RANKING):
+    print(_line)
 # Excluded-locus header: ONLY for ansatz variants that record one (the
 # 25.3x normalization rungs).  Emitting it unconditionally would perturb
 # the byte-identity regression gate on hydrogen/5 and helium/9.
