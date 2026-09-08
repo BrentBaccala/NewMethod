@@ -542,6 +542,9 @@ in order to obtain a finite number of constant parameters.
 Algebraic extensions can also be included, but since
 they must be parameterized by a finite number of constants, they can not express
 an arbitrary algebraic extension of indefinite degree.
+Note that if we limit our ansatz to linear ODEs, then any algebraic extensions need
+to be introduced explicitly; i.e, a linear ODE will not match algebraic extensions,
+though a nonlinear ODE may.
 
 \begin{comment}
 To form an ansatz, we construct a tower of ODE and/or algebraic extensions that build from the base differential ring
@@ -2477,6 +2480,11 @@ other solutions.
 \section{Software}
 \label{sec:Software}
 
+%I've developed working software that can parallize the computation
+%of the minimal associated prime ideals through factorization and monotone dualization,
+%but it's inefficient, so
+%I've been devoting more of my recent efforts towards more efficient algorithms.
+
 The calculations in section \ref{sec:Example} were done with
 SageMath \cite{sage}, a computer algeba system that integrates dozens of open source mathematical programs and libraries into
 a unified, Python-based framework, though stock Sage is generally lacking in differential algebra tools.  Therefore,
@@ -3835,9 +3843,6 @@ y' = \frac{f'_n(x) y^n + \cdots + f'_1(x) y + f'_0(x)}{n f_n(x) y^{n-1} + \cdots
 
 This is a non-linear ODE that is first order, $n^{\rm th}$ degree in $y$.
 
-Note that if we limit our ansatz to linear ODEs, then any algebraic extensions need
-to be introduced explicitly; i.e, a linear ODE will not match algebraic extensions.
-
 We can introduce inhomogenous ODEs very similarly to the nonlinear case by
 introducing a zeroth degree coefficient into the differential equation.
 
@@ -3869,49 +3874,37 @@ or be developed.  Would it be useful?  Perhaps.  \eqref{weird ODE} is still simp
 it only involves one derivative.  The algorithm described in this paper could test for the existence
 of such solutions.  I'm somewhat skeptical of their utility.
 
+\vfill\eject
 \section{Selection of an Ansatz}
 \label{sec:Selection of an Ansatz}
 
-The most obvious question remains: how to select an ansatz?
+An obvious question remains: how to select an ansatz?
 
-First, can we build any such ansatz to express all of the solutions of the PDE?
+The author's primary goal in developing this algorithm is to solve PDEs by expressing their solutions
+using one or more ODEs.  Thus, the various ans\"atze proposed in Section \ref{sec:Ansatze} have
+one thing in common: they are all constructed as towers of either ODE or algebraic extensions.
+No PDE-based ans\"atze have been considered, though the algorithm certainly does not exclude them.
+
+First, given a PDE, can we construct an ansatz to express all of the solutions of the PDE?
 This seems unlikely, as the solutions of a PDE would include solutions for all possible
-boundary conditions.
+boundary conditions (see the beginning of Section \ref{sec:Ansatze}).
+In most cases, we would not expect any finite ansatz to express for all solutions.
 
-For example, the simple heat equation $u_t = u_{xx}$ admits an infinity of solutions of the form
-
-\begin{equation}
-u(x,t) = \frac{1}{\sqrt{4\pi t}}e^{-\frac{(x-x_0)^2}{4t}} \qquad \forall x_0\in\mathbb{R}
-\end{equation}
-
-No single exponential extension can be constructed to express all of these solutions.
-In fact, a different extension is required for each real value of $x_0$, yielding a
-uncountable infinite basis.
-
-Furthermore, these are just the solutions described in a series expansion;
-we expect there to be many others.  The essence of the problem of ansatz selection
-is that we expect there to be solutions all over the place.  Many ans\"atze
-will yield solutions.
-
-So, while the PDE problem is superficially similar to the problem of symbolic integration,
-which asks if a finite tower of extensions can be used to express an integral,
-the nature of the problem is quite different because in the integration case we can express all of its solutions
-in a single extension.  In fact, given one solution to the integration problem, we know that all of its solutions
-are related by adding a constant $C$, which implies that a field containing one solution contains all solutions.
-In the symbolic integration case, we expect to find a single field extension that contains all solutions,
-while in the PDE case we expect this to be impossible.
+So, asking if a tower of ODE extensions can be constructed to solve a PDE is superficially similar to the problem of symbolic integration
+\cite{Bronstein - Symbolic Integration I},
+which asks if a finite tower of primitive extensions can be used to express an integral,
+the nature of the two problems are quite different because in the integration case we can express all of its solutions
+using a single extension.  Given one solution to an integral, we know that all of its remaining solutions
+are related by adding a constant $C$, which implies that any field containing one solution contains all solutions.
+In the PDE case we expect it to be impossible to find any one such constructable field that contains all solutions.
 
 What about differential Galois theory?
-
-Picard-Vessiot / differential Galois theory has been of great utility in analyzing ordinary differential equations.
-An $n^{\rm th}$ order linear ODE,
-% restricted to analytic solutions (complex? what function space?),
-will have at most an $n$-dimensional
+Picard-Vessiot theory, for example, has been of great utility in analyzing ordinary differential equations.
+Yet an $n^{\rm th}$ order linear ODE will have at most an $n$-dimensional
 solution space.  After selecting an arbitrary basis, any
-solution can be represented by an $n$-tuple of complex constants.
-Any automorphism that permutes these solutions can be represented by
-an $n \times n$ matrix, so differential Galois theory can be reduced
-to the analysis of $GL_n(\mathbb{C})$, which has facilitated the work of Kovacic, Singer, and Bronstein.
+solution can be represented by an $n$-tuple of complex constants and
+any automorphism that permutes these solutions can be represented by
+an $n \times n$ matrix, and this representation pervades the work of Kovacic, for instance.
 
 No such easy reduction is available for PDEs.
 A PDE with no boundary conditions
@@ -3919,33 +3912,28 @@ is likely to have a solution space that is not only infinite, but infinite
 dimensional, and probably not even with a countably infinite basis.
 In such an environment, differential Galois groups
 can not be represented as subgroups of $GL_n$,
-so the theory of algebraic groups is therefore unlikely to be much help.
-
-Kovacic developed an algorithm \cite{Kovacic} to handle
-second order ODEs not by developing an algorithm to determine the
-differential Galois group of a given equation, but rather by
-using first a change of variables to restrict the Galois group to $SL_2$, then
-categorizing all possible algebraic subgroups of $SL_2$
-and developing an algorithm to handle each case.
-Taking a similar approach for PDEs would require categorizing
-all possible linear mappings between function spaces,
-which does not seem feasible.
+so the theory of algebraic groups (cite Kolchin) is therefore unlikely to be of much help.
 
 % We'd have to characterize the solution we seek.  Conditions like lowest energy level don't seem
 % useful because they require evaluating a global integral.
+
+One possible approach to ansatz selection would be to impose boundary
+conditions (or the like) prior to any kind of analysis with differential algebra.
+In the case of quantum mechanics, imposing $H^2(\Omega)$, where $\Omega$ is the state space
+of whatever physical system we're analyzing, is an obvious restriction.
+Some kind of theoretical analysis, exploring what restrictions may be placed
+on the ans\"atze if the solutions are required to be in $H^2(\Omega)$, might yield
+useful techniques to better select ans\"atze.
 
 In short, the differential algebra techniques used to analyze integrals and linear ODEs do not seem amenable
 to handling PDEs, and no theory is available at this time to guide the selection of an ansatz.
 The ansatz used for the hydrogen example
 was an educated guess.  It was designed to be general enough to find the existing
 classical solution, and so to be used for testing the software.  The appearance of \eqref{ideal:parabolic}
-was not anticipated, as the solutions was previously unknown,
-and serves to illustrate the mysterious nature of these ans\"atze.
+was not anticipated, as the seperation of \eqref{schrodinger hydrogen 2} was unknown
+to the author at that time.
 
-%I've developed working software that can parallize the computation
-%of the minimal associated prime ideals through factorization and monotone dualization,
-%but it's inefficient, so
-%I've been devoting more of my recent efforts towards more efficient algorithms.
+
 
 \section{Conclusion}
 \label{sec:Conclusion}
@@ -3974,13 +3962,6 @@ need any analysis at this point, just algebra; we just exclude solutions that wo
 establish $1 = 0$ using simple polynomial operations and differentiation.  Everything else is {\it consistent}.
 
 The difficulties of selecting an ansatz have already be touched upon.
-One possible approach to ansatz selection would be to impose boundary
-conditions (or the like) prior to any kind of analysis with differential algebra.
-In the case of quantum mechanics, imposing $H^2(\Omega)$, where $\Omega$ is the state space
-of whatever physical system we're analyzing, is an obvious restriction.
-Some kind of theoretical analysis, exploring what restrictions must be placed
-on ans\"atze to force the functions into $H^2(\Omega)$, might yield
-useful techniques to better select ans\"atze.
 
 What relationship is there between the constant ideals and the function space?
 
