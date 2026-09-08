@@ -1752,14 +1752,13 @@ $\delta_i x_j = \delta_{ij}$ and $\delta_i c_l = 0$; the target system
 $\mathcal{P} = (\mathcal{P}^=, \mathcal{P}^{\ne})$, with equations
 $\mathcal{P}^= = \{P_1, \ldots, P_t\} \subset R$ and inequations
 $\mathcal{P}^{\ne} = \{Q_1, \ldots, Q_w\} \subset R$, abbreviated $Q = Q_1
-\cdots Q_w$ as in \S\ref{sec:constant-loci}; an
+\cdots Q_w$; an
 ansatz $A(c) \subset R$, a finite set of differential polynomials
-parameterized by the constants $c = (c_1, \ldots, c_n)$; and a block ranking
-$\prec$ with
-%
-\[
-\{u_1, \ldots, u_k\} \;\gg\; \{c_1, \ldots, c_n\} \;\gg\; \{x_1, \ldots, x_m\}.
-\]
+parameterized by the constants $c = (c_1, \ldots, c_n)$; and a ranking
+$\prec$ placing the constants below everything else: $c_i \prec \theta u_j$ for every constant $c_i$, every non-constant indeterminate $u_j$
+and every $\theta \in \Theta$.
+
+% specify that the equations and inequations in P can not involve the constants
 
 {\bf Output:} A constructible subset of $\mathbb{C}^n$, presented as a finite
 set $\mathcal{W}$ of pairs $(\mathfrak{a}, \mathfrak{b})$ of ideals,
@@ -1851,22 +1850,7 @@ V_{\exists\forall} \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
 \label{alg:core-basic}
 \mbox{}
 
-{\bf Input:} A differential polynomial ring
-$R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$ with
-derivations $\Delta = \{\delta_1, \ldots, \delta_m\}$ satisfying
-$\delta_i x_j = \delta_{ij}$ and $\delta_i c_l = 0$; the target system
-$\mathcal{P} = (\mathcal{P}^=, \mathcal{P}^{\ne})$, with equations
-$\mathcal{P}^= = \{P_1, \ldots, P_t\} \subset R$ and inequations
-$\mathcal{P}^{\ne} = \{Q_1, \ldots, Q_w\} \subset R$, abbreviated $Q = Q_1
-\cdots Q_w$ as in \S\ref{sec:constant-loci}; an
-ansatz $A(c) \subset R$, a finite set of differential polynomials
-parameterized by the constants $c = (c_1, \ldots, c_n)$; a block ranking $\prec$
-with
-%
-\[
-\{u_1, \ldots, u_k\} \;\gg\; \{c_1, \ldots, c_n\} \;\gg\; \{x_1, \ldots, x_m\};
-\]
-%
+{\bf Input:} As in Algorithm~\ref{alg:consistency-basic}
 and a flag $\mu \in \{\forall, \, \exists\forall\}$ selecting the assembly.
 
 {\bf Output:} A constructible subset of $\mathbb{C}^n$, presented as a finite
@@ -2558,8 +2542,7 @@ for reproducing the calculations of this paper.
     {\tt consistency} ($V_\exists$), or {\tt membership} ($V_\forall$) \\[3pt]
 {\tt --ranking NAME}
   & the ranking used for the differential Thomas decomposition:
-    {\tt orderly} (default) or {\tt elimination}, a block ranking that
-    changes the decomposition and costs considerably more \\[3pt]
+    {\tt orderly} (default), {\tt block} or {\tt elimination} \\[3pt]
 {\tt --generic-cell}
   & skip the decomposition and run the pipeline on the ansatz's generic cell
     alone.  The way to get a locus out of an ansatz whose decomposition does
@@ -2717,7 +2700,7 @@ We work in the following differential ring:
 \begin{equation}
 \label{eq:hydrogen-ring}
 R \;=\; \mathbb{Q}[x,y,z]\{\,\Psi, \Psi', \Psi'', v, r,\;
-   E, a_0, a_1, b_0, b_1, c_0, c_1, v_1, v_2, v_3, v_4 \,\}
+   E, v_1, v_2, v_3, v_4, a_0, a_1, b_0, b_1, c_0, c_1 \,\}
 \end{equation}
 
 \noindent
@@ -2725,20 +2708,14 @@ with $\Delta = \{\delta_x, \delta_y, \delta_z\}$.  To elaborate,
 \begin{itemize}
    \item the independent variables $x, y, z$ lie in the coefficient ring, where
    $\delta_i x_j = \delta_{ij}$;
-   \item $E, a_0, \ldots, v_4$ are the eleven constants, sent to zero by every
+   \item $E, \ldots, c_1$ are the eleven constants, sent to zero by every
    derivation.  $E$ is a constant of the PDE rather than of the ansatz, but the
-   algorithm makes no distinction: all eleven are ranked together in the lowest
-   block, and the membership locus is a subset of $\mathbb{C}^{11}$ having $E$
-   among its coordinates.  This is what allows the eigenvalue to be solved for
-   rather than supplied;
-   \item $\Psi, \Psi', \Psi'', v, r$ are the five non-constant differential
+   algorithm makes no distinction; the membership locus is a subset of $\mathbb{C}^{11}$ having $(E,\ldots,c_1)$
+   as its coordinates;
+   \item $\Psi, \Psi', \Psi'', v, r$ are five non-constant differential
    indeterminates.  They will ultimately be mapped into a function space, so it
-   is often convenient to think of them as functions; algebraically, all that is
-   asserted of them here is that they are not constants.  Note that $\Psi'$ and
-   $\Psi''$ are separate indeterminates, not $\Delta$-derivatives of $\Psi$ ---
-   they are tied to $\Psi$ by the chain-rule equations of the ansatz, and $r$
-   likewise carries $r^2 - x^2 - y^2 - z^2$ in the system rather than as a
-   quotient of the ring;
+   is often convenient to think of them as functions.  Note that $\Psi'$ and
+   $\Psi''$ are separate indeterminates, not $\Delta$-derivatives of $\Psi$.
 \end{itemize}
 
 % \subsection{Ansatz}
@@ -2802,30 +2779,26 @@ Use Cartesian coordinates.  Let $v$ be a linear polynomial in the coordinates an
 Reduce the input PDE \eqref{schrodinger} modulo differential ideal \eqref{ansatz 5}, obtaining
 \end{comment}
 
-To use Ritt's reduction algorithm, we must now specify a ranking.  While the algorithm's correct
-operation does not depend on any particular ordering, different rankings can produce
-dramatically different performance timings.  We use this orderly ranking:
+We must now specify a ranking.  We use an orderly ranking that places the constants below
+all other indeterminates, as required by the algorithm:
 
 % The {\tt DifferentialAlgebra} library \cite{DifferentialAlgebra} always ranks
-% indeterminates associated with derivations below everything else, so we use this orderly ranking:
+% indeterminates associated with derivations below everything else
 
 \begin{equation}
 \label{ranking}
-\{\Psi'' > \Psi' > \Psi > v > r\}
-\;\gg\; \{E, a_0, \ldots, v_4\}
-\;\gg\; \{x, y, z\}
+\{\Psi'' > \Psi' > \Psi > v > r > E > v_1 > v_2 > v_3 > v_4 > a_0 > a_1 > b_0 > b_1 > c_0 > c_1\}
 \end{equation}
-
-\noindent
-in the block form of Algorithm~\ref{alg:core-basic}: the five non-constant
-indeterminates, ordered among themselves as shown, above the eleven constants,
-above the independent variables.
 
 % \subsection{Differential Reduction Step}
 
+{\bf The Consistency Locus}
+
 The software described in section \ref{sec:Software} was used to attempt computing the consistency locus
 using Algorithm~\ref{alg:consistency-basic}, resulting in memory exhaustion past an 80 GB ceiling after three and a half hours
-while attempting a differential Thomas decomposition of the combined system.
+while performing the first step on line 1 of the algorithm, {\tt DifferentialDecompose}, a differential Thomas decomposition of the combined system.
+
+{\bf The Intermediate Locus}
 
 Computing a differential Thomas decomposition of \eqref{ansatz 5 plus} with ranking \eqref{ranking} takes about seven minutes
 on an AMD Ryzen 5 processor and produces 29 cells.  Performing the differential reduction / projection / irreducible
@@ -3005,6 +2978,8 @@ That the hydrogen atom separates in {\it both} systems is the signature
 of its symmetry: the problem conserves both the angular momentum $\mathbf{L}$
 and the Laplace--Runge--Lenz vector $\mathbf{A}$
 (\cite{BanderItzykson} (3)).
+
+{\bf The Membership Locus}
 
 In summary, the solution method presented in this paper finds solutions expressed
 in both first and second order differential equations, in both spherical and parabolic coordinates,
@@ -3730,6 +3705,9 @@ establish $1 = 0$ using simple polynomial operations and differentiation.  Every
 The difficulties of selecting an ansatz have already be touched upon.
 
 What relationship is there between the constant ideals and the function space?
+
+How does ranking affect the operation of the algorithm?  We know it doesn't affect correctness, but experimentation with
+the software (it has a {\tt --ranking} option) shows that elimination rankings are slower that what was used in the example.
 
 The algorithm presented above can be used to check any PDE to see if any of its solutions
 can be expressed using an ODE structured according to a specific ansatz, defined by
