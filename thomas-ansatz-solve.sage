@@ -1007,24 +1007,33 @@ print("params:", ", ".join(PARAMS))
 # it induces on the jets, and that is what the problem statement has to carry.
 # A differential ranking orders infinitely many derivative jets, so it cannot
 # be listed -- but it is determined by three finite things, and those are what
-# is printed: the independents (whose ORDER is the degrevlex tie-break), the
-# dependents highest-first (or the block layout, for the elimination ranking),
-# and the comparison rule that combines them.  Read straight off the Ranking
-# object built by ansatz-library, so it reports what the run actually used
-# rather than what `--ranking` asked for.
+# is printed: the dependents highest-first (or the block layout, for the
+# elimination ranking), the derivation list whose ORDER is the degrevlex
+# tie-break, and the comparison rule that combines them.  Read straight off
+# the Ranking object built by ansatz-library, so it reports what the run
+# actually used rather than what `--ranking` asked for.
+#
+# The independents are NOT in the ranking's domain.  `Ranking.
+# is_differential_variable` accepts only jets whose head is a dependent, so a
+# polynomial in x, y, z alone has an empty DiffVarList and leader = the field
+# sentinel 1, which `Ranking.compare` puts below every jet -- the independents
+# are coefficients, sitting under the whole ranking.  What their ORDER means
+# is a separate thing: it is the axis order of the derivative multi-index,
+# which degrevlex scans from the right, so at equal total order d/dx outranks
+# d/dz.  The printout says both, because reading the derivation list as a
+# ranking of x above z is exactly the misreading it invites.
 
 
 def describe_ranking(rk, name=None):
     r"""
-    The ranking ``rk`` as printable lines: what it is, on what, by what rule.
+    The ranking ``rk`` as printable lines: what it ranks, on what, by what rule.
 
     A differential ranking is a total order on the (infinitely many)
     derivative jets, so what is printable is the DATA that determines it.
-    :class:`differentialthomas.ranking.Ranking` holds exactly that: ``ivar``
-    (the independents, in the order the degrevlex tie-break reads them),
-    ``dvar`` (the dependents, highest first), ``_blocks`` (the block layout,
-    or ``None`` for a one-block ranking) and ``_mode`` (``'degrevlex'`` or
-    ``'matrix'``).
+    :class:`differentialthomas.ranking.Ranking` holds exactly that: ``dvar``
+    (the dependents, highest first), ``_blocks`` (the block layout, or ``None``
+    for a one-block ranking), ``ivar`` (the derivations, in multi-index order)
+    and ``_mode`` (``'degrevlex'`` or ``'matrix'``).
 
     The comparison rule reported for each mode is the one
     ``Ranking.compare`` implements:
@@ -1034,6 +1043,11 @@ def describe_ranking(rk, name=None):
     - ``matrix`` (what a block layout builds) -- block membership first, so
       elimination between blocks, then the same degrevlex comparison inside
       a block, then position within the block.
+
+    The independents are reported as what they are: not ranked, and below
+    everything that is.  They fail ``Ranking.is_differential_variable``, so a
+    polynomial in them alone has leader ``1``, the field sentinel
+    ``Ranking.compare`` ranks under every jet.
 
     INPUT:
 
@@ -1051,24 +1065,41 @@ def describe_ranking(rk, name=None):
     kind = ('block/matrix, %d blocks' % len(blocks)) if blocks else \
            'DegRevLex, one block'
     head = 'ranking: %s -- %s' % (name, kind) if name else 'ranking: %s' % kind
-    out = [head,
-           '    independents (in the order the tie-break reads them): %s'
-           % ', '.join(rk.ivar)]
+    out = [head, '    ranks the derivative jets u[I] of these dependents:']
     if blocks:
-        out.append('    blocks, highest first (>> is elimination between blocks):')
-        out.append('        ' + ' >> '.join('{%s}' % ', '.join(b) for b in blocks))
-        out.append('    a jet of an earlier block outranks EVERY jet of a later'
-                   ' one, whatever its order;')
-        out.append('    within a block: total differentiation order, then'
-                   ' reverse-lex on the derivative')
-        out.append('    multi-index, then position in the block.')
+        out.append('        blocks, highest first (>> is elimination between'
+                   ' blocks):')
+        out.append('        ' + ' >> '.join('{%s}' % ', '.join(b)
+                                            for b in blocks))
     else:
-        out.append('    dependents, highest first: %s' % ' > '.join(rk.dvar))
-        out.append('    u[I] vs w[J]: total differentiation order |I| vs |J|'
-                   ' first, then reverse-lex')
-        out.append('    on the multi-index, then the position of u vs w above'
-                   ' -- so the dependent')
-        out.append('    order only breaks ties between jets of EQUAL order.')
+        out.append('        highest first: %s' % ' > '.join(rk.dvar))
+    out.append('    NOT ranked: the independents %s.  They are the derivations,'
+               % ', '.join(rk.ivar))
+    out.append('        and sit below the whole ranking -- a polynomial in them'
+               ' alone has no')
+    out.append('        leader (leader = the field sentinel 1, which loses to'
+               ' every jet).  Their')
+    out.append('        ORDER as listed here is the multi-index axis order,'
+               ' which degrevlex scans')
+    if len(rk.ivar) > 1:
+        out.append('        from the right, so at equal total order d/d%s'
+                   ' outranks d/d%s.' % (rk.ivar[0], rk.ivar[-1]))
+    else:
+        out.append('        from the right -- though with one derivation there'
+                   ' is nothing to break.')
+    if blocks:
+        out.append('    u[I] vs w[J]: block first -- a jet of an earlier block'
+                   ' outranks EVERY jet')
+        out.append('        of a later one, whatever its order.  Within a'
+                   ' block: total order |I| vs')
+        out.append('        |J|, then the reverse-lex tie-break, then position'
+                   ' in the block.')
+    else:
+        out.append('    u[I] vs w[J]: total order |I| vs |J| first, then the'
+                   ' reverse-lex tie-break,')
+        out.append('        then the position of u vs w above -- so the'
+                   ' dependent order only breaks')
+        out.append('        ties between jets of EQUAL order.')
     return out
 
 
