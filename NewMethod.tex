@@ -2438,29 +2438,6 @@ and here is the same locus with simplified holes:
 \end{subequations}
 
 \vfill\eject
-\subsection{Scaling Symmetries}
-
-A moment's consideration is enough to realize that the number of free parameters
-can be reduced by considering certain simple scaling symmetries.  For example,
-given an ODE:
-
-\[
-a \Psi'' + b \Psi' + c \Psi = 0
-\]
-
-The equation will not be altered in any material way by multiplying all
-three constants by a non-zero constant $\lambda$.
-
-The independent variable of the ODE can be likewise scaled by a non-zero constant $\lambda$
-with no additional impact beyond having to scale the coefficients $a$, $b$, and $c$
-by $\lambda^2$, $\lambda$, and 1.
-
-Equations, especially those arising from physics, often exhibit symmetries.  Rotational
-symmetry allows coordinates systems to be oriented in an arbitrary direction;
-often a preferred direction can be selected that can then be rotated to find
-other solutions.
-
-\vfill\eject
 \section{Software}
 \label{sec:Software}
 
@@ -3712,6 +3689,9 @@ What relationship is there between the constant ideals and the function space?
 
 How does ranking affect the operation of the algorithm?  We know it doesn't affect correctness, but experimentation with
 the software (it has a {\tt --ranking} option) shows that elimination rankings are slower that what was used in the example.
+
+The algorithm does not depend on finding any symmetries in the equations to be solved,
+but symmetry can be exploited to reduce the number of required constants.
 
 The algorithm presented above can be used to check any PDE to see if any of its solutions
 can be expressed using an ODE structured according to a specific ansatz, defined by
