@@ -104,6 +104,14 @@
 # compare against an old "29 cells" figure recorded before the paper's
 # algorithm changed.
 #
+#   * The DEFAULT RANKING changed on 2026-09-07, from the flat DegRevLex
+#     `orderly` to `algorithm`, the {jets} >> {constants} block ranking the
+#     paper's Algorithms state as their Input condition.  Every cell count and
+#     every timing recorded before that date -- and every resume log, which
+#     records `ranking=` and is REJECTED on a mismatch rather than silently
+#     reused -- is an `orderly` figure.  Re-run with `--ranking orderly` to
+#     reproduce one; do not compare across the two.
+#
 #   sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 [--decompose-only]
 #   sage thomas-ansatz-solve.sage --pde helium   --ansatz 5
 #   sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 --latex
@@ -203,10 +211,19 @@ Choosing what to compute
   --decompose-only   stop after the decomposition, before the prime pipeline.
                      Cheap way to find out whether a decomposition terminates
                      at all, and in what memory.
-  --ranking NAME     orderly (default) or elimination.  elimination is a block
-                     ranking -- each jet its own block, so a high jet like
-                     DDPsi outranks every lower-jet derivative.  It changes the
-                     decomposition, and is much the more expensive of the two.
+  --ranking NAME     algorithm (default), orderly, or elimination.
+                     algorithm is the block ranking the paper's Algorithms
+                     require on their Input line, {jets} >> {constants}: the
+                     non-constant indeterminates in one block, the constants
+                     below them.  orderly is a FLAT DegRevLex over both at
+                     once, so a constant's derivative jet outranks every
+                     order-0 jet -- it was the default through 2026-09-07 and
+                     does not meet the algorithms' Input condition; kept for
+                     reproducing earlier runs.  elimination puts each jet in a
+                     block of its own, so a high jet like DDPsi outranks every
+                     lower-jet derivative; it is much the most expensive.
+                     The ranking changes the decomposition, so the resume log
+                     records it and refuses a mismatch.
   --max-cells N      process only the first N cells (default 0 = all).
 
 Running the prime step
@@ -492,11 +509,14 @@ ANSATZ = float(ANSATZ) if '.' in str(ANSATZ) else int(ANSATZ)
 DECOMPOSE_ONLY = '--decompose-only' in sys.argv
 VERBOSE_REM = '--verbose-remainder' in sys.argv
 MAX_CELLS = int(_argval('--max-cells', '0'))
-# Differential ranking: 'orderly' (degrevlex, coordinate-order dominates) or
-# 'elimination' (block ranking, each jet its own block so a high jet like DDPsi
-# outranks all lower-jet derivatives).  The ranking changes the decomposition,
-# so the cells file name records which one was used.
-RANKING = _argval('--ranking', 'orderly')
+# Differential ranking; see build_problem in ansatz-library for what each one
+# builds.  'algorithm' (the default) is the block ranking the paper's
+# Algorithms state as their Input condition, {jets} >> {constants}; 'orderly'
+# is the flat DegRevLex that was the default through 2026-09-07 and does NOT
+# meet that condition; 'elimination' gives each jet its own block.  The ranking
+# changes the decomposition, so the cells file name records which one was used
+# and a resume log built under another one is rejected rather than reused.
+RANKING = _argval('--ranking', 'algorithm')
 # Skip the differential Thomas decomposition and run the downstream pipeline on
 # the ansatz's own generic cell (see GenericCell).  For an ansatz whose
 # decomposition does not terminate, this is the only way to get a membership
@@ -667,7 +687,7 @@ if GTZ_SUBPROCESS:
 # One record per completed stage, appended the moment the stage finishes:
 #
 #     #resume-log 1
-#     #problem pde=hydrogen ansatz=5 ranking=orderly locus=membership generic=0
+#     #problem pde=hydrogen ansatz=5 ranking=algorithm locus=membership generic=0
 #     #gtz-dir /home/claude/thomas-experiments/gtz/hydrogen_ansatz5
 #     #stage cells prev=- start=2026-09-05T23:40:12 wall=313.0 elapsed=471.2
 #     --- cell 1 ---
@@ -1058,8 +1078,8 @@ def describe_ranking(rk, name=None):
 
     EXAMPLES::
 
-        sage: describe_ranking(prob['rk'], 'orderly')[0]   # not tested (needs a problem)
-        'ranking: orderly -- DegRevLex, one block'
+        sage: describe_ranking(prob['rk'], 'algorithm')[0]  # not tested (needs a problem)
+        'ranking: algorithm -- block elimination, 2 blocks'
     """
     blocks = getattr(rk, '_blocks', None)
     kind = ('block elimination, %d blocks' % len(blocks)) if blocks else \
@@ -1276,10 +1296,17 @@ def is_param_constancy(p):
 # PolyRing generators of their own (bracket-free mangled names; the BLAD-name ->
 # generator map is patched into _GEN_IDX below).  Order <= 3 covers everything
 # the order-2 PDEs can leave; a higher-order survivor still raises the explicit
-# TypeError in _elt_to_polyring.  Gated on the ranking so the orderly path is
-# byte-identical to before.
+# TypeError in _elt_to_polyring.
+#
+# The default 'algorithm' ranking does NOT need these.  Its two blocks keep all
+# the jets together, so within that block the ranking is orderly and the chain
+# rule `Psi[R1] - DPsi*v[R1]` still leads on Psi[R1], not DPsi; and a parametric
+# derivative jet c[x] sits in the LOWER block, where the pconst equation
+# c[x] = 0 is its own leader and reduces it away.  Only the one-block-per-jet
+# ranking reseats those leaders.  (Gated, not unconditional: the extra
+# generators would perturb PolyRing's generator order for every other ranking.)
 EXTRA_JET_PAIRS = []                 # [(blad_name, mangled_generator_name)]
-if RANKING in ('elimination', 'block', 'elim'):
+if RANKING in ('elimination', 'elim'):
     from itertools import combinations_with_replacement
     for _head in prob['jets']:
         for _k in (1, 2, 3):
@@ -1430,10 +1457,11 @@ def _elt_to_polyring(e):
     OUTPUT: the corresponding element of ``PolyRing``
 
     A :class:`TypeError` is raised when a BLAD name has no ``PolyRing``
-    generator.  Under the orderly ranking that means a derivative jet survived
-    a reduction that should have eliminated it; under the elimination ranking
-    the parametric derivative jets legitimately survive and are given
-    generators of their own, so only an unexpectedly high order reaches this.
+    generator.  Under the ``algorithm`` and ``orderly`` rankings that means a
+    derivative jet survived a reduction that should have eliminated it; under
+    the ``elimination`` ranking the parametric derivative jets legitimately
+    survive and are given generators of their own, so only an unexpectedly
+    high order reaches this.
 
     EXAMPLES::
 

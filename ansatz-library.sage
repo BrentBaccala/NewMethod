@@ -1175,7 +1175,7 @@ def build_pde_string(pde_name, coords):
 # ==========================================================================
 # assemble the full problem
 # ==========================================================================
-def build_problem(pde_name, ansatz, ranking='orderly'):
+def build_problem(pde_name, ansatz, ranking='algorithm'):
     coords, roots = coordinate_system(pde_name)
     spec = ansatz_spec(ansatz, coords, roots)
     params = spec['params']
@@ -1216,7 +1216,27 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
     jets = list(jets_dep) + [rn for rn, _ in roots]
     IVAR = coords
     pparams = pde_params(pde_name)
-    if ranking in ('elimination', 'block', 'elim'):
+    if ranking in ('algorithm', 'paper'):
+        # THE DEFAULT: the block ranking NewMethod's Algorithms require on
+        # their Input line, {u_1..u_k} >> {c_1..c_n} >> {x_1..x_m} -- the
+        # non-constant differential indeterminates in one block, the constants
+        # in a second block below them.  (The independents are not a third
+        # block: they are the derivations, not differential indeterminates,
+        # and so are not in the ranking's domain at all -- see the note in
+        # thomas-ansatz-solve's describe_ranking.  BLAD declares them as
+        # `derivations`, which is what IVAR is.)
+        #
+        # Two blocks, not one, is the whole point.  The constants ARE
+        # differential indeterminates here -- their constancy is imposed by
+        # the adjoined pconst equations c[x] = 0, not by the ring -- so a
+        # constant's derivative jet exists, and under the flat 'orderly'
+        # ranking its order-1 status makes it outrank EVERY order-0 jet.  The
+        # second block puts it back below them, which is what makes
+        # `S^= \cap QQ[c]` on the algorithms' line 3 an elimination rather
+        # than whichever constant-only equations a flat ranking happened to
+        # leave in the triangular set.
+        DVAR = [list(jets), pparams + params]
+    elif ranking in ('elimination', 'elim'):
         # Block ranking: each jet its own block (highest first), the PDE's own
         # constants + params in a final low block.  The block comparison
         # dominates coordinate-order, so a high jet like DDPsi outranks ALL
@@ -1224,8 +1244,27 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
         # DPsi[c]-DDPsi*v[c] then eliminates DDPsi directly instead of forcing
         # the cleared high-degree prolongation the orderly ranking does.
         DVAR = [[j] for j in jets] + [pparams + params]
-    else:                                          # 'orderly' -- degrevlex
+    elif ranking == 'orderly':
+        # FLAT DegRevLex over jets and constants together -- one block, so the
+        # total differentiation order dominates and a constant's derivative
+        # jet c[x] outranks every order-0 jet (the pconst equations then
+        # reduce it away).  This was the default through 2026-09-07; it does
+        # NOT satisfy the algorithms' Input condition.  Kept for reproducing
+        # earlier runs and their resume logs.
         DVAR = jets + pparams + params
+    elif ranking == 'block':
+        # 'block' used to be an alias for 'elimination'.  Since 'algorithm' is
+        # now ALSO a block ranking -- and the one the paper means by "the block
+        # form" -- the name no longer picks out one ranking.  Fail rather than
+        # guess: a silently misread ranking is a silently wrong decomposition.
+        raise ValueError(
+            "ranking 'block' is ambiguous: 'algorithm' ({jets} >> {constants},"
+            " the paper's block form) and 'elimination' (one block per jet)"
+            " are both block rankings.  Name the one you mean.")
+    else:
+        raise ValueError(
+            "unknown ranking %r (want 'algorithm', 'orderly' or 'elimination')"
+            % (ranking,))
     rk = dt.compute_ranking(IVAR, DVAR)
     R = rk.ring
 
