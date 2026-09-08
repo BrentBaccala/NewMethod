@@ -1062,8 +1062,8 @@ def describe_ranking(rk, name=None):
         'ranking: orderly -- DegRevLex, one block'
     """
     blocks = getattr(rk, '_blocks', None)
-    kind = ('block/matrix, %d blocks' % len(blocks)) if blocks else \
-           'DegRevLex, one block'
+    kind = ('block elimination, %d blocks' % len(blocks)) if blocks else \
+           'DegRevLex on the derivative multi-index, one block'
     head = 'ranking: %s -- %s' % (name, kind) if name else 'ranking: %s' % kind
     out = [head, '    ranks the derivative jets u[I] of these dependents:']
     if blocks:
@@ -1100,6 +1100,16 @@ def describe_ranking(rk, name=None):
         out.append('        then the position of u vs w above -- so the'
                    ' dependent order only breaks')
         out.append('        ties between jets of EQUAL order.')
+    out.append('    This is a total order on JETS -- single variables -- not a'
+               ' monomial order.')
+    out.append('        "DegRevLex" names the rule applied to the'
+               ' differentiation multi-index I,')
+    out.append('        by analogy: u[I] compares to u[J] as the monomial x^I'
+               ' would to x^J.  The')
+    out.append('        term order of the algebraic PolyRing the primes are'
+               ' computed in is a')
+    out.append('        separate, later thing (Sage default degrevlex) and'
+               ' plays no part here.')
     return out
 
 
