@@ -1255,11 +1255,12 @@ def build_problem(pde_name, ansatz, ranking='orderly'):
         # independents are not a third block: they are the derivations, not
         # differential indeterminates, so they are not in the ranking's domain
         # at all -- see describe_ranking in thomas-ansatz-solve.  BLAD declares
-        # them as `derivations`, which is what IVAR is.)  Admissible, but the
-        # elimination between the blocks makes the decomposition dramatically
-        # more expensive than `orderly` for no result the algorithms can
-        # distinguish; use it to reproduce the paper's stated form, not to
-        # compute.
+        # them as `derivations`, which is what IVAR is.)  Admissible, and it
+        # computes nothing `orderly` cannot -- but the elimination between the
+        # blocks is ruinous: on hydrogen/5 the decomposition ran 85 minutes and
+        # was OOM-killed at 30.2 GB without emitting a cell, against 430 s and
+        # 16 cells under `orderly`.  Kept to exhibit the block form, not to
+        # compute with.
         DVAR = [list(jets), pparams + params]
     elif ranking in ('elimination', 'elim'):
         # Each jet its own block (highest first), the PDE's own constants +

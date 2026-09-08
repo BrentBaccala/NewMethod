@@ -109,9 +109,11 @@
 #     silently reused, which is the right behaviour but means an old log needs
 #     the ranking it was built under.  `orderly` is and has been the default;
 #     `--ranking block` (the paper's {jets} >> {constants} Input form) is
-#     admissible but dramatically slower -- hydrogen/5 --decompose-only runs
-#     7 min / 16 cells under orderly and had not produced a cell after 25 min
-#     under block.
+#     equally admissible but does NOT COMPLETE on hydrogen/5:
+#     --decompose-only ran 85 min and was OOM-killed at 30.2 GB anon-rss
+#     without emitting a single cell (2026-09-07, samsung, 34 GB), where
+#     orderly finishes in 430 s with 16 cells.  Do not reach for `block`
+#     expecting the same answer more slowly.
 #
 #   sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 [--decompose-only]
 #   sage thomas-ansatz-solve.sage --pde helium   --ansatz 5
