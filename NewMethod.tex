@@ -2798,6 +2798,11 @@ The software described in section \ref{sec:Software} was used to attempt computi
 using Algorithm~\ref{alg:consistency-basic}, resulting in memory exhaustion past an 80 GB ceiling after three and a half hours
 while performing the first step on line 1 of the algorithm, {\tt DifferentialDecompose}, a differential Thomas decomposition of the combined system.
 
+{\bf The Membership Locus}
+
+After computing the intermediate locus (see below), the script hit a memory ceiling at 71 GB while
+attempting the {\tt RefiningPartition} on line 15 of Algorithm~\ref{alg:core-basic}.
+
 {\bf The Intermediate Locus}
 
 Computing a differential Thomas decomposition of \eqref{ansatz 5 plus} with ranking \eqref{ranking} and two inequations:
@@ -2979,8 +2984,6 @@ That the hydrogen atom separates in {\it both} systems is the signature
 of its symmetry: the problem conserves both the angular momentum $\mathbf{L}$
 and the Laplace--Runge--Lenz vector $\mathbf{A}$
 (\cite{BanderItzykson} (3)).
-
-{\bf The Membership Locus}
 
 In summary, the solution method presented in this paper finds solutions expressed
 in both first and second order differential equations, in both spherical and parabolic coordinates,
