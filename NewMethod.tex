@@ -1755,7 +1755,7 @@ $\mathcal{P}^{\ne} = \{Q_1, \ldots, Q_w\} \subset R$, abbreviated $Q = Q_1
 \cdots Q_w$; an
 ansatz $A(c) \subset R$, a finite set of differential polynomials
 parameterized by the constants $c = (c_1, \ldots, c_n)$; and a ranking
-$\prec$ placing the constants below everything else: $c_i \prec \theta u_j$ for every constant $c_i$, every non-constant indeterminate $u_j$
+$\prec$ placing the constants below everything else: $c_i \prec \theta u_j$ for every constant $c_i$, every non-constant $u_j$
 and every $\theta \in \Theta$.
 
 % specify that the equations and inequations in P can not involve the constants
@@ -2780,14 +2780,14 @@ Reduce the input PDE \eqref{schrodinger} modulo differential ideal \eqref{ansatz
 \end{comment}
 
 We must now specify a ranking.  We use an orderly ranking that places the constants below
-all other indeterminates, as required by the algorithm:
+all other indeterminates, as required by the algorithm and recommended by experience\footnote{Other permitted rankings tend to run slower and consume more memory}:
 
 % The {\tt DifferentialAlgebra} library \cite{DifferentialAlgebra} always ranks
 % indeterminates associated with derivations below everything else
 
 \begin{equation}
 \label{ranking}
-\{\Psi'' > \Psi' > \Psi > v > r > E > v_1 > v_2 > v_3 > v_4 > a_0 > a_1 > b_0 > b_1 > c_0 > c_1\}
+\Psi'' \succ \Psi' \succ \Psi \succ v \succ r \succ E \succ v_1 \succ v_2 \succ v_3 \succ v_4 \succ a_0 \succ a_1 \succ b_0 \succ b_1 \succ c_0 \succ c_1
 \end{equation}
 
 % \subsection{Differential Reduction Step}
@@ -2800,11 +2800,14 @@ while performing the first step on line 1 of the algorithm, {\tt DifferentialDec
 
 {\bf The Intermediate Locus}
 
-Computing a differential Thomas decomposition of \eqref{ansatz 5 plus} with one inequation $\Psi \ne 0$
-and ranking \eqref{ranking} takes about seven minutes
+Computing a differential Thomas decomposition of \eqref{ansatz 5 plus} with ranking \eqref{ranking} and two inequations:
+\begin{equation}
+\Psi \ne 0 \qquad v \ne 0
+\end{equation}
+takes about seven minutes
 on an AMD Ryzen 5 processor and produces 16 cells.  Performing the remainder of Algorithm~\ref{alg:core-basic}
 on each of those cells takes another half hour and computes the following constructable set
-for the intermediate locus $V_{\exists\forall}$:
+for the intermediate locus $V_{\exists\forall}$ (after applying the polishing techniques of Section \ref{sec:constructable-set}):
 
 \begin{subequations}
 \label{ideal}
@@ -2827,7 +2830,7 @@ In brief,
 \item[\eqref{ideal:1s}] corresponds to a first-order solution for the 1s shell,
 \item[\eqref{ideal:2s}] corresponds to a first-order solution for the 2s shell,
 \item[\eqref{ideal:classical}] corresponds to the classical radial solutions, and
-\item[\eqref{ideal:parabolic}] corresponds to a solution in parabolic coordinates.
+\item[\eqref{ideal:parabolic}] corresponds to a known solution in parabolic coordinates.
 \end{itemize}
 
 We analyze these varieties by treating their generators as a system of equations, all set equal to zero.
