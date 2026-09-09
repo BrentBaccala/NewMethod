@@ -3610,7 +3610,16 @@ No PDE-based ans\"atze have been considered, though the algorithm certainly does
 First, given a PDE, can we construct an ansatz to express all of the solutions of the PDE?
 This seems unlikely, as the solutions of a PDE would include solutions for all possible
 boundary conditions (see the beginning of Section \ref{sec:Ansatze}).
-In most cases, we would not expect any finite ansatz to express for all solutions.
+In most cases, we would not expect any finite ansatz to express all solutions.
+
+In fact, the vast extent of a PDE's solution space in the
+absence of boundary conditions or function space restrictions
+justifies the use of an ansatz.  Without adding additional differential equations to a PDE,
+we can only derive equations and relationship that apply to {\it all} solutions of the PDE,
+and does not seem likely to be a very large or informative set.
+Restricting the solution space in
+some manner seems essential; an ansatz enables us to do that in a manner
+ammenable to the techniques of differential algebra.
 
 So, asking if a tower of ODE extensions can be constructed to solve a PDE is superficially similar to the problem of symbolic integration
 \cite{Bronstein - Symbolic Integration I},
