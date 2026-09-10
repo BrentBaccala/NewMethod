@@ -1551,19 +1551,16 @@ V_m \subseteq V_c
 \end{theorem}
 
 {\it Proof.}
-$\sqrt{[A(c^*)] : Q^\infty}$ is a differential ideal, and if every element
-of $\mathcal{P}^=$ lies in it then it contains both $A(c^*)$ and $\mathcal{P}^=$,
-hence contains $[A(c^*), \mathcal{P}^=]$; saturating that containment
-by~$Q^\infty$ and using $(I : Q^\infty) : Q^\infty = I : Q^\infty$ gives
-%
-\begin{equation}
-\begin{gathered}
-\mathcal{P}^= \subseteq \sqrt{[A(c^*)] : Q^\infty} \implies [A(c^*),\mathcal{P}^=] : Q^\infty = \sqrt{[A(c^*)] : Q^\infty} \\
-Q \notin \sqrt{[A(c^*)]} \implies 1 \notin \sqrt{[A(c^*)] : Q^\infty} \implies 1 \notin \sqrt{[A(c^*), \mathcal{P}^=] : Q^\infty} \\
-V_m \subseteq V_c
-\end{gathered}
-\end{equation}
-%
+If $c^* \in V_m$, then $\mathcal{P}^= \subseteq \sqrt{[A(c^*)] : Q^\infty}$ and
+\[
+\sqrt{[A(c^*),\mathcal{P}^=] : Q^\infty} = \sqrt{[A(c^*)] : Q^\infty}
+\]
+
+Assume $c^* \notin V_c$.  Then $1 \in [A(c^*), \mathcal{P}^=] : Q^\infty$,
+so $1 \in \sqrt{[A(c^*), \mathcal{P}^=] : Q^\infty}$
+and $1 \in \sqrt{[A(c^*)] : Q^\infty}$, contradicting $c^* \in V_m$.
+
+Therefore, $c^* \in V_c$.
 \hfill $\square$
 
 \begin{example}
