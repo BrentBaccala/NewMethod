@@ -1706,8 +1706,8 @@ Show that $V_c = V_m = \{ -1, 1 \}$.
 
 \vfill\eject
 
-\subsection{Computing the Consistency Locus}
-\label{sec:consistency-locus}
+\subsection{Computing the Constant Loci}
+\label{sec:consant-loci}
 
 We now present algorithms to compute the consistency and membership loci,
 and return them in the form of generators of ideals that define a {\it constructable subset}
@@ -1737,6 +1737,43 @@ and a finite set $\mathcal{W}$ of such pairs represents the constructable subset
 $\mathrm{Z}(\mathcal{W}) := \bigcup_{B \in \mathcal{W}} \mathrm{Z}(B)$.  Following \cite{CTD}, \S2, we
 reserve $\mathrm{Z}(\cdot)$ for this passage from a representation to the set
 it represents, so that no symbol stands for both at once.
+
+Several published algorithms are invoked as subroutines, each taken from the
+literature and used unmodified.
+We name them as their sources do, and give the
+source's own numbering where the source numbers its algorithms.
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}lXl@{}}
+\hline
+subroutine & what it computes & source \\
+\hline
+$\mathrm{DifferentialDecompose}$
+  & a differential Thomas decomposition: a partition of the solution set of a
+    differential system into finitely many differentially simple subsystems
+  & \cite{ThomasDecomp}, Alg.~3.6 \\[3pt]
+$\mathrm{FullReduce}$
+  & Ritt's full reduction: the remainder $r$, fully reduced with respect to the
+    equations of the system
+  & \cite{Ritt}, \S6 \\[3pt]
+$\mathrm{minAss}$
+  & for an ideal $\mathfrak{a} \subseteq \mathbb{Q}[c_1, \ldots, c_n]$, the
+    finite set $\mathrm{minAss}(\mathfrak{a})$ of its minimal primes,
+    presented by generating sets; $\mathrm{minAss}((1)) = \emptyset$
+  & \cite{GTZ}, Cor.~3.2(v), \S9 \\[3pt]
+$\mathrm{RefiningPartition}$
+  & for a finite family of constructible sets, a finite set of pairs
+    $(B, \iota)$ in which the $B$ are pairwise disjoint, $\iota$ is the
+    subset of the family $B$ is contained in, and every member of the family
+    is the union of the $B$ with that member in their $\iota$
+  & \cite{CSTools}, \S3 \\[3pt]
+\hline
+\end{tabularx}
+\end{center}
+
+\subsection{Computing the Consistency Locus}
+\label{sec:consistency-locus}
 
 \begin{comment}
 The consistency locus admits a much simpler algorithm than the membership
@@ -2051,48 +2088,6 @@ compute them (\cite{GTZ}, among others).
 Each subsystem's inequations can include inequations in $\mathbb{Q}[c_1, \ldots, c_n]$,
 which must be preserved with the minimal primes, using the ideal notation
 introduced in \S\ref{sec:consistency-locus}.
-
-The algorithm calls four subroutines, each taken from the
-literature and used unmodified; the work is in what is handed to them and how
-their results are combined.  We name them as their sources do, and give the
-source's own numbering where the source numbers its algorithms.
-
-\begin{center}
-\small
-\begin{tabularx}{\textwidth}{@{}lXl@{}}
-\hline
-subroutine & what it computes & source \\
-\hline
-$\mathrm{DifferentialDecompose}$
-  & a differential Thomas decomposition: a partition of the solution set of a
-    differential system into finitely many differentially simple subsystems
-  & \cite{ThomasDecomp}, Alg.~3.6 \\[3pt]
-$\mathrm{FullReduce}$
-  & Ritt's full reduction: the remainder $r$, fully reduced with respect to the
-    equations of the system
-  & \cite{Ritt}, \S6 \\[3pt]
-$\mathrm{minAss}$
-  & for an ideal $\mathfrak{a} \subseteq \mathbb{Q}[c_1, \ldots, c_n]$, the
-    finite set $\mathrm{minAss}(\mathfrak{a})$ of its minimal primes,
-    presented by generating sets; $\mathrm{minAss}((1)) = \emptyset$
-  & \cite{GTZ}, Cor.~3.2(v), \S9 \\[3pt]
-$\mathrm{ConsLevels}$
-  & for a constructible set given as a finite set of C-representations of locally
-    closed sets, the C-representations of its canonical levels
-  & \cite{BrunatMontes}, Alg.~3 \\[3pt]
-$\mathrm{Prep}$
-  & the canonical P-representation of a locally closed set given by a pair of
-    ideals, as tops $\mathfrak{p}_i$ with their holes $\mathfrak{p}_{ij}$
-  & \cite{BrunatMontes}, \S2 \\[3pt]
-$\mathrm{RefiningPartition}$
-  & for a finite family of constructible sets, a finite set of pairs
-    $(B, \iota)$ in which the $B$ are pairwise disjoint, $\iota$ is the
-    subset of the family $B$ is contained in, and every member of the family
-    is the union of the $B$ with that member in their $\iota$
-  & \cite{CSTools}, \S3 \\[3pt]
-\hline
-\end{tabularx}
-\end{center}
 
 \vfill\eject
 \subsection{Completeness of the Algorithm}
@@ -2410,6 +2405,24 @@ the {\it number} of locally closed sets presented to it, and any reduction of th
 number pays exponentially.  Discarding the pieces that are empty is the cheapest such
 reduction, and comes for free: $V(\mathfrak{a}_i) \setminus V(\mathfrak{b}_i) = \emptyset$
 exactly when $\mathfrak{a}_i = (1)$, which the algorithm has already computed.
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}lXl@{}}
+\hline
+subroutine & what it computes & source \\
+\hline
+$\mathrm{ConsLevels}$
+  & for a constructible set given as a finite set of C-representations of locally
+    closed sets, the C-representations of its canonical levels
+  & \cite{BrunatMontes}, Alg.~3 \\[3pt]
+$\mathrm{Prep}$
+  & the canonical P-representation of a locally closed set given by a pair of
+    ideals, as tops $\mathfrak{p}_i$ with their holes $\mathfrak{p}_{ij}$
+  & \cite{BrunatMontes}, \S2 \\[3pt]
+\hline
+\end{tabularx}
+\end{center}
 
 \begin{algorithm}[PolishLocus]
 \label{alg:consistency-comp}
