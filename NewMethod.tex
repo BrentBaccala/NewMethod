@@ -1277,6 +1277,18 @@ A ranking is said to be {\it orderly} if meets the additional condition:
 
 Note that an orderly ranking ranks all pure indeterminates lower than any proper derivative.
 
+\begin{definition}
+\label{def:parametric-ranking}
+A ranking $\prec$ is a {\it constant-lowest} ranking (with respect to some specified constants
+$c_1, \ldots, c_n$) if every constant ranks below every derivative of every
+non-constant indeterminate:
+\[
+c_i \prec \theta u_j
+\qquad\text{for every constant } c_i, \text{ every non-constant } u_j,
+\text{ and every } \theta \in \Theta .
+\]
+\end{definition}
+
 The {\it leader} of a polynomial is the highest ranking indeterminate or derivative that appears in the polynomial
 with a non-zero coefficient.
 Writing $u_p$ for the leader of~$p$,
@@ -1726,24 +1738,6 @@ $\mathrm{Z}(\mathcal{W}) := \bigcup_{B \in \mathcal{W}} \mathrm{Z}(B)$.  Followi
 reserve $\mathrm{Z}(\cdot)$ for this passage from a representation to the set
 it represents, so that no symbol stands for both at once.
 
-The most straightforward way to compute the consistency locus $V_c$ is to proceed
-as its definition suggests: combine the system and the ansatz together as the generators of a single differential
-ideal.  We do not wish to treat the constants as indeterminates (as they would always be non-zero), but rather
-as parameters, and seek conditions on those parameters to
-achieve $1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty$.  This suggests the
-use of a parametric algorithm, such as parametric Rosenfeld-Gr\"obner \cite{Fakouri2018} or a
-differential Thomas decomposition \cite{ThomasDecomp, RobertzLNM}.  We have adopted
-differential Thomas decomposition primarily because it has convenient theoretical
-properties that allow us to prove completeness of the algorithm.
-
-We record this direct approach below, as Algorithm~\ref{alg:consistency-basic}, both
-for completeness and because its simplicity makes a good introduction to the
-rest of this section.  An essential component of this algorithm is a variable ranking
-that places the consants below all other indeterminates and
-allows us to find the equations and inequations for the constructable subsets corresponding to a differentially
-simple system simply by reading off the equations and inequations of the system
-which involve only constants.
-
 \begin{comment}
 The consistency locus admits a much simpler algorithm than the membership
 locus, because its definition lets us decompose the ansatz and the target
@@ -1754,8 +1748,7 @@ demanding, precisely because its input involves more polynomials.
 \end{comment}
 
 \begin{definition}
-The {\it cell} of a differentially simple system $(S^=, S^{\ne})$,
-computed with the constant parameters $c = (c_1, \ldots, c_n)$ ranked below all other indeterminates,
+The {\it cell} of a differentially simple system $(S^=, S^{\ne})$, computed with a constant-lowest ranking,
 is the constant locus in $\mathbb{C}^n$ that solves the equations and inequations of $(S^=, S^{\ne})$
 that lie in $\mathbb{Q}[c_1, \ldots, c_n]$.
 \end{definition}
@@ -1763,30 +1756,51 @@ that lie in $\mathbb{Q}[c_1, \ldots, c_n]$.
 \medskip
 \begin{lemma}
 \label{lem:cell-consistency}
-Given a vector of constants $c^*$, and a differentially simple system $(S^=, S^{\ne})$,
+Given a vector of constants $c^*$, and a differentially simple system $(S^=, S^{\ne})$ ranked according to a constant-lowest ranking,
 $1 \notin [S^=]:S^{\ne\infty}$ if and only if $c^*$ lies in the system's cell.
 \end{lemma}
 
 {\it Proof.}
 By \cite{ThomasDecomp}, Remark~2.3, every solution of a lower-ranked subsystem
-of a simple system extends to a solution of the next equation, and by induction,
+of a simple system extends to a solution of the next higher-ranked equation, and by induction,
 to a solution of the entire system.  The solutions
 of the subsystem of the strictly lower-ranked constants (the cell)
 therefore extends to a solution of the entire system.  The solutions
 of \cite{ThomasDecomp} are assignments of formal power series to each of the differential variables
-that satisfy all of the equations and inequations.  The existence of a differential extension
-containing such a solution precludes 1 being a member of the ideal.
+that satisfy all of the equations and inequations.  The existence of such a solution
+precludes 1 being a member of the ideal, since if 1 were in the ideal,
+then once everything in the ideal is equated to zero, we would be left with $1=0$,
+which no solution in formal power series could satisfy.
+
+% then once everything in the ideal is equated to zero, we would be left with a solution in formal power series
+%and a system of equations which enables us to derive $1=0$, which is impossible.
 
 Conversely,
 any $c^*$ outside the cell violates one or more of the system's equations,
 and leads to either a non-zero constant being introduced among the equations,
-or a zero being introduced into the inequations,
+or a zero being introduced into the inequations, precluding any possible of a solution there.
 \hfill $\square$
+
+An essential component of this proof is a variable ranking
+that places the consants below all other indeterminates and
+allows us to find the equations and inequations for the constructable subsets corresponding to a differentially
+simple system simply by reading off the equations and inequations of the system
+which involve only constants.
 
 The constant-only equations and inequations need only be a subset of $(S^=, S^{\ne})$,
 so cells belonging to different
 components may overlap, even though the components themselves are disjoint,
 since the case distinction may be made at the level of non-constant indeterminates.
+
+The most straightforward way to compute the consistency locus $V_c$ is to proceed
+as its definition suggests: combine the system and the ansatz together as the generators of a single differential
+ideal.  We do not wish to treat the constants as indeterminates (as they would always be non-zero), but rather
+as parameters, and seek conditions on those parameters to
+achieve $1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty$.  This suggests the
+use of a parametric algorithm, such as parametric Rosenfeld-Gr\"obner \cite{Fakouri2018} or a
+differential Thomas decomposition \cite{ThomasDecomp, RobertzLNM}.  We have adopted
+differential Thomas decomposition primarily because it has convenient theoretical
+properties that allow us to prove completeness of the algorithm.
 
 \begin{algorithm}[ConsistencyLocus]
 \label{alg:consistency-basic}
@@ -1801,9 +1815,7 @@ $\mathcal{P}^= = \{P_1, \ldots, P_t\} \subset R$ and inequations
 $\mathcal{P}^{\ne} = \{Q_1, \ldots, Q_w\} \subset R$, abbreviated $Q = Q_1
 \cdots Q_w$; an
 ansatz $A(c) \subset R$, a finite set of differential polynomials
-parameterized by the constants $c = (c_1, \ldots, c_n)$; and a ranking
-$\prec$ placing the constants below everything else: $c_i \prec \theta u_j$ for every constant $c_i$, every non-constant $u_j$
-and every $\theta \in \Theta$.
+parameterized by the constants $c = (c_1, \ldots, c_n)$; and a constant-lowest ranking $\prec$.
 
 % specify that the equations and inequations in P can not involve the constants
 
@@ -2096,8 +2108,7 @@ the decomposition, and Corollary~\ref{cor:assembly} assembles the components.
 \begin{lemma}
 \label{lem:specialization}
 Let $(S^=, S^{\ne})$ be a differentially simple system,
-computed with the constant
-parameters $c = (c_1, \ldots, c_n)$ ranked below all other indeterminates.
+computed with the constant-lowest ranking.
 If $c^* \in \mathbb{C}^n$ lies in the system's cell, then the specialized system $(S^=(c^*), S^{\ne}(c^*))$
 is again differentially simple.
 \end{lemma}
