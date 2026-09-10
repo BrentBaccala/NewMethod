@@ -1925,7 +1925,7 @@ $V_c$          & $\exists$ & $\exists$ & at one solution \\
 \end{center}
 
 It is possible for multiple subsystems to lie over a single constant.
-The membership locus proper requires $\mathcal{P}^=$ to belong to every such subsystem.
+The membership locus requires $\mathcal{P}^=$ to belong to every such subsystem.
 The intermediate locus, on the other hand, requires only membership in a single subsystem.
 The intermediate locus is somewhat easier to compute
 and may be preferred when our primary interest is in the consistency locus.
@@ -1957,14 +1957,14 @@ V_i \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
 \mbox{}
 
 {\bf Input:} As in Algorithm~\ref{alg:consistency-basic}
-and a flag $\mu \in \{\forall, \, \exists\forall\}$ selecting the assembly.
+and a flag $\mu \in \{\forall, \, \exists\}$ selecting the assembly.
 
 {\bf Output:} A constructible subset of $\mathbb{C}^n$, presented as a finite
 set $\mathcal{W}$ of pairs $(\mathfrak{a}, \mathfrak{b})$ of ideals 
 so that $\mathrm{Z}(\mathcal{W})$ is a finite union
 of locally closed sets.  For $\mu = \forall$ it is the
 membership locus $V_m$.  For
-$\mu = \exists\forall$ it is the intermediate locus $V_i$, which
+$\mu = \exists$ it is the intermediate locus $V_i$, which
 satisfies $V_m \subseteq V_i \subseteq V_c$ whenever
 the ansatz is consistent throughout $\mathbb{C}^n$ --- a condition the algorithm
 reports, as described below.
