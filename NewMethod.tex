@@ -1504,10 +1504,10 @@ rule those out.
 {\bf The Consistency Locus}
 
 \begin{equation}
-V_\exists = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty \}
+V_c = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty \}
 \end{equation}
 
-The {\it consistency locus} $V_\exists$ is the set of constants for which the ansatz
+The {\it consistency locus} $V_c$ is the set of constants for which the ansatz
 {\it together with} the system is consistent.
 
 % The condition
@@ -1523,7 +1523,7 @@ is an analytic statement that is not asserted here.
 {\bf The Membership Locus}
 
 \begin{equation}
-V_{\forall} = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*)] : Q^\infty \wedge \mathcal{P}^= \subseteq \sqrt{[A(c^*)] : Q^\infty} \}
+V_m = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*)] : Q^\infty \wedge \mathcal{P}^= \subseteq \sqrt{[A(c^*)] : Q^\infty} \}
 \end{equation}
 
 The {\it membership locus} is the set of constants for which the ansatz is consistent and every equation of
@@ -1537,7 +1537,7 @@ have nilpotents, and we are typically looking for either real- or complex-valued
 take the radical to simplify both the theory and the implementation.
 
 % \begin{equation}
-% V_{\forall} = \{ c^* \in {\mathbb C}^n : P \in [A(c^*)] \}
+% V_m = \{ c^* \in {\mathbb C}^n : P \in [A(c^*)] \}
 % \end{equation}
 
 \begin{theorem}
@@ -1546,7 +1546,7 @@ The membership locus is a subset of the consistency locus:
 %
 \begin{equation}
 \label{eq:locus-containment}
-V_\forall \subseteq V_\exists
+V_m \subseteq V_c
 \end{equation}
 \end{theorem}
 
@@ -1560,7 +1560,7 @@ by~$Q^\infty$ and using $(I : Q^\infty) : Q^\infty = I : Q^\infty$ gives
 \begin{gathered}
 \mathcal{P}^= \subseteq \sqrt{[A(c^*)] : Q^\infty} \implies [A(c^*),\mathcal{P}^=] : Q^\infty = \sqrt{[A(c^*)] : Q^\infty} \\
 Q \notin \sqrt{[A(c^*)]} \implies 1 \notin \sqrt{[A(c^*)] : Q^\infty} \implies 1 \notin \sqrt{[A(c^*), \mathcal{P}^=] : Q^\infty} \\
-V_\forall \subseteq V_\exists
+V_m \subseteq V_c
 \end{gathered}
 \end{equation}
 %
@@ -1588,17 +1588,17 @@ but splits into two differentially simple subsystems:
 \end{gathered}
 \end{equation}
 $\mathcal{S}_1$, in particular, has no restriction on $c$ (other than it be constant)
-and no terms in $\mathbb{C}$, so $1 \notin [\mathcal{S}_1^=]$ and $V_\exists = \mathbb{C}$.
+and no terms in $\mathbb{C}$, so $1 \notin [\mathcal{S}_1^=]$ and $V_c = \mathbb{C}$.
 
-To compute $V_\forall$, we need to identify the constants where
+To compute $V_m$, we need to identify the constants where
 $\mathcal{P} \subseteq \sqrt{[A(c)]}$.  $A(c)$ is a simple differential
 system, and $\Psi_t-\Psi$ remains unchanged after pseudo-reduction by $A(c)$,
 so by Proposition \ref{prop:simple-membership}, $\Psi_t-\Psi$ is not in $[A(c)]$
-for any value of $c$, and $V_\forall$ is empty.
+for any value of $c$, and $V_m$ is empty.
 
 \begin{equation*}
-V_\exists  = \mathbb{C} \qquad
-V_\forall = \emptyset
+V_c  = \mathbb{C} \qquad
+V_m = \emptyset
 \end{equation*}
 \qed
 \end{example}
@@ -1626,21 +1626,21 @@ The inequality kills the first system in \eqref{ex:three-loci two systems}, so w
 \end{gathered}
 \end{equation}
 
-Only $c=1$ solves this system, so $V_\exists = \{1\}$, and $V_\forall$ remains vacuous:
+Only $c=1$ solves this system, so $V_c = \{1\}$, and $V_m$ remains vacuous:
 
 \begin{equation*}
-V_\exists  = \{ 1 \} \qquad
-V_\forall = \emptyset
+V_c  = \{ 1 \} \qquad
+V_m = \emptyset
 \end{equation*}
 \qed
 \end{example}
 
 It is perhaps easiest to understand these examples analytically.
-For any constant $c$, $\Psi=0$ is a solution to both the ansatz and the PDE, so without the inequation $V_\exists = \mathbb{C}$.
+For any constant $c$, $\Psi=0$ is a solution to both the ansatz and the PDE, so without the inequation $V_c = \mathbb{C}$.
 If $c=1$, then $ae^t$ is a solution to both $A(1)$ and $P$, and 1 is the only value of $c$ for which they have a common non-zero solution,
 so imposing $\Psi \ne 0$ cuts the consistency locus down to $\{ 1 \}$.
 However, although both $ae^t$ and $ae^{-t}$ solve $A(1)$, only $ae^t$ solves $P$,
-so a solution to the ansatz does not necessarily solve the PDE and $V_\forall = \emptyset$.
+so a solution to the ansatz does not necessarily solve the PDE and $V_m = \emptyset$.
 The containment \eqref{eq:locus-containment} reads
 $\emptyset \subseteq \{1\}$, as it must.
 
@@ -1663,7 +1663,7 @@ A {\it constructible subset} of $\mathbb{C}^n$ is any finite union
 where $A_1, \ldots , A_e , B_1 , \ldots , B_e$ are algebraic varieties in $\mathbb{C}^n$.
 \end{definition}
 
-The most straightforward way to compute the consistency locus $V_\exists$ is to proceed
+The most straightforward way to compute the consistency locus $V_c$ is to proceed
 as its definition suggests: combine the system and the ansatz together as the generators of a singular differential
 ideal.  We do not wish to treat the constants as indeterminates (as they would always be non-zero), but rather
 as parameters, and seek conditions on those parameters that would yield a non-trivial
@@ -1757,8 +1757,8 @@ and every $\theta \in \Theta$.
 {\bf Output:} A constructible subset of $\mathbb{C}^n$, presented as a finite
 set $\mathcal{W}$ of pairs $(\mathfrak{a}, \mathfrak{b})$ of ideals,
 and so as a finite union of locally
-closed sets: $\mathrm{Z}(\mathcal{W}) = V_\exists$, the consistency locus
-$V_\exists = \{\, c^* \in \mathbb{C}^n : 1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty \,\}$.
+closed sets: $\mathrm{Z}(\mathcal{W}) = V_c$, the consistency locus
+$V_c = \{\, c^* \in \mathbb{C}^n : 1 \notin [A(c^*), \mathcal{P}^=] : Q^\infty \,\}$.
 
 {\bf Algorithm:}
 \begin{pseudocode}
@@ -1780,8 +1780,8 @@ Every $c^*$ in
 $S_i$'s cell $C_i = V(E_i) \setminus V(h_i)$ extends to a genuine solution of
 the whole specialized system,
 %, respecting $Q \ne 0$ along with everything else in $S_i^{\ne}$;
-so $c^* \in V_\exists$ exactly when it lies in the cell
-of {\it some} component, and $V_\exists = \bigcup_{i=1}^{s} C_i$.
+so $c^* \in V_c$ exactly when it lies in the cell
+of {\it some} component, and $V_c = \bigcup_{i=1}^{s} C_i$.
 
 
 \vfill\eject
@@ -1795,7 +1795,7 @@ separately tests the target system against each resulting component.
 It tends to be less computationally demanding that Algorithm~\ref{alg:consistency-basic}.
 
 Algorithm~\ref{alg:core-basic} has two branches which compute two different loci: the membership
-locus $V_\forall$ and an intermediate locus $V_{\exists\forall}$ which lies
+locus $V_m$ and an intermediate locus $V_i$ which lies
 between the membership locus and the consistency locus.  The distinction
 between them lies in how they handle constants which appear in multiple
 subsystems.
@@ -1805,9 +1805,9 @@ subsystems.
 \hline
 locus & subsystems & solutions & all of $\mathcal{P}^=$ vanishes \ldots \\
 \hline
-$V_\forall$          & $\forall$ & $\forall$ & on every solution \\
-$V_{\exists\forall}$ & $\exists$ & $\forall$ & on some subsystem \\
-$V_\exists$          & $\exists$ & $\exists$ & at one solution \\
+$V_m$          & $\forall$ & $\forall$ & on every solution \\
+$V_i$ & $\exists$ & $\forall$ & on some subsystem \\
+$V_c$          & $\exists$ & $\exists$ & at one solution \\
 \hline
 \end{tabular}
 \end{center}
@@ -1823,7 +1823,7 @@ between the three loci is as follows:
 
 \begin{equation}
 \label{eq:intermediate-sandwich}
-V_\forall \;\subseteq\; V_{\exists\forall} \;\subseteq\; V_\exists .
+V_m \;\subseteq\; V_i \;\subseteq\; V_c .
 \end{equation}
 
 Writing
@@ -1833,9 +1833,9 @@ the two loci
 are constructed as follows:
 %
 \[
-V_\forall \;=\; \bigcap_{i=1}^{s} \bigl( \mathrm{Z}(W_i) \cup (\mathbb{C}^n \setminus \mathrm{Z}(C_i)) \bigr)
+V_m \;=\; \bigcap_{i=1}^{s} \bigl( \mathrm{Z}(W_i) \cup (\mathbb{C}^n \setminus \mathrm{Z}(C_i)) \bigr)
 \qquad
-V_{\exists\forall} \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
+V_i \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
 \]
 
 \vfill\eject
@@ -1851,9 +1851,9 @@ and a flag $\mu \in \{\forall, \, \exists\forall\}$ selecting the assembly.
 set $\mathcal{W}$ of pairs $(\mathfrak{a}, \mathfrak{b})$ of ideals 
 so that $\mathrm{Z}(\mathcal{W})$ is a finite union
 of locally closed sets.  For $\mu = \forall$ it is the
-membership locus $V_\forall$.  For
-$\mu = \exists\forall$ it is the intermediate locus $V_{\exists\forall}$, which
-satisfies $V_\forall \subseteq V_{\exists\forall} \subseteq V_\exists$ whenever
+membership locus $V_m$.  For
+$\mu = \exists\forall$ it is the intermediate locus $V_i$, which
+satisfies $V_m \subseteq V_i \subseteq V_c$ whenever
 the ansatz is consistent throughout $\mathbb{C}^n$ --- a condition the algorithm
 reports, as described below.
 
@@ -2033,9 +2033,9 @@ $\mathrm{RefiningPartition}$
 \subsection{Completeness of the Algorithm}
 \label{sec:completeness}
 
-Two questions arise.  If some constant lies in $V_\forall$, the membership
+Two questions arise.  If some constant lies in $V_m$, the membership
 locus --- will the algorithm always find it?  And conversely, is everything the
-algorithm returns genuinely in $V_\forall$?
+algorithm returns genuinely in $V_m$?
 Theorem~\ref{thm:completeness} answers both at once for a single component of
 the decomposition, and Corollary~\ref{cor:assembly} assembles the components.
 
@@ -2228,7 +2228,7 @@ differential Thomas decomposition of the ansatz.  Then, for every
 $c^* \in \mathbb{C}^n$,
 %
 \[
-c^* \in V_\forall
+c^* \in V_m
 \quad\Longleftrightarrow\quad
 c^* \in \mathcal{V}_i \ \text{ for every $i$ whose cell contains $c^*$}.
 \]
@@ -2378,16 +2378,16 @@ $[\mathfrak{a}'_i, \mathfrak{b}'_i]$ is its C-representation.  Line 6 discards
 the empty pieces: $\mathrm{Z}(\mathfrak{a}_i, \mathfrak{b}_i) = \emptyset$
 exactly when $\mathfrak{a}'_i = (1)$.
 
-$\mathrm{ConsLevels}$ decomposes $V_\exists$ into its canonical {\it levels}
+$\mathrm{ConsLevels}$ decomposes $V_c$ into its canonical {\it levels}
 $L_1, L_3, \ldots, L_{2\ell \pm 1}$, a sequence of disjoint locally closed sets of
 strictly decreasing dimension with
 \[
-V_\exists \;=\; L_1 \uplus L_3 \uplus \cdots \uplus L_{2\ell \pm 1},
+V_c \;=\; L_1 \uplus L_3 \uplus \cdots \uplus L_{2\ell \pm 1},
 \]
 returning each as a C-representation.  The even-numbered levels, which decompose the
-complement $\overline{V_\exists} \setminus V_\exists$, are computed along the way and
+complement $\overline{V_c} \setminus V_c$, are computed along the way and
 discarded.  Because every level is locally closed, $\mathrm{Prep}$ applies to it; and
-because the level decomposition depends only on $V_\exists$, so does the result --- it
+because the level decomposition depends only on $V_c$, so does the result --- it
 is independent of the differential decomposition that produced it, and of the order in
 which the segments were presented.  This is the sense in which the output is canonical,
 and it is what Algorithm~\ref{alg:consistency-basic}'s output lacks.
@@ -2509,8 +2509,8 @@ for reproducing the calculations of this paper.
     {\tt 5} \\[3pt]
 {\tt --locus NAME}
   & which of the three constant loci of \S\ref{sec:Solution Algorithm} to
-    compute: {\tt intermediate} ($V_{\exists\forall}$, the default),
-    {\tt consistency} ($V_\exists$), or {\tt membership} ($V_\forall$) \\[3pt]
+    compute: {\tt intermediate} ($V_i$, the default),
+    {\tt consistency} ($V_c$), or {\tt membership} ($V_m$) \\[3pt]
 {\tt --ranking NAME}
   & the ranking used for the differential Thomas decomposition:
     {\tt orderly} (default), {\tt block} or {\tt elimination} \\[3pt]
@@ -2783,7 +2783,7 @@ Computing a differential Thomas decomposition of \eqref{ansatz 5 plus} with rank
 takes about seven minutes
 on an AMD Ryzen 5 processor and produces 16 cells.  Performing the remainder of Algorithm~\ref{alg:core-basic}
 on each of those cells takes another half hour and computes the following constructable set
-for the intermediate locus $V_{\exists\forall}$ (after applying the polishing techniques of Section \ref{sec:constructable-set}):
+for the intermediate locus $V_i$ (after applying the polishing techniques of Section \ref{sec:constructable-set}):
 
 \begin{subequations}
 \label{ideal}
