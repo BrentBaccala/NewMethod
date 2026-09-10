@@ -1501,17 +1501,6 @@ rule those out.
 
 %% It is convenient to define two loci in constant space.
 
-{\bf The Non-degenercy Locus}
-
-\begin{equation}
-\label{eq:nondegeneracy}
-N_Q = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*)]:Q^\infty \},
-\end{equation}
-
-The {\it non-degeneracy locus} $N_Q$ is the set of constants for which the ansatz
-alone is consistent in the sense of
-\S\ref{sec:preliminaries}, after saturation by the inequations.
-
 {\bf The Consistency Locus}
 
 \begin{equation}
@@ -1539,12 +1528,12 @@ V_{\forall} = \{ c^* \in {\mathbb C}^n : 1 \notin [A(c^*)] : Q^\infty \wedge \ma
 
 The {\it membership locus} is the set of constants for which the ansatz is consistent and every equation of
 the system lies in the saturated radical differential ideal defined by the
-ansatz, meaning that any function satisfying the ansatz {\it and the
-inequations} will satisfy every equation of the system.
+ansatz and the inequations.  Informally, at these constants $c^*$, any function satisfying the ansatz and the
+inequations will satisfy every equation of the system.
 
 Taking the radical of the ideal is justified when we will ultimately map the differential indeterminates
 into a function space whose range has no nilpotent elements.  Since neither the real nor the complex numbers
-have nilpotents, and we are ultimately looking for either real- or complex-valued functions, we
+have nilpotents, and we are typically looking for either real- or complex-valued functions, we
 take the radical to simplify both the theory and the implementation.
 
 % \begin{equation}
