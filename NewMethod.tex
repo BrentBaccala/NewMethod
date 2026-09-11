@@ -71,6 +71,14 @@
 
 \usepackage[hidelinks]{hyperref}
 
+% Named conditions (A1)--(A3) and (S1)--(S4) of the simplicity definitions.
+% \condlabel{A1} anchors a condition where it is stated; \condref{A1}
+% typesets "(A1)" exactly as the plain text would, but as a link to that
+% anchor (invisible under hidelinks), so a viewer such as evince previews
+% the condition's statement on hover.
+\newcommand{\condlabel}[1]{\hypertarget{cond:#1}{}}
+\newcommand{\condref}[1]{\hyperlink{cond:#1}{(#1)}}
+
 \usepackage{tabularx}
 
 \usepackage{longtable}
@@ -1389,12 +1397,12 @@ regarded as a polynomial system in the differential variables that occur in
 it, is {\it algebraically simple} (\cite{ThomasDecomp}, Definition~2.2) if
 
 \begin{enumerate}
-\item[\rm(A1)] $S$ is {\it triangular}: no two elements of $S$ share a leader,
+\item[\rm(A1)]\condlabel{A1} $S$ is {\it triangular}: no two elements of $S$ share a leader,
   and no element of $S$ lies in the base field;
-\item[\rm(A2)] $S$ has {\it non-vanishing initials}: for each equation $p$ of
+\item[\rm(A2)]\condlabel{A2} $S$ has {\it non-vanishing initials}: for each equation $p$ of
   $S$, with leader $x$, the initial of $p$ is non-zero at every solution of the
   subsystem of $S$ in the variables ranked strictly below~$x$; and
-\item[\rm(A3)] $S$ is {\it square-free}: for each equation $p$ of $S$, with
+\item[\rm(A3)]\condlabel{A3} $S$ is {\it square-free}: for each equation $p$ of $S$, with
   leader $x$, the univariate polynomial in $x$ obtained by evaluating the
   coefficients of $p$ at any solution of the subsystem of $S$ in the variables ranked strictly below~$x$
   is square-free.
@@ -1404,7 +1412,7 @@ it, is {\it algebraically simple} (\cite{ThomasDecomp}, Definition~2.2) if
 Each polynomial in such an algebraically simple differential system has
 associated with it a {\it lower subsystem} consisting of the equations (and inequations)
 whose leaders rank below the polynomial's leader.
-Conditions (A2) and~(A3) are quantified over the solutions of the lower subsystem.
+Conditions \condref{A2} and~\condref{A3} are quantified over the solutions of the lower subsystem.
 This makes them
 stable under specialization of lower-ranked variables.
 
@@ -1415,7 +1423,7 @@ polynomial's lower subsystem.
 \end{lemma}
 
 {\it Proof.}
-That the initial does not vanish is condition (A2).
+That the initial does not vanish is condition \condref{A2}.
 
 ``Square-freeness has an important side-effect in the differential case. A square-free polynomial and its separant
 have no common roots. Thus, the separants do not vanish on solutions of the lower-ranking subsystems.'' (Footnote~3,~\S\,2,~\cite{ThomasDecomp})
@@ -1426,10 +1434,10 @@ A system $S = (S^=, S^{\ne})$ is {\it differentially simple}
 (\cite{ThomasDecomp}, Definition~3.5) if
 
 \begin{enumerate}
-\item[\rm(S1)] $S$ is algebraically simple;
-\item[\rm(S2)] $S$ is involutive;
-\item[\rm(S3)] $S^=$ is minimal; and
-\item[\rm(S4)] no inequation of $S^{\ne}$ is reducible modulo $S^=$.
+\item[\rm(S1)]\condlabel{S1} $S$ is algebraically simple;
+\item[\rm(S2)]\condlabel{S2} $S$ is involutive;
+\item[\rm(S3)]\condlabel{S3} $S^=$ is minimal; and
+\item[\rm(S4)]\condlabel{S4} no inequation of $S^{\ne}$ is reducible modulo $S^=$.
 \end{enumerate}
 
 \noindent
@@ -1469,7 +1477,7 @@ construction a combination of derivatives of equations of $S^=$, so it lies
 in~$E$; by Proposition~\ref{prop:simple-membership} it therefore pseudo-reduces
 to zero, and a critical pair whose $\Delta$-polynomial reduces to zero is solved
 (\cite{blop}, Lemma~20, whose hypothesis that the two leaders be distinct is
-condition~(A1)).
+condition~\condref{A1}).
 \end{comment}
 
 \begin{comment}
@@ -1971,20 +1979,20 @@ is again differentially simple.
 
 {\it Proof.}
 Because the constants are ranked below every other indeterminate and conditions
-(A2) and (A3) of algebraic simplicity are quantified over solution sets that
+\condref{A2} and \condref{A3} of algebraic simplicity are quantified over solution sets that
 contain the whole cell, they are preserved over constants that solve the system.
 Since the initial of each equation is non-zero, the leaders do not change
-under specialization, and (A1) is preserved as well.  Therefore (S1) persists.
+under specialization, and \condref{A1} is preserved as well.  Therefore \condref{S1} persists.
 
-(A2) ensures that initials are non-zero at any $c^*$ in the cell,
+\condref{A2} ensures that initials are non-zero at any $c^*$ in the cell,
 so the leaders of the system's equations remain unchanged.
 Janet's division's multiplicative/non-multiplicative split is computed from
 the leaders alone, so this also remains unchanged.  The reductions
-required by (S2) remain unchanged, and if they are zero for generic
+required by \condref{S2} remain unchanged, and if they are zero for generic
 constants $c$, they are zero for any specialization $c^*$.
-The minimality required by (S3) is computed based on leaders
+The minimality required by \condref{S3} is computed based on leaders
 and reductive derivations, which remain unchanged,
-and the reductions prohibited by (S4) are also based on
+and the reductions prohibited by \condref{S4} are also based on
 leaders and remain unchanged.
 \hfill $\square$
 
@@ -2299,7 +2307,7 @@ onto the space of the $n$ constant parameters
 $c = (c_1, \ldots, c_n)$.
 The subsystem's own inequations $S^{\ne}_i$ --- which, by construction, now
 carry $Q$'s contribution along with the rest --- need no further reduction:
-condition (S4) of differential simplicity already guarantees that no
+condition \condref{S4} of differential simplicity already guarantees that no
 inequation of $S^{\ne}_i$ is reducible modulo $S^=_i$, so
 $\mathrm{Coeffs}(q, \mathbb{Q}[c_1, \ldots, c_n])$ can be read off each
 $q \in S^{\ne}_i$ directly.  That coefficient set need not generate a prime
