@@ -1904,19 +1904,20 @@ and still result in a solution.
   assignment to the remaining differential variables, so $(c^*, \sigma)$ is a
   solution of $(A(c) \cup \mathcal{P}^=, \{Q\})$.  A Thomas decomposition
   partitions that solution set, so $(c^*, \sigma) \in \mathrm{Sol}(S_i)$ for
-  some~$i$; in particular $c^*$ satisfies every equation and every inequation of
-  $S_i$ lying in $\mathbb{Q}[c_1, \ldots, c_n]$, which is to say $c^*$ lies in
+  some~$i$, which is to say $c^*$ lies in
   the cell of $S_i$, contrary to hypothesis.
+  The specialized system therefore has no solutions, and by the differential
+  Nullstellensatz (\cite{hubert2} Theorem 2.7), $1 \in [A(c^*), \mathcal{P}^=] : Q(c^*)^\infty$.
 
-  The specialized system therefore has no solutions, and its own Thomas
-  decomposition is empty: a simple system is consistent, since by
-  \cite{ThomasDecomp}, Remark~2.3 the empty subsystem's solution extends
-  upward through the ranking to a solution of the whole.  Applying
-  Proposition~\ref{prop:decomposition-membership} to the specialized system with
-  that empty decomposition makes the right-hand side an empty intersection of
-  ideals, namely $R$, so
-  $\sqrt{[A(c^*), \mathcal{P}^=] : Q(c^*)^\infty} = R$ and hence
-  $1 \in [A(c^*), \mathcal{P}^=] : Q(c^*)^\infty$.
+%  The specialized system therefore has no solutions, and its own Thomas
+%  decomposition is empty: a simple system is consistent, since by
+%  \cite{ThomasDecomp}, Remark~2.3 the empty subsystem's solution extends
+%  upward through the ranking to a solution of the whole.  Applying
+%  Proposition~\ref{prop:decomposition-membership} to the specialized system with
+%  that empty decomposition makes the right-hand side an empty intersection of
+%  ideals, namely $R$, so
+%  $\sqrt{[A(c^*), \mathcal{P}^=] : Q(c^*)^\infty} = R$ and hence
+%  $1 \in [A(c^*), \mathcal{P}^=] : Q(c^*)^\infty$.
   \hfill $\square$
 
 
