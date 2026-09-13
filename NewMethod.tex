@@ -1999,7 +1999,7 @@ Algorithm~\ref{alg:core-basic} has two branches which compute two different loci
 locus $V_m$ and an intermediate locus $V_i$ which lies
 between the membership locus and the consistency locus.  The distinction
 between them lies in how they handle constants which appear in multiple
-subsystems.
+subsystems of the decomposition.
 
 \begin{center}
 \begin{tabular}{llll}
@@ -2013,11 +2013,11 @@ $V_c$          & $\exists$ & $\exists$ & at one solution \\
 \end{tabular}
 \end{center}
 
-It is possible for multiple subsystems to lie over a single constant.
+It is possible for multiple subsystems to lie over a single constant vector.
 The membership locus requires $\mathcal{P}^=$ to belong to every such subsystem.
 The intermediate locus, on the other hand, requires only membership in a single subsystem.
-The intermediate locus is somewhat easier to compute
-and may be preferred when our primary interest is in the consistency locus.
+Computing the intermediate locus is the first step in computing the membership locus,
+so it may be preferred when our primary interest is in the consistency locus.
 In that case, there is little justification for the extra work required
 to discard solutions outside the membership locus; the relationship
 between the three loci is as follows:
