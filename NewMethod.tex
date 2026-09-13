@@ -2045,7 +2045,9 @@ V_i \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
 Let $(S^=, S^{\ne})$ be a differentially simple system,
 computed with a constant-lowest ranking.
 If $c^* \in \mathbb{C}^n$ lies in the system's cell, then the specialized system $(S^=(c^*), S^{\ne}(c^*))$
-is again differentially simple.
+is again differentially simple.  Furthermore, the initials and separants $h(c^*)$ of the 
+specialized system are formed by substitution from the initials and separants $h$ of
+the original system.
 \end{lemma}
 
 {\it Proof.}
@@ -2065,6 +2067,10 @@ The minimality required by \condref{S3} is computed based on leaders
 and reductive derivations, which remain unchanged,
 and the reductions prohibited by \condref{S4} are also based on
 leaders and remain unchanged.
+
+Since the leaders remain unchanged, the initials and separants are
+simply the specialized (and non-zero) versions of the generic initials and separants,
+with $c^*$ substituted in.
 \hfill $\square$
 
 \medskip
