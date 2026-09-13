@@ -2098,34 +2098,6 @@ q^m\,(h\,w)\,P \;=\; q^{m+k}\,P \;\in\; [S] ,
 therefore $P \in [S] : q^\infty$.
 \hfill $\square$
 
-  \begin{lemma}
-  \label{lem:specialized-hs}
-  Let $(S^=, S^{\ne})$ be a differentially simple system computed with respect to
-  a constant-lowest ranking,
-  let $H_{S^=} = I_{S^=} \cup S_{S^=}$ be the initials and separants of $S^=$,
-  let $q$ be the product of the elements of $H_{S^=}$,
-  let $h$ be any power product of elements of $H_{S^=}$, and let $c^*$ lie
-  in the system's cell.  Then, for every $P \in R$,
-  %
-  \[
-  h(c^*) \cdot P \in [S^=(c^*)] : q(c^*)^\infty
-  \quad\Longleftrightarrow\quad
-  P \in [S^=(c^*)] : q(c^*)^\infty .
-  \]
-  \end{lemma}
-
-  {\it Proof.}
-  By Lemma~\ref{lem:specialization} the specialized system $(S^=(c^*), S^{\ne}(c^*))$ is again differentially simple,
-  and by Lemma~\ref{lem:initials-and-separants-specialize}, all of the initials and
-  separants are non-zero.
-%, so none of the inequations are violated and $q(c^*)\ne 0$.
-  Every element of $H_{S^=}$ therefore specializes
-  to either a non-zero constant or a non-zero polynomial; $h(c^*)$ is a power product of
-  elements of those specializations $H_{S^=(c^*)}$, and $q(c^*)$ is their product.
-  Lemma~\ref{lem:saturation-cancellation}, applied to $S^=(c^*)$, gives the
-  claim.
-  \hfill $\square$
-
 \medskip
 \begin{theorem}
 \label{thm:completeness}
@@ -2180,8 +2152,7 @@ and remembering that $[S^=(c^*)] \subseteq [S^=(c^*)]:q(c^*)^\infty$, gives
 h(c^*) \cdot P - r(c^*) \in [S^=(c^*)]:q(c^*)^\infty
 \]
 %
-Since $c^*$ lies in the cell,
-Lemma~\ref{lem:specialized-hs} gives us
+Lemma~\ref{lem:saturation-cancellation} gives us
 %
 \[
 r(c^*) \in [S^=(c^*)]:q(c^*)^\infty
