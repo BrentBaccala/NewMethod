@@ -1724,7 +1724,7 @@ Show that $V_c = V_m = \{ -1, 1 \}$.
 \vfill\eject
 
 \subsection{Computing the Constant Loci}
-\label{sec:consant-loci}
+\label{sec:computing-constant-loci}
 
 We now present algorithms to compute the consistency and membership loci,
 and return them in the form of generators of ideals that define a {\it constructable subset}
@@ -1802,7 +1802,7 @@ demanding, precisely because its input involves more polynomials.
 \end{comment}
 
 An essential component of the algorithms below is a variable ranking
-that places the consants below all other indeterminates and
+that places the constants below all other indeterminates and
 allows us to find the equations and inequations for the constructable subsets corresponding to a differentially
 simple system simply by reading off the equations and inequations of the system
 which involve only constants.
@@ -1856,9 +1856,9 @@ since the case distinction may be made at the level of non-constant indeterminat
 \end{lemma}
 
 {\it Proof.}
-If $1 \in S^=(c^*) : q(c^*)^\infty$, then $\exists m\in\mathbb{Z}^+$ such that $q(c^*)^m \in S^=(c^*)$.
+If $1 \in [S^=(c^*)] : q(c^*)^\infty$, then $\exists m\in\mathbb{Z}^+$ such that $q(c^*)^m \in S^=(c^*)$.
 But if $c^*$ lies in the system's cell, then Lemma~\ref{lem:initials-and-separants-specialize}
-says that $q(c^*)$ is non-zero, so no power of $q(c^*)$ could lie in $S^=(c^*)$
+says that $q(c^*)$ is non-zero, so no power of $q(c^*)$ could lie in $[S^=(c^*)]$
 and still result in a solution.
 % and Lemma~\ref{lem:cell-consistency} tells us that this will occur
 % precisely when $c^*$ falls into a cell of one of the components
@@ -2066,8 +2066,7 @@ will always be satisfied by $c^*$.
   \begin{lemma}
   \label{lem:specialization}
   Let $(S^=, S^{\ne})$ be a differentially simple system computed with a
-  constant-lowest ranking, let $H_{S^=} = I_{S^=} \cup S_{S^=}$ be its initials and separants of its equations $S^=$
-  and let $c^* \in \mathbb{C}^n$ lie in the system's
+  constant-lowest ranking and let $c^* \in \mathbb{C}^n$ lie in the system's
   cell.  Then
   \begin{enumerate}
   \item[\rm(i)] the elements of $S^=$ that specialize to zero are exactly those
@@ -2094,7 +2093,7 @@ will always be satisfied by $c^*$.
   There are two ways the leader could change under specialization: either the initial could vanish,
   or the leader itself could vanish.  In our case, the only leaders that vanish are the constants
   and their derivatives.
-  The equations with constant leaders are in $\mathbb{Q}[c_1, \ldots, c_n]$ (as it's a consant-lowest ranking),
+  The equations with constant leaders are in $\mathbb{Q}[c_1, \ldots, c_n]$ (as it's a constant-lowest ranking),
   so these equations all specialize to zero because $c^*$ is in the system's cell.
   The only equations with constant derivative leaders are the equations that set those
   derivatives to zero (add and refer to a note somewhere that $\delta_i c_l = 0$ is implicitly included in these systems)
@@ -2110,21 +2109,21 @@ will always be satisfied by $c^*$.
   and this too is non-zero, by Lemma~\ref{lem:initials-and-separants-specialize}.
 
   However, the product of the initials and separants of the original system includes
-  the initials and separants of the constant equations in $\mathbb{Q}[c_1, \ldots, c_n]$;
-  While they specialize to non-zero constants, there is no corresponding equation
+  the initials and separants of the constant equations in $\mathbb{Q}[c_1, \ldots, c_n]$.
+  While they specialize to non-zero constants (Lemma~\ref{lem:initials-and-separants-specialize}),
+  there is no corresponding equation
   in the specialized system to contribute to $q_{S^=(c^*)}$, and so this polynomial
-  may differ from $q_{S^=}(c^*)$ by a non-zero constant.
+  will differ from $q_{S^=}(c^*)$ by the product of the non-zero constants these initials and separants specialize to.
   The initials and separants of the constant derivative equations (like $c_t=0$)
   are trivially 1.
 
+Since the leaders do not change
+under specialization, except for equations that are dropped, \condref{A1} is preserved.
 Because the constants are ranked below every other indeterminate and conditions
 \condref{A2} and \condref{A3} of algebraic simplicity are quantified over solution sets that
 contain the whole cell, they are preserved over constants that solve the system.
-Since the initial of each equation is non-zero, the leaders do not change
-under specialization, and \condref{A1} is preserved as well.  Therefore \condref{S1} persists.
+Therefore \condref{S1} persists.
 
-\condref{A2} ensures that initials are non-zero at any $c^*$ in the cell,
-so the leaders of the system's equations remain unchanged.
 Janet's division's multiplicative/non-multiplicative split is computed from
 the leaders alone, so this also remains unchanged.  The reductions
 required by \condref{S2} remain unchanged, and if they are zero for generic
@@ -2133,10 +2132,6 @@ The minimality required by \condref{S3} is computed based on leaders
 and reductive derivations, which remain unchanged,
 and the reductions prohibited by \condref{S4} are also based on
 leaders and remain unchanged.
-
-Since the leaders remain unchanged, the initials and separants are
-simply the specialized (and non-zero) versions of the generic initials and separants,
-with $c^*$ substituted in.
 \hfill $\square$
 
 \medskip
@@ -2225,7 +2220,7 @@ h(c^*) \cdot P - r(c^*) \in [S^=(c^*)]:q(c^*)^\infty
 \]
 %
 By hypothesis, $c^*$ lies in the system's cell, so Lemma~\ref{lem:specialization} (ii) tells us that $q(c^*)$
-is, in fact, the product of the initials and separants of $S^=(c^*)$, and
+is, in fact, a constant multiple of the product of the initials and separants of $S^=(c^*)$, and
 Lemma~\ref{lem:saturation-cancellation} gives us
 %
 \[
@@ -2235,7 +2230,7 @@ P \in [S^=(c^*)]:q(c^*)^\infty
 \]
 %
 
-Since $r$ is fully reduced w.r.t. $S^=(c^*)$, Lemma~\ref{lem:specialization} (iii) and Proposition~\ref{prop:simple-membership} gives
+Since $r(c^*)$ is fully reduced w.r.t. $S^=(c^*)$, Lemma~\ref{lem:specialization} (iii) and Proposition~\ref{prop:simple-membership} gives
 %
 \[
 r(c^*) = 0
@@ -2338,7 +2333,7 @@ c^* \in \mathcal{V}_i \ \text{ for every $i$ whose cell contains $c^*$}.
 By Proposition \ref{prop:decomposition-membership},
 %
 \[
-\sqrt{[A(c)] : Q^\infty}
+\sqrt{[A(c^*)] : Q^\infty}
   \;=\; \bigl(E^{(1)} : (q^{(1)})^\infty\bigr)
         \,\cap\,\cdots\,\cap\,
         \bigl(E^{(r)} : (q^{(r)})^\infty\bigr).
