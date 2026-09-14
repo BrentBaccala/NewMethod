@@ -2039,6 +2039,29 @@ V_m \;=\; \bigcap_{i=1}^{s} \bigl( \mathrm{Z}(W_i) \cup (\mathbb{C}^n \setminus 
 V_i \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
 \]
 
+  \begin{definition}
+  \label{def:specialized system}
+  Given a differential ring $R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$,
+  let $(S^=, S^{\ne})$ be a differential system over $R$ and let
+  $c^* \in \mathbb{C}^n$.  {\it Specialization at $c^*$} is the differential ring
+  homomorphism
+  \[
+  \sigma_{c^*} : R \longrightarrow \mathbb{C}[x_1, \ldots, x_m]\{u_1, \ldots, u_k\},
+  \qquad c_j \mapsto c_j^* ,
+  \]
+  acting as the identity on the $x_i$ and the $u_j$.  Since $\sigma_{c^*}$ commutes
+  with the derivations, $\theta c_j \mapsto 0$ for every $\theta \in \Theta$ other
+  than the identity.  The {\it specialized system} $(S^=(c^*), S^{\ne}(c^*))$ is the
+  image of $(S^=, S^{\ne})$ under $\sigma_{c^*}$, with trivial equations $0 = 0$ and
+  trivial inequations $a \ne 0$ ($a \in \mathbb{Q} \setminus \{0\}$) removed, as in
+  \cite{RobertzCIRM}, Remark~3.10.  Should the image contain an equation $a = 0$
+  with $a \ne 0$, or the inequation $0 \ne 0$, the specialized system is
+  inconsistent.
+  \end{definition}
+
+Note that, in the case where $c^*$ is in the system's cell, the system's equations and inequations in $\mathbb{Q}[c_1, \ldots, c_n]$
+will always be satisfied by $c^*$.
+
 \medskip
   \begin{lemma}
   \label{lem:specialization}
@@ -2047,8 +2070,9 @@ V_i \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
   and let $c^* \in \mathbb{C}^n$ lie in the system's
   cell.  Then
   \begin{enumerate}
-  \item[\rm(i)] each $p \in S^=$ and its specialization $p(c^*)$ have the same
-    leader, to the same degree;
+  \item[\rm(i)] the elements of $S^=$ that specialize to zero are exactly those
+      whose leader is a constant or a derivative of one; every other $p \in S^=$
+      and its specialization $p(c^*)$ have the same leader, to the same degree;
   \item[\rm(ii)] $H_{S^=(c^*)} = \{\, g(c^*) : g \in H_{S^=} \,\}$, and no element
     of it is zero; and
   \item[\rm(iii)] $(S^=(c^*), S^{\ne}(c^*))$ is again differentially simple.
