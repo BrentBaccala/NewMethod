@@ -2040,17 +2040,31 @@ V_i \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
 \]
 
 \medskip
-\begin{lemma}
-\label{lem:specialization}
-Let $(S^=, S^{\ne})$ be a differentially simple system,
-computed with a constant-lowest ranking.
-If $c^* \in \mathbb{C}^n$ lies in the system's cell, then the specialized system $(S^=(c^*), S^{\ne}(c^*))$
-is again differentially simple.  Furthermore, the initials and separants $h(c^*)$ of the 
-specialized system are formed by substitution from the initials and separants $h$ of
-the original system.
-\end{lemma}
+  \begin{lemma}
+  \label{lem:specialization}
+  Let $(S^=, S^{\ne})$ be a differentially simple system computed with a
+  constant-lowest ranking, let $H_{S^=} = I_{S^=} \cup S_{S^=}$ be its initials and separants of its equations $S^=$
+  and let $c^* \in \mathbb{C}^n$ lie in the system's
+  cell.  Then
+  \begin{enumerate}
+  \item[\rm(i)] each $p \in S^=$ and its specialization $p(c^*)$ have the same
+    leader, to the same degree;
+  \item[\rm(ii)] $H_{S^=(c^*)} = \{\, g(c^*) : g \in H_{S^=} \,\}$, and no element
+    of it is zero; and
+  \item[\rm(iii)] $(S^=(c^*), S^{\ne}(c^*))$ is again differentially simple.
+  \end{enumerate}
+  \end{lemma}
 
 {\it Proof.}
+  Because $c^*$ lies in the cell, \cite{ThomasDecomp}, Remark~2.3 applied upward
+  from the constants supplies one or more solutions $\sigma$ of $(S^=, S^{\ne})$ whose
+  constant coordinates are $c^*$.  Let $p \in S^=$ have leader $u$, initial $I_p$, and separant $S_p$.  By
+  \condref{A2}, $I_p$ does not vanish at any solution $\sigma$.
+  Hence $\deg_u p(c^*) = \deg_u p$, the leader of $p(c^*)$ is still
+  $u$, and its initial is $I_p(c^*)$.  Since the leader and its degree
+  are both unchanged, the separant of $p(c^*)$ is $S_p(c^*)$,
+  and this too is non-zero, by Lemma~\ref{lem:initials-and-separants-specialize}.
+
 Because the constants are ranked below every other indeterminate and conditions
 \condref{A2} and \condref{A3} of algebraic simplicity are quantified over solution sets that
 contain the whole cell, they are preserved over constants that solve the system.
