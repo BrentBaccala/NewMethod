@@ -2073,8 +2073,15 @@ will always be satisfied by $c^*$.
   \item[\rm(i)] the elements of $S^=$ that specialize to zero are exactly those
       whose leader is a constant or a derivative of one; every other $p \in S^=$
       and its specialization $p(c^*)$ have the same leader, to the same degree;
-  \item[\rm(ii)] $H_{S^=(c^*)} = \{\, g(c^*) : g \in H_{S^=} \,\}$, and no element
-    of it is zero; and
+  \item[\rm(ii)] the product $q_{S^=}$ of the initials and separants of the original system,
+\[
+  q_{S^=} = \prod_{p \in S^=} I_p \, s_p
+\]
+    when specialized $q_{S^=}(c^*)$, is a non-zero constant times the product $q_{S^=(c^*)}$ of the initials and separants
+    of the specialized system
+\[
+  q_{S^=(c^*)} = \prod_{p \in S^=(c^*)} I_p \, s_p
+\]
   \item[\rm(iii)] $(S^=(c^*), S^{\ne}(c^*))$ is again differentially simple.
   \end{enumerate}
   \end{lemma}
@@ -2082,12 +2089,33 @@ will always be satisfied by $c^*$.
 {\it Proof.}
   Because $c^*$ lies in the cell, \cite{ThomasDecomp}, Remark~2.3 applied upward
   from the constants supplies one or more solutions $\sigma$ of $(S^=, S^{\ne})$ whose
-  constant coordinates are $c^*$.  Let $p \in S^=$ have leader $u$, initial $I_p$, and separant $S_p$.  By
-  \condref{A2}, $I_p$ does not vanish at any solution $\sigma$.
+  constant coordinates are $c^*$.  Let $p \in S^=$ have leader $u$, initial $I_p$, and separant $s_p$.
+
+  There are two ways the leader could change under specialization: either the initial could vanish,
+  or the leader itself could vanish.  In our case, the only leaders that vanish are the constants
+  and their derivatives.
+  The equations with constant leaders are in $\mathbb{Q}[c_1, \ldots, c_n]$ (as it's a consant-lowest ranking),
+  so these equations all specialize to zero because $c^*$ is in the system's cell.
+  The only equations with constant derivative leaders are the equations that set those
+  derivatives to zero (add and refer to a note somewhere that $\delta_i c_l = 0$ is implicitly included in these systems)
+  and by \condref{A1} and \condref{S3}, no other equation can have a constant derivative leader.
+  So these constant and constant-derivative equations lose their leaders and specialize to zero;
+  no other leaders vanish.
+
+  Nor can the leader change because the initial vanishes.
+  By \condref{A2}, $I_p$ does not vanish at any solution $\sigma$.
   Hence $\deg_u p(c^*) = \deg_u p$, the leader of $p(c^*)$ is still
   $u$, and its initial is $I_p(c^*)$.  Since the leader and its degree
-  are both unchanged, the separant of $p(c^*)$ is $S_p(c^*)$,
+  are both unchanged, the separant of $p(c^*)$ is $s_p(c^*)$,
   and this too is non-zero, by Lemma~\ref{lem:initials-and-separants-specialize}.
+
+  However, the product of the initials and separants of the original system includes
+  the initials and separants of the constant equations in $\mathbb{Q}[c_1, \ldots, c_n]$;
+  While they specialize to non-zero constants, there is no corresponding equation
+  in the specialized system to contribute to $q_{S^=(c^*)}$, and so this polynomial
+  may differ from $q_{S^=}(c^*)$ by a non-zero constant.
+  The initials and separants of the constant derivative equations (like $c_t=0$)
+  are trivially 1.
 
 Because the constants are ranked below every other indeterminate and conditions
 \condref{A2} and \condref{A3} of algebraic simplicity are quantified over solution sets that
