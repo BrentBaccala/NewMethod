@@ -1889,6 +1889,164 @@ is also consistent.  The converse is not asserted -- there can be constant vecto
 system's cell that make the second ideal consistent.  However, we can make the following global statement
 about constant vectors that lie outside of {\it any} cell.
 
+  \begin{definition}
+  \label{def:specialized system}
+  Given a differential ring $R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$,
+  let $(S^=, S^{\ne})$ be a differential system over $R$ and let
+  $c^* \in \mathbb{C}^n$.  {\it Specialization at $c^*$} is the differential ring
+  homomorphism
+  \[
+  \sigma_{c^*} : R \longrightarrow \mathbb{C}[x_1, \ldots, x_m]\{u_1, \ldots, u_k\},
+  \qquad c_j \mapsto c_j^* ,
+  \]
+  acting as the identity on the $x_i$ and the $u_j$.  Since $\sigma_{c^*}$ commutes
+  with the derivations, $\theta c_j \mapsto 0$ for every $\theta \in \Theta$ other
+  than the identity.  The {\it specialized system} $(S^=(c^*), S^{\ne}(c^*))$ is the
+  image of $(S^=, S^{\ne})$ under $\sigma_{c^*}$, with trivial equations $0 = 0$ and
+  trivial inequations $a \ne 0$ ($a \in \mathbb{Q} \setminus \{0\}$) removed, as in
+  \cite{RobertzCIRM}, Remark~3.10.  Should the image contain an equation $a = 0$
+  with $a \ne 0$, or the inequation $0 \ne 0$, the specialized system is
+  inconsistent.
+  \end{definition}
+
+Note that, in the case where $c^*$ is in the system's cell, the system's equations and inequations in $\mathbb{Q}[c_1, \ldots, c_n]$
+will always be satisfied by $c^*$.
+
+\medskip
+  \begin{lemma}
+  \label{lem:specialization}
+  Let $(S^=, S^{\ne})$ be a differentially simple system computed with a
+  constant-lowest ranking and let $c^* \in \mathbb{C}^n$ lie in the system's
+  cell.  Then
+  \begin{enumerate}
+  \item[\rm(i)] the elements of $S^=$ that specialize to zero are exactly those
+      whose leader is a constant or a derivative of one; every other $p \in S^=$
+      and its specialization $p(c^*)$ have the same leader, to the same degree;
+  \item[\rm(ii)] the product $q_{S^=}$ of the initials and separants of the original system,
+\[
+  q_{S^=} = \prod_{p \in S^=} I_p \, s_p
+\]
+    when specialized $q_{S^=}(c^*)$, is a non-zero constant times the product $q_{S^=(c^*)}$ of the initials and separants
+    of the specialized system
+\[
+  q_{S^=(c^*)} = \prod_{p \in S^=(c^*)} I_p \, s_p
+\]
+  \item[\rm(iii)] $(S^=(c^*), S^{\ne}(c^*))$ is again differentially simple.
+  \end{enumerate}
+  \end{lemma}
+
+{\it Proof.}
+  Because $c^*$ lies in the cell, \cite{ThomasDecomp}, Remark~2.3 applied upward
+  from the constants supplies one or more solutions $\sigma$ of $(S^=, S^{\ne})$ whose
+  constant coordinates are $c^*$.  Let $p \in S^=$ have leader $u$, initial $I_p$, and separant $s_p$.
+
+  There are two ways the leader could change under specialization: either the initial could vanish,
+  or the leader itself could vanish.  In our case, the only leaders that vanish are the constants
+  and their derivatives.
+  The equations with constant leaders are in $\mathbb{Q}[c_1, \ldots, c_n]$ (as it's a constant-lowest ranking),
+  so these equations all specialize to zero because $c^*$ is in the system's cell.
+  The only equations with constant derivative leaders are the equations that set those
+  derivatives to zero (add and refer to a note somewhere that $\delta_i c_l = 0$ is implicitly included in these systems)
+  and by \condref{A1} and \condref{S3}, no other equation can have a constant derivative leader.
+  So these constant and constant-derivative equations lose their leaders and specialize to zero;
+  no other leaders vanish.
+
+  Nor can the leader change because the initial vanishes.
+  By \condref{A2}, $I_p$ does not vanish at any solution $\sigma$.
+  Hence $\deg_u p(c^*) = \deg_u p$, the leader of $p(c^*)$ is still
+  $u$, and its initial is $I_p(c^*)$.  Since the leader and its degree
+  are both unchanged, the separant of $p(c^*)$ is $s_p(c^*)$,
+  and this too is non-zero, by Lemma~\ref{lem:initials-and-separants-specialize}.
+
+  However, the product of the initials and separants of the original system includes
+  the initials and separants of the constant equations in $\mathbb{Q}[c_1, \ldots, c_n]$.
+  While they specialize to non-zero constants (Lemma~\ref{lem:initials-and-separants-specialize}),
+  there is no corresponding equation
+  in the specialized system to contribute to $q_{S^=(c^*)}$, and so this polynomial
+  will differ from $q_{S^=}(c^*)$ by the product of the non-zero constants these initials and separants specialize to.
+  The initials and separants of the constant derivative equations (like $c_t=0$)
+  are trivially 1.
+
+Since the leaders do not change
+under specialization, except for equations that are dropped, \condref{A1} is preserved.
+Because the constants are ranked below every other indeterminate and conditions
+\condref{A2} and \condref{A3} of algebraic simplicity are quantified over solution sets that
+contain the whole cell, they are preserved over constants that solve the system.
+Therefore \condref{S1} persists.
+
+Janet's division's multiplicative/non-multiplicative split is computed from
+the leaders alone, so this also remains unchanged.  The reductions
+required by \condref{S2} remain unchanged, and if they are zero for generic
+constants $c$, they are zero for any specialization $c^*$.
+The minimality required by \condref{S3} is computed based on leaders
+and reductive derivations, which remain unchanged,
+and the reductions prohibited by \condref{S4} are also based on
+leaders and remain unchanged.
+\hfill $\square$
+
+  \medskip
+  \begin{lemma}
+  \label{lem:specialized-decomposition}
+  Let $(S^=, S^{\ne})$ be a differential system over $R$ whose equations include
+  $\delta_i c_j$ for all derivations $\delta_i$ and constants $c_j$,
+let $S_1, \ldots, S_r$ be a differential Thomas
+  decomposition of it computed with a constant-lowest ranking, and let
+  $c^* \in \mathbb{C}^n$.  Then
+  $\{\, S_i(c^*) : c^* \in \mathrm{cell}(S_i) \,\}$ is a differential Thomas
+  decomposition of $(S^=(c^*), S^{\ne}(c^*))$.
+  % and $S_i(c^*)$ is inconsistent for
+  % every $S_i$ where $c^* \notin \mathrm{cell}(S_i)$.
+  \end{lemma}
+
+  {\it Proof.}
+  % Because $\sigma_{c^*}$ is a differential ring homomorphism,
+  A tuple $\tau$ of power
+  series in the non-constant indeterminates satisfies $p(c^*)$ exactly when the pair
+  $(c^*, \tau)$ satisfies $p$;
+%  and the presence of every $\delta_i c_j$ among $T^=$
+%  forces the constant coordinates of any solution of $T$ to be genuine constants.
+  Hence, for any system $(U^=, U^{\ne})$ over $R$ whose equations include $T^=$,
+  %
+  \begin{equation}
+  \label{fibre}
+  \mathrm{Sol}(U(c^*)) \;=\; \{\, \tau \;:\; (c^*, \tau) \in \mathrm{Sol}(U) \,\} .
+  \end{equation}
+  %
+  (The equations that $\sigma_{c^*}$ sends to zero are dropped by
+  Definition~\ref{def:specialized system} and constrain nothing; an inequation sent
+  to zero empties both sides.)
+
+  By definition, a differential Thomas decomposition is a disjoint decomposition of a system into finitely many differentially simple
+  subsystems (\cite{ThomasDecomp}, Definition~3.5).  We check each of these requirements.
+
+  {\it Simplicity.}  $S_i(c^*)$ is differentially simple by
+  Lemma~\ref{lem:specialization} (iii).
+
+  {\it Disjointness.}  If $\tau \in \mathrm{Sol}(S_i(c^*)) \cap \mathrm{Sol}(S_j(c^*))$
+  with $i \ne j$, then by \eqref{fibre} $(c^*, \tau)$ lies in both $\mathrm{Sol}(S_i)$
+  and $\mathrm{Sol}(S_j)$, contradicting the disjointness of the decomposition of $S$.
+
+  {\it Covering.}  Any solution of $(S^=, S^{\ne})$ maps to a solution in an $S_i$.
+The presence of $\delta_i c_j$ in the equations for all $i, j$
+  ensures that any solution of $(S^=, S^{\ne})$ will have constants for the $c_j$.
+
+  {\it Covering.}  Intersecting the partition
+  $\mathrm{Sol}(S) = \bigsqcup_{i=1}^r \mathrm{Sol}(S_i)$ with the fibre over $c^*$
+  and applying \eqref{fibre} to $S$ and to each $S_i$ gives
+  %
+  \[
+  \mathrm{Sol}(S(c^*)) \;=\; \bigsqcup_{i=1}^{r} \mathrm{Sol}(S_i(c^*)) .
+  \]
+  %
+  For $i \notin \mathcal{I}(c^*)$, $c^*$ violates a constant-only equation or
+  inequation of $S_i$, so $S_i(c^*)$ carries a non-zero constant among its equations
+  or a zero among its inequations (the converse half of 
+  Lemma~\ref{lem:cell-consistency}) and has no solutions.  Those terms drop out, and
+  the union is over $\mathcal{I}(c^*)$ alone.
+  \hfill $\square$
+
+% END OF AI CONTRIBUTION
+
   \medskip
   \begin{lemma}
   \label{lem:no-cell-inconsistent}
@@ -2038,101 +2196,6 @@ V_m \;=\; \bigcap_{i=1}^{s} \bigl( \mathrm{Z}(W_i) \cup (\mathbb{C}^n \setminus 
 \qquad
 V_i \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
 \]
-
-  \begin{definition}
-  \label{def:specialized system}
-  Given a differential ring $R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$,
-  let $(S^=, S^{\ne})$ be a differential system over $R$ and let
-  $c^* \in \mathbb{C}^n$.  {\it Specialization at $c^*$} is the differential ring
-  homomorphism
-  \[
-  \sigma_{c^*} : R \longrightarrow \mathbb{C}[x_1, \ldots, x_m]\{u_1, \ldots, u_k\},
-  \qquad c_j \mapsto c_j^* ,
-  \]
-  acting as the identity on the $x_i$ and the $u_j$.  Since $\sigma_{c^*}$ commutes
-  with the derivations, $\theta c_j \mapsto 0$ for every $\theta \in \Theta$ other
-  than the identity.  The {\it specialized system} $(S^=(c^*), S^{\ne}(c^*))$ is the
-  image of $(S^=, S^{\ne})$ under $\sigma_{c^*}$, with trivial equations $0 = 0$ and
-  trivial inequations $a \ne 0$ ($a \in \mathbb{Q} \setminus \{0\}$) removed, as in
-  \cite{RobertzCIRM}, Remark~3.10.  Should the image contain an equation $a = 0$
-  with $a \ne 0$, or the inequation $0 \ne 0$, the specialized system is
-  inconsistent.
-  \end{definition}
-
-Note that, in the case where $c^*$ is in the system's cell, the system's equations and inequations in $\mathbb{Q}[c_1, \ldots, c_n]$
-will always be satisfied by $c^*$.
-
-\medskip
-  \begin{lemma}
-  \label{lem:specialization}
-  Let $(S^=, S^{\ne})$ be a differentially simple system computed with a
-  constant-lowest ranking and let $c^* \in \mathbb{C}^n$ lie in the system's
-  cell.  Then
-  \begin{enumerate}
-  \item[\rm(i)] the elements of $S^=$ that specialize to zero are exactly those
-      whose leader is a constant or a derivative of one; every other $p \in S^=$
-      and its specialization $p(c^*)$ have the same leader, to the same degree;
-  \item[\rm(ii)] the product $q_{S^=}$ of the initials and separants of the original system,
-\[
-  q_{S^=} = \prod_{p \in S^=} I_p \, s_p
-\]
-    when specialized $q_{S^=}(c^*)$, is a non-zero constant times the product $q_{S^=(c^*)}$ of the initials and separants
-    of the specialized system
-\[
-  q_{S^=(c^*)} = \prod_{p \in S^=(c^*)} I_p \, s_p
-\]
-  \item[\rm(iii)] $(S^=(c^*), S^{\ne}(c^*))$ is again differentially simple.
-  \end{enumerate}
-  \end{lemma}
-
-{\it Proof.}
-  Because $c^*$ lies in the cell, \cite{ThomasDecomp}, Remark~2.3 applied upward
-  from the constants supplies one or more solutions $\sigma$ of $(S^=, S^{\ne})$ whose
-  constant coordinates are $c^*$.  Let $p \in S^=$ have leader $u$, initial $I_p$, and separant $s_p$.
-
-  There are two ways the leader could change under specialization: either the initial could vanish,
-  or the leader itself could vanish.  In our case, the only leaders that vanish are the constants
-  and their derivatives.
-  The equations with constant leaders are in $\mathbb{Q}[c_1, \ldots, c_n]$ (as it's a constant-lowest ranking),
-  so these equations all specialize to zero because $c^*$ is in the system's cell.
-  The only equations with constant derivative leaders are the equations that set those
-  derivatives to zero (add and refer to a note somewhere that $\delta_i c_l = 0$ is implicitly included in these systems)
-  and by \condref{A1} and \condref{S3}, no other equation can have a constant derivative leader.
-  So these constant and constant-derivative equations lose their leaders and specialize to zero;
-  no other leaders vanish.
-
-  Nor can the leader change because the initial vanishes.
-  By \condref{A2}, $I_p$ does not vanish at any solution $\sigma$.
-  Hence $\deg_u p(c^*) = \deg_u p$, the leader of $p(c^*)$ is still
-  $u$, and its initial is $I_p(c^*)$.  Since the leader and its degree
-  are both unchanged, the separant of $p(c^*)$ is $s_p(c^*)$,
-  and this too is non-zero, by Lemma~\ref{lem:initials-and-separants-specialize}.
-
-  However, the product of the initials and separants of the original system includes
-  the initials and separants of the constant equations in $\mathbb{Q}[c_1, \ldots, c_n]$.
-  While they specialize to non-zero constants (Lemma~\ref{lem:initials-and-separants-specialize}),
-  there is no corresponding equation
-  in the specialized system to contribute to $q_{S^=(c^*)}$, and so this polynomial
-  will differ from $q_{S^=}(c^*)$ by the product of the non-zero constants these initials and separants specialize to.
-  The initials and separants of the constant derivative equations (like $c_t=0$)
-  are trivially 1.
-
-Since the leaders do not change
-under specialization, except for equations that are dropped, \condref{A1} is preserved.
-Because the constants are ranked below every other indeterminate and conditions
-\condref{A2} and \condref{A3} of algebraic simplicity are quantified over solution sets that
-contain the whole cell, they are preserved over constants that solve the system.
-Therefore \condref{S1} persists.
-
-Janet's division's multiplicative/non-multiplicative split is computed from
-the leaders alone, so this also remains unchanged.  The reductions
-required by \condref{S2} remain unchanged, and if they are zero for generic
-constants $c$, they are zero for any specialization $c^*$.
-The minimality required by \condref{S3} is computed based on leaders
-and reductive derivations, which remain unchanged,
-and the reductions prohibited by \condref{S4} are also based on
-leaders and remain unchanged.
-\hfill $\square$
 
 \medskip
 \begin{lemma}
