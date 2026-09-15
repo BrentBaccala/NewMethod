@@ -1,3 +1,27 @@
-# Build products: every PDF here is pdflatex output from the .tex beside it.
-# (Same convention as WhatIveLearned/, PolySystems/ and NewSol/.)
+# pdflatex build products
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# beamer build products
+*.nav
+*.snm
+*.vrb
+
+*.sage.py
+
+# Python bytecode cache
+__pycache__/
+
+# comment package scratch file (\excludecomment)
+*.cut
+
+# generated PDFs (dropped from history at the 2026-09-15 repo split;
+# rebuild with pdflatex -- see AI-CONTRIBUTIONS / README)
 *.pdf
