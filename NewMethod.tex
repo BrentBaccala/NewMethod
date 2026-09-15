@@ -1365,8 +1365,7 @@ reduction.
 \end{comment}
 
 \smallskip
-The differential Thomas decomposition rests on a constructive completion
-condition, phrased through an involutive division.  Fix
+The differential Thomas decomposition rests on an involutive division.  Fix
 an ordering $d_1 < \cdots < d_n$ of the derivations.  Given a finite set $U$ of
 derivatives, write each $u \in U$ as $\theta v$ for an indeterminate $v$ and
 $\theta = d_1^{\mu_1} \cdots d_n^{\mu_n} \in \Theta$, and call
@@ -1440,10 +1439,23 @@ A system $S = (S^=, S^{\ne})$ is {\it differentially simple}
 \item[\rm(S4)]\condlabel{S4} no inequation of $S^{\ne}$ is reducible modulo $S^=$.
 \end{enumerate}
 
-\noindent
+\begin{definition}
+\label{def:differential-Thomas-decomposition}
 A disjoint decomposition of a system into finitely many differentially simple subsystems
 is a {\it differential Thomas decomposition} (\cite{ThomasDecomp}, Definition~3.5).  \cite{ThomasDecomp} gives an algorithm computing one, and
 \cite{RobertzLNM} develops the theory at length; \cite{RobertzCIRM} is a shorter and freely available account.
+
+\noindent
+All of the available literature on differential Thomas decomposition is phrased in terms of {\it solutions},
+yet they differ on exactly how solutions are defined.
+In \cite{RobertzLNM} the solutions simply exist in the field of coefficients, while 
+in \cite{RobertzCIRM} they are assignments of analytic functions.
+\cite{ThomasDecomp} uses formal power series and notes that ``any power series
+solution can be considered as a solution in the universal differential field''.
+It is this final interpretation, that the solutions exist in Kolchin's universal field (\cite{KolchinDAAG} \S II.2 and \S III.7)
+and can be thought of as power series, that we adopt.  In particular, this means
+that any solutions that can exist, does exist.
+\end{definition}
 
 \smallskip
 Everything the completeness arguments require are supplied by the following results.
@@ -1814,6 +1826,26 @@ is the constant locus in $\mathbb{C}^n$ that solves the equations and inequation
 that lie in $\mathbb{Q}[c_1, \ldots, c_n]$.
 \end{definition}
 
+  \begin{definition}
+  \label{def:specialized system}
+  Given a differential ring $R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$,
+  let $(S^=, S^{\ne})$ be a differential system over $R$ and let
+  $c^* \in \mathbb{C}^n$.  {\it Specialization at $c^*$} is the differential ring
+  homomorphism
+  \[
+  \sigma_{c^*} : R \longrightarrow \mathbb{C}[x_1, \ldots, x_m]\{u_1, \ldots, u_k\},
+  \qquad c_j \mapsto c_j^* ,
+  \]
+  acting as the identity on the $x_i$ and the $u_j$.
+  The {\it specialized system} $(S^=(c^*), S^{\ne}(c^*))$ is the
+  image of $(S^=, S^{\ne})$ under $\sigma_{c^*}$, with trivial equations $0 = 0$ and
+  trivial inequations $a \ne 0$ ($a \in \mathbb{Q} \setminus \{0\}$) removed.
+  % as in \cite{RobertzCIRM}, Remark~3.10.
+  \end{definition}
+
+Note that, in the case where $c^*$ is in the system's cell, the system's equations and inequations in $\mathbb{Q}[c_1, \ldots, c_n]$
+will always be satisfied by $c^*$.
+
 \medskip
 \begin{lemma}
 \label{lem:cell-solution}
@@ -1823,36 +1855,6 @@ if and only if $c^*$ lies in the system's cell.
 \end{lemma}
 
 {\it Proof.}
-
-The solutions
-of \cite{RobertzCIRM} are assignments of analytic functions to each of the differential variables
-that satisfy all of the equations and inequations.  In \cite{RobertzLNM} the solutions simply exist
-in the field of coefficients.
-\cite{ThomasDecomp} uses formal power series and notes that ``any power series
-solution can be considered as a solution in the universal differential field''.
-It is this final interpretation, that the solutions exist in Kolchin's universal field (\cite{KolchinDAAG} \S II.2 and \S III.7)
-that is most useful for our purposes, and that is the interpretation we adopt.
-
-\begin{comment}
-\newcommand{\Sol}{\operatorname{Sol}}
-
-  Specifically, let $\Omega$ be an open and connected subset of $\mathbb{C}^n$ with coordinates
-  $z_1, z_2, \dots, z_n$. Then the \emph{solution set} of $S$ on $\Omega$ is
-  \[
-    \Sol_\Omega(S) :=
-    \left\{\,
-      f = (f_1,\dots,f_m)
-      \;\middle|\;
-      \begin{aligned}
-        &f_k \colon \Omega \to \mathbb{C} \text{ analytic},\ k = 1,\dots,m,\\
-        &p_i(f) = 0,\ q_j(f) \neq 0,\ i = 1,\dots,s,\ j = 1,\dots,t
-      \end{aligned}
-    \,\right\},
-  \]
-  where $p_i(f)$ and $q_j(f)$ are obtained from $p_i$ and $q_j$, respectively, by
-  substituting $f_k$ for $u_k$ and the partial derivatives of $f_k$ for the
-  corresponding jet variables in $u_k$.
-\end{comment}
 
 By \cite{ThomasDecomp}, Remark~2.3, every solution of a lower-ranked subsystem
 of a simple system extends to a solution of the next higher-ranked equation, and by induction,
@@ -1882,9 +1884,10 @@ then once all of the differential variables were assigned to their solutions,
 something in the ideal constructed from those solutions and the equations of the system
 would be equal to one, and we would be left with $1=0$, a contradiction.
 
-The absence of such a solution, on the other hand, requires $1 \in [S^=(c^*)]:S^{\ne}(c^*)^\infty$,
+The absence of a solution, on the other hand, requires $1 \in [S^=(c^*)]:S^{\ne}(c^*)^\infty$,
 since otherwise, by the differential Nullstenensatz (\cite{hubert2} Theorem 2.7), a differential extension field exists
-containing a solution of $S^=(c^*)$, contradicting the universality of the coefficient field.
+containing a solution of $S^=(c^*)$, contradicting the universality of the coefficient field
+asserted below Definition \ref{def:differential-Thomas-decomposition}.
 % This extension field could then be used as a new
 % base field, containing a solution.
 % This exposes a disadvantage of simply defining solutions
@@ -1943,29 +1946,6 @@ is also consistent.  The converse is not asserted -- there can be constant vecto
 system's cell that make the second ideal consistent.  However, we can make the following global statement
 about constant vectors that lie outside of {\it any} cell.
 
-  \begin{definition}
-  \label{def:specialized system}
-  Given a differential ring $R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$,
-  let $(S^=, S^{\ne})$ be a differential system over $R$ and let
-  $c^* \in \mathbb{C}^n$.  {\it Specialization at $c^*$} is the differential ring
-  homomorphism
-  \[
-  \sigma_{c^*} : R \longrightarrow \mathbb{C}[x_1, \ldots, x_m]\{u_1, \ldots, u_k\},
-  \qquad c_j \mapsto c_j^* ,
-  \]
-  acting as the identity on the $x_i$ and the $u_j$.  Since $\sigma_{c^*}$ commutes
-  with the derivations, $\theta c_j \mapsto 0$ for every $\theta \in \Theta$ other
-  than the identity.  The {\it specialized system} $(S^=(c^*), S^{\ne}(c^*))$ is the
-  image of $(S^=, S^{\ne})$ under $\sigma_{c^*}$, with trivial equations $0 = 0$ and
-  trivial inequations $a \ne 0$ ($a \in \mathbb{Q} \setminus \{0\}$) removed, as in
-  \cite{RobertzCIRM}, Remark~3.10.  Should the image contain an equation $a = 0$
-  with $a \ne 0$, or the inequation $0 \ne 0$, the specialized system is
-  inconsistent.
-  \end{definition}
-
-Note that, in the case where $c^*$ is in the system's cell, the system's equations and inequations in $\mathbb{Q}[c_1, \ldots, c_n]$
-will always be satisfied by $c^*$.
-
 \medskip
   \begin{lemma}
   \label{lem:specialization}
@@ -1990,8 +1970,8 @@ will always be satisfied by $c^*$.
   \end{lemma}
 
 {\it Proof.}
-  Because $c^*$ lies in the cell, \cite{ThomasDecomp}, Remark~2.3 applied upward
-  from the constants supplies one or more solutions $\sigma$ of $(S^=, S^{\ne})$ whose
+  Because $c^*$ lies in the cell, by Lemma~\ref{lem:cell-solution}
+  there exist one or more solutions $\sigma$ of $(S^=, S^{\ne})$ whose
   constant coordinates are $c^*$.  Let $p \in S^=$ have leader $u$, initial $I_p$, and separant $s_p$.
 
   There are two ways the leader could change under specialization: either the initial could vanish,
@@ -2055,20 +2035,7 @@ leaders and remain unchanged.
   {\it Proof.}
   We proof first that $\{\, S_i(c^*) : c^* \in \mathrm{cell}(S_i) \,\}$ is a differential
   Thomas decomposition, then show that it is a differential Thomas decomposition of $(S^=(c^*), S^{\ne}(c^*))$.
-  % Because $\sigma_{c^*}$ is a differential ring homomorphism,
   $(c^*, \tau)$ satisfies $p$;
-%  and the presence of every $\delta_i c_j$ among $T^=$
-%  forces the constant coordinates of any solution of $T$ to be genuine constants.
-  Hence, for any system $(U^=, U^{\ne})$ over $R$ whose equations include $T^=$,
-  %
-  \begin{equation}
-  \label{fibre}
-  \mathrm{Sol}(U(c^*)) \;=\; \{\, \tau \;:\; (c^*, \tau) \in \mathrm{Sol}(U) \,\} .
-  \end{equation}
-  %
-  (The equations that $\sigma_{c^*}$ sends to zero are dropped by
-  Definition~\ref{def:specialized system} and constrain nothing; an inequation sent
-  to zero empties both sides.)
 
   By definition, a differential Thomas decomposition is a disjoint decomposition of a system into finitely many differentially simple
   subsystems (\cite{ThomasDecomp}, Definition~3.5).  We check each of these requirements.
@@ -2083,24 +2050,16 @@ leaders and remain unchanged.
   If $S_i(c^*)$ and $S_j(c^*)$ shared a solution $\tau$, then $S_i$ and $S_j$ would share the solution $(c^*, \tau)$,
   but the solutions of $S_i$ and $S_j$ are disjoint because $S_1, \ldots, S_r$ is a differential Thomas decomposition.
 
-  {\it Covering.}  Any solution of $(S^=, S^{\ne})$ maps to a solution in an $S_i$.
-  If that $S_i$'s
-  The presence of $\delta_i c_j$ in the equations for all $i, j$
-  ensures that any solution of $(S^=, S^{\ne})$ will have constants for the $c_j$.
+  {\it Covering.}  We need to show that the union of the solutions of the $S_i(c^*)$
+  are the solutions of $(S^=(c^*), S^{\ne}(c^*))$.  First, we note that if $S_i(c^*)$
+  has a solution $\tau$, then $S_i$ has a solution $(c^*, \tau)$, so $(S^=, S^{\ne})$ has that same solution $(c^*,\tau)$,
+  and that induces a solution $\tau$ in $(S^=(c^*), S^{\ne}(c^*))$.
 
-  {\it Covering.}  Intersecting the partition
-  $\mathrm{Sol}(S) = \bigsqcup_{i=1}^r \mathrm{Sol}(S_i)$ with the fibre over $c^*$
-  and applying \eqref{fibre} to $S$ and to each $S_i$ gives
-  %
-  \[
-  \mathrm{Sol}(S(c^*)) \;=\; \bigsqcup_{i=1}^{r} \mathrm{Sol}(S_i(c^*)) .
-  \]
-  %
-  For $i \notin \mathcal{I}(c^*)$, $c^*$ violates a constant-only equation or
-  inequation of $S_i$, so $S_i(c^*)$ carries a non-zero constant among its equations
-  or a zero among its inequations (the converse half of 
-  Lemma~\ref{lem:cell-consistency}) and has no solutions.  Those terms drop out, and
-  the union is over $\mathcal{I}(c^*)$ alone.
+  Next, any solution $\tau$ of $(S^=(c^*), S^{\ne}(c^*))$ extends to a solution $(c^*, \tau)$ of $(S^=, S^{\ne})$,
+  which maps to an $S_i$, a differentially simple system with $(c^*, \tau)$ as a solution.
+  $c^*$ must lie in its cell, since otherwise $c^*$ would violate at least one its equations
+  or inequations,
+  so $S_i(c^*)$ is included in the union and by Lemma~\ref{lem:cell-solution}, has a solution.
   \hfill $\square$
 
 % END OF AI CONTRIBUTION
