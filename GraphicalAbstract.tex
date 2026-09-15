@@ -42,6 +42,13 @@
 \newcommand{\upper}[1]{{\ttfamily\fontsize{6.2pt}{7.5pt}\selectfont\MakeUppercase{#1}}}
 \newcommand{\note}[1]{{\ttfamily\fontsize{5.5pt}{6.8pt}\selectfont\color{faint}#1}}
 
+% Width of a stage head's "0N " prefix, for hanging a wrapped title under
+% itself rather than under the number.  \hangindent does not survive TikZ's
+% node setup, so the number and the title are drawn as two nodes and the title
+% is shifted by this length instead.
+\newlength{\stagenumwd}
+\settowidth{\stagenumwd}{{\ttfamily\scriptsize 03}\hspace{0.4em}}
+
 % ---------- TikZ styles ----------
 \tikzset{
   every node/.style={inner sep=0pt, outer sep=0pt},
@@ -132,9 +139,14 @@
 % ---------- 03 DIFFERENTIAL THOMAS DECOMPOSITION ----------
 % Card 03 stops at x=170 rather than 178: the fan-out below needs a clear
 % corridor to climb through on its way to the topmost solution card.
-\node[anchor=north west, text width=42mm] at (129, 86.5)
-  {\ttfamily\scriptsize\color{faint}03\hspace{0.4em}%
-   \bfseries\small\color{ink}Differential Thomas decomposition};
+% Drawn as two nodes so the second line hangs under "Differential" rather than
+% under "03".  \ttfamily stays scoped to the number and the title gets
+% \bfseries\small over the picture's \sffamily -- exactly as \stagehead does it.
+% The line break is explicit: left to itself TeX hyphenates "de-composition".
+\node[anchor=north west] at (129, 86.5)
+  {\ttfamily\scriptsize\color{faint}03};
+\node[anchor=north west, xshift=\stagenumwd, align=left] at (129, 86.5)
+  {\bfseries\small\color{ink}Differential Thomas\\decomposition};
 \draw[card] (129, 54) rectangle (170, 78);
 \node[anchor=north west] at (130.5, 77.2) {\upper{cells}};
 
