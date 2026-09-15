@@ -1901,23 +1901,40 @@ will always be satisfied by $c^*$.
 \medskip
 \begin{lemma}
 \label{lem:cell-consistency}
-Given a vector of constants $c^*$, and a differentially simple system $(S^=, S^{\ne})$ ranked according to a constant-lowest ranking,
-$1 \notin [S^=(c^*)]:S^{\ne}(c^*)^\infty$ if and only if $c^*$ lies in the system's cell.
+Given a vector of constants $c^*$ and a differentially simple system
+$(S^=, S^{\ne})$ ranked according to a constant-lowest ranking whose equations
+include $\delta_i c_j$ for all derivations $\delta_i$ and constants $c_j$,
+$1 \notin [S^=(c^*)] : S^{\ne}(c^*)^\infty$ if and only if $c^*$ lies in the
+system's cell.
 \end{lemma}
 
 {\it Proof.}
-By Lemma~\ref{lem:cell-solution}, the specialized system $(S^=(c^*), S^{\ne}(c^*))$ has a solution
-if and only if $c^*$ is in the original system's cell.
-The existence of such a solution
-precludes 1 being a member of the ideal, since if 1 were in the ideal,
-then once all of the differential variables were assigned to their solutions,
-something in the ideal constructed from those solutions and the equations of the system
-would be equal to one, and we would be left with $1=0$, a contradiction.
+In the discussion following the differential Nullstellensatz
+(\cite{hubert2}, Theorem~2.7), it is shown that a differential polynomial $p$
+vanishes on the solutions of a system $\Sigma = 0$, $H \ne 0$ if and only if
+$p \in \sqrt{[\Sigma]} : H^\infty$.  Take $\Sigma = S^=(c^*)$, $H = S^{\ne}(c^*)$
+and $p = 1$, which vanishes on a set exactly when that set is empty; then
+%
+\[
+1 \in [S^=(c^*)] : S^{\ne}(c^*)^\infty
+\quad\Longleftrightarrow\quad
+(S^=(c^*), S^{\ne}(c^*)) \ \text{has no solution} ,
+\]
+%
+where the radical has been dropped because, writing $h$ for the product of the
+elements of $S^{\ne}(c^*)$, membership of $1$ in either saturation says only that
+some power of $h$ lies in $[S^=(c^*)]$.
+By Lemma~\ref{lem:cell-solution}, (i) $\Leftrightarrow$ (iii), the specialized
+system has a solution exactly when $c^*$ lies in the system's cell, and negating
+both sides of the equivalence above gives the claim.
 
-The absence of a solution, on the other hand, requires $1 \in [S^=(c^*)]:S^{\ne}(c^*)^\infty$,
-since otherwise, by the differential Nullstenensatz (\cite{hubert2} Theorem 2.7), a differential extension field exists
-containing a solution of $S^=(c^*)$, contradicting the universality of the coefficient field
-asserted below Definition \ref{def:differential-Thomas-decomposition}.
+Both halves of this argument speak of solutions in Kolchin's universal
+differential field, as fixed below
+Definition~\ref{def:differential-Thomas-decomposition}, and that convention is
+what allows them to be combined: the zeros \cite{hubert2} constructs lie in some
+differential extension of the coefficient field, and it is the universal field
+--- in which any solution that can exist does exist --- that makes such a zero a
+solution in the sense used here.
 % This extension field could then be used as a new
 % base field, containing a solution.
 % This exposes a disadvantage of simply defining solutions
