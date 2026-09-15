@@ -1801,19 +1801,14 @@ $\mathrm{RefiningPartition}$
 \end{tabularx}
 \end{center}
 
-\subsection{Computing the Consistency Locus}
-\label{sec:consistency-locus}
+\subsection{Cells and their Specialization}
+\label{sec:cells-specialization}
 
-\begin{comment}
-The consistency locus admits a much simpler algorithm than the membership
-locus, because its definition lets us decompose the ansatz and the target
-system's equations {\it together}, rather than decomposing the ansatz alone
-and testing the target system against each resulting component afterward.
-However, the {\tt DifferentialDecompose} step is more computationally
-demanding, precisely because its input involves more polynomials.
-\end{comment}
+We now develop the technical machinery required to associate
+a differentially simple system with a constructable subset, defined according to a system
+of polynomial equations and inequations in the constants.
 
-An essential component of the algorithms below is a variable ranking
+An essential component of this theory is a variable ranking
 that places the constants below all other indeterminates and
 allows us to find the equations and inequations for the constructable subsets corresponding to a differentially
 simple system simply by reading off the equations and inequations of the system
@@ -2096,6 +2091,18 @@ leaders and remain unchanged.
 %  $1 \in [A(c^*), \mathcal{P}^=] : Q(c^*)^\infty$.
   \hfill $\square$
 
+
+\subsection{Computing the Consistency Locus}
+\label{sec:consistency-locus}
+
+\begin{comment}
+The consistency locus admits a much simpler algorithm than the membership
+locus, because its definition lets us decompose the ansatz and the target
+system's equations {\it together}, rather than decomposing the ansatz alone
+and testing the target system against each resulting component afterward.
+However, the {\tt DifferentialDecompose} step is more computationally
+demanding, precisely because its input involves more polynomials.
+\end{comment}
 
 \begin{theorem}
 \label{thm:correctness-consistency}
