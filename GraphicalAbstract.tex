@@ -259,8 +259,11 @@
 % SOLUTIONS — the four components of the intermediate locus
 % cards x 182..231
 % ==================================================================
+% Through \stagehead, so the number's font and its gap match 01--06 by
+% construction; the node still starts at the cards' left edge, which is where
+% the other stages put their numbers.
 \node[anchor=north west] at (182, 86.5)
-  {\bfseries\small\color{ink}Solutions%
+  {\stagehead{7}{Solutions}%
    \ \color{faint}\normalfont\fontsize{6pt}{7.2pt}\selectfont four components of $V_i$};
 
 % ---- 1s (first-order) ----
