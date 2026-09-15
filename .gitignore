@@ -1,7 +1,6 @@
-# pdflatex build products
+# ---------- LaTeX build products ----------
 *.aux
 *.log
-*.out
 *.toc
 *.lof
 *.lot
@@ -9,19 +8,33 @@
 *.fls
 *.fdb_latexmk
 
-# beamer build products
+# hyperref bookmark file.  CAREFUL: the sage drivers also write their
+# results as *.out, so this pattern is deliberately narrowed below.
+# LaTeX .out files always have a sibling .tex; the data files do not.
+*.out
+!hydrogen-*.out
+!joca-*.out
+
+# ---------- beamer (NewMethod-talk.tex) ----------
 *.nav
 *.snm
 *.vrb
 
-*.sage.py
-
-# Python bytecode cache
-__pycache__/
-
-# comment package scratch file (\excludecomment)
+# ---------- comment package scratch file ----------
+# \excludecomment in NewMethod.tex, results.tex, regularity-counterexamples.tex
 *.cut
 
-# generated PDFs (dropped from history at the 2026-09-15 repo split;
-# rebuild with pdflatex -- see AI-CONTRIBUTIONS / README)
+# ---------- sage / python ----------
+*.sage.py
+__pycache__/
+
+# transient scratch from the sage drivers.  The *results* are the
+# hydrogen-*.out / joca-*.out files un-ignored above.
+current.output
+*.resumelog
+
+# ---------- generated PDFs ----------
+# Dropped from history at the 2026-09-15 split out of BrentBaccala/Papers.
+# Every PDF here is a pdflatex product of a sibling .tex -- none is an
+# \includegraphics input.  Rebuild with: pdflatex <file>.tex
 *.pdf
