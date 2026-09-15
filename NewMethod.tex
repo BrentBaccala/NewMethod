@@ -1816,30 +1816,84 @@ that lie in $\mathbb{Q}[c_1, \ldots, c_n]$.
 
 \medskip
 \begin{lemma}
+\label{lem:cell-solution}
+Given a vector of constants $c^*$ and a differentially simple system $(S^=, S^{\ne})$ ranked according to a constant-lowest ranking,
+the specialized system $(S^=(c^*), S^{\ne})$ has a solution (in the sense of \cite{ThomasDecomp})
+if and only if $c^*$ lies in the system's cell.
+\end{lemma}
+
+{\it Proof.}
+
+The solutions
+of \cite{RobertzCIRM} are assignments of analytic functions to each of the differential variables
+that satisfy all of the equations and inequations.  In \cite{RobertzLNM} the solutions simply exist
+in the field of coefficients.
+\cite{ThomasDecomp} uses formal power series and notes that ``any power series
+solution can be considered as a solution in the universal differential field''.
+It is this final interpretation, that the solutions exist in Kolchin's universal field (\cite{KolchinDAAG} \S II.2 and \S III.7)
+that is most useful for our purposes, and that is the interpretation we adopt.
+
+\begin{comment}
+\newcommand{\Sol}{\operatorname{Sol}}
+
+  Specifically, let $\Omega$ be an open and connected subset of $\mathbb{C}^n$ with coordinates
+  $z_1, z_2, \dots, z_n$. Then the \emph{solution set} of $S$ on $\Omega$ is
+  \[
+    \Sol_\Omega(S) :=
+    \left\{\,
+      f = (f_1,\dots,f_m)
+      \;\middle|\;
+      \begin{aligned}
+        &f_k \colon \Omega \to \mathbb{C} \text{ analytic},\ k = 1,\dots,m,\\
+        &p_i(f) = 0,\ q_j(f) \neq 0,\ i = 1,\dots,s,\ j = 1,\dots,t
+      \end{aligned}
+    \,\right\},
+  \]
+  where $p_i(f)$ and $q_j(f)$ are obtained from $p_i$ and $q_j$, respectively, by
+  substituting $f_k$ for $u_k$ and the partial derivatives of $f_k$ for the
+  corresponding jet variables in $u_k$.
+\end{comment}
+
+By \cite{ThomasDecomp}, Remark~2.3, every solution of a lower-ranked subsystem
+of a simple system extends to a solution of the next higher-ranked equation, and by induction,
+to a solution of the entire system.  The solutions
+of the subsystem of the strictly lower-ranked constants (the cell)
+therefore extends to a solution of the entire system.
+
+Conversely,
+any $c^*$ outside the cell violates one or more of the system's equations,
+and leads to either a non-zero constant being introduced among the equations,
+or a zero being introduced into the inequations, precluding any possible of a solution there.
+\hfill $\square$
+
+\medskip
+\begin{lemma}
 \label{lem:cell-consistency}
 Given a vector of constants $c^*$, and a differentially simple system $(S^=, S^{\ne})$ ranked according to a constant-lowest ranking,
 $1 \notin [S^=(c^*)]:S^{\ne}(c^*)^\infty$ if and only if $c^*$ lies in the system's cell.
 \end{lemma}
 
 {\it Proof.}
-By \cite{ThomasDecomp}, Remark~2.3, every solution of a lower-ranked subsystem
-of a simple system extends to a solution of the next higher-ranked equation, and by induction,
-to a solution of the entire system.  The solutions
-of the subsystem of the strictly lower-ranked constants (the cell)
-therefore extends to a solution of the entire system.  The solutions
-of \cite{ThomasDecomp} are assignments of formal power series to each of the differential variables
-that satisfy all of the equations and inequations.  The existence of such a solution
+By Lemma~\ref{lem:cell-solution}, the specialized system $(S^=(c^*), S^{\ne})$ has a solution
+if and only if $c^*$ is in the original system's cell.
+The existence of such a solution
 precludes 1 being a member of the ideal, since if 1 were in the ideal,
-then once everything in the ideal is equated to zero, we would be left with $1=0$,
-which no solution in formal power series could satisfy.
+then once all of the differential variables were assigned to their solutions,
+something in the ideal constructed from those solutions and the equations of the system
+would be equal to one, and we would be left with $1=0$, a contradiction.
 
-% then once everything in the ideal is equated to zero, we would be left with a solution in formal power series
-%and a system of equations which enables us to derive $1=0$, which is impossible.
+The absence of such a solution, on the other hand, requires $1 \in [S^=(c^*)]:S^{\ne}(c^*)^\infty$,
+since otherwise, by the differential Nullstenensatz (\cite{hubert2} Theorem 2.7), a differential extension field exists
+containing a solution of $S^=(c^*)$, contradicting the universality of the coefficient field.
+% This extension field could then be used as a new
+% base field, containing a solution.
+% This exposes a disadvantage of simply defining solutions
+% as tuples of values occuring in some coefficient field; there is no requirement that
+% any solution must exist.
 
-Conversely,
-any $c^*$ outside the cell violates one or more of the system's equations,
-and leads to either a non-zero constant being introduced among the equations,
-or a zero being introduced into the inequations, precluding any possible of a solution there.
+% We'd like to ensure that the coefficient field is maximal in the following sense.  We say
+% that a solution exists if there exists a differential extension of the coefficient field
+% in which a solution exists.
 \hfill $\square$
 
 The constant-only equations and inequations need only be a subset of $(S^=, S^{\ne})$,
@@ -1989,7 +2043,7 @@ leaders and remain unchanged.
   \label{lem:specialized-decomposition}
   Let $(S^=, S^{\ne})$ be a differential system over $R$ whose equations include
   $\delta_i c_j$ for all derivations $\delta_i$ and constants $c_j$,
-let $S_1, \ldots, S_r$ be a differential Thomas
+  let $S_1, \ldots, S_r$ be a differential Thomas
   decomposition of it computed with a constant-lowest ranking, and let
   $c^* \in \mathbb{C}^n$.  Then
   $\{\, S_i(c^*) : c^* \in \mathrm{cell}(S_i) \,\}$ is a differential Thomas
@@ -1999,9 +2053,9 @@ let $S_1, \ldots, S_r$ be a differential Thomas
   \end{lemma}
 
   {\it Proof.}
+  We proof first that $\{\, S_i(c^*) : c^* \in \mathrm{cell}(S_i) \,\}$ is a differential
+  Thomas decomposition, then show that it is a differential Thomas decomposition of $(S^=(c^*), S^{\ne}(c^*))$.
   % Because $\sigma_{c^*}$ is a differential ring homomorphism,
-  A tuple $\tau$ of power
-  series in the non-constant indeterminates satisfies $p(c^*)$ exactly when the pair
   $(c^*, \tau)$ satisfies $p$;
 %  and the presence of every $\delta_i c_j$ among $T^=$
 %  forces the constant coordinates of any solution of $T$ to be genuine constants.
@@ -2022,12 +2076,16 @@ let $S_1, \ldots, S_r$ be a differential Thomas
   {\it Simplicity.}  $S_i(c^*)$ is differentially simple by
   Lemma~\ref{lem:specialization} (iii).
 
-  {\it Disjointness.}  If $\tau \in \mathrm{Sol}(S_i(c^*)) \cap \mathrm{Sol}(S_j(c^*))$
-  with $i \ne j$, then by \eqref{fibre} $(c^*, \tau)$ lies in both $\mathrm{Sol}(S_i)$
-  and $\mathrm{Sol}(S_j)$, contradicting the disjointness of the decomposition of $S$.
+  {\it Disjointness.}
+  A tuple $\tau$ of power
+  series in the non-constant indeterminates satisfies $p(c^*)$ exactly when the pair
+  $(c^*, \tau)$ satisfies $p$.
+  If $S_i(c^*)$ and $S_j(c^*)$ shared a solution $\tau$, then $S_i$ and $S_j$ would share the solution $(c^*, \tau)$,
+  but the solutions of $S_i$ and $S_j$ are disjoint because $S_1, \ldots, S_r$ is a differential Thomas decomposition.
 
   {\it Covering.}  Any solution of $(S^=, S^{\ne})$ maps to a solution in an $S_i$.
-The presence of $\delta_i c_j$ in the equations for all $i, j$
+  If that $S_i$'s
+  The presence of $\delta_i c_j$ in the equations for all $i, j$
   ensures that any solution of $(S^=, S^{\ne})$ will have constants for the $c_j$.
 
   {\it Covering.}  Intersecting the partition
