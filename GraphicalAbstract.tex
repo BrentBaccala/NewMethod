@@ -140,13 +140,21 @@
 % Card 03 stops at x=170 rather than 178: the fan-out below needs a clear
 % corridor to climb through on its way to the topmost solution card.
 % Drawn as two nodes so the second line hangs under "Differential" rather than
-% under "03".  \ttfamily stays scoped to the number and the title gets
-% \bfseries\small over the picture's \sffamily -- exactly as \stagehead does it.
+% under "03", with \ttfamily scoped to the number so it cannot leak.
+%
+% The title's weight and size go through the node's font= key, not inline
+% switches in the text: TikZ re-establishes the node font at each \\, so an
+% inline \bfseries applies to the first line only and "decomposition" comes out
+% regular.  font= must name the family as well -- it replaces the picture's
+% font=\sffamily rather than adding to it, so \sffamily\bfseries\small, or the
+% head silently reverts to roman.
+%
 % The line break is explicit: left to itself TeX hyphenates "de-composition".
 \node[anchor=north west] at (129, 86.5)
   {\ttfamily\scriptsize\color{faint}03};
-\node[anchor=north west, xshift=\stagenumwd, align=left] at (129, 86.5)
-  {\bfseries\small\color{ink}Differential Thomas\\decomposition};
+\node[anchor=north west, xshift=\stagenumwd, align=left,
+      font=\sffamily\bfseries\small] at (129, 86.5)
+  {\color{ink}Differential Thomas\\decomposition};
 \draw[card] (129, 54) rectangle (170, 78);
 \node[anchor=north west] at (130.5, 77.2) {\upper{cells}};
 
