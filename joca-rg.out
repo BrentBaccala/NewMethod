@@ -1,0 +1,279 @@
+PDE: -E*Psi*r + (-0.5*Psi[x, x] - 0.5*Psi[y, y] - 0.5*Psi[z, z])*r - Psi
+
+Ansatz:
+Psi[x] - v[x]*DPsi
+Psi[y] - v[y]*DPsi
+Psi[z] - v[z]*DPsi
+DPsi[x] - v[x]*DDPsi
+DPsi[y] - v[y]*DDPsi
+DPsi[z] - v[z]*DDPsi
+a0*DDPsi + a1*DDPsi*v + b0*DPsi + b1*DPsi*v + c0*Psi + c1*Psi*v
+-v1*x - v2*y - v3*z - v4*r + v
+-x**2 - y**2 - z**2 + r**2
+
+Hypothesis (3) discharged: the ansatz is a single coherent regular system.
+
+Regularized system from Rosenfeld-Groebner (the regular chain, used as the reduction set):
+-x**2 - y**2 - z**2 + r**2
+-v1*x - v2*y - v3*z - v4*r + v
+a0**2*DDPsi + 2*a0*a1*v1*x*DDPsi + 2*a0*a1*v2*y*DDPsi + 2*a0*a1*v3*z*DDPsi + a0*b0*DPsi + a0*b1*v1*x*DPsi + a0*b1*v2*y*DPsi + a0*b1*v3*z*DPsi + a0*b1*v4*DPsi*r + a0*c0*Psi + a0*c1*v1*x*Psi + a0*c1*v2*y*Psi + a0*c1*v3*z*Psi + a0*c1*v4*Psi*r + a1**2*v1**2*x**2*DDPsi + 2*a1**2*v1*v2*x*y*DDPsi + 2*a1**2*v1*v3*x*z*DDPsi + a1**2*v2**2*y**2*DDPsi + 2*a1**2*v2*v3*y*z*DDPsi + a1**2*v3**2*z**2*DDPsi - a1**2*v4**2*x**2*DDPsi - a1**2*v4**2*y**2*DDPsi - a1**2*v4**2*z**2*DDPsi + a1*b0*v1*x*DPsi + a1*b0*v2*y*DPsi + a1*b0*v3*z*DPsi - a1*b0*v4*DPsi*r + a1*b1*v1**2*x**2*DPsi + 2*a1*b1*v1*v2*x*y*DPsi + 2*a1*b1*v1*v3*x*z*DPsi + a1*b1*v2**2*y**2*DPsi + 2*a1*b1*v2*v3*y*z*DPsi + a1*b1*v3**2*z**2*DPsi - a1*b1*v4**2*x**2*DPsi - a1*b1*v4**2*y**2*DPsi - a1*b1*v4**2*z**2*DPsi + a1*c0*v1*x*Psi + a1*c0*v2*y*Psi + a1*c0*v3*z*Psi - a1*c0*v4*Psi*r + a1*c1*v1**2*x**2*Psi + 2*a1*c1*v1*v2*x*y*Psi + 2*a1*c1*v1*v3*x*z*Psi + a1*c1*v2**2*y**2*Psi + 2*a1*c1*v2*v3*y*z*Psi + a1*c1*v3**2*z**2*Psi - a1*c1*v4**2*x**2*Psi - a1*c1*v4**2*y**2*Psi - a1*c1*v4**2*z**2*Psi
+-v3*x**2*DPsi - v3*y**2*DPsi - v3*z**2*DPsi - v4*z*DPsi*r + x**2*Psi[z] + y**2*Psi[z] + z**2*Psi[z]
+-v2*x**2*DPsi - v2*y**2*DPsi - v2*z**2*DPsi - v4*y*DPsi*r + x**2*Psi[y] + y**2*Psi[y] + z**2*Psi[y]
+-v1*x**2*DPsi - v1*y**2*DPsi - v1*z**2*DPsi - v4*x*DPsi*r + x**2*Psi[x] + y**2*Psi[x] + z**2*Psi[x]
+a0**2*x**2*DPsi[z] + a0**2*y**2*DPsi[z] + a0**2*z**2*DPsi[z] + 2*a0*a1*v1*x**3*DPsi[z] + 2*a0*a1*v1*x*y**2*DPsi[z] + 2*a0*a1*v1*x*z**2*DPsi[z] + 2*a0*a1*v2*x**2*y*DPsi[z] + 2*a0*a1*v2*y**3*DPsi[z] + 2*a0*a1*v2*y*z**2*DPsi[z] + 2*a0*a1*v3*x**2*z*DPsi[z] + 2*a0*a1*v3*y**2*z*DPsi[z] + 2*a0*a1*v3*z**3*DPsi[z] + a0*b0*v3*x**2*DPsi + a0*b0*v3*y**2*DPsi + a0*b0*v3*z**2*DPsi + a0*b0*v4*z*DPsi*r + a0*b1*v1*v3*x**3*DPsi + a0*b1*v1*v3*x*y**2*DPsi + a0*b1*v1*v3*x*z**2*DPsi + a0*b1*v1*v4*x*z*DPsi*r + a0*b1*v2*v3*x**2*y*DPsi + a0*b1*v2*v3*y**3*DPsi + a0*b1*v2*v3*y*z**2*DPsi + a0*b1*v2*v4*y*z*DPsi*r + a0*b1*v3**2*x**2*z*DPsi + a0*b1*v3**2*y**2*z*DPsi + a0*b1*v3**2*z**3*DPsi + a0*b1*v3*v4*x**2*DPsi*r + a0*b1*v3*v4*y**2*DPsi*r + 2*a0*b1*v3*v4*z**2*DPsi*r + a0*b1*v4**2*x**2*z*DPsi + a0*b1*v4**2*y**2*z*DPsi + a0*b1*v4**2*z**3*DPsi + a0*c0*v3*x**2*Psi + a0*c0*v3*y**2*Psi + a0*c0*v3*z**2*Psi + a0*c0*v4*z*Psi*r + a0*c1*v1*v3*x**3*Psi + a0*c1*v1*v3*x*y**2*Psi + a0*c1*v1*v3*x*z**2*Psi + a0*c1*v1*v4*x*z*Psi*r + a0*c1*v2*v3*x**2*y*Psi + a0*c1*v2*v3*y**3*Psi + a0*c1*v2*v3*y*z**2*Psi + a0*c1*v2*v4*y*z*Psi*r + a0*c1*v3**2*x**2*z*Psi + a0*c1*v3**2*y**2*z*Psi + a0*c1*v3**2*z**3*Psi + a0*c1*v3*v4*x**2*Psi*r + a0*c1*v3*v4*y**2*Psi*r + 2*a0*c1*v3*v4*z**2*Psi*r + a0*c1*v4**2*x**2*z*Psi + a0*c1*v4**2*y**2*z*Psi + a0*c1*v4**2*z**3*Psi + a1**2*v1**2*x**4*DPsi[z] + a1**2*v1**2*x**2*y**2*DPsi[z] + a1**2*v1**2*x**2*z**2*DPsi[z] + 2*a1**2*v1*v2*x**3*y*DPsi[z] + 2*a1**2*v1*v2*x*y**3*DPsi[z] + 2*a1**2*v1*v2*x*y*z**2*DPsi[z] + 2*a1**2*v1*v3*x**3*z*DPsi[z] + 2*a1**2*v1*v3*x*y**2*z*DPsi[z] + 2*a1**2*v1*v3*x*z**3*DPsi[z] + a1**2*v2**2*x**2*y**2*DPsi[z] + a1**2*v2**2*y**4*DPsi[z] + a1**2*v2**2*y**2*z**2*DPsi[z] + 2*a1**2*v2*v3*x**2*y*z*DPsi[z] + 2*a1**2*v2*v3*y**3*z*DPsi[z] + 2*a1**2*v2*v3*y*z**3*DPsi[z] + a1**2*v3**2*x**2*z**2*DPsi[z] + a1**2*v3**2*y**2*z**2*DPsi[z] + a1**2*v3**2*z**4*DPsi[z] - a1**2*v4**2*x**4*DPsi[z] - 2*a1**2*v4**2*x**2*y**2*DPsi[z] - 2*a1**2*v4**2*x**2*z**2*DPsi[z] - a1**2*v4**2*y**4*DPsi[z] - 2*a1**2*v4**2*y**2*z**2*DPsi[z] - a1**2*v4**2*z**4*DPsi[z] + a1*b0*v1*v3*x**3*DPsi + a1*b0*v1*v3*x*y**2*DPsi + a1*b0*v1*v3*x*z**2*DPsi + a1*b0*v1*v4*x*z*DPsi*r + a1*b0*v2*v3*x**2*y*DPsi + a1*b0*v2*v3*y**3*DPsi + a1*b0*v2*v3*y*z**2*DPsi + a1*b0*v2*v4*y*z*DPsi*r + a1*b0*v3**2*x**2*z*DPsi + a1*b0*v3**2*y**2*z*DPsi + a1*b0*v3**2*z**3*DPsi - a1*b0*v3*v4*x**2*DPsi*r - a1*b0*v3*v4*y**2*DPsi*r - a1*b0*v4**2*x**2*z*DPsi - a1*b0*v4**2*y**2*z*DPsi - a1*b0*v4**2*z**3*DPsi + a1*b1*v1**2*v3*x**4*DPsi + a1*b1*v1**2*v3*x**2*y**2*DPsi + a1*b1*v1**2*v3*x**2*z**2*DPsi + a1*b1*v1**2*v4*x**2*z*DPsi*r + 2*a1*b1*v1*v2*v3*x**3*y*DPsi + 2*a1*b1*v1*v2*v3*x*y**3*DPsi + 2*a1*b1*v1*v2*v3*x*y*z**2*DPsi + 2*a1*b1*v1*v2*v4*x*y*z*DPsi*r + 2*a1*b1*v1*v3**2*x**3*z*DPsi + 2*a1*b1*v1*v3**2*x*y**2*z*DPsi + 2*a1*b1*v1*v3**2*x*z**3*DPsi + 2*a1*b1*v1*v3*v4*x*z**2*DPsi*r + a1*b1*v2**2*v3*x**2*y**2*DPsi + a1*b1*v2**2*v3*y**4*DPsi + a1*b1*v2**2*v3*y**2*z**2*DPsi + a1*b1*v2**2*v4*y**2*z*DPsi*r + 2*a1*b1*v2*v3**2*x**2*y*z*DPsi + 2*a1*b1*v2*v3**2*y**3*z*DPsi + 2*a1*b1*v2*v3**2*y*z**3*DPsi + 2*a1*b1*v2*v3*v4*y*z**2*DPsi*r + a1*b1*v3**3*x**2*z**2*DPsi + a1*b1*v3**3*y**2*z**2*DPsi + a1*b1*v3**3*z**4*DPsi + a1*b1*v3**2*v4*z**3*DPsi*r - a1*b1*v3*v4**2*x**4*DPsi - 2*a1*b1*v3*v4**2*x**2*y**2*DPsi - 2*a1*b1*v3*v4**2*x**2*z**2*DPsi - a1*b1*v3*v4**2*y**4*DPsi - 2*a1*b1*v3*v4**2*y**2*z**2*DPsi - a1*b1*v3*v4**2*z**4*DPsi - a1*b1*v4**3*x**2*z*DPsi*r - a1*b1*v4**3*y**2*z*DPsi*r - a1*b1*v4**3*z**3*DPsi*r + a1*c0*v1*v3*x**3*Psi + a1*c0*v1*v3*x*y**2*Psi + a1*c0*v1*v3*x*z**2*Psi + a1*c0*v1*v4*x*z*Psi*r + a1*c0*v2*v3*x**2*y*Psi + a1*c0*v2*v3*y**3*Psi + a1*c0*v2*v3*y*z**2*Psi + a1*c0*v2*v4*y*z*Psi*r + a1*c0*v3**2*x**2*z*Psi + a1*c0*v3**2*y**2*z*Psi + a1*c0*v3**2*z**3*Psi - a1*c0*v3*v4*x**2*Psi*r - a1*c0*v3*v4*y**2*Psi*r - a1*c0*v4**2*x**2*z*Psi - a1*c0*v4**2*y**2*z*Psi - a1*c0*v4**2*z**3*Psi + a1*c1*v1**2*v3*x**4*Psi + a1*c1*v1**2*v3*x**2*y**2*Psi + a1*c1*v1**2*v3*x**2*z**2*Psi + a1*c1*v1**2*v4*x**2*z*Psi*r + 2*a1*c1*v1*v2*v3*x**3*y*Psi + 2*a1*c1*v1*v2*v3*x*y**3*Psi + 2*a1*c1*v1*v2*v3*x*y*z**2*Psi + 2*a1*c1*v1*v2*v4*x*y*z*Psi*r + 2*a1*c1*v1*v3**2*x**3*z*Psi + 2*a1*c1*v1*v3**2*x*y**2*z*Psi + 2*a1*c1*v1*v3**2*x*z**3*Psi + 2*a1*c1*v1*v3*v4*x*z**2*Psi*r + a1*c1*v2**2*v3*x**2*y**2*Psi + a1*c1*v2**2*v3*y**4*Psi + a1*c1*v2**2*v3*y**2*z**2*Psi + a1*c1*v2**2*v4*y**2*z*Psi*r + 2*a1*c1*v2*v3**2*x**2*y*z*Psi + 2*a1*c1*v2*v3**2*y**3*z*Psi + 2*a1*c1*v2*v3**2*y*z**3*Psi + 2*a1*c1*v2*v3*v4*y*z**2*Psi*r + a1*c1*v3**3*x**2*z**2*Psi + a1*c1*v3**3*y**2*z**2*Psi + a1*c1*v3**3*z**4*Psi + a1*c1*v3**2*v4*z**3*Psi*r - a1*c1*v3*v4**2*x**4*Psi - 2*a1*c1*v3*v4**2*x**2*y**2*Psi - 2*a1*c1*v3*v4**2*x**2*z**2*Psi - a1*c1*v3*v4**2*y**4*Psi - 2*a1*c1*v3*v4**2*y**2*z**2*Psi - a1*c1*v3*v4**2*z**4*Psi - a1*c1*v4**3*x**2*z*Psi*r - a1*c1*v4**3*y**2*z*Psi*r - a1*c1*v4**3*z**3*Psi*r
+a0**2*x**2*DPsi[y] + a0**2*y**2*DPsi[y] + a0**2*z**2*DPsi[y] + 2*a0*a1*v1*x**3*DPsi[y] + 2*a0*a1*v1*x*y**2*DPsi[y] + 2*a0*a1*v1*x*z**2*DPsi[y] + 2*a0*a1*v2*x**2*y*DPsi[y] + 2*a0*a1*v2*y**3*DPsi[y] + 2*a0*a1*v2*y*z**2*DPsi[y] + 2*a0*a1*v3*x**2*z*DPsi[y] + 2*a0*a1*v3*y**2*z*DPsi[y] + 2*a0*a1*v3*z**3*DPsi[y] + a0*b0*v2*x**2*DPsi + a0*b0*v2*y**2*DPsi + a0*b0*v2*z**2*DPsi + a0*b0*v4*y*DPsi*r + a0*b1*v1*v2*x**3*DPsi + a0*b1*v1*v2*x*y**2*DPsi + a0*b1*v1*v2*x*z**2*DPsi + a0*b1*v1*v4*x*y*DPsi*r + a0*b1*v2**2*x**2*y*DPsi + a0*b1*v2**2*y**3*DPsi + a0*b1*v2**2*y*z**2*DPsi + a0*b1*v2*v3*x**2*z*DPsi + a0*b1*v2*v3*y**2*z*DPsi + a0*b1*v2*v3*z**3*DPsi + a0*b1*v2*v4*x**2*DPsi*r + 2*a0*b1*v2*v4*y**2*DPsi*r + a0*b1*v2*v4*z**2*DPsi*r + a0*b1*v3*v4*y*z*DPsi*r + a0*b1*v4**2*x**2*y*DPsi + a0*b1*v4**2*y**3*DPsi + a0*b1*v4**2*y*z**2*DPsi + a0*c0*v2*x**2*Psi + a0*c0*v2*y**2*Psi + a0*c0*v2*z**2*Psi + a0*c0*v4*y*Psi*r + a0*c1*v1*v2*x**3*Psi + a0*c1*v1*v2*x*y**2*Psi + a0*c1*v1*v2*x*z**2*Psi + a0*c1*v1*v4*x*y*Psi*r + a0*c1*v2**2*x**2*y*Psi + a0*c1*v2**2*y**3*Psi + a0*c1*v2**2*y*z**2*Psi + a0*c1*v2*v3*x**2*z*Psi + a0*c1*v2*v3*y**2*z*Psi + a0*c1*v2*v3*z**3*Psi + a0*c1*v2*v4*x**2*Psi*r + 2*a0*c1*v2*v4*y**2*Psi*r + a0*c1*v2*v4*z**2*Psi*r + a0*c1*v3*v4*y*z*Psi*r + a0*c1*v4**2*x**2*y*Psi + a0*c1*v4**2*y**3*Psi + a0*c1*v4**2*y*z**2*Psi + a1**2*v1**2*x**4*DPsi[y] + a1**2*v1**2*x**2*y**2*DPsi[y] + a1**2*v1**2*x**2*z**2*DPsi[y] + 2*a1**2*v1*v2*x**3*y*DPsi[y] + 2*a1**2*v1*v2*x*y**3*DPsi[y] + 2*a1**2*v1*v2*x*y*z**2*DPsi[y] + 2*a1**2*v1*v3*x**3*z*DPsi[y] + 2*a1**2*v1*v3*x*y**2*z*DPsi[y] + 2*a1**2*v1*v3*x*z**3*DPsi[y] + a1**2*v2**2*x**2*y**2*DPsi[y] + a1**2*v2**2*y**4*DPsi[y] + a1**2*v2**2*y**2*z**2*DPsi[y] + 2*a1**2*v2*v3*x**2*y*z*DPsi[y] + 2*a1**2*v2*v3*y**3*z*DPsi[y] + 2*a1**2*v2*v3*y*z**3*DPsi[y] + a1**2*v3**2*x**2*z**2*DPsi[y] + a1**2*v3**2*y**2*z**2*DPsi[y] + a1**2*v3**2*z**4*DPsi[y] - a1**2*v4**2*x**4*DPsi[y] - 2*a1**2*v4**2*x**2*y**2*DPsi[y] - 2*a1**2*v4**2*x**2*z**2*DPsi[y] - a1**2*v4**2*y**4*DPsi[y] - 2*a1**2*v4**2*y**2*z**2*DPsi[y] - a1**2*v4**2*z**4*DPsi[y] + a1*b0*v1*v2*x**3*DPsi + a1*b0*v1*v2*x*y**2*DPsi + a1*b0*v1*v2*x*z**2*DPsi + a1*b0*v1*v4*x*y*DPsi*r + a1*b0*v2**2*x**2*y*DPsi + a1*b0*v2**2*y**3*DPsi + a1*b0*v2**2*y*z**2*DPsi + a1*b0*v2*v3*x**2*z*DPsi + a1*b0*v2*v3*y**2*z*DPsi + a1*b0*v2*v3*z**3*DPsi - a1*b0*v2*v4*x**2*DPsi*r - a1*b0*v2*v4*z**2*DPsi*r + a1*b0*v3*v4*y*z*DPsi*r - a1*b0*v4**2*x**2*y*DPsi - a1*b0*v4**2*y**3*DPsi - a1*b0*v4**2*y*z**2*DPsi + a1*b1*v1**2*v2*x**4*DPsi + a1*b1*v1**2*v2*x**2*y**2*DPsi + a1*b1*v1**2*v2*x**2*z**2*DPsi + a1*b1*v1**2*v4*x**2*y*DPsi*r + 2*a1*b1*v1*v2**2*x**3*y*DPsi + 2*a1*b1*v1*v2**2*x*y**3*DPsi + 2*a1*b1*v1*v2**2*x*y*z**2*DPsi + 2*a1*b1*v1*v2*v3*x**3*z*DPsi + 2*a1*b1*v1*v2*v3*x*y**2*z*DPsi + 2*a1*b1*v1*v2*v3*x*z**3*DPsi + 2*a1*b1*v1*v2*v4*x*y**2*DPsi*r + 2*a1*b1*v1*v3*v4*x*y*z*DPsi*r + a1*b1*v2**3*x**2*y**2*DPsi + a1*b1*v2**3*y**4*DPsi + a1*b1*v2**3*y**2*z**2*DPsi + 2*a1*b1*v2**2*v3*x**2*y*z*DPsi + 2*a1*b1*v2**2*v3*y**3*z*DPsi + 2*a1*b1*v2**2*v3*y*z**3*DPsi + a1*b1*v2**2*v4*y**3*DPsi*r + a1*b1*v2*v3**2*x**2*z**2*DPsi + a1*b1*v2*v3**2*y**2*z**2*DPsi + a1*b1*v2*v3**2*z**4*DPsi + 2*a1*b1*v2*v3*v4*y**2*z*DPsi*r - a1*b1*v2*v4**2*x**4*DPsi - 2*a1*b1*v2*v4**2*x**2*y**2*DPsi - 2*a1*b1*v2*v4**2*x**2*z**2*DPsi - a1*b1*v2*v4**2*y**4*DPsi - 2*a1*b1*v2*v4**2*y**2*z**2*DPsi - a1*b1*v2*v4**2*z**4*DPsi + a1*b1*v3**2*v4*y*z**2*DPsi*r - a1*b1*v4**3*x**2*y*DPsi*r - a1*b1*v4**3*y**3*DPsi*r - a1*b1*v4**3*y*z**2*DPsi*r + a1*c0*v1*v2*x**3*Psi + a1*c0*v1*v2*x*y**2*Psi + a1*c0*v1*v2*x*z**2*Psi + a1*c0*v1*v4*x*y*Psi*r + a1*c0*v2**2*x**2*y*Psi + a1*c0*v2**2*y**3*Psi + a1*c0*v2**2*y*z**2*Psi + a1*c0*v2*v3*x**2*z*Psi + a1*c0*v2*v3*y**2*z*Psi + a1*c0*v2*v3*z**3*Psi - a1*c0*v2*v4*x**2*Psi*r - a1*c0*v2*v4*z**2*Psi*r + a1*c0*v3*v4*y*z*Psi*r - a1*c0*v4**2*x**2*y*Psi - a1*c0*v4**2*y**3*Psi - a1*c0*v4**2*y*z**2*Psi + a1*c1*v1**2*v2*x**4*Psi + a1*c1*v1**2*v2*x**2*y**2*Psi + a1*c1*v1**2*v2*x**2*z**2*Psi + a1*c1*v1**2*v4*x**2*y*Psi*r + 2*a1*c1*v1*v2**2*x**3*y*Psi + 2*a1*c1*v1*v2**2*x*y**3*Psi + 2*a1*c1*v1*v2**2*x*y*z**2*Psi + 2*a1*c1*v1*v2*v3*x**3*z*Psi + 2*a1*c1*v1*v2*v3*x*y**2*z*Psi + 2*a1*c1*v1*v2*v3*x*z**3*Psi + 2*a1*c1*v1*v2*v4*x*y**2*Psi*r + 2*a1*c1*v1*v3*v4*x*y*z*Psi*r + a1*c1*v2**3*x**2*y**2*Psi + a1*c1*v2**3*y**4*Psi + a1*c1*v2**3*y**2*z**2*Psi + 2*a1*c1*v2**2*v3*x**2*y*z*Psi + 2*a1*c1*v2**2*v3*y**3*z*Psi + 2*a1*c1*v2**2*v3*y*z**3*Psi + a1*c1*v2**2*v4*y**3*Psi*r + a1*c1*v2*v3**2*x**2*z**2*Psi + a1*c1*v2*v3**2*y**2*z**2*Psi + a1*c1*v2*v3**2*z**4*Psi + 2*a1*c1*v2*v3*v4*y**2*z*Psi*r - a1*c1*v2*v4**2*x**4*Psi - 2*a1*c1*v2*v4**2*x**2*y**2*Psi - 2*a1*c1*v2*v4**2*x**2*z**2*Psi - a1*c1*v2*v4**2*y**4*Psi - 2*a1*c1*v2*v4**2*y**2*z**2*Psi - a1*c1*v2*v4**2*z**4*Psi + a1*c1*v3**2*v4*y*z**2*Psi*r - a1*c1*v4**3*x**2*y*Psi*r - a1*c1*v4**3*y**3*Psi*r - a1*c1*v4**3*y*z**2*Psi*r
+a0**2*x**2*DPsi[x] + a0**2*y**2*DPsi[x] + a0**2*z**2*DPsi[x] + 2*a0*a1*v1*x**3*DPsi[x] + 2*a0*a1*v1*x*y**2*DPsi[x] + 2*a0*a1*v1*x*z**2*DPsi[x] + 2*a0*a1*v2*x**2*y*DPsi[x] + 2*a0*a1*v2*y**3*DPsi[x] + 2*a0*a1*v2*y*z**2*DPsi[x] + 2*a0*a1*v3*x**2*z*DPsi[x] + 2*a0*a1*v3*y**2*z*DPsi[x] + 2*a0*a1*v3*z**3*DPsi[x] + a0*b0*v1*x**2*DPsi + a0*b0*v1*y**2*DPsi + a0*b0*v1*z**2*DPsi + a0*b0*v4*x*DPsi*r + a0*b1*v1**2*x**3*DPsi + a0*b1*v1**2*x*y**2*DPsi + a0*b1*v1**2*x*z**2*DPsi + a0*b1*v1*v2*x**2*y*DPsi + a0*b1*v1*v2*y**3*DPsi + a0*b1*v1*v2*y*z**2*DPsi + a0*b1*v1*v3*x**2*z*DPsi + a0*b1*v1*v3*y**2*z*DPsi + a0*b1*v1*v3*z**3*DPsi + 2*a0*b1*v1*v4*x**2*DPsi*r + a0*b1*v1*v4*y**2*DPsi*r + a0*b1*v1*v4*z**2*DPsi*r + a0*b1*v2*v4*x*y*DPsi*r + a0*b1*v3*v4*x*z*DPsi*r + a0*b1*v4**2*x**3*DPsi + a0*b1*v4**2*x*y**2*DPsi + a0*b1*v4**2*x*z**2*DPsi + a0*c0*v1*x**2*Psi + a0*c0*v1*y**2*Psi + a0*c0*v1*z**2*Psi + a0*c0*v4*x*Psi*r + a0*c1*v1**2*x**3*Psi + a0*c1*v1**2*x*y**2*Psi + a0*c1*v1**2*x*z**2*Psi + a0*c1*v1*v2*x**2*y*Psi + a0*c1*v1*v2*y**3*Psi + a0*c1*v1*v2*y*z**2*Psi + a0*c1*v1*v3*x**2*z*Psi + a0*c1*v1*v3*y**2*z*Psi + a0*c1*v1*v3*z**3*Psi + 2*a0*c1*v1*v4*x**2*Psi*r + a0*c1*v1*v4*y**2*Psi*r + a0*c1*v1*v4*z**2*Psi*r + a0*c1*v2*v4*x*y*Psi*r + a0*c1*v3*v4*x*z*Psi*r + a0*c1*v4**2*x**3*Psi + a0*c1*v4**2*x*y**2*Psi + a0*c1*v4**2*x*z**2*Psi + a1**2*v1**2*x**4*DPsi[x] + a1**2*v1**2*x**2*y**2*DPsi[x] + a1**2*v1**2*x**2*z**2*DPsi[x] + 2*a1**2*v1*v2*x**3*y*DPsi[x] + 2*a1**2*v1*v2*x*y**3*DPsi[x] + 2*a1**2*v1*v2*x*y*z**2*DPsi[x] + 2*a1**2*v1*v3*x**3*z*DPsi[x] + 2*a1**2*v1*v3*x*y**2*z*DPsi[x] + 2*a1**2*v1*v3*x*z**3*DPsi[x] + a1**2*v2**2*x**2*y**2*DPsi[x] + a1**2*v2**2*y**4*DPsi[x] + a1**2*v2**2*y**2*z**2*DPsi[x] + 2*a1**2*v2*v3*x**2*y*z*DPsi[x] + 2*a1**2*v2*v3*y**3*z*DPsi[x] + 2*a1**2*v2*v3*y*z**3*DPsi[x] + a1**2*v3**2*x**2*z**2*DPsi[x] + a1**2*v3**2*y**2*z**2*DPsi[x] + a1**2*v3**2*z**4*DPsi[x] - a1**2*v4**2*x**4*DPsi[x] - 2*a1**2*v4**2*x**2*y**2*DPsi[x] - 2*a1**2*v4**2*x**2*z**2*DPsi[x] - a1**2*v4**2*y**4*DPsi[x] - 2*a1**2*v4**2*y**2*z**2*DPsi[x] - a1**2*v4**2*z**4*DPsi[x] + a1*b0*v1**2*x**3*DPsi + a1*b0*v1**2*x*y**2*DPsi + a1*b0*v1**2*x*z**2*DPsi + a1*b0*v1*v2*x**2*y*DPsi + a1*b0*v1*v2*y**3*DPsi + a1*b0*v1*v2*y*z**2*DPsi + a1*b0*v1*v3*x**2*z*DPsi + a1*b0*v1*v3*y**2*z*DPsi + a1*b0*v1*v3*z**3*DPsi - a1*b0*v1*v4*y**2*DPsi*r - a1*b0*v1*v4*z**2*DPsi*r + a1*b0*v2*v4*x*y*DPsi*r + a1*b0*v3*v4*x*z*DPsi*r - a1*b0*v4**2*x**3*DPsi - a1*b0*v4**2*x*y**2*DPsi - a1*b0*v4**2*x*z**2*DPsi + a1*b1*v1**3*x**4*DPsi + a1*b1*v1**3*x**2*y**2*DPsi + a1*b1*v1**3*x**2*z**2*DPsi + 2*a1*b1*v1**2*v2*x**3*y*DPsi + 2*a1*b1*v1**2*v2*x*y**3*DPsi + 2*a1*b1*v1**2*v2*x*y*z**2*DPsi + 2*a1*b1*v1**2*v3*x**3*z*DPsi + 2*a1*b1*v1**2*v3*x*y**2*z*DPsi + 2*a1*b1*v1**2*v3*x*z**3*DPsi + a1*b1*v1**2*v4*x**3*DPsi*r + a1*b1*v1*v2**2*x**2*y**2*DPsi + a1*b1*v1*v2**2*y**4*DPsi + a1*b1*v1*v2**2*y**2*z**2*DPsi + 2*a1*b1*v1*v2*v3*x**2*y*z*DPsi + 2*a1*b1*v1*v2*v3*y**3*z*DPsi + 2*a1*b1*v1*v2*v3*y*z**3*DPsi + 2*a1*b1*v1*v2*v4*x**2*y*DPsi*r + a1*b1*v1*v3**2*x**2*z**2*DPsi + a1*b1*v1*v3**2*y**2*z**2*DPsi + a1*b1*v1*v3**2*z**4*DPsi + 2*a1*b1*v1*v3*v4*x**2*z*DPsi*r - a1*b1*v1*v4**2*x**4*DPsi - 2*a1*b1*v1*v4**2*x**2*y**2*DPsi - 2*a1*b1*v1*v4**2*x**2*z**2*DPsi - a1*b1*v1*v4**2*y**4*DPsi - 2*a1*b1*v1*v4**2*y**2*z**2*DPsi - a1*b1*v1*v4**2*z**4*DPsi + a1*b1*v2**2*v4*x*y**2*DPsi*r + 2*a1*b1*v2*v3*v4*x*y*z*DPsi*r + a1*b1*v3**2*v4*x*z**2*DPsi*r - a1*b1*v4**3*x**3*DPsi*r - a1*b1*v4**3*x*y**2*DPsi*r - a1*b1*v4**3*x*z**2*DPsi*r + a1*c0*v1**2*x**3*Psi + a1*c0*v1**2*x*y**2*Psi + a1*c0*v1**2*x*z**2*Psi + a1*c0*v1*v2*x**2*y*Psi + a1*c0*v1*v2*y**3*Psi + a1*c0*v1*v2*y*z**2*Psi + a1*c0*v1*v3*x**2*z*Psi + a1*c0*v1*v3*y**2*z*Psi + a1*c0*v1*v3*z**3*Psi - a1*c0*v1*v4*y**2*Psi*r - a1*c0*v1*v4*z**2*Psi*r + a1*c0*v2*v4*x*y*Psi*r + a1*c0*v3*v4*x*z*Psi*r - a1*c0*v4**2*x**3*Psi - a1*c0*v4**2*x*y**2*Psi - a1*c0*v4**2*x*z**2*Psi + a1*c1*v1**3*x**4*Psi + a1*c1*v1**3*x**2*y**2*Psi + a1*c1*v1**3*x**2*z**2*Psi + 2*a1*c1*v1**2*v2*x**3*y*Psi + 2*a1*c1*v1**2*v2*x*y**3*Psi + 2*a1*c1*v1**2*v2*x*y*z**2*Psi + 2*a1*c1*v1**2*v3*x**3*z*Psi + 2*a1*c1*v1**2*v3*x*y**2*z*Psi + 2*a1*c1*v1**2*v3*x*z**3*Psi + a1*c1*v1**2*v4*x**3*Psi*r + a1*c1*v1*v2**2*x**2*y**2*Psi + a1*c1*v1*v2**2*y**4*Psi + a1*c1*v1*v2**2*y**2*z**2*Psi + 2*a1*c1*v1*v2*v3*x**2*y*z*Psi + 2*a1*c1*v1*v2*v3*y**3*z*Psi + 2*a1*c1*v1*v2*v3*y*z**3*Psi + 2*a1*c1*v1*v2*v4*x**2*y*Psi*r + a1*c1*v1*v3**2*x**2*z**2*Psi + a1*c1*v1*v3**2*y**2*z**2*Psi + a1*c1*v1*v3**2*z**4*Psi + 2*a1*c1*v1*v3*v4*x**2*z*Psi*r - a1*c1*v1*v4**2*x**4*Psi - 2*a1*c1*v1*v4**2*x**2*y**2*Psi - 2*a1*c1*v1*v4**2*x**2*z**2*Psi - a1*c1*v1*v4**2*y**4*Psi - 2*a1*c1*v1*v4**2*y**2*z**2*Psi - a1*c1*v1*v4**2*z**4*Psi + a1*c1*v2**2*v4*x*y**2*Psi*r + 2*a1*c1*v2*v3*v4*x*y*z*Psi*r + a1*c1*v3**2*v4*x*z**2*Psi*r - a1*c1*v4**3*x**3*Psi*r - a1*c1*v4**3*x*y**2*Psi*r - a1*c1*v4**3*x*z**2*Psi*r
+
+Denominator: 8*(x**2 + y**2 + z**2)**3*(a0**2 + 2*a0*a1*v1*x + 2*a0*a1*v2*y + 2*a0*a1*v3*z + a1**2*v1**2*x**2 + 2*a1**2*v1*v2*x*y + 2*a1**2*v1*v3*x*z + a1**2*v2**2*y**2 + 2*a1**2*v2*v3*y*z + a1**2*v3**2*z**2 - a1**2*v4**2*x**2 - a1**2*v4**2*y**2 - a1**2*v4**2*z**2)
+
+Remainder: 4*(x**2 + y**2 + z**2)**3*(-2*E*a0**2*Psi*r - 4*E*a0*a1*v1*x*Psi*r - 4*E*a0*a1*v2*y*Psi*r - 4*E*a0*a1*v3*z*Psi*r - 2*E*a1**2*v1**2*x**2*Psi*r - 4*E*a1**2*v1*v2*x*y*Psi*r - 4*E*a1**2*v1*v3*x*z*Psi*r - 2*E*a1**2*v2**2*y**2*Psi*r - 4*E*a1**2*v2*v3*y*z*Psi*r - 2*E*a1**2*v3**2*z**2*Psi*r + 2*E*a1**2*v4**2*x**2*Psi*r + 2*E*a1**2*v4**2*y**2*Psi*r + 2*E*a1**2*v4**2*z**2*Psi*r - 2*a0**2*v4*DPsi - 2*a0**2*Psi - 4*a0*a1*v1*v4*x*DPsi - 4*a0*a1*v1*x*Psi - 4*a0*a1*v2*v4*y*DPsi - 4*a0*a1*v2*y*Psi - 4*a0*a1*v3*v4*z*DPsi - 4*a0*a1*v3*z*Psi + a0*b0*v1**2*DPsi*r + 2*a0*b0*v1*v4*x*DPsi + a0*b0*v2**2*DPsi*r + 2*a0*b0*v2*v4*y*DPsi + a0*b0*v3**2*DPsi*r + 2*a0*b0*v3*v4*z*DPsi + a0*b0*v4**2*DPsi*r + a0*b1*v1**3*x*DPsi*r + a0*b1*v1**2*v2*y*DPsi*r + a0*b1*v1**2*v3*z*DPsi*r + 3*a0*b1*v1**2*v4*x**2*DPsi + a0*b1*v1**2*v4*y**2*DPsi + a0*b1*v1**2*v4*z**2*DPsi + a0*b1*v1*v2**2*x*DPsi*r + 4*a0*b1*v1*v2*v4*x*y*DPsi + a0*b1*v1*v3**2*x*DPsi*r + 4*a0*b1*v1*v3*v4*x*z*DPsi + 3*a0*b1*v1*v4**2*x*DPsi*r + a0*b1*v2**3*y*DPsi*r + a0*b1*v2**2*v3*z*DPsi*r + a0*b1*v2**2*v4*x**2*DPsi + 3*a0*b1*v2**2*v4*y**2*DPsi + a0*b1*v2**2*v4*z**2*DPsi + a0*b1*v2*v3**2*y*DPsi*r + 4*a0*b1*v2*v3*v4*y*z*DPsi + 3*a0*b1*v2*v4**2*y*DPsi*r + a0*b1*v3**3*z*DPsi*r + a0*b1*v3**2*v4*x**2*DPsi + a0*b1*v3**2*v4*y**2*DPsi + 3*a0*b1*v3**2*v4*z**2*DPsi + 3*a0*b1*v3*v4**2*z*DPsi*r + a0*b1*v4**3*x**2*DPsi + a0*b1*v4**3*y**2*DPsi + a0*b1*v4**3*z**2*DPsi + a0*c0*v1**2*Psi*r + 2*a0*c0*v1*v4*x*Psi + a0*c0*v2**2*Psi*r + 2*a0*c0*v2*v4*y*Psi + a0*c0*v3**2*Psi*r + 2*a0*c0*v3*v4*z*Psi + a0*c0*v4**2*Psi*r + a0*c1*v1**3*x*Psi*r + a0*c1*v1**2*v2*y*Psi*r + a0*c1*v1**2*v3*z*Psi*r + 3*a0*c1*v1**2*v4*x**2*Psi + a0*c1*v1**2*v4*y**2*Psi + a0*c1*v1**2*v4*z**2*Psi + a0*c1*v1*v2**2*x*Psi*r + 4*a0*c1*v1*v2*v4*x*y*Psi + a0*c1*v1*v3**2*x*Psi*r + 4*a0*c1*v1*v3*v4*x*z*Psi + 3*a0*c1*v1*v4**2*x*Psi*r + a0*c1*v2**3*y*Psi*r + a0*c1*v2**2*v3*z*Psi*r + a0*c1*v2**2*v4*x**2*Psi + 3*a0*c1*v2**2*v4*y**2*Psi + a0*c1*v2**2*v4*z**2*Psi + a0*c1*v2*v3**2*y*Psi*r + 4*a0*c1*v2*v3*v4*y*z*Psi + 3*a0*c1*v2*v4**2*y*Psi*r + a0*c1*v3**3*z*Psi*r + a0*c1*v3**2*v4*x**2*Psi + a0*c1*v3**2*v4*y**2*Psi + 3*a0*c1*v3**2*v4*z**2*Psi + 3*a0*c1*v3*v4**2*z*Psi*r + a0*c1*v4**3*x**2*Psi + a0*c1*v4**3*y**2*Psi + a0*c1*v4**3*z**2*Psi - 2*a1**2*v1**2*v4*x**2*DPsi - 2*a1**2*v1**2*x**2*Psi - 4*a1**2*v1*v2*v4*x*y*DPsi - 4*a1**2*v1*v2*x*y*Psi - 4*a1**2*v1*v3*v4*x*z*DPsi - 4*a1**2*v1*v3*x*z*Psi - 2*a1**2*v2**2*v4*y**2*DPsi - 2*a1**2*v2**2*y**2*Psi - 4*a1**2*v2*v3*v4*y*z*DPsi - 4*a1**2*v2*v3*y*z*Psi - 2*a1**2*v3**2*v4*z**2*DPsi - 2*a1**2*v3**2*z**2*Psi + 2*a1**2*v4**3*x**2*DPsi + 2*a1**2*v4**3*y**2*DPsi + 2*a1**2*v4**3*z**2*DPsi + 2*a1**2*v4**2*x**2*Psi + 2*a1**2*v4**2*y**2*Psi + 2*a1**2*v4**2*z**2*Psi + a1*b0*v1**3*x*DPsi*r + a1*b0*v1**2*v2*y*DPsi*r + a1*b0*v1**2*v3*z*DPsi*r + a1*b0*v1**2*v4*x**2*DPsi - a1*b0*v1**2*v4*y**2*DPsi - a1*b0*v1**2*v4*z**2*DPsi + a1*b0*v1*v2**2*x*DPsi*r + 4*a1*b0*v1*v2*v4*x*y*DPsi + a1*b0*v1*v3**2*x*DPsi*r + 4*a1*b0*v1*v3*v4*x*z*DPsi - a1*b0*v1*v4**2*x*DPsi*r + a1*b0*v2**3*y*DPsi*r + a1*b0*v2**2*v3*z*DPsi*r - a1*b0*v2**2*v4*x**2*DPsi + a1*b0*v2**2*v4*y**2*DPsi - a1*b0*v2**2*v4*z**2*DPsi + a1*b0*v2*v3**2*y*DPsi*r + 4*a1*b0*v2*v3*v4*y*z*DPsi - a1*b0*v2*v4**2*y*DPsi*r + a1*b0*v3**3*z*DPsi*r - a1*b0*v3**2*v4*x**2*DPsi - a1*b0*v3**2*v4*y**2*DPsi + a1*b0*v3**2*v4*z**2*DPsi - a1*b0*v3*v4**2*z*DPsi*r - a1*b0*v4**3*x**2*DPsi - a1*b0*v4**3*y**2*DPsi - a1*b0*v4**3*z**2*DPsi + a1*b1*v1**4*x**2*DPsi*r + 2*a1*b1*v1**3*v2*x*y*DPsi*r + 2*a1*b1*v1**3*v3*x*z*DPsi*r + 2*a1*b1*v1**3*v4*x**3*DPsi + a1*b1*v1**2*v2**2*x**2*DPsi*r + a1*b1*v1**2*v2**2*y**2*DPsi*r + 2*a1*b1*v1**2*v2*v3*y*z*DPsi*r + 6*a1*b1*v1**2*v2*v4*x**2*y*DPsi + a1*b1*v1**2*v3**2*x**2*DPsi*r + a1*b1*v1**2*v3**2*z**2*DPsi*r + 6*a1*b1*v1**2*v3*v4*x**2*z*DPsi - a1*b1*v1**2*v4**2*y**2*DPsi*r - a1*b1*v1**2*v4**2*z**2*DPsi*r + 2*a1*b1*v1*v2**3*x*y*DPsi*r + 2*a1*b1*v1*v2**2*v3*x*z*DPsi*r + 6*a1*b1*v1*v2**2*v4*x*y**2*DPsi + 2*a1*b1*v1*v2*v3**2*x*y*DPsi*r + 12*a1*b1*v1*v2*v3*v4*x*y*z*DPsi + 2*a1*b1*v1*v2*v4**2*x*y*DPsi*r + 2*a1*b1*v1*v3**3*x*z*DPsi*r + 6*a1*b1*v1*v3**2*v4*x*z**2*DPsi + 2*a1*b1*v1*v3*v4**2*x*z*DPsi*r - 2*a1*b1*v1*v4**3*x**3*DPsi - 2*a1*b1*v1*v4**3*x*y**2*DPsi - 2*a1*b1*v1*v4**3*x*z**2*DPsi + a1*b1*v2**4*y**2*DPsi*r + 2*a1*b1*v2**3*v3*y*z*DPsi*r + 2*a1*b1*v2**3*v4*y**3*DPsi + a1*b1*v2**2*v3**2*y**2*DPsi*r + a1*b1*v2**2*v3**2*z**2*DPsi*r + 6*a1*b1*v2**2*v3*v4*y**2*z*DPsi - a1*b1*v2**2*v4**2*x**2*DPsi*r - a1*b1*v2**2*v4**2*z**2*DPsi*r + 2*a1*b1*v2*v3**3*y*z*DPsi*r + 6*a1*b1*v2*v3**2*v4*y*z**2*DPsi + 2*a1*b1*v2*v3*v4**2*y*z*DPsi*r - 2*a1*b1*v2*v4**3*x**2*y*DPsi - 2*a1*b1*v2*v4**3*y**3*DPsi - 2*a1*b1*v2*v4**3*y*z**2*DPsi + a1*b1*v3**4*z**2*DPsi*r + 2*a1*b1*v3**3*v4*z**3*DPsi - a1*b1*v3**2*v4**2*x**2*DPsi*r - a1*b1*v3**2*v4**2*y**2*DPsi*r - 2*a1*b1*v3*v4**3*x**2*z*DPsi - 2*a1*b1*v3*v4**3*y**2*z*DPsi - 2*a1*b1*v3*v4**3*z**3*DPsi - a1*b1*v4**4*x**2*DPsi*r - a1*b1*v4**4*y**2*DPsi*r - a1*b1*v4**4*z**2*DPsi*r + a1*c0*v1**3*x*Psi*r + a1*c0*v1**2*v2*y*Psi*r + a1*c0*v1**2*v3*z*Psi*r + a1*c0*v1**2*v4*x**2*Psi - a1*c0*v1**2*v4*y**2*Psi - a1*c0*v1**2*v4*z**2*Psi + a1*c0*v1*v2**2*x*Psi*r + 4*a1*c0*v1*v2*v4*x*y*Psi + a1*c0*v1*v3**2*x*Psi*r + 4*a1*c0*v1*v3*v4*x*z*Psi - a1*c0*v1*v4**2*x*Psi*r + a1*c0*v2**3*y*Psi*r + a1*c0*v2**2*v3*z*Psi*r - a1*c0*v2**2*v4*x**2*Psi + a1*c0*v2**2*v4*y**2*Psi - a1*c0*v2**2*v4*z**2*Psi + a1*c0*v2*v3**2*y*Psi*r + 4*a1*c0*v2*v3*v4*y*z*Psi - a1*c0*v2*v4**2*y*Psi*r + a1*c0*v3**3*z*Psi*r - a1*c0*v3**2*v4*x**2*Psi - a1*c0*v3**2*v4*y**2*Psi + a1*c0*v3**2*v4*z**2*Psi - a1*c0*v3*v4**2*z*Psi*r - a1*c0*v4**3*x**2*Psi - a1*c0*v4**3*y**2*Psi - a1*c0*v4**3*z**2*Psi + a1*c1*v1**4*x**2*Psi*r + 2*a1*c1*v1**3*v2*x*y*Psi*r + 2*a1*c1*v1**3*v3*x*z*Psi*r + 2*a1*c1*v1**3*v4*x**3*Psi + a1*c1*v1**2*v2**2*x**2*Psi*r + a1*c1*v1**2*v2**2*y**2*Psi*r + 2*a1*c1*v1**2*v2*v3*y*z*Psi*r + 6*a1*c1*v1**2*v2*v4*x**2*y*Psi + a1*c1*v1**2*v3**2*x**2*Psi*r + a1*c1*v1**2*v3**2*z**2*Psi*r + 6*a1*c1*v1**2*v3*v4*x**2*z*Psi - a1*c1*v1**2*v4**2*y**2*Psi*r - a1*c1*v1**2*v4**2*z**2*Psi*r + 2*a1*c1*v1*v2**3*x*y*Psi*r + 2*a1*c1*v1*v2**2*v3*x*z*Psi*r + 6*a1*c1*v1*v2**2*v4*x*y**2*Psi + 2*a1*c1*v1*v2*v3**2*x*y*Psi*r + 12*a1*c1*v1*v2*v3*v4*x*y*z*Psi + 2*a1*c1*v1*v2*v4**2*x*y*Psi*r + 2*a1*c1*v1*v3**3*x*z*Psi*r + 6*a1*c1*v1*v3**2*v4*x*z**2*Psi + 2*a1*c1*v1*v3*v4**2*x*z*Psi*r - 2*a1*c1*v1*v4**3*x**3*Psi - 2*a1*c1*v1*v4**3*x*y**2*Psi - 2*a1*c1*v1*v4**3*x*z**2*Psi + a1*c1*v2**4*y**2*Psi*r + 2*a1*c1*v2**3*v3*y*z*Psi*r + 2*a1*c1*v2**3*v4*y**3*Psi + a1*c1*v2**2*v3**2*y**2*Psi*r + a1*c1*v2**2*v3**2*z**2*Psi*r + 6*a1*c1*v2**2*v3*v4*y**2*z*Psi - a1*c1*v2**2*v4**2*x**2*Psi*r - a1*c1*v2**2*v4**2*z**2*Psi*r + 2*a1*c1*v2*v3**3*y*z*Psi*r + 6*a1*c1*v2*v3**2*v4*y*z**2*Psi + 2*a1*c1*v2*v3*v4**2*y*z*Psi*r - 2*a1*c1*v2*v4**3*x**2*y*Psi - 2*a1*c1*v2*v4**3*y**3*Psi - 2*a1*c1*v2*v4**3*y*z**2*Psi + a1*c1*v3**4*z**2*Psi*r + 2*a1*c1*v3**3*v4*z**3*Psi - a1*c1*v3**2*v4**2*x**2*Psi*r - a1*c1*v3**2*v4**2*y**2*Psi*r - 2*a1*c1*v3*v4**3*x**2*z*Psi - 2*a1*c1*v3*v4**3*y**2*z*Psi - 2*a1*c1*v3*v4**3*z**3*Psi - a1*c1*v4**4*x**2*Psi*r - a1*c1*v4**4*y**2*Psi*r - a1*c1*v4**4*z**2*Psi*r)
+
+System of equations:
+-8*v1^2*v4*a1^2 - 24*v3^2*v4*a1^2 + 32*v4^3*a1^2 - 8*v1^2*v4*a1*b0 - 16*v2^2*v4*a1*b0 + 8*v3^2*v4*a1*b0 - 16*v4^3*a1*b0 + 24*v1^2*v4*a0*b1 + 16*v2^2*v4*a0*b1 + 40*v3^2*v4*a0*b1 + 16*v4^3*a0*b1
+72*v1*v2^2*v4*a1*b1 + 24*v1*v3^2*v4*a1*b1 - 32*v1*v4^3*a1*b1
+8*v1^3*v3*a1*c1 + 8*v1*v2^2*v3*a1*c1 + 8*v1*v3^3*a1*c1 + 8*v1*v3*v4^2*a1*c1 - 16*E*v1*v3*a1^2
+-24*v2^2*v4*a1*c0 - 24*v4^3*a1*c0 + 48*v1^2*v4*a0*c1 + 24*v2^2*v4*a0*c1 + 48*v3^2*v4*a0*c1 + 24*v4^3*a0*c1 - 24*v1^2*a1^2 - 24*v3^2*a1^2 + 48*v4^2*a1^2
+-24*v2^2*v4*a1^2 - 24*v3^2*v4*a1^2 + 48*v4^3*a1^2 - 24*v1^2*v4*a1*b0 - 24*v4^3*a1*b0 + 24*v1^2*v4*a0*b1 + 48*v2^2*v4*a0*b1 + 48*v3^2*v4*a0*b1 + 24*v4^3*a0*b1
+144*v1^2*v3*v4*a1*c1 + 72*v2^2*v3*v4*a1*c1 + 24*v3^3*v4*a1*c1 - 96*v3*v4^3*a1*c1
+48*v1*v2*v3*v4*a1*b1
+-8*v1^2*v4*a1^2 + 8*v4^3*a1^2 + 4*v1^2*v4*a1*b0 - 4*v2^2*v4*a1*b0 - 4*v3^2*v4*a1*b0 - 4*v4^3*a1*b0 + 12*v1^2*v4*a0*b1 + 4*v2^2*v4*a0*b1 + 4*v3^2*v4*a0*b1 + 4*v4^3*a0*b1
+4*v1^2*v2^2*a1*c1 + 4*v2^4*a1*c1 + 4*v2^2*v3^2*a1*c1 - 4*v1^2*v4^2*a1*c1 - 4*v3^2*v4^2*a1*c1 - 4*v4^4*a1*c1 - 8*E*v2^2*a1^2 + 8*E*v4^2*a1^2
+4*v1^2*v3^2*a1*c1 + 4*v2^2*v3^2*a1*c1 + 4*v3^4*a1*c1 - 4*v1^2*v4^2*a1*c1 - 4*v2^2*v4^2*a1*c1 - 4*v4^4*a1*c1 - 8*E*v3^2*a1^2 + 8*E*v4^2*a1^2
+-96*v2*v4*a0*a1 + 48*v2*v4*a0*b0
+72*v2^2*v3*v4*a1*b1 + 8*v3^3*v4*a1*b1 - 32*v3*v4^3*a1*b1
+72*v2^2*v3*v4*a1*b1 + 24*v3^3*v4*a1*b1 - 48*v3*v4^3*a1*b1
+-48*v2*v3*v4*a1^2 + 48*v2*v3*v4*a1*b0 + 48*v2*v3*v4*a0*b1
+12*v1^2*a0*b0 + 12*v2^2*a0*b0 + 12*v3^2*a0*b0 + 12*v4^2*a0*b0
+12*v1^2*v3*a1*c0 + 12*v2^2*v3*a1*c0 + 12*v3^3*a1*c0 - 12*v3*v4^2*a1*c0 + 12*v1^2*v3*a0*c1 + 12*v2^2*v3*a0*c1 + 12*v3^3*a0*c1 + 36*v3*v4^2*a0*c1 - 48*E*v3*a0*a1
+24*v1*v2^2*v4*a1*b1 - 8*v1*v4^3*a1*b1
+72*v1^2*v2*v4*a1*c1 + 72*v2*v3^2*v4*a1*c1 - 48*v2*v4^3*a1*c1
+24*v2^3*v4*a1*c1 + 72*v2*v3^2*v4*a1*c1 - 48*v2*v4^3*a1*c1
+144*v1^2*v3*v4*a1*b1 + 72*v2^2*v3*v4*a1*b1 + 24*v3^3*v4*a1*b1 - 96*v3*v4^3*a1*b1
+-16*v1^2*v4*a1*c0 - 8*v2^2*v4*a1*c0 + 8*v3^2*v4*a1*c0 - 16*v4^3*a1*c0 + 16*v1^2*v4*a0*c1 + 24*v2^2*v4*a0*c1 + 40*v3^2*v4*a0*c1 + 16*v4^3*a0*c1 - 8*v2^2*a1^2 - 24*v3^2*a1^2 + 32*v4^2*a1^2
+8*v1^2*v4*a1*c0 - 16*v2^2*v4*a1*c0 - 8*v3^2*v4*a1*c0 - 16*v4^3*a1*c0 + 40*v1^2*v4*a0*c1 + 16*v2^2*v4*a0*c1 + 24*v3^2*v4*a0*c1 + 16*v4^3*a0*c1 - 24*v1^2*a1^2 - 8*v3^2*a1^2 + 32*v4^2*a1^2
+72*v1^2*v3*v4*a1*c1 + 24*v2^2*v3*v4*a1*c1 - 32*v3*v4^3*a1*c1
+16*v2*v3*v4*a1*c0 + 16*v2*v3*v4*a0*c1 - 16*v2*v3*a1^2
+48*v1^3*v3*a1*c1 + 48*v1*v2^2*v3*a1*c1 + 48*v1*v3^3*a1*c1 + 48*v1*v3*v4^2*a1*c1 - 96*E*v1*v3*a1^2
+-8*v1^2*v4*a1^2 - 24*v2^2*v4*a1^2 + 32*v4^3*a1^2 - 8*v1^2*v4*a1*b0 + 8*v2^2*v4*a1*b0 - 16*v3^2*v4*a1*b0 - 16*v4^3*a1*b0 + 24*v1^2*v4*a0*b1 + 40*v2^2*v4*a0*b1 + 16*v3^2*v4*a0*b1 + 16*v4^3*a0*b1
+-24*v1^2*v4*a1*c0 - 24*v4^3*a1*c0 + 24*v1^2*v4*a0*c1 + 48*v2^2*v4*a0*c1 + 48*v3^2*v4*a0*c1 + 24*v4^3*a0*c1 - 24*v2^2*a1^2 - 24*v3^2*a1^2 + 48*v4^2*a1^2
+24*v1^3*v2*a1*b1 + 24*v1*v2^3*a1*b1 + 24*v1*v2*v3^2*a1*b1 + 24*v1*v2*v4^2*a1*b1
+24*v2^2*v3*v4*a1*c1 + 24*v3^3*v4*a1*c1 - 32*v3*v4^3*a1*c1
+-16*v1*v3*v4*a1^2 + 16*v1*v3*v4*a1*b0 + 16*v1*v3*v4*a0*b1
+4*v1^2*a0*c0 + 4*v2^2*a0*c0 + 4*v3^2*a0*c0 + 4*v4^2*a0*c0 - 8*E*a0^2
+12*v1^2*v2^2*a1*b1 + 12*v2^4*a1*b1 + 12*v1^2*v3^2*a1*b1 + 24*v2^2*v3^2*a1*b1 + 12*v3^4*a1*b1 - 24*v1^2*v4^2*a1*b1 - 12*v2^2*v4^2*a1*b1 - 12*v3^2*v4^2*a1*b1 - 24*v4^4*a1*b1
+-24*v1^2*v4*a1*c0 - 24*v3^2*v4*a1*c0 - 48*v4^3*a1*c0 + 72*v1^2*v4*a0*c1 + 96*v2^2*v4*a0*c1 + 72*v3^2*v4*a0*c1 + 48*v4^3*a0*c1 - 24*v1^2*a1^2 - 48*v2^2*a1^2 - 24*v3^2*a1^2 + 96*v4^2*a1^2
+-16*v1*v4*a0*a1 + 8*v1*v4*a0*b0
+24*v1^2*v2*v4*a1*b1 + 72*v2*v3^2*v4*a1*b1 - 32*v2*v4^3*a1*b1
+8*v1^3*v4*a1*b1 + 72*v1*v3^2*v4*a1*b1 - 32*v1*v4^3*a1*b1
+24*v1^3*a1*c0 + 24*v1*v2^2*a1*c0 + 24*v1*v3^2*a1*c0 - 24*v1*v4^2*a1*c0 + 24*v1^3*a0*c1 + 24*v1*v2^2*a0*c1 + 24*v1*v3^2*a0*c1 + 72*v1*v4^2*a0*c1 - 96*E*v1*a0*a1
+8*v1^2*v4*a1*c0 - 8*v2^2*v4*a1*c0 - 16*v3^2*v4*a1*c0 - 16*v4^3*a1*c0 + 40*v1^2*v4*a0*c1 + 24*v2^2*v4*a0*c1 + 16*v3^2*v4*a0*c1 + 16*v4^3*a0*c1 - 24*v1^2*a1^2 - 8*v2^2*a1^2 + 32*v4^2*a1^2
+24*v1^3*a1*b0 + 24*v1*v2^2*a1*b0 + 24*v1*v3^2*a1*b0 - 24*v1*v4^2*a1*b0 + 24*v1^3*a0*b1 + 24*v1*v2^2*a0*b1 + 24*v1*v3^2*a0*b1 + 72*v1*v4^2*a0*b1
+12*v1^4*a1*c1 + 24*v1^2*v2^2*a1*c1 + 12*v2^4*a1*c1 + 12*v1^2*v3^2*a1*c1 + 12*v2^2*v3^2*a1*c1 - 12*v1^2*v4^2*a1*c1 - 12*v2^2*v4^2*a1*c1 - 24*v3^2*v4^2*a1*c1 - 24*v4^4*a1*c1 - 24*E*v1^2*a1^2 - 24*E*v2^2*a1^2 + 48*E*v4^2*a1^2
+-16*v3*v4*a0*a1 + 8*v3*v4*a0*b0
+72*v1*v2^2*v4*a1*b1 + 72*v1*v3^2*v4*a1*b1 - 48*v1*v4^3*a1*b1
+24*v1^3*v3*a1*c1 + 24*v1*v2^2*v3*a1*c1 + 24*v1*v3^3*a1*c1 + 24*v1*v3*v4^2*a1*c1 - 48*E*v1*v3*a1^2
+72*v1^2*v3*v4*a1*b1 + 72*v2^2*v3*v4*a1*b1 - 48*v3*v4^3*a1*b1
+12*v1^4*a1*b1 + 16*v1^2*v2^2*a1*b1 + 4*v2^4*a1*b1 + 12*v1^2*v3^2*a1*b1 + 4*v2^2*v3^2*a1*b1 - 4*v1^2*v4^2*a1*b1 - 12*v2^2*v4^2*a1*b1 - 16*v3^2*v4^2*a1*b1 - 16*v4^4*a1*b1
+4*v1^2*v2*a1*c0 + 4*v2^3*a1*c0 + 4*v2*v3^2*a1*c0 - 4*v2*v4^2*a1*c0 + 4*v1^2*v2*a0*c1 + 4*v2^3*a0*c1 + 4*v2*v3^2*a0*c1 + 12*v2*v4^2*a0*c1 - 16*E*v2*a0*a1
+-48*v2*v4*a0*a1 + 24*v2*v4*a0*b0
+72*v1*v2^2*v4*a1*c1 + 72*v1*v3^2*v4*a1*c1 - 48*v1*v4^3*a1*c1
+8*v2^3*v4*a1*b1 + 72*v2*v3^2*v4*a1*b1 - 32*v2*v4^3*a1*b1
+24*v1^2*v2*v4*a1*b1 + 24*v2^3*v4*a1*b1 - 32*v2*v4^3*a1*b1
+4*v1^2*v3^2*a1*b1 + 4*v2^2*v3^2*a1*b1 + 4*v3^4*a1*b1 - 4*v1^2*v4^2*a1*b1 - 4*v2^2*v4^2*a1*b1 - 4*v4^4*a1*b1
+-16*v1*v2*v4*a1^2 + 16*v1*v2*v4*a1*b0 + 16*v1*v2*v4*a0*b1
+72*v1^2*v3*v4*a1*b1 + 8*v3^3*v4*a1*b1 - 32*v3*v4^3*a1*b1
+72*v1^2*v3*v4*a1*b1 + 24*v3^3*v4*a1*b1 - 48*v3*v4^3*a1*b1
+96*v1*v2*v4*a1*c0 + 96*v1*v2*v4*a0*c1 - 96*v1*v2*a1^2
+24*v1^2*v2*a1*b0 + 24*v2^3*a1*b0 + 24*v2*v3^2*a1*b0 - 24*v2*v4^2*a1*b0 + 24*v1^2*v2*a0*b1 + 24*v2^3*a0*b1 + 24*v2*v3^2*a0*b1 + 72*v2*v4^2*a0*b1
+24*v1^3*v4*a1*c1 + 72*v1*v3^2*v4*a1*c1 - 48*v1*v4^3*a1*c1
+8*v1^3*v4*a1*c1 + 72*v1*v3^2*v4*a1*c1 - 32*v1*v4^3*a1*c1
+4*v1^2*v4*a1*c0 - 4*v2^2*v4*a1*c0 - 4*v3^2*v4*a1*c0 - 4*v4^3*a1*c0 + 12*v1^2*v4*a0*c1 + 4*v2^2*v4*a0*c1 + 4*v3^2*v4*a0*c1 + 4*v4^3*a0*c1 - 8*v1^2*a1^2 + 8*v4^2*a1^2
+24*v1*v3^2*v4*a1*c1 - 8*v1*v4^3*a1*c1
+72*v1^2*v2*v4*a1*c1 + 24*v2*v3^2*v4*a1*c1 - 32*v2*v4^3*a1*c1
+24*v2^3*v4*a1*c1 + 24*v2*v3^2*v4*a1*c1 - 32*v2*v4^3*a1*c1
+-16*v1^2*v4*a1*c0 + 8*v2^2*v4*a1*c0 - 8*v3^2*v4*a1*c0 - 16*v4^3*a1*c0 + 16*v1^2*v4*a0*c1 + 40*v2^2*v4*a0*c1 + 24*v3^2*v4*a0*c1 + 16*v4^3*a0*c1 - 24*v2^2*a1^2 - 8*v3^2*a1^2 + 32*v4^2*a1^2
+-48*v3*v4*a0*a1 + 24*v3*v4*a0*b0
+24*v2*v3^2*v4*a1*b1 - 8*v2*v4^3*a1*b1
+-24*v1^2*v4*a1*c0 - 24*v2^2*v4*a1*c0 - 48*v4^3*a1*c0 + 72*v1^2*v4*a0*c1 + 72*v2^2*v4*a0*c1 + 96*v3^2*v4*a0*c1 + 48*v4^3*a0*c1 - 24*v1^2*a1^2 - 24*v2^2*a1^2 - 48*v3^2*a1^2 + 96*v4^2*a1^2
+24*v1^2*a0*c0 + 24*v2^2*a0*c0 + 24*v3^2*a0*c0 + 24*v4^2*a0*c0 - 48*E*a0^2
+8*v1^3*v4*a1*b1 - 8*v1*v4^3*a1*b1
+72*v1^2*v2*v4*a1*b1 + 8*v2^3*v4*a1*b1 - 32*v2*v4^3*a1*b1
+24*v1^2*v3*v4*a1*b1 - 8*v3*v4^3*a1*b1
+24*v2^2*v3*v4*a1*b1 + 24*v3^3*v4*a1*b1 - 32*v3*v4^3*a1*b1
+-8*v3^2*v4*a1^2 + 8*v4^3*a1^2 - 4*v1^2*v4*a1*b0 - 4*v2^2*v4*a1*b0 + 4*v3^2*v4*a1*b0 - 4*v4^3*a1*b0 + 4*v1^2*v4*a0*b1 + 4*v2^2*v4*a0*b1 + 12*v3^2*v4*a0*b1 + 4*v4^3*a0*b1
+-48*a0^2
+12*v1^4*a1*c1 + 24*v1^2*v2^2*a1*c1 + 12*v2^4*a1*c1 + 36*v1^2*v3^2*a1*c1 + 36*v2^2*v3^2*a1*c1 + 24*v3^4*a1*c1 - 36*v1^2*v4^2*a1*c1 - 36*v2^2*v4^2*a1*c1 - 24*v3^2*v4^2*a1*c1 - 48*v4^4*a1*c1 - 24*E*v1^2*a1^2 - 24*E*v2^2*a1^2 - 48*E*v3^2*a1^2 + 96*E*v4^2*a1^2
+72*v1^2*v3*v4*a1*c1 + 8*v3^3*v4*a1*c1 - 32*v3*v4^3*a1*c1
+72*v1^2*v3*v4*a1*c1 + 24*v3^3*v4*a1*c1 - 48*v3*v4^3*a1*c1
+24*v1^3*v4*a1*b1 + 24*v1*v2^2*v4*a1*b1 - 32*v1*v4^3*a1*b1
+4*v1^3*a1*c0 + 4*v1*v2^2*a1*c0 + 4*v1*v3^2*a1*c0 - 4*v1*v4^2*a1*c0 + 4*v1^3*a0*c1 + 4*v1*v2^2*a0*c1 + 4*v1*v3^2*a0*c1 + 12*v1*v4^2*a0*c1 - 16*E*v1*a0*a1
+24*v1*v4*a0*c0 - 48*v1*a0*a1
+4*v1^2*a0*b0 + 4*v2^2*a0*b0 + 4*v3^2*a0*b0 + 4*v4^2*a0*b0
+8*v3*v4*a0*c0 - 16*v3*a0*a1
+-8*v1^2*v4*a1*c0 - 16*v2^2*v4*a1*c0 + 8*v3^2*v4*a1*c0 - 16*v4^3*a1*c0 + 24*v1^2*v4*a0*c1 + 16*v2^2*v4*a0*c1 + 40*v3^2*v4*a0*c1 + 16*v4^3*a0*c1 - 8*v1^2*a1^2 - 24*v3^2*a1^2 + 32*v4^2*a1^2
+12*v1^4*a1*b1 + 12*v1^2*v2^2*a1*b1 + 24*v1^2*v3^2*a1*b1 + 12*v2^2*v3^2*a1*b1 + 12*v3^4*a1*b1 - 12*v1^2*v4^2*a1*b1 - 24*v2^2*v4^2*a1*b1 - 12*v3^2*v4^2*a1*b1 - 24*v4^4*a1*b1
+8*v1^3*v3*a1*b1 + 8*v1*v2^2*v3*a1*b1 + 8*v1*v3^3*a1*b1 + 8*v1*v3*v4^2*a1*b1
+72*v1^2*v3*v4*a1*c1 + 72*v2^2*v3*v4*a1*c1 + 48*v3^3*v4*a1*c1 - 96*v3*v4^3*a1*c1
+24*v1^3*v4*a1*c1 + 24*v1*v2^2*v4*a1*c1 - 32*v1*v4^3*a1*c1
+24*v1*v3^2*v4*a1*b1 - 8*v1*v4^3*a1*b1
+24*v1^3*v4*a1*b1 + 144*v1*v2^2*v4*a1*b1 + 72*v1*v3^2*v4*a1*b1 - 96*v1*v4^3*a1*b1
+24*v1^3*v4*a1*c1 + 144*v1*v2^2*v4*a1*c1 + 72*v1*v3^2*v4*a1*c1 - 96*v1*v4^3*a1*c1
+4*v1^4*a1*b1 + 4*v1^2*v2^2*a1*b1 + 16*v1^2*v3^2*a1*b1 + 12*v2^2*v3^2*a1*b1 + 12*v3^4*a1*b1 - 12*v1^2*v4^2*a1*b1 - 16*v2^2*v4^2*a1*b1 - 4*v3^2*v4^2*a1*b1 - 16*v4^4*a1*b1
+24*v1^2*v3*v4*a1*c1 + 24*v3^3*v4*a1*c1 - 32*v3*v4^3*a1*c1
+12*v1^4*a1*b1 + 36*v1^2*v2^2*a1*b1 + 24*v2^4*a1*b1 + 24*v1^2*v3^2*a1*b1 + 36*v2^2*v3^2*a1*b1 + 12*v3^4*a1*b1 - 36*v1^2*v4^2*a1*b1 - 24*v2^2*v4^2*a1*b1 - 36*v3^2*v4^2*a1*b1 - 48*v4^4*a1*b1
+8*v1^3*v2*a1*c1 + 8*v1*v2^3*a1*c1 + 8*v1*v2*v3^2*a1*c1 + 8*v1*v2*v4^2*a1*c1 - 16*E*v1*v2*a1^2
+-4*v1^2*v4*a1*c0 - 4*v2^2*v4*a1*c0 + 4*v3^2*v4*a1*c0 - 4*v4^3*a1*c0 + 4*v1^2*v4*a0*c1 + 4*v2^2*v4*a0*c1 + 12*v3^2*v4*a0*c1 + 4*v4^3*a0*c1 - 8*v3^2*a1^2 + 8*v4^2*a1^2
+-24*v1^2*v4*a1^2 - 24*v2^2*v4*a1^2 - 48*v3^2*v4*a1^2 + 96*v4^3*a1^2 - 24*v1^2*v4*a1*b0 - 24*v2^2*v4*a1*b0 - 48*v4^3*a1*b0 + 72*v1^2*v4*a0*b1 + 72*v2^2*v4*a0*b1 + 96*v3^2*v4*a0*b1 + 48*v4^3*a0*b1
+144*v1^2*v2*v4*a1*b1 + 24*v2^3*v4*a1*b1 + 72*v2*v3^2*v4*a1*b1 - 96*v2*v4^3*a1*b1
+48*v1^2*v2*v3*a1*b1 + 48*v2^3*v3*a1*b1 + 48*v2*v3^3*a1*b1 + 48*v2*v3*v4^2*a1*b1
+288*v1*v2*v3*v4*a1*c1
+-8*v2^2*v4*a1^2 - 24*v3^2*v4*a1^2 + 32*v4^3*a1^2 - 16*v1^2*v4*a1*b0 - 8*v2^2*v4*a1*b0 + 8*v3^2*v4*a1*b0 - 16*v4^3*a1*b0 + 16*v1^2*v4*a0*b1 + 24*v2^2*v4*a0*b1 + 40*v3^2*v4*a0*b1 + 16*v4^3*a0*b1
+144*v1^2*v2*v4*a1*c1 + 24*v2^3*v4*a1*c1 + 72*v2*v3^2*v4*a1*c1 - 96*v2*v4^3*a1*c1
+48*v3*v4*a0*c0 - 96*v3*a0*a1
+24*v1^2*v2*v4*a1*c1 + 24*v2^3*v4*a1*c1 - 32*v2*v4^3*a1*c1
+-48*v1^2*v4*a1^2 - 24*v2^2*v4*a1^2 - 24*v3^2*v4*a1^2 + 96*v4^3*a1^2 - 24*v2^2*v4*a1*b0 - 24*v3^2*v4*a1*b0 - 48*v4^3*a1*b0 + 96*v1^2*v4*a0*b1 + 72*v2^2*v4*a0*b1 + 72*v3^2*v4*a0*b1 + 48*v4^3*a0*b1
+72*v1^2*v3*v4*a1*b1 + 24*v2^2*v3*v4*a1*b1 - 32*v3*v4^3*a1*b1
+48*v1^3*v4*a1*b1 + 72*v1*v2^2*v4*a1*b1 + 72*v1*v3^2*v4*a1*b1 - 96*v1*v4^3*a1*b1
+8*v3^3*v4*a1*b1 - 8*v3*v4^3*a1*b1
+24*v1^2*v2*v3*a1*b1 + 24*v2^3*v3*a1*b1 + 24*v2*v3^3*a1*b1 + 24*v2*v3*v4^2*a1*b1
+24*v2*v3^2*v4*a1*c1 - 8*v2*v4^3*a1*c1
+72*v1^2*v2*v4*a1*b1 + 72*v2*v3^2*v4*a1*b1 - 48*v2*v4^3*a1*b1
+24*v2^3*v4*a1*b1 + 72*v2*v3^2*v4*a1*b1 - 48*v2*v4^3*a1*b1
+-96*v3*v4*a0*a1 + 48*v3*v4*a0*b0
+-16*v2*v3*v4*a1^2 + 16*v2*v3*v4*a1*b0 + 16*v2*v3*v4*a0*b1
+8*v1*v4*a0*c0 - 16*v1*a0*a1
+24*v2*v4*a0*c0 - 48*v2*a0*a1
+-24*v2^2*v4*a1^2 - 8*v3^2*v4*a1^2 + 32*v4^3*a1^2 - 16*v1^2*v4*a1*b0 + 8*v2^2*v4*a1*b0 - 8*v3^2*v4*a1*b0 - 16*v4^3*a1*b0 + 16*v1^2*v4*a0*b1 + 40*v2^2*v4*a0*b1 + 24*v3^2*v4*a0*b1 + 16*v4^3*a0*b1
+-48*v1*v4*a0*a1 + 24*v1*v4*a0*b0
+48*v1*v4*a0*c0 - 96*v1*a0*a1
+288*v1*v2*v3*v4*a1*b1
+-24*v1^2*v4*a1^2 - 8*v3^2*v4*a1^2 + 32*v4^3*a1^2 + 8*v1^2*v4*a1*b0 - 16*v2^2*v4*a1*b0 - 8*v3^2*v4*a1*b0 - 16*v4^3*a1*b0 + 40*v1^2*v4*a0*b1 + 16*v2^2*v4*a0*b1 + 24*v3^2*v4*a0*b1 + 16*v4^3*a0*b1
+72*v1^2*v2*v4*a1*c1 + 8*v2^3*v4*a1*c1 - 32*v2*v4^3*a1*c1
+4*v1^4*a1*c1 + 4*v1^2*v2^2*a1*c1 + 16*v1^2*v3^2*a1*c1 + 12*v2^2*v3^2*a1*c1 + 12*v3^4*a1*c1 - 12*v1^2*v4^2*a1*c1 - 16*v2^2*v4^2*a1*c1 - 4*v3^2*v4^2*a1*c1 - 16*v4^4*a1*c1 - 8*E*v1^2*a1^2 - 24*E*v3^2*a1^2 + 32*E*v4^2*a1^2
+-24*v1^2*v4*a1^2 - 24*v2^2*v4*a1^2 + 48*v4^3*a1^2 - 24*v3^2*v4*a1*b0 - 24*v4^3*a1*b0 + 48*v1^2*v4*a0*b1 + 48*v2^2*v4*a0*b1 + 24*v3^2*v4*a0*b1 + 24*v4^3*a0*b1
+4*v1^4*a1*b1 + 4*v1^2*v2^2*a1*b1 + 4*v1^2*v3^2*a1*b1 - 4*v2^2*v4^2*a1*b1 - 4*v3^2*v4^2*a1*b1 - 4*v4^4*a1*b1
+12*v1^4*a1*b1 + 24*v1^2*v2^2*a1*b1 + 12*v2^4*a1*b1 + 12*v1^2*v3^2*a1*b1 + 12*v2^2*v3^2*a1*b1 - 12*v1^2*v4^2*a1*b1 - 12*v2^2*v4^2*a1*b1 - 24*v3^2*v4^2*a1*b1 - 24*v4^4*a1*b1
+8*v1^2*v2*v3*a1*b1 + 8*v2^3*v3*a1*b1 + 8*v2*v3^3*a1*b1 + 8*v2*v3*v4^2*a1*b1
+24*v1^2*v2*a1*c0 + 24*v2^3*a1*c0 + 24*v2*v3^2*a1*c0 - 24*v2*v4^2*a1*c0 + 24*v1^2*v2*a0*c1 + 24*v2^3*a0*c1 + 24*v2*v3^2*a0*c1 + 72*v2*v4^2*a0*c1 - 96*E*v2*a0*a1
+-8*v2^2*v4*a1^2 + 8*v4^3*a1^2 - 4*v1^2*v4*a1*b0 + 4*v2^2*v4*a1*b0 - 4*v3^2*v4*a1*b0 - 4*v4^3*a1*b0 + 4*v1^2*v4*a0*b1 + 12*v2^2*v4*a0*b1 + 4*v3^2*v4*a0*b1 + 4*v4^3*a0*b1
+72*v1^2*v2*v4*a1*b1 + 24*v2^3*v4*a1*b1 - 48*v2*v4^3*a1*b1
+-24*v1^2*v4*a1^2 - 8*v2^2*v4*a1^2 + 32*v4^3*a1^2 + 8*v1^2*v4*a1*b0 - 8*v2^2*v4*a1*b0 - 16*v3^2*v4*a1*b0 - 16*v4^3*a1*b0 + 40*v1^2*v4*a0*b1 + 24*v2^2*v4*a0*b1 + 16*v3^2*v4*a0*b1 + 16*v4^3*a0*b1
+4*v1^2*v2^2*a1*b1 + 4*v2^4*a1*b1 + 4*v2^2*v3^2*a1*b1 - 4*v1^2*v4^2*a1*b1 - 4*v3^2*v4^2*a1*b1 - 4*v4^4*a1*b1
+96*v1*v3*v4*a1*c0 + 96*v1*v3*v4*a0*c1 - 96*v1*v3*a1^2
+24*v1^3*v4*a1*b1 + 72*v1*v2^2*v4*a1*b1 - 48*v1*v4^3*a1*b1
+8*v1^3*v4*a1*c1 - 8*v1*v4^3*a1*c1
+24*v2^2*v3*v4*a1*c1 - 8*v3*v4^3*a1*c1
+-8*v4*a0^2
+72*v1^2*v2*v4*a1*b1 + 24*v2^3*v4*a1*b1 + 144*v2*v3^2*v4*a1*b1 - 96*v2*v4^3*a1*b1
+24*v1^2*a0*b0 + 24*v2^2*a0*b0 + 24*v3^2*a0*b0 + 24*v4^2*a0*b0
+24*v1^3*v3*a1*b1 + 24*v1*v2^2*v3*a1*b1 + 24*v1*v3^3*a1*b1 + 24*v1*v3*v4^2*a1*b1
+24*v1*v2^2*v4*a1*c1 + 72*v1*v3^2*v4*a1*c1 - 32*v1*v4^3*a1*c1
+24*v1^3*v4*a1*b1 + 24*v1*v3^2*v4*a1*b1 - 32*v1*v4^3*a1*b1
+-8*v1^2*v4*a1*c0 + 8*v2^2*v4*a1*c0 - 16*v3^2*v4*a1*c0 - 16*v4^3*a1*c0 + 24*v1^2*v4*a0*c1 + 40*v2^2*v4*a0*c1 + 16*v3^2*v4*a0*c1 + 16*v4^3*a0*c1 - 8*v1^2*a1^2 - 24*v2^2*a1^2 + 32*v4^2*a1^2
+72*v1^2*v3*v4*a1*b1 + 144*v2^2*v3*v4*a1*b1 + 24*v3^3*v4*a1*b1 - 96*v3*v4^3*a1*b1
+12*v1^2*v2*a1*b0 + 12*v2^3*a1*b0 + 12*v2*v3^2*a1*b0 - 12*v2*v4^2*a1*b0 + 12*v1^2*v2*a0*b1 + 12*v2^3*a0*b1 + 12*v2*v3^2*a0*b1 + 36*v2*v4^2*a0*b1
+-24*a0^2
+12*v1^2*v2^2*a1*b1 + 12*v2^4*a1*b1 + 4*v1^2*v3^2*a1*b1 + 16*v2^2*v3^2*a1*b1 + 4*v3^4*a1*b1 - 16*v1^2*v4^2*a1*b1 - 4*v2^2*v4^2*a1*b1 - 12*v3^2*v4^2*a1*b1 - 16*v4^4*a1*b1
+-24*v1^2*v4*a1^2 - 48*v2^2*v4*a1^2 - 24*v3^2*v4*a1^2 + 96*v4^3*a1^2 - 24*v1^2*v4*a1*b0 - 24*v3^2*v4*a1*b0 - 48*v4^3*a1*b0 + 72*v1^2*v4*a0*b1 + 96*v2^2*v4*a0*b1 + 72*v3^2*v4*a0*b1 + 48*v4^3*a0*b1
+24*v1^4*a1*b1 + 36*v1^2*v2^2*a1*b1 + 12*v2^4*a1*b1 + 36*v1^2*v3^2*a1*b1 + 24*v2^2*v3^2*a1*b1 + 12*v3^4*a1*b1 - 24*v1^2*v4^2*a1*b1 - 36*v2^2*v4^2*a1*b1 - 36*v3^2*v4^2*a1*b1 - 48*v4^4*a1*b1
+48*v1^3*v4*a1*c1 + 72*v1*v2^2*v4*a1*c1 + 72*v1*v3^2*v4*a1*c1 - 96*v1*v4^3*a1*c1
+-96*v2*v3*v4*a1^2 + 96*v2*v3*v4*a1*b0 + 96*v2*v3*v4*a0*b1
+24*v1^2*v2*v4*a1*c1 - 8*v2*v4^3*a1*c1
+12*v1^2*v2*a1*c0 + 12*v2^3*a1*c0 + 12*v2*v3^2*a1*c0 - 12*v2*v4^2*a1*c0 + 12*v1^2*v2*a0*c1 + 12*v2^3*a0*c1 + 12*v2*v3^2*a0*c1 + 36*v2*v4^2*a0*c1 - 48*E*v2*a0*a1
+12*v1^4*a1*b1 + 12*v1^2*v2^2*a1*b1 + 16*v1^2*v3^2*a1*b1 + 4*v2^2*v3^2*a1*b1 + 4*v3^4*a1*b1 - 4*v1^2*v4^2*a1*b1 - 16*v2^2*v4^2*a1*b1 - 12*v3^2*v4^2*a1*b1 - 16*v4^4*a1*b1
+48*v1^3*v3*a1*b1 + 48*v1*v2^2*v3*a1*b1 + 48*v1*v3^3*a1*b1 + 48*v1*v3*v4^2*a1*b1
+72*v1*v2^2*v4*a1*c1 + 24*v1*v3^2*v4*a1*c1 - 32*v1*v4^3*a1*c1
+-24*v2^2*v4*a1*c0 - 24*v3^2*v4*a1*c0 - 48*v4^3*a1*c0 + 96*v1^2*v4*a0*c1 + 72*v2^2*v4*a0*c1 + 72*v3^2*v4*a0*c1 + 48*v4^3*a0*c1 - 48*v1^2*a1^2 - 24*v2^2*a1^2 - 24*v3^2*a1^2 + 96*v4^2*a1^2
+72*v1^2*v2*v4*a1*b1 + 24*v2*v3^2*v4*a1*b1 - 32*v2*v4^3*a1*b1
+24*v2^3*v4*a1*b1 + 24*v2*v3^2*v4*a1*b1 - 32*v2*v4^3*a1*b1
+24*v2^2*v3*v4*a1*b1 - 8*v3*v4^3*a1*b1
+8*v1^2*v2*v3*a1*c1 + 8*v2^3*v3*a1*c1 + 8*v2*v3^3*a1*c1 + 8*v2*v3*v4^2*a1*c1 - 16*E*v2*v3*a1^2
+24*v1^2*v2*v3*a1*c1 + 24*v2^3*v3*a1*c1 + 24*v2*v3^3*a1*c1 + 24*v2*v3*v4^2*a1*c1 - 48*E*v2*v3*a1^2
+24*v3*v4*a0*c0 - 48*v3*a0*a1
+8*v1^3*v2*a1*b1 + 8*v1*v2^3*a1*b1 + 8*v1*v2*v3^2*a1*b1 + 8*v1*v2*v4^2*a1*b1
+24*v1^3*v4*a1*c1 + 24*v1*v3^2*v4*a1*c1 - 32*v1*v4^3*a1*c1
+-4*v1^2*v4*a1*c0 + 4*v2^2*v4*a1*c0 - 4*v3^2*v4*a1*c0 - 4*v4^3*a1*c0 + 4*v1^2*v4*a0*c1 + 12*v2^2*v4*a0*c1 + 4*v3^2*v4*a0*c1 + 4*v4^3*a0*c1 - 8*v2^2*a1^2 + 8*v4^2*a1^2
+8*v2*v4*a0*c0 - 16*v2*a0*a1
+144*v1*v2*v3*v4*a1*c1
+8*v2^3*v4*a1*c1 - 8*v2*v4^3*a1*c1
+4*v1^2*v3*a1*b0 + 4*v2^2*v3*a1*b0 + 4*v3^3*a1*b0 - 4*v3*v4^2*a1*b0 + 4*v1^2*v3*a0*b1 + 4*v2^2*v3*a0*b1 + 4*v3^3*a0*b1 + 12*v3*v4^2*a0*b1
+16*v1*v3*v4*a1*c0 + 16*v1*v3*v4*a0*c1 - 16*v1*v3*a1^2
+12*v1^4*a1*c1 + 12*v1^2*v2^2*a1*c1 + 16*v1^2*v3^2*a1*c1 + 4*v2^2*v3^2*a1*c1 + 4*v3^4*a1*c1 - 4*v1^2*v4^2*a1*c1 - 16*v2^2*v4^2*a1*c1 - 12*v3^2*v4^2*a1*c1 - 16*v4^4*a1*c1 - 24*E*v1^2*a1^2 - 8*E*v3^2*a1^2 + 32*E*v4^2*a1^2
+-96*v1*v4*a0*a1 + 48*v1*v4*a0*b0
+-24*v4*a0^2
+48*v1^2*v2*v3*a1*c1 + 48*v2^3*v3*a1*c1 + 48*v2*v3^3*a1*c1 + 48*v2*v3*v4^2*a1*c1 - 96*E*v2*v3*a1^2
+4*v1^4*a1*b1 + 16*v1^2*v2^2*a1*b1 + 12*v2^4*a1*b1 + 4*v1^2*v3^2*a1*b1 + 12*v2^2*v3^2*a1*b1 - 12*v1^2*v4^2*a1*b1 - 4*v2^2*v4^2*a1*b1 - 16*v3^2*v4^2*a1*b1 - 16*v4^4*a1*b1
+48*v1^3*v2*a1*b1 + 48*v1*v2^3*a1*b1 + 48*v1*v2*v3^2*a1*b1 + 48*v1*v2*v4^2*a1*b1
+48*v2*v4*a0*c0 - 96*v2*a0*a1
+72*v1^2*v2*v4*a1*c1 + 24*v2^3*v4*a1*c1 - 48*v2*v4^3*a1*c1
+24*v1^2*v2*v4*a1*c1 + 72*v2*v3^2*v4*a1*c1 - 32*v2*v4^3*a1*c1
+12*v1^4*a1*c1 + 36*v1^2*v2^2*a1*c1 + 24*v2^4*a1*c1 + 24*v1^2*v3^2*a1*c1 + 36*v2^2*v3^2*a1*c1 + 12*v3^4*a1*c1 - 36*v1^2*v4^2*a1*c1 - 24*v2^2*v4^2*a1*c1 - 36*v3^2*v4^2*a1*c1 - 48*v4^4*a1*c1 - 24*E*v1^2*a1^2 - 48*E*v2^2*a1^2 - 24*E*v3^2*a1^2 + 96*E*v4^2*a1^2
+-96*v1*v2*v4*a1^2 + 96*v1*v2*v4*a1*b0 + 96*v1*v2*v4*a0*b1
+72*v1^2*v3*v4*a1*b1 + 72*v2^2*v3*v4*a1*b1 + 48*v3^3*v4*a1*b1 - 96*v3*v4^3*a1*b1
+24*v1^3*v2*a1*c1 + 24*v1*v2^3*a1*c1 + 24*v1*v2*v3^2*a1*c1 + 24*v1*v2*v4^2*a1*c1 - 48*E*v1*v2*a1^2
+48*v1*v2*v3*v4*a1*c1
+4*v1^4*a1*c1 + 16*v1^2*v2^2*a1*c1 + 12*v2^4*a1*c1 + 4*v1^2*v3^2*a1*c1 + 12*v2^2*v3^2*a1*c1 - 12*v1^2*v4^2*a1*c1 - 4*v2^2*v4^2*a1*c1 - 16*v3^2*v4^2*a1*c1 - 16*v4^4*a1*c1 - 8*E*v1^2*a1^2 - 24*E*v2^2*a1^2 + 32*E*v4^2*a1^2
+72*v1^2*v2*v4*a1*c1 + 24*v2^3*v4*a1*c1 + 144*v2*v3^2*v4*a1*c1 - 96*v2*v4^3*a1*c1
+24*v1^4*a1*c1 + 36*v1^2*v2^2*a1*c1 + 12*v2^4*a1*c1 + 36*v1^2*v3^2*a1*c1 + 24*v2^2*v3^2*a1*c1 + 12*v3^4*a1*c1 - 24*v1^2*v4^2*a1*c1 - 36*v2^2*v4^2*a1*c1 - 36*v3^2*v4^2*a1*c1 - 48*v4^4*a1*c1 - 48*E*v1^2*a1^2 - 24*E*v2^2*a1^2 - 24*E*v3^2*a1^2 + 96*E*v4^2*a1^2
+4*v1^3*a1*b0 + 4*v1*v2^2*a1*b0 + 4*v1*v3^2*a1*b0 - 4*v1*v4^2*a1*b0 + 4*v1^3*a0*b1 + 4*v1*v2^2*a0*b1 + 4*v1*v3^2*a0*b1 + 12*v1*v4^2*a0*b1
+12*v1^3*a1*b0 + 12*v1*v2^2*a1*b0 + 12*v1*v3^2*a1*b0 - 12*v1*v4^2*a1*b0 + 12*v1^3*a0*b1 + 12*v1*v2^2*a0*b1 + 12*v1*v3^2*a0*b1 + 36*v1*v4^2*a0*b1
+96*v2*v3*v4*a1*c0 + 96*v2*v3*v4*a0*c1 - 96*v2*v3*a1^2
+-24*v3^2*v4*a1*c0 - 24*v4^3*a1*c0 + 48*v1^2*v4*a0*c1 + 48*v2^2*v4*a0*c1 + 24*v3^2*v4*a0*c1 + 24*v4^3*a0*c1 - 24*v1^2*a1^2 - 24*v2^2*a1^2 + 48*v4^2*a1^2
+8*v3^3*v4*a1*c1 - 8*v3*v4^3*a1*c1
+24*v1^3*v4*a1*b1 + 72*v1*v3^2*v4*a1*b1 - 48*v1*v4^3*a1*b1
+24*v1^3*v4*a1*b1 + 72*v1*v2^2*v4*a1*b1 + 144*v1*v3^2*v4*a1*b1 - 96*v1*v4^3*a1*b1
+72*v1^2*v2*v4*a1*b1 + 48*v2^3*v4*a1*b1 + 72*v2*v3^2*v4*a1*b1 - 96*v2*v4^3*a1*b1
+24*v1^3*v4*a1*c1 + 72*v1*v2^2*v4*a1*c1 + 144*v1*v3^2*v4*a1*c1 - 96*v1*v4^3*a1*c1
+-48*v1*v2*v4*a1^2 + 48*v1*v2*v4*a1*b0 + 48*v1*v2*v4*a0*b1
+72*v1^2*v2*v4*a1*c1 + 48*v2^3*v4*a1*c1 + 72*v2*v3^2*v4*a1*c1 - 96*v2*v4^3*a1*c1
+48*v2*v3*v4*a1*c0 + 48*v2*v3*v4*a0*c1 - 48*v2*v3*a1^2
+4*v1^4*a1*c1 + 4*v1^2*v2^2*a1*c1 + 4*v1^2*v3^2*a1*c1 - 4*v2^2*v4^2*a1*c1 - 4*v3^2*v4^2*a1*c1 - 4*v4^4*a1*c1 - 8*E*v1^2*a1^2 + 8*E*v4^2*a1^2
+24*v1^2*v3*v4*a1*c1 - 8*v3*v4^3*a1*c1
+-48*v1*v3*v4*a1^2 + 48*v1*v3*v4*a1*b0 + 48*v1*v3*v4*a0*b1
+4*v1^2*v2^2*a1*b1 + 4*v2^4*a1*b1 + 12*v1^2*v3^2*a1*b1 + 16*v2^2*v3^2*a1*b1 + 12*v3^4*a1*b1 - 16*v1^2*v4^2*a1*b1 - 12*v2^2*v4^2*a1*b1 - 4*v3^2*v4^2*a1*b1 - 16*v4^4*a1*b1
+4*v1^2*v2^2*a1*c1 + 4*v2^4*a1*c1 + 12*v1^2*v3^2*a1*c1 + 16*v2^2*v3^2*a1*c1 + 12*v3^4*a1*c1 - 16*v1^2*v4^2*a1*c1 - 12*v2^2*v4^2*a1*c1 - 4*v3^2*v4^2*a1*c1 - 16*v4^4*a1*c1 - 8*E*v2^2*a1^2 - 24*E*v3^2*a1^2 + 32*E*v4^2*a1^2
+12*v1^4*a1*b1 + 24*v1^2*v2^2*a1*b1 + 12*v2^4*a1*b1 + 36*v1^2*v3^2*a1*b1 + 36*v2^2*v3^2*a1*b1 + 24*v3^4*a1*b1 - 36*v1^2*v4^2*a1*b1 - 36*v2^2*v4^2*a1*b1 - 24*v3^2*v4^2*a1*b1 - 48*v4^4*a1*b1
+8*v2^3*v4*a1*c1 + 72*v2*v3^2*v4*a1*c1 - 32*v2*v4^3*a1*c1
+12*v1^3*a1*c0 + 12*v1*v2^2*a1*c0 + 12*v1*v3^2*a1*c0 - 12*v1*v4^2*a1*c0 + 12*v1^3*a0*c1 + 12*v1*v2^2*a0*c1 + 12*v1*v3^2*a0*c1 + 36*v1*v4^2*a0*c1 - 48*E*v1*a0*a1
+16*v1*v2*v4*a1*c0 + 16*v1*v2*v4*a0*c1 - 16*v1*v2*a1^2
+12*v1^2*v3*a1*b0 + 12*v2^2*v3*a1*b0 + 12*v3^3*a1*b0 - 12*v3*v4^2*a1*b0 + 12*v1^2*v3*a0*b1 + 12*v2^2*v3*a0*b1 + 12*v3^3*a0*b1 + 36*v3*v4^2*a0*b1
+-48*v4*a0^2
+24*v1^2*v2*v4*a1*b1 - 8*v2*v4^3*a1*b1
+72*v1^2*v3*v4*a1*c1 + 72*v2^2*v3*v4*a1*c1 - 48*v3*v4^3*a1*c1
+-96*v1*v3*v4*a1^2 + 96*v1*v3*v4*a1*b0 + 96*v1*v3*v4*a0*b1
+12*v1^4*a1*c1 + 12*v1^2*v2^2*a1*c1 + 24*v1^2*v3^2*a1*c1 + 12*v2^2*v3^2*a1*c1 + 12*v3^4*a1*c1 - 12*v1^2*v4^2*a1*c1 - 24*v2^2*v4^2*a1*c1 - 12*v3^2*v4^2*a1*c1 - 24*v4^4*a1*c1 - 24*E*v1^2*a1^2 - 24*E*v3^2*a1^2 + 48*E*v4^2*a1^2
+12*v1^4*a1*c1 + 16*v1^2*v2^2*a1*c1 + 4*v2^4*a1*c1 + 12*v1^2*v3^2*a1*c1 + 4*v2^2*v3^2*a1*c1 - 4*v1^2*v4^2*a1*c1 - 12*v2^2*v4^2*a1*c1 - 16*v3^2*v4^2*a1*c1 - 16*v4^4*a1*c1 - 24*E*v1^2*a1^2 - 8*E*v2^2*a1^2 + 32*E*v4^2*a1^2
+-24*v1^2*v4*a1^2 - 24*v3^2*v4*a1^2 + 48*v4^3*a1^2 - 24*v2^2*v4*a1*b0 - 24*v4^3*a1*b0 + 48*v1^2*v4*a0*b1 + 24*v2^2*v4*a0*b1 + 48*v3^2*v4*a0*b1 + 24*v4^3*a0*b1
+4*v1^2*v3*a1*c0 + 4*v2^2*v3*a1*c0 + 4*v3^3*a1*c0 - 4*v3*v4^2*a1*c0 + 4*v1^2*v3*a0*c1 + 4*v2^2*v3*a0*c1 + 4*v3^3*a0*c1 + 12*v3*v4^2*a0*c1 - 16*E*v3*a0*a1
+72*v2^2*v3*v4*a1*c1 + 8*v3^3*v4*a1*c1 - 32*v3*v4^3*a1*c1
+72*v2^2*v3*v4*a1*c1 + 24*v3^3*v4*a1*c1 - 48*v3*v4^3*a1*c1
+12*v1^2*v2^2*a1*c1 + 12*v2^4*a1*c1 + 12*v1^2*v3^2*a1*c1 + 24*v2^2*v3^2*a1*c1 + 12*v3^4*a1*c1 - 24*v1^2*v4^2*a1*c1 - 12*v2^2*v4^2*a1*c1 - 12*v3^2*v4^2*a1*c1 - 24*v4^4*a1*c1 - 24*E*v2^2*a1^2 - 24*E*v3^2*a1^2 + 48*E*v4^2*a1^2
+24*v1^2*v3*v4*a1*b1 + 72*v2^2*v3*v4*a1*b1 - 32*v3*v4^3*a1*b1
+48*v1*v2*v4*a1*c0 + 48*v1*v2*v4*a0*c1 - 48*v1*v2*a1^2
+48*v1*v3*v4*a1*c0 + 48*v1*v3*v4*a0*c1 - 48*v1*v3*a1^2
+8*v2^3*v4*a1*b1 - 8*v2*v4^3*a1*b1
+24*v1^2*v3*v4*a1*c1 + 72*v2^2*v3*v4*a1*c1 - 32*v3*v4^3*a1*c1
+-8*a0^2
+24*v1*v2^2*v4*a1*c1 - 8*v1*v4^3*a1*c1
+24*v1^2*v3*v4*a1*b1 + 24*v3^3*v4*a1*b1 - 32*v3*v4^3*a1*b1
+48*v1^3*v2*a1*c1 + 48*v1*v2^3*a1*c1 + 48*v1*v2*v3^2*a1*c1 + 48*v1*v2*v4^2*a1*c1 - 96*E*v1*v2*a1^2
+24*v1^2*v3*a1*b0 + 24*v2^2*v3*a1*b0 + 24*v3^3*a1*b0 - 24*v3*v4^2*a1*b0 + 24*v1^2*v3*a0*b1 + 24*v2^2*v3*a0*b1 + 24*v3^3*a0*b1 + 72*v3*v4^2*a0*b1
+-16*v2*v4*a0*a1 + 8*v2*v4*a0*b0
+8*v1^3*v4*a1*b1 + 72*v1*v2^2*v4*a1*b1 - 32*v1*v4^3*a1*b1
+24*v1*v2^2*v4*a1*b1 + 72*v1*v3^2*v4*a1*b1 - 32*v1*v4^3*a1*b1
+12*v1^2*v2^2*a1*c1 + 12*v2^4*a1*c1 + 4*v1^2*v3^2*a1*c1 + 16*v2^2*v3^2*a1*c1 + 4*v3^4*a1*c1 - 16*v1^2*v4^2*a1*c1 - 4*v2^2*v4^2*a1*c1 - 12*v3^2*v4^2*a1*c1 - 16*v4^4*a1*c1 - 24*E*v2^2*a1^2 - 8*E*v3^2*a1^2 + 32*E*v4^2*a1^2
+12*v1^2*a0*c0 + 12*v2^2*a0*c0 + 12*v3^2*a0*c0 + 12*v4^2*a0*c0 - 24*E*a0^2
+144*v1*v2*v3*v4*a1*b1
+24*v1^3*v4*a1*c1 + 72*v1*v2^2*v4*a1*c1 - 48*v1*v4^3*a1*c1
+8*v1^3*v4*a1*c1 + 72*v1*v2^2*v4*a1*c1 - 32*v1*v4^3*a1*c1
+4*v1^2*v2*a1*b0 + 4*v2^3*a1*b0 + 4*v2*v3^2*a1*b0 - 4*v2*v4^2*a1*b0 + 4*v1^2*v2*a0*b1 + 4*v2^3*a0*b1 + 4*v2*v3^2*a0*b1 + 12*v2*v4^2*a0*b1
+72*v1^2*v3*v4*a1*c1 + 144*v2^2*v3*v4*a1*c1 + 24*v3^3*v4*a1*c1 - 96*v3*v4^3*a1*c1
+24*v1^2*v3*a1*c0 + 24*v2^2*v3*a1*c0 + 24*v3^3*a1*c0 - 24*v3*v4^2*a1*c0 + 24*v1^2*v3*a0*c1 + 24*v2^2*v3*a0*c1 + 24*v3^3*a0*c1 + 72*v3*v4^2*a0*c1 - 96*E*v3*a0*a1
+
+Minimal associated prime ideals:
+Ideal (a0, v4, v3, v2, v1) of Multivariate Polynomial Ring in x, y, z, DDPsi, DPsi, Psi, v, r, E, v1, v2, v3, v4, a0, a1, b0, b1, c0, c1 over Rational Field
+Ideal (a1, a0) of Multivariate Polynomial Ring in x, y, z, DDPsi, DPsi, Psi, v, r, E, v1, v2, v3, v4, a0, a1, b0, b1, c0, c1 over Rational Field
+Ideal (v4*c0 - b0, E*c0 - v4*c1, -v4^2*c1 + E*b0, b1, a1 - 1/2*b0, a0, v3, v2, v1) of Multivariate Polynomial Ring in x, y, z, DDPsi, DPsi, Psi, v, r, E, v1, v2, v3, v4, a0, a1, b0, b1, c0, c1 over Rational Field
+Ideal (v4*c0 - b0, v1^2 + v2^2 + v3^2 - v4^2, c1, b1, a1 - b0, a0, E) of Multivariate Polynomial Ring in x, y, z, DDPsi, DPsi, Psi, v, r, E, v1, v2, v3, v4, a0, a1, b0, b1, c0, c1 over Rational Field
+
+(Compare joca.sage, which reduces against the raw ansatz and finds the faithful five primes; see the README for why the two decompositions differ.)

@@ -1,0 +1,1146 @@
+Sat Sep  5 11:25:56 PM EDT 2026
+cmd: sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 --locus membership --basic --latex
+script commit: 0628e66
+started after the consistency run (PID 130469) exited
+
+Building hydrogen / ansatz 5 from the differential-algebra library ...
+PDE: -Psi[x,x]*r - Psi[y,y]*r - Psi[z,z]*r - 2*Psi*r*E - 2*Psi
+ansatz inequation: v != 0
+PDE inequation: Psi != 0
+ansatz (9 eqs):
+    Psi[x] - DPsi*v[x]
+    Psi[y] - DPsi*v[y]
+    Psi[z] - DPsi*v[z]
+    DPsi[x] - DDPsi*v[x]
+    DPsi[y] - DDPsi*v[y]
+    DPsi[z] - DDPsi*v[z]
+    (a0 + a1*v)*DDPsi + (b0 + b1*v)*DPsi + (c0 + c1*v)*Psi
+    v - (v1*x + v2*y + v3*z + v4*r)
+    r^2 - (x^2 + y^2 + z^2)
+params: v1, v2, v3, v4, a0, a1, b0, b1, c0, c1
+
+Computing native DifferentialThomas decomposition of the ansatz together with Q (9 ansatz + 30 constancy eqs, Q from 2 inequations) ...
+-> 16 cells in 495.2s
+========================================================================
+
+  [cell 1] entering differential_prem: 39 reductors ...
+  [cell 1] differential_prem 15.3s (1106 eqns); entering GTZ minimal_associated_primes (1106 gens) ...
+  [cell 1] GTZ 2.7s -> 4 primes
+
+--- cell 1: zero {(none, generic)}; ansatz 39 eqs; 6 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (a1, a0)   [cell 1's inequations vanish identically on it]
+   V: Ideal (a0, v4, v3, v2, v1)   [cell 1's inequations vanish identically on it]
+   V: Ideal (v4*c0 - b0, E*c0 - v4*c1, -v4^2*c1 + E*b0, b1, a1 - 1/2*b0, a0, v3, v2, v1)   [cell 1's inequations vanish identically on it]
+   V: Ideal (v4*c0 - b0, v1^2 + v2^2 + v3^2 - v4^2, c1, b1, a1 - b0, a0, E)   [cell 1's inequations vanish identically on it]
+
+  [cell 2] entering differential_prem: 37 reductors ...
+  [cell 2] differential_prem 9.8s (880 eqns); entering GTZ minimal_associated_primes (881 gens) ...
+  [cell 2] GTZ 0.4s -> 4 primes
+
+--- cell 2: zero {a0}; ansatz 37 eqs; 3 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (a1, a0)   [cell 2's inequations vanish identically on it]
+   V: Ideal (a0, v4, v3, v2, v1)   [cell 2's inequations vanish identically on it]
+   V: Ideal (v4*c0 - b0, E*c0 - v4*c1, -v4^2*c1 + E*b0, b1, a1 - 1/2*b0, a0, v3, v2, v1)
+   V: Ideal (v4*c0 - b0, v1^2 + v2^2 + v3^2 - v4^2, c1, b1, a1 - b0, a0, E)
+
+  [cell 3] entering differential_prem: 37 reductors ...
+  [cell 3] differential_prem 0.1s (60 eqns); entering GTZ minimal_associated_primes (61 gens) ...
+  [cell 3] GTZ 0.0s -> 2 primes
+
+--- cell 3: zero {v4}; ansatz 37 eqs; 4 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (a1, a0, v4)   [cell 3's inequations vanish identically on it]
+   V: Ideal (a0, v4, v3, v2, v1)   [cell 3's inequations vanish identically on it]
+
+  [cell 4] entering differential_prem: 35 reductors ...
+  [cell 4] differential_prem 0.0s (42 eqns); entering GTZ minimal_associated_primes (44 gens) ...
+  [cell 4] GTZ 0.0s -> 2 primes
+
+--- cell 4: zero {a0, v4}; ansatz 35 eqs; 2 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (a1, a0, v4)   [cell 4's inequations vanish identically on it]
+   V: Ideal (a0, v4, v3, v2, v1)   [cell 4's inequations vanish identically on it]
+
+  [cell 5] entering differential_prem: 37 reductors ...
+  [cell 5] differential_prem 0.9s (226 eqns); entering GTZ minimal_associated_primes (227 gens) ...
+  [cell 5] GTZ 0.1s -> 1 primes
+
+--- cell 5: zero {a1}; ansatz 37 eqs; 3 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (a1, a0)   [cell 5's inequations vanish identically on it]
+
+  [cell 6] entering differential_prem: 35 reductors ...
+  [cell 6] differential_prem 0.0s (9 eqns); entering GTZ minimal_associated_primes (11 gens) ...
+  [cell 6] GTZ 0.0s -> 1 primes
+
+--- cell 6: zero {a1, v4}; ansatz 35 eqs; 2 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (a1, a0, v4)   [cell 6's inequations vanish identically on it]
+
+  [cell 7] entering differential_prem: 31 reductors ...
+  [cell 7] differential_prem 1.8s (168 eqns); entering GTZ minimal_associated_primes (171 gens) ...
+  [cell 7] GTZ 0.1s -> 2 primes
+
+--- cell 7: zero {a0, a1, v4}; ansatz 31 eqs; 4 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (b1, b0, a1, a0, v4)   [cell 7's inequations vanish identically on it]
+   V: Ideal (b0, a1, a0, v4, v3, v2, v1)   [cell 7's inequations vanish identically on it]
+
+  [cell 8] entering differential_prem: 29 reductors ...
+  [cell 8] differential_prem 0.4s (92 eqns); entering GTZ minimal_associated_primes (96 gens) ...
+  [cell 8] GTZ 0.0s -> 2 primes
+
+--- cell 8: zero {a0, a1, b0, v4}; ansatz 29 eqs; 2 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (b1, b0, a1, a0, v4)   [cell 8's inequations vanish identically on it]
+   V: Ideal (b0, a1, a0, v4, v3, v2, v1)   [cell 8's inequations vanish identically on it]
+
+  [cell 9] entering differential_prem: 29 reductors ...
+  [cell 9] differential_prem 0.0s (11 eqns); entering GTZ minimal_associated_primes (15 gens) ...
+  [cell 9] GTZ 0.0s -> 1 primes
+
+--- cell 9: zero {a0, a1, b1, v4}; ansatz 29 eqs; 2 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (b1, b0, a1, a0, v4)   [cell 9's inequations vanish identically on it]
+
+  [cell 10] entering differential_prem: 26 reductors ...
+  [cell 10] differential_prem 0.0s (3 eqns); entering GTZ minimal_associated_primes (10 gens) ...
+  [cell 10] GTZ 0.0s -> 1 primes
+
+--- cell 10: zero {a0, a1, b0, b1, c0, c1, v4}; ansatz 26 eqs; 2 param-ineqs, 1 jet-ineqs ---
+  minimal primes of <J_i U E_i>: NONE (the ideal is (1), and minAss((1)) = {})
+
+  [cell 11] entering differential_prem: 24 reductors ...
+  [cell 11] differential_prem 0.0s (3 eqns); entering GTZ minimal_associated_primes (11 gens) ...
+  [cell 11] GTZ 0.0s -> 1 primes
+
+--- cell 11: zero {a0, a1, b0, b1, c0, c1, v3, v4}; ansatz 24 eqs; 2 param-ineqs, 1 jet-ineqs ---
+  minimal primes of <J_i U E_i>: NONE (the ideal is (1), and minAss((1)) = {})
+
+  [cell 12] entering differential_prem: 22 reductors ...
+  [cell 12] differential_prem 0.0s (3 eqns); entering GTZ minimal_associated_primes (12 gens) ...
+  [cell 12] GTZ 0.0s -> 1 primes
+
+--- cell 12: zero {a0, a1, b0, b1, c0, c1, v2, v3, v4}; ansatz 22 eqs; 1 param-ineqs, 1 jet-ineqs ---
+  minimal primes of <J_i U E_i>: NONE (the ideal is (1), and minAss((1)) = {})
+
+  [cell 13] entering differential_prem: 33 reductors ...
+  [cell 13] differential_prem 476.4s (1129 eqns); entering GTZ minimal_associated_primes (1131 gens) ...
+  [cell 13] GTZ 1430.2s -> 4 primes
+
+--- cell 13: zero {a0, a1}; ansatz 33 eqs; 7 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (b1, b0, a1, a0)   [cell 13's inequations vanish identically on it]
+   V: Ideal (b0, a1, a0, v4, v3, v2, v1)   [cell 13's inequations vanish identically on it]
+   V: Ideal (c0^2 + 4*b0*c1, 4*v4*c1 + c0, v4*c0 - b0, b1 + 1/2*c0, a1, a0, v3, v2, v1, E + 1/8)
+   V: Ideal (-b1*c0 + b0*c1, v4*c1 - b1, v4*c0 - b0, a1, a0, v3, v2, v1, E + 1/2)
+
+  [cell 14] entering differential_prem: 31 reductors ...
+  [cell 14] differential_prem 167.9s (770 eqns); entering GTZ minimal_associated_primes (773 gens) ...
+  [cell 14] GTZ 1.3s -> 3 primes
+
+--- cell 14: zero {a0, a1, b0}; ansatz 31 eqs; 4 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (v4*c1 - b1, c0, b0, a1, a0, v3, v2, v1, E + 1/2)
+   V: Ideal (b0, a1, a0, v4, v3, v2, v1)   [cell 14's inequations vanish identically on it]
+   V: Ideal (b1, b0, a1, a0)   [cell 14's inequations vanish identically on it]
+
+  [cell 15] entering differential_prem: 31 reductors ...
+  [cell 15] differential_prem 4.2s (179 eqns); entering GTZ minimal_associated_primes (182 gens) ...
+  [cell 15] GTZ 0.1s -> 2 primes
+
+--- cell 15: zero {a0, a1, b1}; ansatz 31 eqs; 4 param-ineqs, 1 jet-ineqs ---
+   V: Ideal (b1, b0, a1, a0)   [cell 15's inequations vanish identically on it]
+   V: Ideal (v4*c0 - b0, c1, b1, a1, a0, v3, v2, v1, E + 1/2)
+
+  [cell 16] entering differential_prem: 28 reductors ...
+  [cell 16] differential_prem 0.9s (49 eqns); entering GTZ minimal_associated_primes (55 gens) ...
+  [cell 16] GTZ 0.2s -> 1 primes
+
+--- cell 16: zero {a0, a1, b0, b1, c0, c1}; ansatz 28 eqs; 3 param-ineqs, 1 jet-ineqs ---
+  minimal primes of <J_i U E_i>: NONE (the ideal is (1), and minAss((1)) = {})
+
+========================================================================
+Ansatz-consistency report (Algorithm MembershipLocus, Output):
+  the sandwich V_forall <= V_existsforall <= V_exists needs the
+  ansatz consistent throughout C^n, which by the proof of
+  Corollary cor:assembly means the cells C_i = Z(<E_i>, <h_i>)
+  = V(E_i) \ V(h_i) must cover C^n.
+
+  cell 1: C_1 = ( (0), <v4*a0*a1> )   [GENERIC: E_1 = (0)]
+  cell 2: C_2 = ( <a0>, <v4*a1> )
+  cell 3: C_3 = ( <v4>, <a0*a1> )
+  cell 4: C_4 = ( <a0, v4>, <a1> )
+  cell 5: C_5 = ( <a1>, <v4*a0> )
+  cell 6: C_6 = ( <a1, v4>, <a0> )
+  cell 7: C_7 = ( <a0, a1, v4>, <b0*b1> )
+  cell 8: C_8 = ( <a0, a1, b0, v4>, <b1> )
+  cell 9: C_9 = ( <a0, a1, b1, v4>, <b0> )
+  cell 10: C_10 = ( <a0, a1, b0, b1, c0, c1, v4>, <v3> )
+  cell 11: C_11 = ( <a0, a1, b0, b1, c0, c1, v3, v4>, <v2> )
+  cell 12: C_12 = ( <a0, a1, b0, b1, c0, c1, v2, v3, v4>, <v1> )
+  cell 13: C_13 = ( <a0, a1>, <v4*b0*b1> )
+  cell 14: C_14 = ( <a0, a1, b0>, <v4*b1> )
+  cell 15: C_15 = ( <a0, a1, b1>, <v4*b0> )
+  cell 16: C_16 = ( <a0, a1, b0, b1, c0, c1>, <v4> )
+
+  no generic cell has h_i a unit.  The ansatz MAY BE INCONSISTENT on
+  the uncovered locus, which is contained in the intersection of the
+  V(h_i) over the generic cells i = 1:
+      V(h_1) = V(v4*a0*a1)
+
+  This is a REPORT, not a decision procedure: the exact constructible
+  complement C^n \ union_i Z(C_i) is not computed.
+
+========================================================================
+RefiningPartition (Algorithm MembershipLocus, line 14) over the 33
+constructible set(s) {((0),(1)), W_1, C_1, ..., W_s, C_s}:
+
+  Z(W_i) SUBSET Z(C_i) verified for 16 of 16 component(s); the refinement skips
+  the intersections that containment makes empty.
+
+  [refine] member 1/33: 1 part(s), 1 piece(s), 0.0s
+  [refine] member 2/33: 2 part(s), 2 piece(s), 0.0s
+  [refine] member 3/33: 2 part(s), 2 piece(s), 0.0s
+  [refine] member 4/33: 3 part(s), 4 piece(s), 0.0s
+  [refine] member 5/33: 4 part(s), 6 piece(s), 0.2s
+  [refine] member 6/33: 5 part(s), 9 piece(s), 0.5s
+  [refine] member 7/33: 5 part(s), 9 piece(s), 0.5s
+  [refine] member 8/33: 6 part(s), 11 piece(s), 1.0s
+  [refine] member 9/33: 6 part(s), 11 piece(s), 1.0s
+  [refine] member 10/33: 7 part(s), 11 piece(s), 1.7s
+  [refine] member 11/33: 7 part(s), 11 piece(s), 1.7s
+  [refine] member 12/33: 8 part(s), 13 piece(s), 2.2s
+  [refine] member 13/33: 8 part(s), 13 piece(s), 2.2s
+  [refine] member 14/33: 9 part(s), 19 piece(s), 3.1s
+  [refine] member 15/33: 9 part(s), 19 piece(s), 3.1s
+  [refine] member 16/33: 10 part(s), 25 piece(s), 5.3s
+  [refine] member 17/33: 10 part(s), 25 piece(s), 5.3s
+  [refine] member 18/33: 11 part(s), 36 piece(s), 9.1s
+  [refine] member 19/33: 11 part(s), 36 piece(s), 9.1s
+  [refine] member 20/33: 12 part(s), 62 piece(s), 10.3s
+  [refine] member 21/33: 12 part(s), 62 piece(s), 10.3s
+  [refine] member 22/33: 13 part(s), 113 piece(s), 14.8s
+  [refine] member 23/33: 13 part(s), 113 piece(s), 14.8s
+  [refine] member 24/33: 14 part(s), 214 piece(s), 37.3s
+  [refine] member 25/33: 14 part(s), 214 piece(s), 37.3s
+  [refine] member 26/33: 15 part(s), 222 piece(s), 66.9s
+  [refine] member 27/33: 16 part(s), 224 piece(s), 69.5s
+  [refine] member 28/33: 17 part(s), 312 piece(s), 102.2s
+  [refine] member 29/33: 18 part(s), 313 piece(s), 102.7s
+  [refine] member 30/33: 19 part(s), 241 piece(s), 144.7s
+  [refine] member 31/33: 20 part(s), 242 piece(s), 147.9s
+  [refine] member 32/33: 21 part(s), 258 piece(s), 172.4s
+  [refine] member 33/33: 21 part(s), 258 piece(s), 172.4s
+
+  RefiningPartition: 21 part(s), 258 piece(s), 172.4s
+
+  parts and the D filter (line 15):
+
+   region 1: C^n, C_1   [dropped: C_1 holds but W_1 fails]
+        C^n \ (V(v4*a0*a1))
+   region 2: C^n, C_2, W_2   [IN D]
+        V(-v4^2*c1 + E*b0, E*c0 - v4*c1, a0, a1 - 1/2*b0, b1, v1, v2, v3, v4*a0*a1, v4*c0 - b0) \ (V(v4*a1) u V(a1) u V(v4) u V(v3^2 - v4^2, 2*v1*v2, 2*v2*v3, 2*v1*v3, v2^2 - v4^2, v1^2 - v4^2))
+        V(E, a0, a1 - b0, b1, c1, v1^2 + v2^2 + v3^2 - v4^2, v4*a0*a1, v4*c0 - b0) \ (V(v4*a1) u V(a1) u V(v4) u V(v3^2 - v4^2, 2*v1*v2, 2*v2*v3, 2*v1*v3, v2^2 - v4^2, v1^2 - v4^2))
+   region 3: C^n, C_2   [dropped: C_2 holds but W_2 fails]
+        V(a0, v4*a0*a1) \ (V(v4*a1) u V(-v4^2*c1 + E*b0, E*c0 - v4*c1, a0, a1 - 1/2*b0, b1, v1, v2, v3, v4*c0 - b0) u V(E, a0, a1 - b0, b1, c1, v1^2 + v2^2 + v3^2 - v4^2, v4*c0 - b0))
+   region 4: C^n, C_3   [dropped: C_3 holds but W_3 fails]
+        V(v4, v4*a0*a1, v4*a1) \ (V(a0*a1))
+   region 5: C^n, C_4   [dropped: C_4 holds but W_4 fails]
+        V(a0, a0*a1, v4, v4*a0*a1, v4*a1) \ (V(a1))
+   region 6: C^n, C_5   [dropped: C_5 holds but W_5 fails]
+        V(a0*a1, a1, v4*a0*a1, v4*a1) \ (V(v4*a0))
+   region 7: C^n, C_6   [dropped: C_6 holds but W_6 fails]
+        V(a0*a1, a1, v4, v4*a0, v4*a0*a1, v4*a1) \ (V(a0))
+   region 8: C^n, C_7   [dropped: C_7 holds but W_7 fails]
+        V(a0, a0*a1, a1, v4, v4*a0, v4*a0*a1, v4*a1) \ (V(b0*b1))
+   region 9: C^n, C_8   [dropped: C_8 holds but W_8 fails]
+        V(a0, a0*a1, a1, b0, b0*b1, v4, v4*a0, v4*a0*a1, v4*a1) \ (V(b1))
+   region 10: C^n, C_9   [dropped: C_9 holds but W_9 fails]
+        V(a0, a0*a1, a1, b0*b1, b1, v4, v4*a0, v4*a0*a1, v4*a1) \ (V(b0))
+   region 11: C^n, C_10   [dropped: C_10 holds but W_10 fails]
+        V(a0, a0*a1, a1, b0, b0*b1, b1, c0, c1, v4, v4*a0, v4*a0*a1, v4*a1) \ (V(v3))
+   region 12: C^n, C_11   [dropped: C_11 holds but W_11 fails]
+        V(a0, a0*a1, a1, b0, b0*b1, b1, c0, c1, v3, v4, v4*a0, v4*a0*a1, v4*a1) \ (V(v2))
+   region 13: C^n, C_12   [dropped: C_12 holds but W_12 fails]
+        V(a0, a0*a1, a1, b0, b0*b1, b1, c0, c1, v2, v3, v4, v4*a0, v4*a0*a1, v4*a1) \ (V(v1))
+   region 14: C^n, C_13, W_13   [IN D]
+        V(4*v4*c1 + c0, E + 1/8, a0, a0*a1, a1, b1 + 1/2*c0, c0^2 + 4*b0*c1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*c0 - b0) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(v4*b0*b1) u V(v4) u V(b1) u V(b0^2, 2*v2*b0*b1, 2*v1*v2*b1^2, v3^2*b1^2 - v4^2*b1^2, 2*v2*v3*b1^2, 2*v1*b0*b1, 2*v3*b0*b1, v2^2*b1^2 - v4^2*b1^2, v1^2*b1^2 - v4^2*b1^2, 2*v1*v3*b1^2) u V(v3^2 - v4^2, v3^2) u V(v3^2 - v4^2, 2*v1*v2, 2*v2*v3, 2*v1*v3, v2^2 - v4^2, v1^2 - v4^2) u V(b0) u V(-b0^2, 4*v4^2*b1^2))
+        V(-b1*c0 + b0*c1, E + 1/2, a0, a0*a1, a1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*c0 - b0, v4*c1 - b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(v4*b0*b1) u V(v4) u V(b1) u V(b0^2, 2*v2*b0*b1, 2*v1*v2*b1^2, v3^2*b1^2 - v4^2*b1^2, 2*v2*v3*b1^2, 2*v1*b0*b1, 2*v3*b0*b1, v2^2*b1^2 - v4^2*b1^2, v1^2*b1^2 - v4^2*b1^2, 2*v1*v3*b1^2) u V(v3^2 - v4^2, v3^2) u V(v3^2 - v4^2, 2*v1*v2, 2*v2*v3, 2*v1*v3, v2^2 - v4^2, v1^2 - v4^2) u V(b0) u V(-b0^2, 4*v4^2*b1^2))
+   region 15: C^n, C_13   [dropped: C_13 holds but W_13 fails]
+        V(a0, a0*a1, a1, v4*a0, v4*a0*a1, v4*a1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b0*b1) u V(4*v4*c1 + c0, E + 1/8, a0, a1, b1 + 1/2*c0, c0^2 + 4*b0*c1, v1, v2, v3, v4*c0 - b0) u V(-b1*c0 + b0*c1, E + 1/2, a0, a1, v1, v2, v3, v4*c0 - b0, v4*c1 - b1))
+        V(a0, a0*a1, a1, v1, v4*a0, v4*a0*a1, v4*a1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(v4*b0*b1) u V(4*v4*c1 + c0, E + 1/8, a0, a1, b1 + 1/2*c0, c0^2 + 4*b0*c1, v1, v2, v3, v4*c0 - b0) u V(-b1*c0 + b0*c1, E + 1/2, a0, a1, v1, v2, v3, v4*c0 - b0, v4*c1 - b1))
+        V(a0, a0*a1, a1, v2, v4*a0, v4*a0*a1, v4*a1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b0*b1) u V(4*v4*c1 + c0, E + 1/8, a0, a1, b1 + 1/2*c0, c0^2 + 4*b0*c1, v1, v2, v3, v4*c0 - b0) u V(-b1*c0 + b0*c1, E + 1/2, a0, a1, v1, v2, v3, v4*c0 - b0, v4*c1 - b1))
+        V(a0, a0*a1, a1, v1, v2, v4*a0, v4*a0*a1, v4*a1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(v4*b0*b1) u V(4*v4*c1 + c0, E + 1/8, a0, a1, b1 + 1/2*c0, c0^2 + 4*b0*c1, v1, v2, v3, v4*c0 - b0) u V(-b1*c0 + b0*c1, E + 1/2, a0, a1, v1, v2, v3, v4*c0 - b0, v4*c1 - b1))
+        V(a0, a0*a1, a1, v3, v4*a0, v4*a0*a1, v4*a1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b0*b1) u V(4*v4*c1 + c0, E + 1/8, a0, a1, b1 + 1/2*c0, c0^2 + 4*b0*c1, v1, v2, v3, v4*c0 - b0) u V(-b1*c0 + b0*c1, E + 1/2, a0, a1, v1, v2, v3, v4*c0 - b0, v4*c1 - b1))
+        V(a0, a0*a1, a1, v1, v3, v4*a0, v4*a0*a1, v4*a1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(v4*b0*b1) u V(4*v4*c1 + c0, E + 1/8, a0, a1, b1 + 1/2*c0, c0^2 + 4*b0*c1, v1, v2, v3, v4*c0 - b0) u V(-b1*c0 + b0*c1, E + 1/2, a0, a1, v1, v2, v3, v4*c0 - b0, v4*c1 - b1))
+        V(a0, a0*a1, a1, v2, v3, v4*a0, v4*a0*a1, v4*a1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b0*b1) u V(4*v4*c1 + c0, E + 1/8, a0, a1, b1 + 1/2*c0, c0^2 + 4*b0*c1, v1, v2, v3, v4*c0 - b0) u V(-b1*c0 + b0*c1, E + 1/2, a0, a1, v1, v2, v3, v4*c0 - b0, v4*c1 - b1))
+        V(a0, a0*a1, a1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(v4*b0*b1) u V(4*v4*c1 + c0, E + 1/8, a0, a1, b1 + 1/2*c0, c0^2 + 4*b0*c1, v1, v2, v3, v4*c0 - b0) u V(-b1*c0 + b0*c1, E + 1/2, a0, a1, v1, v2, v3, v4*c0 - b0, v4*c1 - b1))
+   region 16: C^n, C_14, W_14   [IN D]
+        V(E + 1/2, a0, a0*a1, a1, b0, b0*b1, c0, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1, v4*c1 - b1) \ (V(a0, a1, b0, v4) u V(v4*b1) u V(v4) u V(b1) u V(v3^2 - v4^2, v3^2) u V(v3^2 - v4^2, 2*v1*v2, 2*v2*v3, 2*v1*v3, v2^2 - v4^2, v1^2 - v4^2))
+   region 17: C^n, C_14   [dropped: C_14 holds but W_14 fails]
+        V(a0, a0*a1, a1, b0, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b1) u V(E + 1/2, a0, a1, b0, c0, v1, v2, v3, v4*c1 - b1))
+        V(a0, a0*a1, a1, b0, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(v4*b1) u V(E + 1/2, a0, a1, b0, c0, v1, v2, v3, v4*c1 - b1))
+        V(a0, a0*a1, a1, b0, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b1) u V(E + 1/2, a0, a1, b0, c0, v1, v2, v3, v4*c1 - b1))
+        V(a0, a0*a1, a1, b0, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(v4*b1) u V(E + 1/2, a0, a1, b0, c0, v1, v2, v3, v4*c1 - b1))
+        V(a0, a0*a1, a1, b0, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b1) u V(E + 1/2, a0, a1, b0, c0, v1, v2, v3, v4*c1 - b1))
+        V(a0, a0*a1, a1, b0, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(v4*b1) u V(E + 1/2, a0, a1, b0, c0, v1, v2, v3, v4*c1 - b1))
+        V(a0, a0*a1, a1, b0, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b1) u V(E + 1/2, a0, a1, b0, c0, v1, v2, v3, v4*c1 - b1))
+        V(a0, a0*a1, a1, b0, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1) \ (V(a0, a1, b0, v4) u V(v4*b1) u V(E + 1/2, a0, a1, b0, c0, v1, v2, v3, v4*c1 - b1))
+   region 18: C^n, C_15, W_15   [IN D]
+        V(E + 1/2, a0, a0*a1, a1, b0*b1, b1, c1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1, v4*b1, v4*c0 - b0) \ (V(a0, a1, b1, v4) u V(v4*b0) u V(v4) u V(b0) u V(v3^2 - v4^2, v3^2) u V(v3^2 - v4^2, 2*v1*v2, 2*v2*v3, 2*v1*v3, v2^2 - v4^2, v1^2 - v4^2))
+   region 19: C^n, C_15   [dropped: C_15 holds but W_15 fails]
+        V(a0, a0*a1, a1, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b0) u V(E + 1/2, a0, a1, b1, c1, v1, v2, v3, v4*c0 - b0))
+        V(a0, a0*a1, a1, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(v4*b0) u V(E + 1/2, a0, a1, b1, c1, v1, v2, v3, v4*c0 - b0))
+        V(a0, a0*a1, a1, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b0) u V(E + 1/2, a0, a1, b1, c1, v1, v2, v3, v4*c0 - b0))
+        V(a0, a0*a1, a1, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(v4*b0) u V(E + 1/2, a0, a1, b1, c1, v1, v2, v3, v4*c0 - b0))
+        V(a0, a0*a1, a1, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b0) u V(E + 1/2, a0, a1, b1, c1, v1, v2, v3, v4*c0 - b0))
+        V(a0, a0*a1, a1, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(v4*b0) u V(E + 1/2, a0, a1, b1, c1, v1, v2, v3, v4*c0 - b0))
+        V(a0, a0*a1, a1, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4*b0) u V(E + 1/2, a0, a1, b1, c1, v1, v2, v3, v4*c0 - b0))
+        V(a0, a0*a1, a1, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(v4*b0) u V(E + 1/2, a0, a1, b1, c1, v1, v2, v3, v4*c0 - b0))
+   region 20: C^n, C_16   [dropped: C_16 holds but W_16 fails]
+        V(a0, a0*a1, a1, b0, b0*b1, b1, c0, c1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, c0, c1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, c0, c1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, c0, c1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4) u V(v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, c0, c1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, c0, c1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v3, v4) u V(v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, c0, c1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, c0, c1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4))
+   region 21: C^n   [IN D]
+        V(v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(b0, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, b0, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, b0, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0*a1, a1, b0, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v4, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v1, v4, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v2, v4, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v1, v2, v4, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v3, v4, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v1, v3, v4, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v3, v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v2, v3, v4, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1, v2, v3, v4))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, b1, c0, c1))
+        V(a0, a0*a1, a1, b0, b0*b1, b1, v1, v2, v3, v4, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1)
+
+  5 of 21 part(s) are in D.
+
+========================================================================
+Minimal primes of the retained parts (Algorithm MembershipLocus, line 16):
+    [region 2 piece 1] minAss(a : b^inf) on 9 gen(s) ...
+    [region 2 piece 1] 0.0s -> 1 prime(s)
+    [region 2 piece 2] minAss(a : b^inf) on 7 gen(s) ...
+    [region 2 piece 2] 0.0s -> 1 prime(s)
+    [region 14 piece 1] minAss(a : b^inf) on 10 gen(s) ...
+    [region 14 piece 1] 0.0s -> 1 prime(s)
+    [region 14 piece 2] minAss(a : b^inf) on 9 gen(s) ...
+    [region 14 piece 2] 0.0s -> 1 prime(s)
+    [region 16 piece 1] minAss(a : b^inf) on 9 gen(s) ...
+    [region 16 piece 1] 0.0s -> 1 prime(s)
+    [region 18 piece 1] minAss(a : b^inf) on 9 gen(s) ...
+    [region 18 piece 1] 0.0s -> 1 prime(s)
+    [region 21 piece 1] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 1] 0.0s -> 1 prime(s)
+    [region 21 piece 2] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 2] 0.0s -> 1 prime(s)
+    [region 21 piece 3] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 3] 0.0s -> 1 prime(s)
+    [region 21 piece 4] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 4] 0.0s -> 1 prime(s)
+    [region 21 piece 5] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 5] 0.0s -> 1 prime(s)
+    [region 21 piece 6] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 6] 0.0s -> 1 prime(s)
+    [region 21 piece 7] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 7] 0.0s -> 1 prime(s)
+    [region 21 piece 8] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 8] 0.0s -> 1 prime(s)
+    [region 21 piece 9] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 9] 0.0s -> 1 prime(s)
+    [region 21 piece 10] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 10] 0.0s -> 1 prime(s)
+    [region 21 piece 11] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 11] 0.0s -> 1 prime(s)
+    [region 21 piece 12] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 12] 0.0s -> 1 prime(s)
+    [region 21 piece 13] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 13] 0.0s -> 1 prime(s)
+    [region 21 piece 14] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 14] 0.0s -> 1 prime(s)
+    [region 21 piece 15] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 15] 0.0s -> 1 prime(s)
+    [region 21 piece 16] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 16] 0.0s -> 1 prime(s)
+    [region 21 piece 17] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 17] 0.0s -> 1 prime(s)
+    [region 21 piece 18] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 18] 0.0s -> 1 prime(s)
+    [region 21 piece 19] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 19] 0.0s -> 1 prime(s)
+    [region 21 piece 20] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 20] 0.0s -> 1 prime(s)
+    [region 21 piece 21] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 21] 0.0s -> 1 prime(s)
+    [region 21 piece 22] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 22] 0.0s -> 1 prime(s)
+    [region 21 piece 23] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 23] 0.0s -> 1 prime(s)
+    [region 21 piece 24] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 24] 0.0s -> 1 prime(s)
+    [region 21 piece 25] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 25] 0.0s -> 1 prime(s)
+    [region 21 piece 26] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 26] 0.0s -> 1 prime(s)
+    [region 21 piece 27] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 27] 0.0s -> 1 prime(s)
+    [region 21 piece 28] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 28] 0.0s -> 1 prime(s)
+    [region 21 piece 29] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 29] 0.0s -> 1 prime(s)
+    [region 21 piece 30] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 30] 0.0s -> 1 prime(s)
+    [region 21 piece 31] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 31] 0.0s -> 1 prime(s)
+    [region 21 piece 32] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 32] 0.0s -> 1 prime(s)
+    [region 21 piece 33] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 33] 0.0s -> 1 prime(s)
+    [region 21 piece 34] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 34] 0.0s -> 1 prime(s)
+    [region 21 piece 35] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 35] 0.0s -> 1 prime(s)
+    [region 21 piece 36] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 36] 0.0s -> 1 prime(s)
+    [region 21 piece 37] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 37] 0.0s -> 1 prime(s)
+    [region 21 piece 38] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 38] 0.0s -> 1 prime(s)
+    [region 21 piece 39] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 39] 0.0s -> 1 prime(s)
+    [region 21 piece 40] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 40] 0.0s -> 1 prime(s)
+    [region 21 piece 41] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 41] 0.0s -> 1 prime(s)
+    [region 21 piece 42] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 42] 0.0s -> 1 prime(s)
+    [region 21 piece 43] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 43] 0.0s -> 1 prime(s)
+    [region 21 piece 44] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 44] 0.0s -> 1 prime(s)
+    [region 21 piece 45] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 45] 0.0s -> 1 prime(s)
+    [region 21 piece 46] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 46] 0.0s -> 1 prime(s)
+    [region 21 piece 47] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 47] 0.0s -> 1 prime(s)
+    [region 21 piece 48] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 48] 0.0s -> 1 prime(s)
+    [region 21 piece 49] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 49] 0.0s -> 1 prime(s)
+    [region 21 piece 50] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 50] 0.0s -> 1 prime(s)
+    [region 21 piece 51] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 51] 0.0s -> 1 prime(s)
+    [region 21 piece 52] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 52] 0.0s -> 1 prime(s)
+    [region 21 piece 53] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 53] 0.0s -> 1 prime(s)
+    [region 21 piece 54] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 54] 0.0s -> 1 prime(s)
+    [region 21 piece 55] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 55] 0.0s -> 1 prime(s)
+    [region 21 piece 56] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 56] 0.0s -> 1 prime(s)
+    [region 21 piece 57] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 57] 0.0s -> 1 prime(s)
+    [region 21 piece 58] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 58] 0.0s -> 1 prime(s)
+    [region 21 piece 59] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 59] 0.0s -> 1 prime(s)
+    [region 21 piece 60] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 60] 0.0s -> 1 prime(s)
+    [region 21 piece 61] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 61] 0.0s -> 1 prime(s)
+    [region 21 piece 62] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 62] 0.0s -> 1 prime(s)
+    [region 21 piece 63] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 63] 0.0s -> 1 prime(s)
+    [region 21 piece 64] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 64] 0.0s -> 1 prime(s)
+    [region 21 piece 65] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 65] 0.0s -> 1 prime(s)
+    [region 21 piece 66] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 66] 0.0s -> 1 prime(s)
+    [region 21 piece 67] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 67] 0.0s -> 1 prime(s)
+    [region 21 piece 68] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 68] 0.0s -> 1 prime(s)
+    [region 21 piece 69] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 69] 0.0s -> 1 prime(s)
+    [region 21 piece 70] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 70] 0.0s -> 1 prime(s)
+    [region 21 piece 71] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 71] 0.0s -> 1 prime(s)
+    [region 21 piece 72] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 72] 0.0s -> 1 prime(s)
+    [region 21 piece 73] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 73] 0.0s -> 1 prime(s)
+    [region 21 piece 74] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 74] 0.0s -> 1 prime(s)
+    [region 21 piece 75] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 75] 0.1s -> 1 prime(s)
+    [region 21 piece 76] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 76] 0.1s -> 1 prime(s)
+    [region 21 piece 77] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 77] 0.1s -> 1 prime(s)
+    [region 21 piece 78] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 78] 0.1s -> 1 prime(s)
+    [region 21 piece 79] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 79] 0.1s -> 1 prime(s)
+    [region 21 piece 80] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 80] 0.1s -> 1 prime(s)
+    [region 21 piece 81] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 81] 0.1s -> 1 prime(s)
+    [region 21 piece 82] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 82] 0.1s -> 1 prime(s)
+    [region 21 piece 83] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 83] 0.1s -> 1 prime(s)
+    [region 21 piece 84] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 84] 0.1s -> 1 prime(s)
+    [region 21 piece 85] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 85] 0.1s -> 1 prime(s)
+    [region 21 piece 86] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 86] 0.1s -> 1 prime(s)
+    [region 21 piece 87] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 87] 0.1s -> 1 prime(s)
+    [region 21 piece 88] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 88] 0.1s -> 1 prime(s)
+    [region 21 piece 89] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 89] 0.1s -> 1 prime(s)
+    [region 21 piece 90] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 90] 0.1s -> 1 prime(s)
+    [region 21 piece 91] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 91] 0.1s -> 1 prime(s)
+    [region 21 piece 92] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 92] 0.1s -> 1 prime(s)
+    [region 21 piece 93] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 93] 0.1s -> 1 prime(s)
+    [region 21 piece 94] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 94] 0.1s -> 1 prime(s)
+    [region 21 piece 95] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 95] 0.1s -> 1 prime(s)
+    [region 21 piece 96] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 96] 0.1s -> 1 prime(s)
+    [region 21 piece 97] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 97] 0.1s -> 1 prime(s)
+    [region 21 piece 98] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 98] 0.1s -> 1 prime(s)
+    [region 21 piece 99] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 99] 0.1s -> 1 prime(s)
+    [region 21 piece 100] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 100] 0.1s -> 1 prime(s)
+    [region 21 piece 101] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 101] 0.1s -> 1 prime(s)
+    [region 21 piece 102] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 102] 0.1s -> 1 prime(s)
+    [region 21 piece 103] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 103] 0.1s -> 1 prime(s)
+    [region 21 piece 104] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 104] 0.1s -> 1 prime(s)
+    [region 21 piece 105] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 105] 0.1s -> 1 prime(s)
+    [region 21 piece 106] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 106] 0.1s -> 1 prime(s)
+    [region 21 piece 107] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 107] 0.1s -> 1 prime(s)
+    [region 21 piece 108] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 108] 0.1s -> 1 prime(s)
+    [region 21 piece 109] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 109] 0.1s -> 1 prime(s)
+    [region 21 piece 110] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 110] 0.1s -> 1 prime(s)
+    [region 21 piece 111] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 111] 0.1s -> 1 prime(s)
+    [region 21 piece 112] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 112] 0.1s -> 1 prime(s)
+    [region 21 piece 113] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 113] 0.2s -> 1 prime(s)
+    [region 21 piece 114] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 114] 0.2s -> 1 prime(s)
+    [region 21 piece 115] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 115] 0.1s -> 1 prime(s)
+    [region 21 piece 116] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 116] 0.1s -> 1 prime(s)
+    [region 21 piece 117] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 117] 0.1s -> 1 prime(s)
+    [region 21 piece 118] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 118] 0.1s -> 1 prime(s)
+    [region 21 piece 119] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 119] 0.1s -> 1 prime(s)
+    [region 21 piece 120] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 120] 0.1s -> 1 prime(s)
+    [region 21 piece 121] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 121] 0.1s -> 1 prime(s)
+    [region 21 piece 122] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 122] 0.1s -> 1 prime(s)
+    [region 21 piece 123] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 123] 0.1s -> 1 prime(s)
+    [region 21 piece 124] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 124] 0.1s -> 1 prime(s)
+    [region 21 piece 125] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 125] 0.1s -> 1 prime(s)
+    [region 21 piece 126] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 126] 0.1s -> 1 prime(s)
+    [region 21 piece 127] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 127] 0.1s -> 1 prime(s)
+    [region 21 piece 128] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 128] 0.1s -> 1 prime(s)
+    [region 21 piece 129] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 129] 0.1s -> 1 prime(s)
+    [region 21 piece 130] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 130] 0.1s -> 1 prime(s)
+    [region 21 piece 131] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 131] 0.1s -> 1 prime(s)
+    [region 21 piece 132] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 132] 0.0s -> 1 prime(s)
+    [region 21 piece 133] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 133] 0.0s -> 1 prime(s)
+    [region 21 piece 134] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 134] 0.0s -> 1 prime(s)
+    [region 21 piece 135] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 135] 0.0s -> 1 prime(s)
+    [region 21 piece 136] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 136] 0.0s -> 1 prime(s)
+    [region 21 piece 137] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 137] 0.0s -> 1 prime(s)
+    [region 21 piece 138] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 138] 0.0s -> 1 prime(s)
+    [region 21 piece 139] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 139] 0.0s -> 1 prime(s)
+    [region 21 piece 140] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 140] 0.0s -> 1 prime(s)
+    [region 21 piece 141] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 141] 0.0s -> 1 prime(s)
+    [region 21 piece 142] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 142] 0.0s -> 1 prime(s)
+    [region 21 piece 143] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 143] 0.0s -> 1 prime(s)
+    [region 21 piece 144] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 144] 0.0s -> 1 prime(s)
+    [region 21 piece 145] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 145] 0.0s -> 1 prime(s)
+    [region 21 piece 146] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 146] 0.0s -> 1 prime(s)
+    [region 21 piece 147] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 147] 0.0s -> 1 prime(s)
+    [region 21 piece 148] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 148] 0.0s -> 1 prime(s)
+    [region 21 piece 149] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 149] 0.0s -> 1 prime(s)
+    [region 21 piece 150] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 150] 0.0s -> 1 prime(s)
+    [region 21 piece 151] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 151] 0.0s -> 1 prime(s)
+    [region 21 piece 152] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 152] 0.0s -> 1 prime(s)
+    [region 21 piece 153] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 153] 0.0s -> 1 prime(s)
+    [region 21 piece 154] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 154] 0.0s -> 1 prime(s)
+    [region 21 piece 155] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 155] 0.0s -> 1 prime(s)
+    [region 21 piece 156] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 156] 0.0s -> 1 prime(s)
+    [region 21 piece 157] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 157] 0.0s -> 1 prime(s)
+    [region 21 piece 158] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 158] 0.0s -> 1 prime(s)
+    [region 21 piece 159] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 159] 0.0s -> 1 prime(s)
+    [region 21 piece 160] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 160] 0.0s -> 1 prime(s)
+    [region 21 piece 161] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 161] 0.0s -> 1 prime(s)
+    [region 21 piece 162] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 162] 0.0s -> 1 prime(s)
+    [region 21 piece 163] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 163] 0.0s -> 1 prime(s)
+    [region 21 piece 164] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 164] 0.0s -> 1 prime(s)
+    [region 21 piece 165] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 165] 0.0s -> 1 prime(s)
+    [region 21 piece 166] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 166] 0.0s -> 1 prime(s)
+    [region 21 piece 167] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 167] 0.1s -> 1 prime(s)
+    [region 21 piece 168] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 168] 0.1s -> 1 prime(s)
+    [region 21 piece 169] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 169] 0.1s -> 1 prime(s)
+    [region 21 piece 170] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 170] 0.1s -> 1 prime(s)
+    [region 21 piece 171] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 171] 0.1s -> 1 prime(s)
+    [region 21 piece 172] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 172] 0.1s -> 1 prime(s)
+    [region 21 piece 173] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 173] 0.1s -> 1 prime(s)
+    [region 21 piece 174] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 174] 0.1s -> 1 prime(s)
+    [region 21 piece 175] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 175] 0.1s -> 1 prime(s)
+    [region 21 piece 176] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 176] 0.0s -> 1 prime(s)
+    [region 21 piece 177] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 177] 0.0s -> 1 prime(s)
+    [region 21 piece 178] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 178] 0.0s -> 1 prime(s)
+    [region 21 piece 179] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 179] 0.0s -> 1 prime(s)
+    [region 21 piece 180] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 180] 0.0s -> 1 prime(s)
+    [region 21 piece 181] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 181] 0.0s -> 1 prime(s)
+    [region 21 piece 182] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 182] 0.0s -> 1 prime(s)
+    [region 21 piece 183] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 183] 0.0s -> 1 prime(s)
+    [region 21 piece 184] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 184] 0.0s -> 1 prime(s)
+    [region 21 piece 185] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 185] 0.0s -> 1 prime(s)
+    [region 21 piece 186] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 186] 0.0s -> 1 prime(s)
+    [region 21 piece 187] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 187] 0.0s -> 1 prime(s)
+    [region 21 piece 188] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 188] 0.0s -> 1 prime(s)
+    [region 21 piece 189] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 189] 0.0s -> 1 prime(s)
+    [region 21 piece 190] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 190] 0.0s -> 1 prime(s)
+    [region 21 piece 191] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 191] 0.0s -> 1 prime(s)
+    [region 21 piece 192] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 192] 0.0s -> 1 prime(s)
+    [region 21 piece 193] minAss(a : b^inf) on 4 gen(s) ...
+    [region 21 piece 193] 0.0s -> 1 prime(s)
+    [region 21 piece 194] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 194] 0.0s -> 1 prime(s)
+    [region 21 piece 195] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 195] 0.0s -> 1 prime(s)
+    [region 21 piece 196] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 196] 0.0s -> 1 prime(s)
+    [region 21 piece 197] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 197] 0.0s -> 1 prime(s)
+    [region 21 piece 198] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 198] 0.0s -> 1 prime(s)
+    [region 21 piece 199] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 199] 0.0s -> 1 prime(s)
+    [region 21 piece 200] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 200] 0.0s -> 1 prime(s)
+    [region 21 piece 201] minAss(a : b^inf) on 5 gen(s) ...
+    [region 21 piece 201] 0.0s -> 1 prime(s)
+    [region 21 piece 202] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 202] 0.0s -> 1 prime(s)
+    [region 21 piece 203] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 203] 0.0s -> 1 prime(s)
+    [region 21 piece 204] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 204] 0.0s -> 1 prime(s)
+    [region 21 piece 205] minAss(a : b^inf) on 6 gen(s) ...
+    [region 21 piece 205] 0.0s -> 1 prime(s)
+    [region 21 piece 206] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 206] 0.0s -> 1 prime(s)
+    [region 21 piece 207] minAss(a : b^inf) on 7 gen(s) ...
+    [region 21 piece 207] 0.0s -> 1 prime(s)
+    [region 21 piece 208] minAss(a : b^inf) on 16 gen(s) ...
+    [region 21 piece 208] 0.0s -> 1 prime(s)
+
+========================================================================
+The mu = forall filter against the mu = exists-forall union:
+
+  V_{exists-forall} \ V_forall is EMPTY: no part lies in some Z(W_j) while
+  failing the filter, so the mu = forall branch removed nothing and
+  V_forall CONTAINS V_{exists-forall}.
+
+  V_forall \ V_{exists-forall} -- the constants NO cell lies over, which
+  satisfy the membership condition vacuously:
+
+        region 21: V(v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(b0, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(v4) u V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, b0, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, b0, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0*a1, a1, b0, b0*b1, b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, v4) u V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0, b0*b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0, b0*b1, v1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0, b0*b1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0, b0*b1, v1, v2, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0, b0*b1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0, b0*b1, v1, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0, b0*b1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0, b0*b1, v1, v2, v3, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b0, v4) u V(a0, a1, b0, b1, c0, c1))
+        region 21: V(a0, a0*a1, a1, b0*b1, b1, v4*a0, v4*a0*a1, v4*a1, v4*b0, v4*b0*b1, v4*b1) \ (V(a0, a1, b1, v4) u V(a0, a1, b0, b1, c0, c1, v4) u V(a0, a1, b0, b1, c0, c1, v3, v4) u V(a0, a1, b0, b1, c0, c1, v2, v3, v4) u V(a0, a1, b0, b1, c0, c1))
+=== KILLED at Sun Sep  6 12:38:33 AM EDT 2026 by request, after 1h13m.
+=== RSS had reached 30.4 GB on a 34 GB machine with 1.8 GB available,
+=== growing ~8 GB in the preceding 30 min, and no output for 23 min
+=== (stalled inside the mu=forall filter section).  Killed to keep the
+=== OOM killer away from the desktop session rather than to save the run.
+=== Everything above -- the decomposition, all per-cell differential_prem
+=== and GTZ results through region 21 piece 208 -- is preserved here.
+=== No --resume-log: this run predates the feature.

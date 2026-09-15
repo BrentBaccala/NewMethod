@@ -1,0 +1,27 @@
+Sat Sep  5 10:16:04 PM EDT 2026
+cmd: sage thomas-ansatz-solve.sage --pde hydrogen --ansatz 5 --locus consistency  (default mode: Comprehensive + compact holes)
+script commit: 068b4cf + uncommitted mode-switch work
+
+Building hydrogen / ansatz 5 from the differential-algebra library ...
+PDE: -Psi[x,x]*r - Psi[y,y]*r - Psi[z,z]*r - 2*Psi*r*E - 2*Psi
+ansatz inequation: v != 0
+PDE inequation: Psi != 0
+ansatz (9 eqs):
+    Psi[x] - DPsi*v[x]
+    Psi[y] - DPsi*v[y]
+    Psi[z] - DPsi*v[z]
+    DPsi[x] - DDPsi*v[x]
+    DPsi[y] - DDPsi*v[y]
+    DPsi[z] - DDPsi*v[z]
+    (a0 + a1*v)*DDPsi + (b0 + b1*v)*DPsi + (c0 + c1*v)*Psi
+    v - (v1*x + v2*y + v3*z + v4*r)
+    r^2 - (x^2 + y^2 + z^2)
+params: v1, v2, v3, v4, a0, a1, b0, b1, c0, c1
+
+Computing native DifferentialThomas decomposition of the ansatz together with Q
+AND the target equations -- Algorithm ConsistencyLocus line 1, (A(c) u P^=, {Q}) --
+(9 ansatz + 30 constancy + 1 target eqs, Q from 2 inequations) ...
+
+=== KILLED at Sat Sep  5 11:25:53 PM EDT 2026 by request, after 1h06m, still inside the
+=== Thomas decomposition at 23.7 GB RSS (34 GB machine, 5.9 GB free).
+=== Freed the machine for the hydrogen/5 membership run.
