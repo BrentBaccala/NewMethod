@@ -1841,17 +1841,89 @@ that lie in $\mathbb{Q}[c_1, \ldots, c_n]$.
 Note that, in the case where $c^*$ is in the system's cell, the system's equations and inequations in $\mathbb{Q}[c_1, \ldots, c_n]$
 will always be satisfied by $c^*$.
 
+      \medskip
+      \begin{lemma}
+      \label{lem:cell-solution}
+      Given a vector of constants $c^*$ and a differentially simple system
+      $(S^=, S^{\ne})$ ranked according to a constant-lowest ranking whose equations
+      include $\delta_i c_j$ for all derivations $\delta_i$ and constants $c_j$,
+      every solution of $(S^=, S^{\ne})$ is a pair $(c^*, \tau)$ of a vector
+      $c^* \in \mathbb{C}^n$ and an assignment $\tau$ to the non-constant
+      indeterminates, and
+      %
+      \begin{equation}
+      \label{eq:specialization-fibre}
+      \mathrm{Sol}\bigl(S^=(c^*), S^{\ne}(c^*)\bigr)
+        \;=\; \{\, \tau \;:\; (c^*, \tau) \in \mathrm{Sol}(S^=, S^{\ne}) \,\} .
+      \end{equation}
+      %
+      Moreover the following are equivalent:
+      \begin{enumerate}
+      \item[\rm(i)]   $c^*$ lies in the system's cell;
+      \item[\rm(ii)]  $(S^=, S^{\ne})$ has a solution whose constant coordinates are $c^*$;
+      \item[\rm(iii)] the specialized system $(S^=(c^*), S^{\ne}(c^*))$ has a solution.
+      \end{enumerate}
+      \end{lemma}
+
+  {\it Proof.}
+  Because the equations $\delta_i c_j$ lie in $S^=$, every solution of
+  $(S^=, S^{\ne})$ assigns a constant to each $c_j$, so each solution is a pair
+  $(c^*, \tau)$ as claimed.  Since $\sigma_{c^*}$ is a differential ring
+  homomorphism fixing the $x_i$ and the $u_j$, such a pair assigns to $p$ the same
+  value that $\tau$ assigns to $p(c^*)$, for every $p \in R$; and the equations and
+  inequations that Definition~\ref{def:specialized system} removes are the trivial
+  ones, satisfied by every $\tau$.  Hence $(c^*, \tau)$ solves $(S^=, S^{\ne})$ if
+  and only if $\tau$ solves $(S^=(c^*), S^{\ne}(c^*))$, which is
+  \eqref{eq:specialization-fibre}; taking either side to be non-empty gives
+  (ii) $\Leftrightarrow$ (iii).
+
+  (i) $\Rightarrow$ (ii).  Suppose $c^*$ lies in the cell, so it satisfies every
+  equation and inequation of $(S^=, S^{\ne})$ lying in
+  $\mathbb{Q}[c_1, \ldots, c_n]$.  Under a constant-lowest ranking the pure
+  constants are the lowest-ranked indeterminates and those are exactly the
+  equations and inequations of the subsystem they carry, so $c_j \mapsto c^*_j$ is
+  a solution of that subsystem.  By \cite{ThomasDecomp}, Remark~2.3, a solution of
+  a lower-ranked subsystem of a simple system extends to a solution of the next
+  higher-ranked equation, and by induction to a solution of the whole system,
+  whose constant coordinates are $c^*$.  The equations $\delta_i c_j$ are met
+  automatically along the way: the $c_j$ have already been assigned constants, so
+  each $\delta_i c_j$ evaluates to zero when the induction reaches it.
+
+  (iii) $\Rightarrow$ (i).  Contrapositively, a $c^*$ outside the cell violates
+  some equation or inequation of $(S^=, S^{\ne})$ lying in
+  $\mathbb{Q}[c_1, \ldots, c_n]$.  In the first case $\sigma_{c^*}$ carries that
+  equation to a non-zero constant, which no assignment can make vanish; in the
+  second it carries that inequation to zero, which no assignment can make
+  non-zero.  Definition~\ref{def:specialized system} discards neither, so
+  $(S^=(c^*), S^{\ne}(c^*))$ has no solution.
+  \hfill $\square$
+
+\begin{comment}
+
+    \medskip
+    \begin{lemma}
+    \label{lem:cell-solution}
+    Given a vector of constants $c^*$ and a differentially simple system
+    $(S^=, S^{\ne})$ ranked according to a constant-lowest ranking whose equations
+    include $\delta_i c_j$ for all derivations $\delta_i$ and constants $c_j$, the
+    following are equivalent:
+    \begin{enumerate}
+    \item[\rm(i)]   $c^*$ lies in the system's cell;
+    \item[\rm(ii)]  $(S^=, S^{\ne})$ has a solution whose constant coordinates are $c^*$;
+    \item[\rm(iii)] the specialized system $(S^=(c^*), S^{\ne}(c^*))$ has a solution.
+    \end{enumerate}
+    \end{lemma}
 \medskip
 \begin{lemma}
 \label{lem:cell-solution}
 Given a vector of constants $c^*$ and a differentially simple system $(S^=, S^{\ne})$ ranked according to a constant-lowest ranking,
-the specialized system $(S^=(c^*), S^{\ne})$ has a solution (in the sense of \cite{ThomasDecomp})
+the specialized system $(S^=(c^*), S^{\ne}(c^*))$ has a solution (in the sense of \cite{ThomasDecomp})
 if and only if $c^*$ lies in the system's cell.
 \end{lemma}
 
 {\it Proof.}
 
-By \cite{ThomasDecomp}, Remark~2.3, every solution of a lower-ranked subsystem
+(i) $\Rightarrow$ (ii).  By \cite{ThomasDecomp}, Remark~2.3, every solution of a lower-ranked subsystem
 of a simple system extends to a solution of the next higher-ranked equation, and by induction,
 to a solution of the entire system.  The solutions
 of the subsystem of the strictly lower-ranked constants (the cell)
@@ -1862,6 +1934,8 @@ any $c^*$ outside the cell violates one or more of the system's equations,
 and leads to either a non-zero constant being introduced among the equations,
 or a zero being introduced into the inequations, precluding any possible of a solution there.
 \hfill $\square$
+
+\end{comment}
 
 \medskip
 \begin{lemma}
