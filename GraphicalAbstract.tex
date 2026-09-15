@@ -64,11 +64,11 @@
 
 % ========== HEADER STRIP ==========
 \node[anchor=west] at (5.5, 90)
-  {\bfseries\small\color{ink} Finding exact, non-separable solutions of PDEs%
-   \color{faint}\normalfont\,\textperiodcentered\ a previously unknown solution to hydrogen's Schr\"odinger eq};
+  {\bfseries\small\color{ink} Finding exact solutions of PDEs%
+   \color{faint}\normalfont\,\textperiodcentered\ example: hydrogen's Schr\"odinger eq};
 \node[anchor=east] at (229.5, 90)
   {\ttfamily\color{faint}\fontsize{6.5pt}{7.8pt}\selectfont
-   DIFFERENTIAL ALGEBRA \textperiodcentered\ RITT REDUCTION \textperiodcentered\ GTZ};
+   DIFFERENTIAL ALGEBRA \textperiodcentered\ DIFFERENTIAL THOMAS DECOMPOSITION \textperiodcentered\ RITT REDUCTION \textperiodcentered\ CONSTRUCTABLE SETS};
 \draw[faintrule] (0, 86.5) -- (235, 86.5);
 
 % ========== TOP BAND — ANSATZ PALETTE ==========
@@ -309,25 +309,21 @@
 % Known (amber)
 \draw[card] (178, 22) rectangle (229, 40);
 \draw[amber, line width=1.2pt] (178.3, 22) -- (178.3, 40);
-\node[anchor=north west] at (179.5, 39.6)
-  {\ttfamily\fontsize{5.5pt}{6.5pt}\selectfont\color{amber}\bfseries KNOWN \textperiodcentered\ FROM $\mathfrak{p}_4$};
 \node[anchor=west] at (179.5, 34) {\normalsize$\Psi(r) = e^{-r}$};
 \node[anchor=west] at (208, 34) {\small\color{faint}$E = -\tfrac{1}{2}$};
 \node[anchor=south west, text width=50mm, align=left] at (179.5, 23)
   {\fontsize{6pt}{7.5pt}\selectfont\color{faint}classical radial\\
-   separation of variables};
+   spherical coordinates};
 
 % New (accent)
 \draw[cardA] (178, 0) rectangle (229, 18);
 \draw[accent, line width=1.2pt] (178.3, 0) -- (178.3, 18);
-\node[anchor=north west] at (179.5, 17.6)
-  {\ttfamily\fontsize{5.5pt}{6.5pt}\selectfont\color{accent}\bfseries $\bigstar$\ NEW \textperiodcentered\ FROM $\mathfrak{p}_5$};
 \node[anchor=west] at (179.5, 12)
   {\normalsize$\Psi = J_0\!\left(2\sqrt{x+r}\right)$};
 \node[anchor=west] at (215, 12) {\small\color{faint}$E = 0$};
 \node[anchor=south west, text width=50mm, align=left] at (179.5, 1)
   {\fontsize{6pt}{7.5pt}\selectfont\color{ink}non-separable\\
-   \color{faint}unreachable by separation of variables};
+   \color{faint}parabolic coordinates};
 
 \end{tikzpicture}
 \end{document}
