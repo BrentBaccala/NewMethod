@@ -1898,6 +1898,30 @@ will always be satisfied by $c^*$.
   $(S^=(c^*), S^{\ne}(c^*))$ has no solution.
   \hfill $\square$
 
+  \smallskip
+  \begin{lemma}
+  \label{lem:radical-saturation}
+  Let $I \subseteq R$ be an ideal and let $h \in R$.  Then
+  %
+  \[
+  \sqrt{I} : h^\infty \;=\; \sqrt{I : h^\infty} ,
+  \]
+  %
+  and $1 \in \sqrt{I} : h^\infty$ if and only if $1 \in I : h^\infty$.
+  Saturation by a finite set $H$ being saturation by the product of its elements,
+  the same holds with $h^\infty$ replaced by $H^\infty$.
+  \end{lemma}
+
+  {\it Proof.}
+  If $p \in \sqrt{I} : h^\infty$ then $h^m p \in \sqrt{I}$ for some $m$, so
+  $h^{me} p^e = (h^m p)^e \in I$ for some $e \ge 1$, whence $p^e \in I : h^\infty$
+  and $p \in \sqrt{I : h^\infty}$.  Conversely, if $p \in \sqrt{I : h^\infty}$
+  then $h^m p^e \in I$ for some $m$ and some $e \ge 1$, and
+  $(h^m p)^e = h^{m(e-1)} \cdot h^m p^e \in I$, so $h^m p \in \sqrt{I}$ and
+  $p \in \sqrt{I} : h^\infty$.  $1 \in \sqrt{I}$ if and only if $1 \in I$, and the
+  claim follows.
+  \hfill $\square$
+
 \medskip
 \begin{lemma}
 \label{lem:cell-consistency}
@@ -1909,32 +1933,15 @@ system's cell.
 \end{lemma}
 
 {\it Proof.}
-In the discussion following the differential Nullstellensatz
-(\cite{hubert2}, Theorem~2.7), it is shown that a differential polynomial $p$
-vanishes on the solutions of a system $\Sigma = 0$, $H \ne 0$ if and only if
-$p \in \sqrt{[\Sigma]} : H^\infty$.  Take $\Sigma = S^=(c^*)$, $H = S^{\ne}(c^*)$
-and $p = 1$, which vanishes on a set exactly when that set is empty; then
-%
-\[
-1 \in [S^=(c^*)] : S^{\ne}(c^*)^\infty
-\quad\Longleftrightarrow\quad
-(S^=(c^*), S^{\ne}(c^*)) \ \text{has no solution} ,
-\]
-%
-where the radical has been dropped because, writing $h$ for the product of the
-elements of $S^{\ne}(c^*)$, membership of $1$ in either saturation says only that
-some power of $h$ lies in $[S^=(c^*)]$.
-By Lemma~\ref{lem:cell-solution}, (i) $\Leftrightarrow$ (iii), the specialized
-system has a solution exactly when $c^*$ lies in the system's cell, and negating
-both sides of the equivalence above gives the claim.
+Lemma~\ref{lem:cell-solution} tells us that $(S^=(c^*), S^{\ne}(c^*))$
+has a solution if and only if $c^*$ lies in the system's cell.
+The differential Nullstellensatz
+(\cite{hubert2}, Theorem~2.7) tells us that a solution to $S^=(c^*)$ exists
+if and only if $1 \notin \sqrt{[S^=(c^*)]}$.  In the discussion
+that follows Theorem~2.7, \cite{hubert2} shows that a solution exists to $(S^=(c^*), S^{\ne}(c^*))$
+if and only if $1 \notin \sqrt{[S^=(c^*)]} : S^{\ne}(c^*)^\infty$.
+Lemma~\ref{lem:radical-saturation} completes the proof.
 
-Both halves of this argument speak of solutions in Kolchin's universal
-differential field, as fixed below
-Definition~\ref{def:differential-Thomas-decomposition}, and that convention is
-what allows them to be combined: the zeros \cite{hubert2} constructs lie in some
-differential extension of the coefficient field, and it is the universal field
---- in which any solution that can exist does exist --- that makes such a zero a
-solution in the sense used here.
 % This extension field could then be used as a new
 % base field, containing a solution.
 % This exposes a disadvantage of simply defining solutions
@@ -1945,6 +1952,14 @@ solution in the sense used here.
 % that a solution exists if there exists a differential extension of the coefficient field
 % in which a solution exists.
 \hfill $\square$
+
+The use of the differential Nullstellensatz implies that we speak of solutions in Kolchin's universal
+differential field, as fixed below
+Definition~\ref{def:differential-Thomas-decomposition}.
+The zeros we construct lie in some
+differential extension of the coefficient field, and it is the universal field
+--- in which any solution that can exist does exist --- that makes such a zero a
+solution in the sense used here.
 
 The constant-only equations and inequations need only be a subset of $(S^=, S^{\ne})$,
 so cells belonging to different
