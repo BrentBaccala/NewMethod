@@ -4116,45 +4116,53 @@ In both cases, I use Hartree atomic units to render the equations dimensionless.
 % scoped to language and readability; the use here went past that, so the
 % statement is itemized instead.
 % ---------------------------------------------------------------------
-\section*{Declaration of generative AI and AI-assisted technologies in the
-manuscript preparation process}
+\vfill\eject
+\section*{Declaration of generative AI use}
 
-During the preparation of this work the author used Anthropic's Claude, both
-interactively and through the Claude Code command-line tool --- models in the
-Claude Opus 4 family through mid-2026, and Claude Opus 5 thereafter --- and,
-for a small number of citation suggestions, OpenAI's GPT-5.  That use went
-beyond checking language and readability, so it is itemized here rather than
-summarized.
+During the preparation of this work the author used Anthropic's Claude
+extensively, primarily through the Claude Code command-line tool, with models in the
+Claude Opus 4 family through mid-2026, and Claude Opus 5 thereafter.
+That use went considerably beyond checking language and readability.
+The AI agent had access to both the LaTeX source of the paper being written and PDF versions of most
+of the references cited, and was thus able to propose entire
+theorems and lemmas, along with their associated proofs.
 
-The method itself, the research program, the core mathematical ideas, the
-ans\"atze and the new hydrogen solution, the choice of results, and the bulk of
+The research program, the idea of using Ritt reduction to test an equation for membership against an ansatz,
+the ans\"atze and the hydrogen example, and the bulk of
 the prose, figures and worked examples are the author's own.  The AI tools
 contributed the following.
 
 \begin{itemize}
 
+\item {\it Literature search.}  Claude identified differential Thomas
+decomposition as necessary for completeness after the author had developed
+a version of the software implementing only lines 3--12 of Algorithm~\ref{alg:core-basic}
+and found references \cite{ThomasDecomp}, \cite{LHRcontrol} and \cite{RobertzLNM}.
+After flagging \eqref{eq:Bessel solution ODE} as anticipated by \cite{LandauLifshitz} \S 37,
+Claude found \cite{Schrodinger26} as an early use of parabolic coordinates
+to solve \eqref{schrodinger hydrogen 2}
+and found \cite{BanderItzykson} to explain the related symmetry.
+Claude identified \cite{BrunatMontes} and \cite{CSTools} as relevant for
+the post-processing of constructable sets
+and found \cite{Chaharbashloo2013} as an early precursor of this entire method.
+
 \item {\it Mathematical drafting.}  Theorem~\ref{thm:completeness} and its
 proof were drafted by Claude and then edited and incorporated by the author, as
 were several of the lemmas and proofs of
-\S\ref{sec:Solution Algorithm}\ifNSexample{} and the whole of
-\S\ref{sec:NavierStokes}\fi.
+\S\ref{sec:Solution Algorithm}.
 
-\item {\it Structural and expository work on the author's ideas.}  The
-generalization of the method from a single equation to a system of them, the
-formalization of Algorithms~\ref{alg:consistency-basic}
-and~\ref{alg:core-basic} from the author's descriptions of them, and the
-summary in \S1.1.
+\item {\it Formalization.}  The
+formalization and formatting of Algorithms~\ref{alg:consistency-basic}
+and~\ref{alg:core-basic} from the author's descriptions of them
+was done by Claude.
 
-\item {\it Literature search, prior-art assessment and citation checking},
-including a negative assessment of the novelty of one line of development,
-which was consequently dropped.  GPT-5's contribution falls under this heading
-and is confined to its narrowest part: it proposed three additional places
-where works already in the bibliography should be cited.
+\item {\it Distinction between the two primary constant loci.}
+Claude produced several examples to illustrate the gap between
+the consistency and membership loci that were developed into
+Examples~\ref{ex:three-loci} and \ref{ex:three-loci-2}.
 
 \item {\it Review.}  The tools were used to look for errors in the author's
-drafts, and found some --- among them a containment between two of the loci of
-\S\ref{sec:constant-loci} that was false as stated, together with the
-counterexample family that showed it and the corrected hypothesis.  Errors in
+drafts, found some, and often proposed corrections.  Errors in
 the AI's own drafts were found and corrected by the author in the same way.
 
 \item {\it The computation scripts.}  The Sage programs that produced this
@@ -4170,8 +4178,8 @@ bibliography, repairing \LaTeX{} faults, and tightening prose.
 \end{itemize}
 
 After using these tools the author reviewed and edited the content as needed
-and takes full responsibility for the content of the published article.  No AI
-tool is an author of this work.  A commit-level record of AI use is kept
+and takes full responsibility for the content of the published article.
+A commit-level record of AI use is kept
 alongside the manuscript at
 \url{https://github.com/BrentBaccala/NewMethod}.
 
