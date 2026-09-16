@@ -2297,10 +2297,16 @@ the two loci
 are constructed as follows:
 %
 \[
-V_m \;=\; \bigcap_{i=1}^{s} \bigl( \mathrm{Z}(W_i) \cup (\mathbb{C}^n \setminus \mathrm{Z}(C_i)) \bigr)
+V_m \;=\; \Bigl( \bigcup_{i=1}^{s} \mathrm{Z}(C_i) \Bigr)
+         \;\cap\; \bigcap_{i=1}^{s} \bigl( \mathrm{Z}(W_i) \cup (\mathbb{C}^n \setminus \mathrm{Z}(C_i)) \bigr)
 \qquad
 V_i \;=\; \bigcup_{i=1}^{s} \mathrm{Z}(W_i)
 \]
+%
+\noindent
+The leading union is the first conjunct of Corollary~\ref{cor:assembly}: without
+it, a $c^*$ lying in no cell would belong to every term of the intersection and
+be returned, although the ansatz is inconsistent there and so $c^* \notin V_m$.
 
 \medskip
 \begin{lemma}
@@ -2436,46 +2442,47 @@ system.
 \begin{corollary}
 \label{cor:system-locus}
 Let $(S^=, S^{\ne})$ be a differentially simple system as in
-Theorem~\ref{thm:completeness}, and let $\mathcal{E}, \mathcal{N} \subset R$ be
-finite sets of differential polynomials in the same ring --- equations that
-must lie in the saturated ideal $[S(c^*)] : q(c^*)^\infty$, and inequations
-that must not, respectively.  For each $P \in \mathcal{E} \cup \mathcal{N}$
-let $\mathcal{V}_P \subseteq \mathbb{C}^n$ be the variety produced by
+Theorem~\ref{thm:completeness}, and let $\mathcal{E} \subset R$ be a finite set
+of differential polynomials in the same ring --- equations that must lie in the
+saturated ideal $[S(c^*)] : q(c^*)^\infty$.  For each $P \in \mathcal{E}$ let
+$\mathcal{V}_P \subseteq \mathbb{C}^n$ be the variety produced by
 Theorem~\ref{thm:completeness}, and put
 %
 \[
-\mathcal{V} \;=\;
-   \Bigl(\, \bigcap_{P \in \mathcal{E}} \mathcal{V}_P \,\Bigr)
-   \;\setminus\;
-   \Bigl(\, \bigcup_{P \in \mathcal{N}} \mathcal{V}_P \,\Bigr).
+\mathcal{V} \;=\; \bigcap_{P \in \mathcal{E}} \mathcal{V}_P .
 \]
 %
-Then $\mathcal{V}$ is a constructible set, and for every $c^*$ in the cell of
+Then $\mathcal{V}$ is a variety, and for every $c^*$ in the cell of
 $(S^=, S^{\ne})$,
 %
 \[
 c^* \in \mathcal{V}
 \quad\Longleftrightarrow\quad
-\mathcal{E} \subset [S(c^*)] : q(c^*)^\infty
-\ \text{ and }\
-\mathcal{N} \cap \bigl( [S(c^*)] : q(c^*)^\infty \bigr) = \emptyset .
+\mathcal{E} \subset [S(c^*)] : q(c^*)^\infty .
 \]
 \end{corollary}
 
 {\it Proof.}
-The set $A = \bigcap_{P \in \mathcal{E}} \mathcal{V}_P$ is a finite
-intersection of algebraic varieties and so is itself a variety, as is
-$B = \bigcup_{P \in \mathcal{N}} \mathcal{V}_P$; thus $\mathcal{V} = A
-\setminus B$ is constructible, being of the form required by the definition
-of a constructible subset.
-
-Fix $c^*$ in the cell.  Theorem~\ref{thm:completeness}, applied to each
-$P \in \mathcal{E} \cup \mathcal{N}$ in turn against the same system $S$ ---
-and hence the same $q$ --- gives $c^* \in \mathcal{V}_P \iff P \in [S(c^*)] :
-q(c^*)^\infty$.  So $c^* \in A$ exactly when every equation of $\mathcal{E}$
-lies in the saturated ideal, and $c^* \notin B$ exactly when no inequation
-of $\mathcal{N}$ does; conjoining the two gives the claimed equivalence.
+$\mathcal{V}$ is a finite intersection of algebraic varieties and so is itself a
+variety.  Fix $c^*$ in the cell.  Theorem~\ref{thm:completeness}, applied to
+each $P \in \mathcal{E}$ in turn against the same system $S$ --- and hence the
+same $q$ --- gives $c^* \in \mathcal{V}_P \iff P \in [S(c^*)] : q(c^*)^\infty$,
+so $c^* \in \mathcal{V}$ exactly when every equation of $\mathcal{E}$ lies in
+the saturated ideal.
 \qedbox
+
+\medskip
+The corollary carries no companion condition for the inequations, and needs
+none.  The pooled inequation $Q(c)$ of \eqref{eq:Q-def} was fed to the
+decomposition, so no solution of $(S^=, S^{\ne})$ annihilates it; and for $c^*$
+in the cell the specialized system has a solution $\tau$
+(Lemma~\ref{lem:cell-solution}).  Were $Q(c^*)$ to lie in
+$[S(c^*)] : q(c^*)^\infty$, then $q(c^*)^m Q(c^*) \in [S(c^*)]$ for some $m$
+and the left side would vanish at $\tau$, which is impossible: $Q(c^*)$ does
+not vanish there, and neither does $q(c^*)$, by
+Lemma~\ref{lem:initials-and-separants-specialize}.  Testing the inequations
+after the fact would only repeat what decomposing against them already
+established.
 
 \medskip
 The membership
@@ -2484,37 +2491,64 @@ decomposition.
 
 \begin{corollary}
 \label{cor:assembly}
-Let $\mathcal{V}_1, \ldots, \mathcal{V}_r$ be the constructible sets produced by
-Corollary~\ref{cor:system-locus}, taking $\mathcal{E} = \mathcal{P}^=$ and
-$\mathcal{N} = \emptyset$, from the components $S_1, \ldots, S_r$ of a
-differential Thomas decomposition of the ansatz.  Then, for every
-$c^* \in \mathbb{C}^n$,
+Let $S_1, \ldots, S_r$ be the components of a differential Thomas decomposition
+of the ansatz, computed with a constant-lowest ranking, and let
+$\mathcal{V}_1, \ldots, \mathcal{V}_r$ be the varieties produced from them by
+Corollary~\ref{cor:system-locus}, taking $\mathcal{E} = \mathcal{P}^=$.  For
+$c^* \in \mathbb{C}^n$ write
+$\mathcal{I}(c^*) = \{\, i : c^* \in \mathrm{cell}(S_i) \,\}$ for the set of
+components whose cell contains $c^*$.  Then, for every $c^* \in \mathbb{C}^n$,
 %
 \[
 c^* \in V_m
 \quad\Longleftrightarrow\quad
-c^* \in \mathcal{V}_i \ \text{ for every $i$ whose cell contains $c^*$}.
+\mathcal{I}(c^*) \neq \emptyset
+\ \text{ and }\
+c^* \in \mathcal{V}_i \ \text{ for every } i \in \mathcal{I}(c^*) .
 \]
 \end{corollary}
 
+\medskip
+\noindent
+The first conjunct on the right is not a technicality.  $V_m$ requires the
+ansatz to be {\it consistent} at $c^*$ as well as to imply $\mathcal{P}^=$
+there, and where no cell contains $c^*$ that requirement fails while the
+second conjunct, a condition quantified over an empty index set, holds
+vacuously.
+
 {\it Proof.}
-By Proposition \ref{prop:decomposition-membership},
+Suppose first that $\mathcal{I}(c^*) = \emptyset$.  By
+Lemma~\ref{lem:no-cell-inconsistent}, $1 \in [A(c^*)] : Q(c^*)^\infty$, so the
+first conjunct in the definition of $V_m$ fails and $c^* \notin V_m$.  Both
+sides of the equivalence are false, and it holds.
+
+Now suppose $\mathcal{I}(c^*) \neq \emptyset$.  By
+Lemma~\ref{lem:specialized-decomposition},
+$\{\, S_i(c^*) : i \in \mathcal{I}(c^*) \,\}$ is a differential Thomas
+decomposition of $(A(c^*), \{Q(c^*)\})$.  Pick any
+$i \in \mathcal{I}(c^*)$; by Lemma~\ref{lem:cell-solution} the specialized
+component $S_i(c^*)$ has a solution $\tau$, which is then a solution of
+$(A(c^*), \{Q(c^*)\})$.  Every element of $[A(c^*)]$ vanishes at $\tau$ and
+$Q(c^*)$ does not, so $1 \notin [A(c^*)] : Q(c^*)^\infty$: the first conjunct
+of $V_m$ holds automatically here, and $c^* \in V_m$ reduces to the second,
+$\mathcal{P}^= \subseteq \sqrt{[A(c^*)] : Q(c^*)^\infty}$.
+
+Apply Proposition~\ref{prop:decomposition-membership} to that decomposition.
+Its components are the $S_i(c^*)$ for $i \in \mathcal{I}(c^*)$, whose initials
+and separants are the specializations of those of $S_i$
+(Lemma~\ref{lem:specialization}~(ii)), so
 %
 \[
 \sqrt{[A(c^*)] : Q(c^*)^\infty}
-  \;=\; \bigl(E^{(1)} : (q^{(1)})^\infty\bigr)
-        \,\cap\,\cdots\,\cap\,
-        \bigl(E^{(r)} : (q^{(r)})^\infty\bigr).
+  \;=\; \bigcap_{i \in \mathcal{I}(c^*)}
+        \bigl( [S^=_i(c^*)] : q^{(i)}(c^*)^\infty \bigr) ,
 \]
-
-For a given $c^*$, components of this intersection whose cell does not include $c^*$
-simplify to $R$, either because a non-zero constant lies in $E^{(i)}$ or because
-$q^{(i)}$ is zero.  The result follows directly.
-
-If no cell contains $c^*$ then
-the intersection above equals the whole
-ring, so $\sqrt{[A(c^*)] : Q(c^*)^\infty} = (1)$
-and the ansatz is inconsistent at this value of $c^*$.
+%
+and $\mathcal{P}^=$ lies in the left-hand side exactly when it lies in every
+term on the right.  By Corollary~\ref{cor:system-locus}, applied to $S_i$ with
+$\mathcal{E} = \mathcal{P}^=$, that happens for a given $i \in \mathcal{I}(c^*)$
+exactly when $c^* \in \mathcal{V}_i$.  Conjoining over $\mathcal{I}(c^*)$ gives
+the claim.
 \qedbox
 
 \medskip
@@ -2560,7 +2594,7 @@ reports, as described below.
 \item {\bf end for}
 \item {\bf if} $\mu = \forall$ {\bf then}
 \item \algind $\mathcal{B} \leftarrow \mathrm{RefiningPartition}\bigl( \{((0), (1)), W_1, C_1, \ldots, W_s, C_s\} \bigr)$
-\item \algind $D \leftarrow \bigl\{\, B \;:\; (B, \iota) \in \mathcal{B}, \; C_i \in \iota \implies W_i \in \iota \text{ for every } i \,\bigr\}$
+\item \algind $D \leftarrow \bigl\{\, B \;:\; (B, \iota) \in \mathcal{B}, \; C_j \in \iota \text{ for some } j, \; C_i \in \iota \implies W_i \in \iota \text{ for every } i \,\bigr\}$
 \item \algind {\bf return} $D$
 \item {\bf else}
 \item \algind {\bf return} $\textstyle\bigcup_{i=1}^{s} W_i$
@@ -2678,6 +2712,19 @@ Each subsystem's inequations can include inequations in $\mathbb{Q}[c_1, \ldots,
 constants, or produced by the decomposition's own case-splitting ---
 and these must be preserved with the minimal primes, using the ideal notation
 introduced in \S\ref{sec:consistency-locus}.
+
+The two branches differ only in their assembly.  For $\mu = \exists$ the
+answer is the union of the $W_i$, and a constant vector lying over no cell
+simply appears in none of them.  For $\mu = \forall$ the condition is a
+universal one, and universal conditions are satisfied vacuously where there is
+nothing to quantify over, so the assembly must exclude that region explicitly.
+$\mathrm{RefiningPartition}$ refines
+$\{((0),(1)), W_1, C_1, \ldots, W_s, C_s\}$ into disjoint parts, each tagged
+with the members of the family that contain it; the seed $((0),(1))$ is all of
+$\mathbb{C}^n$, so the parts cover $\mathbb{C}^n$ and the region lying over no
+cell is among them.  Line 16 keeps a part when its tag contains some $C_j$ ---
+the first conjunct of Corollary~\ref{cor:assembly}, which discards exactly that
+region --- and, for every $i$, contains $W_i$ whenever it contains $C_i$.
 
 \vfill\eject
 \subsection{Polishing a Constructable Set}
