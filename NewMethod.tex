@@ -175,7 +175,7 @@ to solve hydrogen's Schr\"odinger equation.
 % \item Evans: Duhamel's principle: separate out one variable (t) that appears like $u_t - Lu = f$ (L has no time deriv);
 %       form the ``retarded solution'' that represents the effect of an infinitesimal $f$, then integrate over time
 % \item Evans: heat eq: scaling symmetry $\rightarrow$ fundamental sol $\rightarrow$ convolution to handle arbitrary initial condition
-%       $\rightarrow$ Duhamel's principle to handle the inhomogenous component
+%       $\rightarrow$ Duhamel's principle to handle the inhomogeneous component
 % \end{itemize}
 % %\end{comment}
 %
@@ -424,7 +424,7 @@ sends to zero.  We name them $c_1, \ldots, c_n$ and impose $\delta_i c_j = 0$.
 
 Ultimately, we are operating in a partial differential ring, but we are
 seeking to solve the PDE using ODEs.  How, then, do we describe ODEs using differential polynomials?
-Initially, we consider homogenous linear ODEs, but this is not a fundamental limitation;
+Initially, we consider homogeneous linear ODEs, but this is not a fundamental limitation;
 see below, for example, Figure \ref{nonlinear ansatz figure} and equations \eqref{ansatz 18}.
 
 An $n^{\rm th}$-order homogeneous linear ODE takes the form:
@@ -564,7 +564,7 @@ differential polynomials.
 
 Our primary goal is to solve a PDE, or a system of them, by finding solutions described using ODEs.
 Therefore, all of my current ans\"atze attempt to express solutions to the system using
-a finite combination of ODEs.  They do not have to be linear, seperable or homogenous.
+a finite combination of ODEs.  They do not have to be linear, separable or homogeneous.
 They do require degree bounds on all of their constituent polynomials,
 in order to obtain a finite number of constant parameters.
 
@@ -587,7 +587,7 @@ beyond reducing each equation of the system in turn.
 \end{comment}
 
 The primary requirement for an ansatz is that it be expressed using differential polynomials.
-% as this makes it ammenable to the techniques of differential algebra.
+% as this makes it amenable to the techniques of differential algebra.
 This excludes any kind of boundary conditions (which would require evaluating functions at some boundary)
 or function space restrictions (which would require evaluating global integrals of the function),
 but admits almost almost any differential equation imaginable.
@@ -686,12 +686,12 @@ box is the description.
   \end{tikzpicture}
 \end{minipage}%
 }
-\caption{An ansatz for a second-order linear homogenous ODE}
+\caption{An ansatz for a second-order linear homogeneous ODE}
 \label{ansatz 5 figure}
 \end{figure}
 
 The ansatz diagramed in Figure \ref{ansatz 5 figure} uses
-a second-order linear homogenous ODE with first degree coefficients and first degree independent variable,
+a second-order linear homogeneous ODE with first degree coefficients and first degree independent variable,
 and is described using differential polynomials as follows.
 
 
@@ -1019,7 +1019,7 @@ r^2 - (x^2 + y^2 + z^2)
   \end{tikzpicture}
 \end{minipage}
 }
-\caption{An ansatz for a second-order linear homogenous ODE with second degree coefficients and second degree independent variable, and a square root used in the formation of the independent variable}
+\caption{An ansatz for a second-order linear homogeneous ODE with second degree coefficients and second degree independent variable, and a square root used in the formation of the independent variable}
 \label{ansatz 16 figure}
 \end{figure}
 
@@ -1712,7 +1712,7 @@ V_m = \emptyset
 \begin{example}
 \label{ex:three-loci-2}
 In example \ref{ex:three-loci}, the zero function dominated
-the consistency locus because homogenous equations are being used.
+the consistency locus because homogeneous equations are being used.
 We now address this problem by using an inequation
 to strip out the zero solution.  The ansatz remains the same:
 
@@ -1769,7 +1769,7 @@ Show that $V_c = V_m = \{ -1, 1 \}$.
 \label{sec:computing-constant-loci}
 
 We now present algorithms to compute the consistency and membership loci,
-and return them in the form of generators of ideals that define a {\it constructable subset}
+and return them in the form of generators of ideals that define a {\it constructible subset}
 in the constant space.
 
 \begin{definition}[\cite{CTD}, Definition 6]
@@ -1792,7 +1792,7 @@ A pair $(\mathfrak{a}, \mathfrak{b})$ of ideals represents the locally closed se
 \mathrm{Z}(\mathfrak{a}, \mathfrak{b}) \;:=\; V(\mathfrak{a}) \setminus V(\mathfrak{b}) \;\subseteq\; \mathbb{C}^n,
 \]
 %
-and a finite set $\mathcal{W}$ of such pairs represents the constructable subset
+and a finite set $\mathcal{W}$ of such pairs represents the constructible subset
 $\mathrm{Z}(\mathcal{W}) := \bigcup_{B \in \mathcal{W}} \mathrm{Z}(B)$.  Following \cite{CTD}, \S2, we
 reserve $\mathrm{Z}(\cdot)$ for this passage from a representation to the set
 it represents, so that no symbol stands for both at once.
@@ -1835,12 +1835,12 @@ $\mathrm{RefiningPartition}$
 \label{sec:cells-specialization}
 
 We now develop the technical machinery required to associate
-a differentially simple system with a constructable subset, defined according to a system
+a differentially simple system with a constructible subset, defined according to a system
 of polynomial equations and inequations in the constants.
 
 An essential component of this theory is a variable ranking
 that places the constants below all other indeterminates and
-allows us to find the equations and inequations for the constructable subsets corresponding to a differentially
+allows us to find the equations and inequations for the constructible subsets corresponding to a differentially
 simple system simply by reading off the equations and inequations of the system
 which involve only constants.
 
@@ -2125,7 +2125,7 @@ leaders and remain unchanged.
   \end{lemma}
 
   {\it Proof.}
-  We proof first that $\{\, S_i(c^*) : c^* \in \mathrm{cell}(S_i) \,\}$ is a differential
+  We prove first that $\{\, S_i(c^*) : c^* \in \mathrm{cell}(S_i) \,\}$ is a differential
   Thomas decomposition, then show that it is a differential Thomas decomposition of $(S^=(c^*), S^{\ne}(c^*))$.
 
   By definition, a differential Thomas decomposition is a disjoint decomposition of a system into finitely many differentially simple
@@ -2251,7 +2251,7 @@ $V_c = \{\, c^* \in \mathbb{C}^n : 1 \notin [A(c^*), \mathcal{P}^=] : Q(c^*)^\in
 \end{algorithm}
 
 No attempt is made at this point to simplify the results; we will return
-to this topic in Section \ref{sec:constructable-set}.
+to this topic in Section \ref{sec:constructible-set}.
 
 \vfill\eject
 
@@ -2644,12 +2644,12 @@ the first conjunct of Corollary~\ref{cor:assembly}, which discards exactly that
 region --- and, for every $i$, contains $W_i$ whenever it contains $C_i$.
 
 \vfill\eject
-\subsection{Polishing a Constructable Set}
-\label{sec:constructable-set}
+\subsection{Polishing a Constructible Set}
+\label{sec:constructible-set}
 
 The algorithms presented in the previous subsections compute the consistency
 and membership loci, and return them in the form of a pair of ideals
-specifying a constructable subset.  For clarify of presentation,
+specifying a constructible subset.  For clarity of presentation,
 no attempt was made to simplify the resulting ideals.
 Their output, while correct, is not in its most useful form, in large part because
 the ideals are not necessarily prime.  Factoring them with something like \cite{GTZ}
@@ -2697,7 +2697,7 @@ $\mathfrak{b} = \bigcap_i \bigcap_j \mathfrak{p}_{ij}$.  The C-representation
 of a locally closed set given by arbitrary pair of ideals $(\mathfrak{a'}, \mathfrak{b'})$
 can be normalized into a C-representation that respects the closure conditions as follows:
 (\cite{BrunatMontes}, Prop.~2.4)\footnote{\cite{BrunatMontes} doesn't show explicitly
-    that the radical of the saturation is the intersection of primes rrequired by Prop 2.4}
+    that the radical of the saturation is the intersection of primes required by Prop 2.4}
 \[
 \mathfrak{a} = \sqrt{\mathfrak{a}' : \mathfrak{b}'^\infty}
 \qquad
@@ -2751,10 +2751,10 @@ $\mathrm{Prep}$
 \mbox{}
 
 {\bf Input:} A list of pairs $W = \{ (\mathfrak{a}_1, \mathfrak{b}_1), \ldots, (\mathfrak{a}_N, \mathfrak{b}_N) \}$
-of ideals that defines a constructable set,
+of ideals that defines a constructible set,
 i.e, the output of Algorithms~\ref{alg:consistency-basic} or \ref{alg:core-basic}.
 
-{\bf Output:} The P-representation of the same constructable set, presented as
+{\bf Output:} The P-representation of the same constructible set, presented as
 a set of components
 $[\mathfrak{p}_i, \{\mathfrak{p}_{ij}\}]$ with all ideals prime, grouped by
 level, the levels disjoint and of strictly decreasing dimension.
@@ -2962,7 +2962,7 @@ for reproducing the calculations of this paper.
 (neither)
   & the default: the same canonical levels, with each hole reported by the
     simplest verified equivalent found by the polishing of
-    \S\ref{sec:constructable-set} --- the same sets as {\tt --comprehensive},
+    \S\ref{sec:constructible-set} --- the same sets as {\tt --comprehensive},
     different representatives for the holes \\[3pt]
 {\tt --latex}
   & re-print the result as the {\tt subequations} block this paper uses.  The
@@ -3203,8 +3203,8 @@ Computing a differential Thomas decomposition of \eqref{ansatz 5 plus} with rank
 
 takes about seven minutes
 on an AMD Ryzen 5 processor and produces 16 cells.  Performing the remainder of Algorithm~\ref{alg:core-basic}
-on each of those cells takes another half hour and computes the following constructable set
-for the intermediate locus $V_i$ (after applying the polishing techniques of Section \ref{sec:constructable-set}):
+on each of those cells takes another half hour and computes the following constructible set
+for the intermediate locus $V_i$ (after applying the polishing techniques of Section \ref{sec:constructible-set}):
 
 \begin{subequations}
 \label{ideal}
@@ -3255,7 +3255,7 @@ $\Psi = (2-r)e^{-r/2}$
 \end{center}
 
 As an example, let's analyze ideal \eqref{ideal:classical}.
-$a_0=0$, and we can always multiply our homogenous differential polynomial by a constant without affecting our result, so we can set $a_1=1$.
+$a_0=0$, and we can always multiply our homogeneous differential polynomial by a constant without affecting our result, so we can set $a_1=1$.
 Likewise, we can multiply our variable $v$ by a constant and that will only change our coefficients by constants,
 and $v_1=v_2=v_3=0$, so we can normalize by setting $v_4=1$.  This immediately implies that $b_0 = c_0 = 2$ and simplifies ideal \eqref{ideal:classical} to:
 
@@ -3273,7 +3273,7 @@ v \Psi'' + 2 \Psi' + 2(1 + E v) \Psi = 0
 \end{gathered}
 \end{equation}
 
-This is the classical radial equation obtained by seperation of variables (\cite{pauling and wilson} \S18a).
+This is the classical radial equation obtained by separation of variables (\cite{pauling and wilson} \S18a).
 %% or \url{http://hyperphysics.phy-astr.gsu.edu/hbase/quantum/hydrad.html}
 We use spherical coordinates, set $\Psi = R(r)P(\theta)F(\psi)$, and obtain the above equation for $R(r)$,
 though it is more commonly written in this form:
@@ -3961,7 +3961,7 @@ justifies the use of an ansatz.  Without adding additional differential equation
 we can only derive equations and relationship that apply to {\it all} solutions of the PDE.
 Restricting the solution space in
 some manner seems essential; an ansatz enables us to do that in a manner
-ammenable to the techniques of differential algebra.
+amenable to the techniques of differential algebra.
 
 So, while asking if a tower of ODE extensions can be constructed to solve a PDE is superficially similar to the problem of symbolic integration
 \cite{Bronstein},
@@ -3969,7 +3969,7 @@ which asks if a finite tower of primitive extensions can be used to express an i
 the nature of the two problems are quite different.
 Given one solution to an integral, we know that all of its remaining solutions
 are related by adding a constant $C$, which implies that any field containing one solution contains all solutions.
-In the PDE case we expect it to be impossible to find any one such constructable field that contains all solutions.
+In the PDE case we expect it to be impossible to find any one such constructible field that contains all solutions.
 
 What about differential Galois theory?
 Picard-Vessiot theory, for example, has been of great utility in analyzing ordinary differential equations.
@@ -3997,7 +3997,7 @@ useful techniques to better select ans\"atze.
 
 The algorithm does not depend on finding any symmetries in the equations to be solved,
 but symmetry can be exploited to reduce the number of required constants.
-For example, any homogenous differential equation
+For example, any homogeneous differential equation
 can be scaled by a constant without altering its solutions.  An ODE's
 independent variable can also be scaled by a constant if the ODE's coefficients are
 likewise scaled to compensate.  An arbitrary rotation can often be applied
@@ -4022,7 +4022,7 @@ to the author at that time.
 The applications of Gr\"obner basis algorithms such as Buchberger's and Faug\`ere's
 continue to grow.  The present work would be impossible without the GTZ algorithm and the
 Gr\"obner basis calculations that underlie it, since factoring an ideal into its minimal associated primes
-is the core of computing the P-representation of a constructable set.
+is the core of computing the P-representation of a constructible set.
 \cite{Chaharbashloo2013} was something
 of a shot across the bow; it is now clear that Gr\"obner basis algorithms are capable
 of solving systems of differential equations as well as systems of polynomial equations.
@@ -4120,7 +4120,7 @@ Claude found \cite{Schrodinger26} as an early use of parabolic coordinates
 to solve \eqref{schrodinger hydrogen 2}
 and found \cite{BanderItzykson} to explain the related symmetry.
 Claude identified \cite{BrunatMontes} and \cite{CSTools} as relevant for
-the post-processing of constructable sets
+the post-processing of constructible sets
 and found \cite{Chaharbashloo2013} as an early precursor of this entire method.
 
 \item {\it Mathematical drafting.}  Theorem~\ref{thm:completeness} and its
