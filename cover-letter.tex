@@ -3,8 +3,8 @@
 % file through Editorial Manager (editorialmanager.com/jaca).
 %
 % TO FILL IN BEFORE SENDING:
-%   - the Editor-in-Chief's name in the salutation, if you would rather
-%     not address the editors collectively;
+%   - check the guest editors' titles in the salutation (all three are
+%     professors, but confirm before sending);
 %   - the archival deposit's DOI in the "Code and data" paragraph, once
 %     the Zenodo (or equivalent) record exists;
 %   - the date.
@@ -24,7 +24,7 @@
 
 % The letter runs a few lines past a page; give page 1 the extra depth
 % rather than spill a signature block onto a second page.
-\enlargethispage{4\baselineskip}
+\enlargethispage{5\baselineskip}
 
 \hfill Brent Baccala \quad \url{cosine@freesoft.org}
 
@@ -32,10 +32,11 @@
 
 \vspace{6pt}
 
-Dear Editors,
+Dear Professors Guo, Chen and Ovchinnikov,
 
 I am submitting {\it A New Method of Solving PDEs} to the {\it Journal of
-Computational Algebra} for consideration as a Full-Length Research Article.
+Computational Algebra}, for the special issue {\it Differential Algebra and
+Related Topics}, as a Full-Length Research Article.
 
 {\bf What the paper does.}  It gives an algorithmic method for finding exact
 solutions of partial differential equations, and of systems of them, by fitting
@@ -48,8 +49,13 @@ component, and a projection of the remainders onto the constants, assembled with
 constructible-set operations.  A completeness theorem establishes that what the
 algorithm returns is exactly the locus sought.
 
-{\bf Fit with the journal's scope.}  Both the mathematics and the algorithms
-contribute to the result.  Section~3 develops the theory: specialization of a
+{\bf Fit with the call.}  The paper is differential algebra in the broader
+sense the call describes --- the algebraic theory of differential equations,
+applied to a problem in the sciences --- and it is squarely {\it about}
+computation, which the call particularly solicits: the theory exists to justify
+two algorithms, and the algorithms were run.  It also meets the journal's
+general criterion, that both the mathematics and the algorithms contribute to
+the result.  Section~3 develops the theory: specialization of a
 simple system at a constant vector, the three loci and their containments, and
 the completeness theorem.  The two algorithms are
 given as pseudocode with proofs of what they return.  Section~5 is a
@@ -95,9 +101,7 @@ of it was reviewed and edited by me, and I take full responsibility for it.
 {\bf Code and data.}  The Sage scripts and the two supporting packages that
 produced the paper's computations are described in Section~4 and, per the
 journal's research-data policy, deposited in an archival repository and cited in
-the reference list.
-
-Thank you for considering the manuscript.
+the reference list.  Thank you for considering the manuscript.
 
 % Kept in a minipage so the sign-off cannot be split from the name.
 \begin{minipage}{\linewidth}
