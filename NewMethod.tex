@@ -2472,22 +2472,11 @@ the saturated ideal.
 \qedbox
 
 \medskip
-The corollary carries no companion condition for the inequations, and needs
-none.  The pooled inequation $Q(c)$ of \eqref{eq:Q-def} was fed to the
-decomposition, so no solution of $(S^=, S^{\ne})$ annihilates it; and for $c^*$
-in the cell the specialized system has a solution $\tau$
-(Lemma~\ref{lem:cell-solution}).  Were $Q(c^*)$ to lie in
-$[S(c^*)] : q(c^*)^\infty$, then $q(c^*)^m Q(c^*) \in [S(c^*)]$ for some $m$
-and the left side would vanish at $\tau$, which is impossible: $Q(c^*)$ does
-not vanish there, and neither does $q(c^*)$, by
-Lemma~\ref{lem:initials-and-separants-specialize}.  Testing the inequations
-after the fact would only repeat what decomposing against them already
-established.
-
-\medskip
 The membership
 locus of the ansatz as a whole is recovered by intersecting over the
 decomposition.
+
+\vfill\eject
 
 \begin{corollary}
 \label{cor:assembly}
@@ -2551,13 +2540,6 @@ exactly when $c^* \in \mathcal{V}_i$.  Conjoining over $\mathcal{I}(c^*)$ gives
 the claim.
 \qedbox
 
-\medskip
-\noindent
-The per-component test decides membership in the {\it saturated} ideal of
-that component, while intersecting over the decomposition decides membership in
-the {\it radical} differential ideal of the ansatz --- which is the membership
-locus as defined in \S\ref{sec:constant-loci}.
-
 \vfill\eject
 
 \begin{algorithm}[MembershipLocus]
@@ -2604,49 +2586,12 @@ reports, as described below.
 
 We now summarize and explain Algorithm~\ref{alg:core-basic}.
 
-First, we compute a differential Thomas decomposition of the system
-$(A(c), \{Q(c)\})$ --- the ansatz equations together with the pooled
+First, we compute a differential Thomas decomposition of the ansatz equations together with the pooled
 inequations of \eqref{eq:Q-def}, carried along as the single inequation
-$Q(c)$ --- which produces a partition of
-the jet space into quasi-affine sets (i.e, defined by both equations and
-inequations), each equiped with a specialization of the ansatz in a
-differentially simple form.  Feeding $Q(c)$ into the decomposition itself, rather
-than checking it afterward, lets it participate in the case-splitting: each
-component's inequations $S^{\ne}_i$ then already carry whatever of $Q(c)$'s
-non-degeneracy survives on that component.  Because $Q(c)$ may involve the
-constants, that case-splitting is in part a splitting of constant space, and
-the constant inequations it deposits in $S^{\ne}_i$ are what the cell $C_i$ of
-line 10 and the exclusion ideal $\mathfrak{h}_i$ of line 11 are built from.
-For each differentially simple subsystem in the decomposition,
-we use Ritt's full reduction algorithm to reduce each $P_j$
-modulo the subsystem, obtaining remainders $r_1, \ldots, r_t$, and project them
-onto the space of the $n$ constant parameters
-$c = (c_1, \ldots, c_n)$.
-The subsystem's own inequations $S^{\ne}_i$ --- which, by construction, now
-carry $Q(c)$'s contribution along with the rest --- need no further reduction:
-condition \condref{S4} of differential simplicity already guarantees that no
-inequation of $S^{\ne}_i$ is reducible modulo $S^=_i$, so
-$\mathrm{Coeffs}(q, \mathbb{Q}[c_1, \ldots, c_n])$ can be read off each
-$q \in S^{\ne}_i$ directly.  That coefficient set need not generate a prime
-ideal, so we decompose it too: $K_i$ collects, over every $q \in S^{\ne}_i$,
-the minimal associated primes of $\langle \mathrm{Coeffs}(q, \mathbb{Q}[c_1,
-\ldots, c_n]) \rangle$, each $\mathfrak{q} \in K_i$ an irreducible piece of
-some inequation's identically-zero locus.  A prime $\mathfrak{p}$ from the
-$\mathrm{minAss}$ of Algorithm~\ref{alg:core-comp} is discarded outright when
-some $\mathfrak{q} \in K_i$ is
-entirely contained in it, since then $V(\mathfrak{p}) \subseteq
-V(\mathfrak{q})$ and every point of $V(\mathfrak{p})$ is degenerate; a
-surviving $\mathfrak{p}$ is instead paired with $\mathfrak{h}_i =
-\prod_{\mathfrak{q} \in K_i} \mathfrak{q}$, so that $\mathrm{Z}(\mathfrak{p},
-\mathfrak{h}_i)$ denotes exactly $V(\mathfrak{p}) \setminus
-\bigcup_{\mathfrak{q} \in K_i} V(\mathfrak{q})$ --- excluding precisely the
-points where some inequation degenerates, not merely discarding whichever
-components are degenerate {\it everywhere}.  This subsumes $h_i$: an
-already-constant inequation of $S^{\ne}_i$ has coefficient set $\{q\}$, whose
-minimal primes are the $\langle q_k \rangle$ for the distinct irreducible
-factors $q_k$ of $q$; since $\mathfrak{p}$ is prime, some $\langle q_k
-\rangle \subseteq \mathfrak{p}$ exactly when $q \in \mathfrak{p}$, the test
-$h_i$ was already built from.
+$Q(c)$.  Feeding all inequations into the decomposition itself, rather
+than checking them afterward, lets them participate in the case-splitting: each
+component's inequations $S^{\ne}_i$ then already carry whatever inequations of $\mathcal{P}^{\ne}$
+survive on that component.
 
 Membership of $P_j$ in $\sqrt{[A(c^*)] : Q(c^*)^\infty}$ is a statement about $P_j$ as a
 polynomial, not about its value at any particular point.
@@ -2663,7 +2608,7 @@ r_j \;=\; \sum_{\alpha=1}^{N_j} m_{j\alpha} \, p_{j\alpha}(c),
 where the $m_{j\alpha}$ are the $N_j$ distinct power products occurring in $r_j$
 and each coefficient $p_{j\alpha}(c)$ is a polynomial in the constants.
 
-It will be convenient to name the set of coefficients the expansion
+It is convenient to name the set of coefficients the expansion
 produces, and to carry in the notation the ring they are taken from.
 Let $A \subseteq R$ be a subring over which $R$ is a polynomial ring in the
 remaining indeterminates, so that each $r \in R$ has a unique expansion
@@ -2679,39 +2624,6 @@ The only case we need is $A = \mathbb{Q}[c_1, \ldots, c_n]$, for which the
 remaining indeterminates are exactly the non-constant ones and
 $\mathrm{Coeffs}(r_j, \mathbb{Q}[c_1, \ldots, c_n])$ is the coefficient set
 $\{p_{j1}, \ldots, p_{jN_j}\}$ of \eqref{eq:remainder-expansion}.
-
-Distinct monomials in a polynomial ring are linearly independent over
-$\mathbb{C}$, so $r_j$ vanishes identically at $c^*$ if and only if every one of
-its coefficients does.  The projection step therefore replaces the reduced
-system $r_1, \ldots, r_t$ by the single system
-%
-\begin{equation}
-\label{eq:projection-system}
-\begin{gathered}
-p(c) = 0 \quad \text{for every } p \in J, \\[2pt]
-J \;=\; \bigcup_{j=1}^{t} \mathrm{Coeffs}\bigl(r_j, \; \mathbb{Q}[c_1, \ldots, c_n]\bigr)
-\end{gathered}
-\end{equation}
-
-The system $J \subseteq \mathbb{Q}[c_1, \ldots, c_n]$ defines an algebraic variety
-%
-\[
-\mathcal{V} \;=\; V(J) \;\subseteq\; \mathbb{C}^n,
-\]
-%
-which need not be irreducible.  Because only the zero locus matters, the
-decomposition we want is into irreducible components, and these are given by the
-minimal associated primes: under the well-known correspondence between prime
-ideals and irreducible varieties (\cite{iva}, Corollary~4.5.4), the minimal
-primes of the ideal generated by $J$ cut out the irreducible components
-of~$\mathcal{V}$, and several algorithms have been proposed and implemented to
-compute them (\cite{GTZ}, among others).
-
-Each subsystem's inequations can include inequations in $\mathbb{Q}[c_1, \ldots, c_n]$
---- either inherited from $Q(c)$, when the pooled inequation involves the
-constants, or produced by the decomposition's own case-splitting ---
-and these must be preserved with the minimal primes, using the ideal notation
-introduced in \S\ref{sec:consistency-locus}.
 
 The two branches differ only in their assembly.  For $\mu = \exists$ the
 answer is the union of the $W_i$, and a constant vector lying over no cell
