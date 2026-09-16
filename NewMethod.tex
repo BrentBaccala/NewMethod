@@ -3960,7 +3960,7 @@ using one or more ODEs.  Thus, the various ans\"atze proposed in Section \ref{se
 one thing in common: they are all constructed as towers of either ODE or algebraic extensions.
 No PDE-based ans\"atze have been considered, though the algorithm certainly does not exclude them.
 
-First, given a PDE, can we construct an ansatz to express all of the solutions of the PDE?
+Given a PDE, can we construct an ODE-based ansatz to express all of the solutions of the PDE?
 This seems unlikely, as the solutions of a PDE would include solutions for all possible
 boundary conditions (see the beginning of Section \ref{sec:Ansatze}).
 In most cases, we would not expect any finite ansatz to express all solutions.
@@ -3968,53 +3968,60 @@ In most cases, we would not expect any finite ansatz to express all solutions.
 In fact, the vast extent of a PDE's solution space in the
 absence of boundary conditions or function space restrictions
 justifies the use of an ansatz.  Without adding additional differential equations to a PDE,
-we can only derive equations and relationship that apply to {\it all} solutions of the PDE,
-and does not seem likely to be a very large or informative set.
+we can only derive equations and relationship that apply to {\it all} solutions of the PDE.
 Restricting the solution space in
 some manner seems essential; an ansatz enables us to do that in a manner
 ammenable to the techniques of differential algebra.
 
-So, asking if a tower of ODE extensions can be constructed to solve a PDE is superficially similar to the problem of symbolic integration
+So, while asking if a tower of ODE extensions can be constructed to solve a PDE is superficially similar to the problem of symbolic integration
 \cite{Bronstein},
 which asks if a finite tower of primitive extensions can be used to express an integral,
-the nature of the two problems are quite different because in the integration case we can express all of its solutions
-using a single extension.  Given one solution to an integral, we know that all of its remaining solutions
+the nature of the two problems are quite different.
+Given one solution to an integral, we know that all of its remaining solutions
 are related by adding a constant $C$, which implies that any field containing one solution contains all solutions.
 In the PDE case we expect it to be impossible to find any one such constructable field that contains all solutions.
 
 What about differential Galois theory?
 Picard-Vessiot theory, for example, has been of great utility in analyzing ordinary differential equations.
-Yet an $n^{\rm th}$ order linear ODE will have at most an $n$-dimensional
+An $n^{\rm th}$ order linear ODE will have at most an $n$-dimensional
 solution space.  After selecting an arbitrary basis, any
 solution can be represented by an $n$-tuple of complex constants and
-any automorphism that permutes these solutions can be represented by
-an $n \times n$ matrix, and this representation pervades the work of Kovacic, for instance.
+the Galois automorphisms that permutes these solutions can be represented by
+an $n \times n$ matrix.
 
 No such easy reduction is available for PDEs.
 A PDE with no boundary conditions
 is likely to have a solution space that is not only infinite, but infinite
 dimensional, and probably not even with a countably infinite basis.
 In such an environment, differential Galois groups
-can not be represented as subgroups of $GL_n$,
-so the theory of algebraic groups (cite Kolchin) is therefore unlikely to be of much help.
+can not be represented as subgroups of $GL_n$.
 
 % We'd have to characterize the solution we seek.  Conditions like lowest energy level don't seem
 % useful because they require evaluating a global integral.
 
 One possible approach to ansatz selection would be to impose boundary
-conditions (or the like) prior to any kind of analysis with differential algebra.
-In the case of quantum mechanics, imposing $H^2(\Omega)$, where $\Omega$ is the state space
-of whatever physical system we're analyzing, is an obvious restriction.
+conditions or function space restrictions prior to any kind of analysis with differential algebra.
 Some kind of theoretical analysis, exploring what restrictions may be placed
-on the ans\"atze if the solutions are required to be in $H^2(\Omega)$, might yield
+on the ans\"atze if the solutions are required to be in $L^2(\Omega)$, for example, might yield
 useful techniques to better select ans\"atze.
 
-In short, the differential algebra techniques used to analyze integrals and linear ODEs do not seem amenable
-to handling PDEs, and no theory is available at this time to guide the selection of an ansatz.
+The algorithm does not depend on finding any symmetries in the equations to be solved,
+but symmetry can be exploited to reduce the number of required constants.
+For example, any homogenous differential equation
+can be scaled by a constant without altering its solutions.  An ODE's
+independent variable can also be scaled by a constant if the ODE's coefficients are
+likewise scaled to compensate.  An arbitrary rotation can often be applied
+to normalize some vector into a standard position.  These kinds of simplifications
+will not alter the final results, but by removing unnecessary constants can
+reduce the computational complexity of the algorithm.
+
+In short, no theory is available at this time to guide the selection of an ansatz,
+and the differential algebra techniques used to analyze integrals and linear ODEs do not seem amenable
+to this problem.
 The ansatz used for the hydrogen example
 was an educated guess.  It was designed to be general enough to find the existing
 classical solution, and so to be used for testing the software.  The appearance of \eqref{ideal:parabolic}
-was not anticipated, as the seperation of \eqref{schrodinger hydrogen 2} was unknown
+was not anticipated, as the separation of \eqref{schrodinger hydrogen 2} in parabolic coordinates was unknown
 to the author at that time.
 
 
@@ -4022,23 +4029,28 @@ to the author at that time.
 \section{Conclusion}
 \label{sec:Conclusion}
 
-The applications of Gr\"obner basis algorithms such as Buchberger's and Fauvere's
+The applications of Gr\"obner basis algorithms such as Buchberger's and Faug\`ere's
 continue to grow.  The present work would be impossible without the GTZ algorithm and the
-Gr\"obner basis calculations that underlie it.  \cite{Chaharbashloo2013} was something
+Gr\"obner basis calculations that underlie it, since factoring an ideal into its minimal associated primes
+is the core of computing the P-representation of a constructable set.
+\cite{Chaharbashloo2013} was something
 of a shot across the bow; it is now clear that Gr\"obner basis algorithms are capable
 of solving systems of differential equations as well as systems of polynomial equations.
+In addition, differential Thomas decomposition is a crucial pre-processing step for both the consistency and the membership loci.
 
-Singular remains in an alarming state - single threaded and tied to its array implementation.
-
-The utility of this algorithm is currently limited by our Gr\"obner basis software.
+The utility of this algorithm is currently limited by our software.
 For example, I have formed a system of 1570 equations with 1,296,960 terms
 to test whether helium can be solved using ansatz \eqref{ansatz 16 plus}.
+In this case, the differential Thomas decomposition was skipped, so only the generic
+cell (with all initials and separants non-zero) was considered.
 Various attempts to compute a decomposition of this system into its minimal associated primes exhaust the
 memory on a computer with 96 GB RAM,
 % during the Gr\"obner basis calculation,
-but the software lacks the ability to
+but Singular's Gr\"obner basis implementation lacks the ability to
 fall back effectively on mass storage when RAM is exhausted, nor
 can it use memory spread out over a cluster.
+Even when it does not exhaust the available memory,
+it is single-threaded and its performance is often limited by its array-based data structures.
 
 Consistency is a bigger concept in differential algebra that it first appears.  A great deal of information
 about the constant solution space is contained in the consistency locus alone.  We don't
@@ -4047,13 +4059,10 @@ establish $1 = 0$ using simple polynomial operations and differentiation.  Every
 
 The difficulties of selecting an ansatz have already be touched upon.
 
-What relationship is there between the constant ideals and the function space?
+% What relationship is there between the constant ideals and the function space?
 
 How does ranking affect the operation of the algorithm?  We know it doesn't affect correctness, but experimentation with
-the software (it has a {\tt --ranking} option) shows that elimination rankings are slower that what was used in the example.
-
-The algorithm does not depend on finding any symmetries in the equations to be solved,
-but symmetry can be exploited to reduce the number of required constants.
+the software (it has a {\tt --ranking} option) shows that elimination rankings are slower than the orderly ranking used in the example.
 
 The algorithm presented above can be used to check any PDE to see if any of its solutions
 can be expressed using an ODE structured according to a specific ansatz, defined by
@@ -4072,40 +4081,18 @@ around the differential-algebraic structure of the ansatz; they do not
 presuppose any symmetry of the PDE, and they carry the completeness guarantee of
 Theorem~\ref{thm:completeness}.
 
-The name of the software repository ({\tt helium}) informs a primary goal
-of my research: to find a closed form expression for helium's ground state.
-In that repository, you will find several years of attempts in
-that direction, of which {\tt joca.sage} is the most refined.
-% \footnote{{\tt helium.sage} is also notable for containing a very aggressive, though inefficient,
-% factorizing implementation of the GTZ algorithm, but that's the subject of another paper.}
-Although ``solving helium'' is widely regarded as impossible, I know
-of no proof that helium's ground state wavefunction can not be formed
-from a finite number of linear homogenous ODEs.  Lacking any good theory
-to inform the selection of an ansatz, I have turned to educated guesswork.
-
-We can explore other important PDEs, such as the Navier-Stokes equation.
-As with helium, we can work incrementally towards it using smaller ans\"atze.
+We can explore other important PDEs, such as the helium Schr\"odinger equation and the Navier-Stokes equation.
 Ansatz \eqref{ansatz 18} is a step in the direction
 of analyzing Navier-Stokes.  $\mathbf{\bar{v}} = (u,v,w)$ is meant to be a velocity field
 and $p$ is the pressure, all varying as functions of position $(x,y,z)$ and time $t$.
+Ansatz \eqref{ansatz 18}, at the very least, should be able to find the traveling-wave shear layers of Navier–Stokes,
+though this claim remains as yet unverified.
 
-We can solve differential equations with Gr\"obner bases, and this
-technique, given enough compute resources, allows us to check for simple ODE-based solutions,
-but we're primarily limited by inefficiencies of our software.
-
-\begin{comment}
-As my primary interest lies in quantum mechanics, I have investigated the PDEs
-that model hydrogen and helium.
-
-For hydrogen, the PDE is $\nabla^2 \Psi - \frac{1}{r} \Psi = E \Psi$
-
-For helium, the PDE is $\nabla_1^2 \Psi + \nabla_2^2 \Psi - \frac{2}{r_1} - \Psi \frac{2}{r_2} - \Psi \frac{1}{r_{12}} \Psi = E \Psi$,
-where $\Psi=\Psi(r_1,r_2,r_{12})$ and $\nabla_i$ is the Laplacian with respect to the $i^{\rm th}$ electron.
-$\Psi$ is assumed to have no angular dependence, which has been known since
-at least the time of Hylleraas to be a valid assumption for the ground state.
-
-In both cases, I use Hartree atomic units to render the equations dimensionless.
-\end{comment}
+Ultimately, this method and these algorithms strike me as somewhat like a radar system
+that lets us search for solutions within some limited scope.  The more flexible the ansatz, the wider the scope,
+the more numerous are its constants, and the more computational resources are required.
+More efficient software and more powerful hardware allows ever larger scopes to be searched.  Whether we find
+useful solutions in this way or whether the radar returns are largely empty remains to be seen.
 
 % ---------------------------------------------------------------------
 % Required by Elsevier's generative-AI policy: "a new section before the
