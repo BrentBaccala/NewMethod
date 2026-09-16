@@ -1,0 +1,111 @@
+% Cover letter for the submission of NewMethod.tex to the
+% Journal of Computational Algebra (Elsevier).  Submitted as a separate
+% file through Editorial Manager (editorialmanager.com/jaca).
+%
+% TO FILL IN BEFORE SENDING:
+%   - the Editor-in-Chief's name in the salutation, if you would rather
+%     not address the editors collectively;
+%   - the archival deposit's DOI in the "Code and data" paragraph, once
+%     the Zenodo (or equivalent) record exists;
+%   - the date.
+
+\documentclass[11pt]{article}
+
+\usepackage[margin=0.9in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\pagestyle{empty}
+
+\begin{document}
+
+% The letter runs a few lines past a page; give page 1 the extra depth
+% rather than spill a signature block onto a second page.
+\enlargethispage{4\baselineskip}
+
+\hfill Brent Baccala \quad \url{cosine@freesoft.org}
+
+\hfill \today
+
+\vspace{6pt}
+
+Dear Editors,
+
+I am submitting {\it A New Method of Solving PDEs} to the {\it Journal of
+Computational Algebra} for consideration as a Full-Length Research Article.
+
+{\bf What the paper does.}  It gives an algorithmic method for finding exact
+solutions of partial differential equations, and of systems of them, by fitting
+the system to a parameterized {\it ansatz}: a finite set of differential
+polynomials whose coefficients are undetermined constants.  The method computes,
+inside the space of those constants, the locus at which the ansatz solves the
+system.  The computation is a differential Thomas decomposition of the ansatz,
+Ritt's full reduction of each equation of the target system modulo each
+component, and a projection of the remainders onto the constants, assembled with
+constructible-set operations.  A completeness theorem establishes that what the
+algorithm returns is exactly the locus sought.
+
+{\bf Fit with the journal's scope.}  Both the mathematics and the algorithms
+contribute to the result.  Section~3 develops the theory: specialization of a
+simple system at a constant vector, the three loci and their containments, and
+the completeness theorem.  The two algorithms are
+given as pseudocode with proofs of what they return.  Section~5 is a
+computation, carried out with an implementation, that produced a previously
+unknown closed-form solution of the hydrogen Schr\"odinger equation,
+$\Psi = J_0\bigl(2\sqrt{x+r}\bigr)$ at $E=0$, which is neither spherically nor
+Cartesian separable.  It is not reachable by standard use of an existing
+implementation, and it is not heuristic: the completeness theorem certifies that
+nothing valid was missed.
+
+{\bf What I claim is new.}  Three things.
+
+The first is the embedding of ODEs in a {\it partial} differential ring with
+arbitrary flexibility in the choice of the ODE's independent variable.  The
+ansatz does not fix what the ODE is an equation in: the independent variable is
+itself a parameterized expression --- in the hydrogen example,
+$v = v_1 x + v_2 y + v_3 z + v_4 r$ --- and the constants that determine it are
+solved for alongside the ODE's own coefficients.  This is what lets the method
+reach solutions separable in no coordinate system chosen beforehand, the
+parabolic-coordinate solution above among them.
+
+The second is the consistency and membership loci themselves --- more
+generally, any notion of a locus in the space of constants attached to a
+parameterized ansatz.  I am not aware of prior work that defines such loci,
+distinguishes them, or establishes the containments between them.  The paper defines
+three, shows the containments are strict, and shows what each one answers.
+
+The third is the pair of algorithms that compute the two loci, together with
+the proofs that they do.
+
+{\bf Declarations.}  I am the sole author.  The work has not been published
+previously and is not under consideration elsewhere.  I have no competing
+interests to declare, and the research received no specific grant from any
+funding agency.
+
+{\bf Generative AI.}  I used AI tools substantially in preparing this work, well
+beyond checking language and readability, and would rather say so at the outset.
+The manuscript carries the declaration section your guide requires, immediately
+before the reference list, itemizing that use; a commit-level record is public in
+the paper's repository at \url{https://github.com/BrentBaccala/NewMethod}.  All
+of it was reviewed and edited by me, and I take full responsibility for it.
+
+{\bf Code and data.}  The Sage scripts and the two supporting packages that
+produced the paper's computations are described in Section~4 and, per the
+journal's research-data policy, deposited in an archival repository and cited in
+the reference list.
+
+Thank you for considering the manuscript.
+
+% Kept in a minipage so the sign-off cannot be split from the name.
+\begin{minipage}{\linewidth}
+Yours sincerely,
+
+\vspace{18pt}
+
+Brent Baccala
+\end{minipage}
+
+\end{document}
