@@ -22,7 +22,7 @@
 
 % The letter runs a few lines past a page; give page 1 the extra depth
 % rather than spill a signature block onto a second page.
-\enlargethispage{10\baselineskip}
+\enlargethispage{12\baselineskip}
 
 \hfill Brent Baccala \quad \url{cosine@freesoft.org}
 
@@ -36,25 +36,29 @@ I am submitting {\it A New Method of Solving PDEs} to the {\it Journal of
 Computational Algebra}, for the special issue {\it Differential Algebra and
 Related Topics}, as a Full-Length Research Article.
 
-{\bf What the paper does.}  It gives an algorithmic method for finding exact
-solutions of partial differential equations, and of systems of them, by fitting
-the system to a parameterized {\it ansatz}: a finite set of differential
-polynomials whose coefficients are undetermined constants.  The method computes,
-inside the space of those constants, the locus at which the ansatz solves the
-system.  The computation is a differential Thomas decomposition of the ansatz,
-Ritt's full reduction of each equation of the target system modulo each
-component, and a projection of the remainders onto the constants, assembled with
-constructible-set operations.  A completeness theorem establishes that what the
-algorithm returns is exactly the locus sought.
+{\bf What the paper does.}  It solves partial differential equations, and
+systems of them, by fitting the system to a parameterized {\it ansatz} --- a
+finite set of differential polynomials whose coefficients are undetermined
+constants --- so that solving becomes a question about the space of those
+constants.  Three nested loci live in that space: the constants at which the
+ansatz and the system are jointly {\it consistent}, those at which every
+solution of the ansatz solves the system ({\it membership}), and an intermediate
+one.  The paper gives {\bf two algorithms}.  The first computes the consistency
+locus: it takes a differential Thomas decomposition of the ansatz and the system
+{\it together} and reads the answer off the components' cells.  The second
+decomposes the ansatz {\it alone}, then applies Ritt's full reduction to each
+equation of the system modulo each component and projects the remainders onto
+the constants; its two assembly branches return the membership locus and the
+intermediate one.  Both deliver constructible subsets of constant space, and
+each is proved to return exactly the locus it claims --- for the second, that is
+the completeness theorem.
 
 {\bf Fit with the call.}  The paper is differential algebra in the broader
 sense the call describes --- the algebraic theory of differential equations,
 applied to a problem in the sciences --- and it is squarely {\it about}
 computation, which the call particularly solicits, and it meets the journal's
 general criterion that both the mathematics and the algorithms contribute to the
-result.  Section~3 develops the theory --- specialization at a constant vector,
-the three loci and their containments, the completeness theorem --- and gives
-both algorithms as pseudocode with proofs of what they return.  Section~5 is a
+result.  Section~3 is the theory and the two algorithms; Section~5 is a
 computation, carried out with an implementation, that returns four components,
 one of them the parabolic family containing
 $\Psi = J_0\bigl(2\sqrt{x+r}\bigr)$ at $E=0$ --- a solution that is neither
