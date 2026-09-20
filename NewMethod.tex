@@ -30,6 +30,47 @@ Corresponding author.  Email address: {\tt cosine@freesoft.org}}}
 \newtheorem{definition}[theorem]{Definition}
 \theoremstyle{plain}
 
+% ---------------------------------------------------------------------
+% Frozen numbering (post-submission, 2026-09-15).
+%
+% The numbers in the submitted version are fixed: a result added during
+% revision must not renumber anything that follows it.  Instead of
+% \begin{lemma}, use the "i" (inserted) variant and state the number
+% explicitly:
+%
+%     \begin{ilemma}{14.1}\label{lem:whatever} ... \end{ilemma}
+%     \begin{ilemma}{14.1}[Optional title] ... \end{ilemma}
+%
+% The literal number is what gets printed, \label'd, \ref'd and used as
+% the hyperref anchor; the shared theorem counter is left exactly where
+% it was, so Theorem 15 stays Theorem 15.  One variant exists for every
+% environment that shares the counter.
+%
+% For an inserted *equation*, amsmath's \tag does the same job and also
+% leaves the counter alone: \begin{equation}\tag{37a} ... \end{equation}
+%
+% check-numbering.sh diffs the .aux against frozen-numbering.txt and
+% reports any label whose number moved.  Run it after every rebuild.
+\makeatletter
+\newcommand{\nm@insertedvariant}[1]{%
+  \newenvironment{i#1}[1]{%
+    \addtocounter{theorem}{-1}% undo the step \refstepcounter is about to make
+    \def\thetheorem{##1}\def\theHtheorem{##1}%
+    \csname #1\endcsname
+  }{%
+    \csname end#1\endcsname
+  }%
+}
+\nm@insertedvariant{theorem}
+\nm@insertedvariant{lemma}
+\nm@insertedvariant{corollary}
+\nm@insertedvariant{proposition}
+\nm@insertedvariant{algorithm}
+\nm@insertedvariant{example}
+\nm@insertedvariant{exercise}
+\nm@insertedvariant{definition}
+\makeatother
+
 % Numbered pseudocode lines ("1:", "2:", ...), following the style of the
 % algorithm displays in \cite{ThomasDecomp}.  \algind indents one level.
 \newcounter{algline}

@@ -1,0 +1,107 @@
+# label	number	kind -- numbering of the submitted version, regenerate only on purpose
+J0 sol	7	equation
+alg:consistency-basic	22	theorem
+alg:consistency-comp	29	theorem
+alg:core-basic	27	theorem
+analytic ODE	10	equation
+ansatz 11 figure	5	figure
+ansatz 11 plus	22	equation
+ansatz 11 plus:1	22g	equation
+ansatz 11 plus:2	22h	equation
+ansatz 12 figure	4	figure
+ansatz 12 plus	21	equation
+ansatz 12 plus:1	21g	equation
+ansatz 12 plus:2	21h	equation
+ansatz 12 plus:3	21o	equation
+ansatz 12 plus:4	21p	equation
+ansatz 13	25	equation
+ansatz 13 figure	8	figure
+ansatz 16 figure	6	figure
+ansatz 16 plus	23	equation
+ansatz 16 plus:1	23g	equation
+ansatz 16 plus:2	23h	equation
+ansatz 16 plus:3	23i	equation
+ansatz 17	24	equation
+ansatz 17 figure	7	figure
+ansatz 18	26	equation
+ansatz 1a	2	equation
+ansatz 1b	3	equation
+ansatz 1sol	4	equation
+ansatz 5 figure	2	figure
+ansatz 5 plus	51	equation
+ansatz 5 plus:1	51g	equation
+ansatz 5 plus:2	51h	equation
+ansatz 5a	19	equation
+ansatz 5b	17	equation
+ansatz 5c	18	equation
+classical eq in ideal	56	equation
+cor:assembly	26	theorem
+cor:system-locus	25	theorem
+def:constant	1	theorem
+def:differential-Thomas-decomposition	4	theorem
+def:parametric-ranking	2	theorem
+def:specialized system	13	theorem
+eq:Bessel solution ODE	61	equation
+eq:Q-def	29	equation
+eq:Schrodinger ODE	62	equation
+eq:coeff-operator	46	equation
+eq:hydrogen-ring	50	equation
+eq:intermediate-sandwich	43	equation
+eq:locus-containment	32	equation
+eq:remainder-expansion	45	equation
+eq:specialization-fibre	42	equation
+ex:three-loci	8	theorem
+ex:three-loci two systems	36	equation
+ex:three-loci-2	9	theorem
+ideal	54	equation
+ideal:1s	54a	equation
+ideal:2s	54b	equation
+ideal:classical	54c	equation
+ideal:parabolic	54d	equation
+key	1	figure
+lem:cell-consistency	16	theorem
+lem:cell-solution	14	theorem
+lem:initials-and-separants-specialize	3	theorem
+lem:no-cell-inconsistent	20	theorem
+lem:radical-saturation	15	theorem
+lem:saturation-cancellation	23	theorem
+lem:specialization	18	theorem
+lem:specialized-decomposition	19	theorem
+nonlinear ansatz figure	9	figure
+prop:decomposition-membership	6	theorem
+prop:simple-membership	5	theorem
+ranking	52	equation
+ranking compatibility	27	equation
+related solution	60	equation
+ritt reduction 1	44	equation
+schrodinger hydrogen	1	equation
+schrodinger hydrogen 2	49	equation
+sec:Ansatze	2	section
+sec:Conclusion	7	section
+sec:Example	5	section
+sec:Selection of an Ansatz	6	section
+sec:Software	4	section
+sec:Solution Algorithm	3	section
+sec:cells-specialization	3.4	subsection
+sec:computing-constant-loci	3.3	subsection
+sec:consistency-locus	3.5	subsection
+sec:constant-loci	3.2	subsection
+sec:constructible-set	3.7	subsection
+sec:membership-locus	3.6	subsection
+sec:preliminaries	3.1	subsection
+separation ansatz	20	equation
+separation ansatz figure	3	figure
+separation ansatz:L	20b	equation
+separation ansatz:Lchain	20d	equation
+separation ansatz:P	20h	equation
+separation ansatz:Pchain	20j	equation
+separation ansatz:T	20e	equation
+separation ansatz:Tchain	20g	equation
+separation ansatz:product	20a	equation
+separation ansatz:u	20c	equation
+separation ansatz:v	20f	equation
+separation ansatz:w	20i	equation
+thm:cell-consistency-2	17	theorem
+thm:completeness	24	theorem
+thm:correctness-consistency	21	theorem
+thm:locus-containment	7	theorem
