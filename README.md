@@ -127,6 +127,51 @@ faithful path; the RG step is heavy and, when used, needs the constants in the
 base field — and even then it regularizes (rewrites) rather than preserves the
 ansatz.
 
+## Paper source: the numbering is frozen
+
+`NewMethod.tex` went to JOCA on 2026-09-15 and is out for review, so the
+numbers the referees are reading must survive the revision: their "Lemma 14"
+has to still be Lemma 14 in what we send back. Every theorem-like environment
+shares one counter, so a new result inserted anywhere would renumber
+everything after it.
+
+**Adding a result during revision.** Use the `i` (inserted) variant of the
+environment and give the number literally:
+
+```latex
+\begin{ilemma}{14.1}\label{lem:whatever}
+  ...
+\end{ilemma}
+
+\begin{ilemma}{14.1}[Optional title]     % the optional title still works
+```
+
+`itheorem`, `ilemma`, `icorollary`, `iproposition`, `ialgorithm`, `iexample`,
+`iexercise` and `idefinition` all exist (defined in the preamble next to the
+`\newtheorem` block). Each decrements the shared counter before the real
+environment steps it, so the net effect on the counter is zero — Theorem 15
+stays Theorem 15. The literal number is what is printed, what `\label`/`\ref`
+see, and what hyperref anchors. For an inserted **equation**, amsmath's `\tag`
+already behaves this way: `\begin{equation}\tag{37a} ... \end{equation}` prints
+(37a) and leaves the equation counter alone.
+
+**Checking that nothing drifted.** `frozen-numbering.txt` records label →
+number for all 106 labels of the submitted build (theorems, sections,
+equations, figures), taken from that build's `.aux`. After every rebuild:
+
+```
+./check-numbering.py            # reports MOVED / MISSING, exit 1 if any
+./check-numbering.py --freeze   # regenerate, only when renumbering on purpose
+```
+
+Genuinely new labels are listed as `new` and do not fail the check.
+
+**One thing the check can't fix for you:** line 69 of `NewMethod.tex` is
+`\NSexamplefalse`, so the Navier–Stokes section is *out* of the submitted
+version. It contains no theorem-like environments today, but if you switch it
+on for the revision, run the check — anything numbered inside it would shift
+everything downstream.
+
 ## Provenance
 
 `joca.sage` is Brent's; the `joca-rg*`, `rg_basefield.py` variants and this
