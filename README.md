@@ -135,25 +135,24 @@ has to still be Lemma 14 in what we send back. Every theorem-like environment
 shares one counter, so a new result inserted anywhere would renumber
 everything after it.
 
-**Adding a result during revision.** Use the `i` (inserted) variant of the
-environment and give the number literally:
+**Fixed numbers.** Every theorem-like environment (`theorem`, `lemma`,
+`corollary`, `proposition`, `algorithm`, `example`, `exercise`, `definition`)
+takes an optional number in angle brackets, ahead of the usual optional title,
+and every environment that existed in the submitted version carries its number
+in the source:
 
 ```latex
-\begin{ilemma}{14.1}\label{lem:whatever}
-  ...
-\end{ilemma}
-
-\begin{ilemma}{14.1}[Optional title]     % the optional title still works
+\begin{lemma}<14>\label{lem:whatever} ... \end{lemma}
+\begin{algorithm}<22>[ConsistencyLocus] ... \end{algorithm}
 ```
 
-`itheorem`, `ilemma`, `icorollary`, `iproposition`, `ialgorithm`, `iexample`,
-`iexercise` and `idefinition` all exist (defined in the preamble next to the
-`\newtheorem` block). Each decrements the shared counter before the real
-environment steps it, so the net effect on the counter is zero — Theorem 15
-stays Theorem 15. The literal number is what is printed, what `\label`/`\ref`
-see, and what hyperref anchors. For an inserted **equation**, amsmath's `\tag`
-already behaves this way: `\begin{equation}\tag{37a} ... \end{equation}` prints
-(37a) and leaves the equation counter alone.
+**Adding a result during revision.** Just write `\begin{lemma}` with no number.
+It is numbered automatically as a decimal of the last fixed number before it:
+after Lemma 14 come 14.1, 14.2, ... until the next fixed number (before the
+first fixed number they would be 0.1, 0.2, ...). `\label`/`\ref` and the hyperref
+anchors all see the printed number. A fixed number that doesn't exceed the
+previous one draws a LaTeX warning. For an inserted **equation**, amsmath's
+`\tag` does the same job: `\begin{equation}\tag{37a} ... \end{equation}`.
 
 **Checking that nothing drifted.** `frozen-numbering.txt` records label →
 number for all 106 labels of the submitted build (theorems, sections,

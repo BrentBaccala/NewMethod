@@ -17,58 +17,74 @@ Corresponding author.  Email address: {\tt cosine@freesoft.org}}}
 \usepackage{amsthm}
 % Single shared counter for every theorem-like environment: theorems,
 % lemmas, corollaries, algorithms, examples, and definitions are numbered
-% in one sequence (1, 2, 3, ...) in order of appearance.  Cross-reference
-% them with \label/\ref throughout, never by a hard-coded number.
+% in one sequence.  Cross-reference them with \label/\ref throughout,
+% never by a hard-coded number.
+%
+% Fixed numbering (the submitted version's numbers must survive revision).
+% Every theorem-like environment takes an optional number in angle
+% brackets, ahead of the usual optional title:
+%
+%     \begin{lemma}<14>\label{lem:whatever} ... \end{lemma}
+%     \begin{lemma}<14>[Optional title] ... \end{lemma}
+%
+% A fixed number is printed as given and resets the sub-numbering.  An
+% environment with no number is numbered automatically as a decimal of the
+% last fixed number before it: after Lemma 14 come 14.1, 14.2, ... until the
+% next fixed number.  (Before the first fixed number they would be 0.1, 0.2.)
+% \label/\ref and the hyperref anchors all see the printed number.  A fixed
+% number that doesn't exceed the previous one draws a warning.
+%
+% For an inserted *equation*, amsmath's \tag does the same job:
+% \begin{equation}\tag{37a} ... \end{equation}.  check-numbering.py diffs
+% the .aux against frozen-numbering.txt; run it after every rebuild.
 \newtheorem{theorem}{Theorem}
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{corollary}[theorem]{Corollary}
-\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{nm@lemma}[theorem]{Lemma}
+\newtheorem{nm@corollary}[theorem]{Corollary}
+\newtheorem{nm@proposition}[theorem]{Proposition}
 \theoremstyle{definition}
-\newtheorem{algorithm}[theorem]{Algorithm}
-\newtheorem{example}[theorem]{Example}
-\newtheorem{exercise}[theorem]{Exercise}
-\newtheorem{definition}[theorem]{Definition}
+\newtheorem{nm@algorithm}[theorem]{Algorithm}
+\newtheorem{nm@example}[theorem]{Example}
+\newtheorem{nm@exercise}[theorem]{Exercise}
+\newtheorem{nm@definition}[theorem]{Definition}
 \theoremstyle{plain}
-
-% ---------------------------------------------------------------------
-% Frozen numbering (post-submission, 2026-09-15).
-%
-% The numbers in the submitted version are fixed: a result added during
-% revision must not renumber anything that follows it.  Instead of
-% \begin{lemma}, use the "i" (inserted) variant and state the number
-% explicitly:
-%
-%     \begin{ilemma}{14.1}\label{lem:whatever} ... \end{ilemma}
-%     \begin{ilemma}{14.1}[Optional title] ... \end{ilemma}
-%
-% The literal number is what gets printed, \label'd, \ref'd and used as
-% the hyperref anchor; the shared theorem counter is left exactly where
-% it was, so Theorem 15 stays Theorem 15.  One variant exists for every
-% environment that shares the counter.
-%
-% For an inserted *equation*, amsmath's \tag does the same job and also
-% leaves the counter alone: \begin{equation}\tag{37a} ... \end{equation}
-%
-% check-numbering.sh diffs the .aux against frozen-numbering.txt and
-% reports any label whose number moved.  Run it after every rebuild.
 \makeatletter
-\newcommand{\nm@insertedvariant}[1]{%
-  \newenvironment{i#1}[1]{%
-    \addtocounter{theorem}{-1}% undo the step \refstepcounter is about to make
-    \def\thetheorem{##1}\def\theHtheorem{##1}%
-    \csname #1\endcsname
+\let\nm@theorem\theorem \let\endnm@theorem\endtheorem
+\newcounter{nm@sub}
+% Called just before the underlying environment's \refstepcounter{theorem}.
+\newcommand{\nm@setnumber}[1]{%
+  \IfNoValueTF{#1}{%
+    \addtocounter{theorem}{-1}%
+    \stepcounter{nm@sub}%
+    \def\thetheorem{\arabic{theorem}.\arabic{nm@sub}}%
   }{%
-    \csname end#1\endcsname
+    \ifnum#1>\value{theorem}\else
+      \@latex@warning{Fixed theorem number #1 does not exceed the
+        previous number \the\value{theorem}}%
+    \fi
+    \setcounter{theorem}{\numexpr#1-1\relax}%
+    \setcounter{nm@sub}{0}%
+    \def\thetheorem{\arabic{theorem}}%
+  }%
+  \let\theHtheorem\thetheorem
+}
+\newcommand{\nm@fixable}[1]{%
+  \expandafter\let\csname #1\endcsname\relax
+  \expandafter\let\csname end#1\endcsname\relax
+  \NewDocumentEnvironment{#1}{d<> o}{%
+    \nm@setnumber{##1}%
+    \IfNoValueTF{##2}{\csname nm@#1\endcsname}{\csname nm@#1\endcsname[##2]}%
+  }{%
+    \csname endnm@#1\endcsname
   }%
 }
-\nm@insertedvariant{theorem}
-\nm@insertedvariant{lemma}
-\nm@insertedvariant{corollary}
-\nm@insertedvariant{proposition}
-\nm@insertedvariant{algorithm}
-\nm@insertedvariant{example}
-\nm@insertedvariant{exercise}
-\nm@insertedvariant{definition}
+\nm@fixable{theorem}
+\nm@fixable{lemma}
+\nm@fixable{corollary}
+\nm@fixable{proposition}
+\nm@fixable{algorithm}
+\nm@fixable{example}
+\nm@fixable{exercise}
+\nm@fixable{definition}
 \makeatother
 
 % Numbered pseudocode lines ("1:", "2:", ...), following the style of the
@@ -1348,13 +1364,13 @@ formed from differential polynomials.  We generally regard the equations and ine
 that must equal (or must not equal) zero, and collectively referred to them as the {\it elements} of $S$.
 \end{definition}
 
-\begin{definition}
+\begin{definition}<1>
 \label{def:constant}
 A {\it constant} is an indeterminate $c$ in a system whose equations
 include $\delta c$ for all derivations $\delta \in\Theta$.
 \end{definition}
 
-\begin{definition}
+\begin{definition}<2>
 \label{def:parametric-ranking}
 A ranking $\prec$ is a {\it constant-lowest} ranking (with respect to some specified constants
 $c_1, \ldots, c_n$) if every constant ranks below every derivative of every
@@ -1486,7 +1502,7 @@ Conditions \condref{A2} and~\condref{A3} are quantified over the solutions of th
 This makes them
 stable under specialization of lower-ranked variables.
 
-\begin{lemma}
+\begin{lemma}<3>
 \label{lem:initials-and-separants-specialize}
 Both the initials and separants of an element of an algebraically simple differential system are non-zero at every solution of the
 element's lower subsystem.
@@ -1510,7 +1526,7 @@ A system $S = (S^=, S^{\ne})$ is {\it differentially simple}
 \item[\rm(S4)]\condlabel{S4} no inequation of $S^{\ne}$ is reducible modulo $S^=$.
 \end{enumerate}
 
-\begin{definition}
+\begin{definition}<4>
 \label{def:differential-Thomas-decomposition}
 A disjoint decomposition of a system into finitely many differentially simple subsystems
 is a {\it differential Thomas decomposition} (\cite{ThomasDecomp}, Definition~3.5).  \cite{ThomasDecomp} gives an algorithm computing one, and
@@ -1531,7 +1547,7 @@ that any solutions that can exist, does exist.
 \smallskip
 Everything the completeness arguments require are supplied by the following results.
 
-\begin{proposition}[\cite{RobertzLNM}, Prop.~2.2.50; \cite{RobertzCIRM}, Prop.~3.31]
+\begin{proposition}<5>[\cite{RobertzLNM}, Prop.~2.2.50; \cite{RobertzCIRM}, Prop.~3.31]
 \label{prop:simple-membership}
 Let $S$ be a simple
 differential system with equations $p_1 = 0, \ldots, p_s = 0$, let
@@ -1566,7 +1582,7 @@ condition~\condref{A1}).
 A companion statement assembles the components of a decomposition.
 \end{comment}
 
-\begin{proposition}[\cite{RobertzLNM}, Prop.~2.2.72; \cite{RobertzCIRM}, Prop.~3.32]
+\begin{proposition}<6>[\cite{RobertzLNM}, Prop.~2.2.72; \cite{RobertzCIRM}, Prop.~3.32]
 \label{prop:decomposition-membership}
 Let $S$ be a differential system, not assumed simple, with equations
 $p_1 = 0, \ldots, p_s = 0$ and inequations $q_1 \ne 0, \ldots, q_t \ne 0$; let
@@ -1672,7 +1688,7 @@ take the radical to simplify both the theory and the implementation.
 % V_m = \{ c^* \in {\mathbb C}^n : P \in [A(c^*)] \}
 % \end{equation}
 
-\begin{theorem}
+\begin{theorem}<7>
 \label{thm:locus-containment}
 The membership locus is a subset of the consistency locus:
 %
@@ -1695,7 +1711,7 @@ contradicting $c^* \in V_m$.
 Therefore, $c^* \in V_c$.
 \qedbox
 
-\begin{example}
+\begin{example}<8>
 \label{ex:three-loci}
 In the differential ring $\mathbb{C}[t]\{\Psi, c\}$, with the single derivation
 $\delta_t$ and $c$ constant, consider the ansatz
@@ -1760,7 +1776,7 @@ V_m = \emptyset
 \qed
 \end{example}
 
-\begin{example}
+\begin{example}<9>
 \label{ex:three-loci-2}
 In example \ref{ex:three-loci}, the zero function dominated
 the consistency locus because homogeneous equations are being used.
@@ -1803,7 +1819,7 @@ so a solution to the ansatz does not necessarily solve the PDE and $V_m = \empty
 The containment \eqref{eq:locus-containment} reads
 $\emptyset \subseteq \{1\}$, as it must.
 
-\begin{exercise}
+\begin{exercise}<10>
 Let
 \begin{equation}
 \begin{gathered}
@@ -1823,7 +1839,7 @@ We now present algorithms to compute the consistency and membership loci,
 and return them in the form of generators of ideals that define a {\it constructible subset}
 in the constant space.
 
-\begin{definition}[\cite{CTD}, Definition 6]
+\begin{definition}<11>[\cite{CTD}, Definition 6]
 A {\it constructible subset} of $\mathbb{C}^n$ is any finite union
 \[
 (A_1 \setminus B_1 ) \cup \ldots \cup (A_e \setminus B_e )
@@ -1895,14 +1911,14 @@ allows us to find the equations and inequations for the constructible subsets co
 simple system simply by reading off the equations and inequations of the system
 which involve only constants.
 
-\begin{definition}
+\begin{definition}<12>
 The {\it cell} of a differentially simple system $(S^=, S^{\ne})$, computed with a constant-lowest ranking,
 and constants $c_1,\ldots,c_n$,
 is the constant locus in $\mathbb{C}^n$ that solves the equations and inequations of $(S^=, S^{\ne})$
 that lie in $\mathbb{Q}[c_1, \ldots, c_n]$.
 \end{definition}
 
-  \begin{definition}
+  \begin{definition}<13>
   \label{def:specialized system}
   Given a differential ring $R = \mathbb{Q}[x_1, \ldots, x_m]\{u_1, \ldots, u_k, c_1, \ldots, c_n\}$,
   let $(S^=, S^{\ne})$ be a differential system over $R$ and let
@@ -1923,7 +1939,7 @@ Note that, in the case where $c^*$ is in the system's cell, the system's equatio
 will always be satisfied by $c^*$.
 
       \medskip
-      \begin{lemma}
+      \begin{lemma}<14>
       \label{lem:cell-solution}
       Given a vector of constants $c^*$ and a differentially simple system
       $(S^=, S^{\ne})$ ranked according to a constant-lowest ranking whose equations
@@ -1980,7 +1996,7 @@ will always be satisfied by $c^*$.
   \qedbox
 
   \smallskip
-  \begin{lemma}
+  \begin{lemma}<15>
   \label{lem:radical-saturation}
   Let $I \subseteq R$ be an ideal and let $h \in R$.  Then
   %
@@ -2004,7 +2020,7 @@ will always be satisfied by $c^*$.
   \qedbox
 
 \medskip
-\begin{lemma}
+\begin{lemma}<16>
 \label{lem:cell-consistency}
 Given a vector of constants $c^*$ and a differentially simple system
 $(S^=, S^{\ne})$ ranked according to a constant-lowest ranking whose equations
@@ -2047,7 +2063,7 @@ so cells belonging to different
 components may overlap, even though the components themselves are disjoint,
 since the case distinction may be made at the level of non-constant indeterminates.
 
-\begin{lemma}
+\begin{lemma}<17>
 \label{thm:cell-consistency-2}
   Let $(S^=, S^{\ne})$ be a differentially simple system computed with a
   constant-lowest ranking, let $q$ be the product of the initials and separants
@@ -2090,7 +2106,7 @@ system's cell that make the second ideal consistent.  However, we can make the f
 about constant vectors that lie outside of {\it any} cell.
 
 \medskip
-  \begin{lemma}
+  \begin{lemma}<18>
   \label{lem:specialization}
   Let $(S^=, S^{\ne})$ be a differentially simple system computed with a
   constant-lowest ranking and let $c^* \in \mathbb{C}^n$ lie in the system's
@@ -2162,7 +2178,7 @@ leaders and remain unchanged.
 \qedbox
 
   \medskip
-  \begin{lemma}
+  \begin{lemma}<19>
   \label{lem:specialized-decomposition}
   Let $(S^=, S^{\ne})$ be a differential system over $R$ whose equations include
   $\delta_i c_j$ for all derivations $\delta_i$ and constants $c_j$,
@@ -2205,7 +2221,7 @@ leaders and remain unchanged.
   \qedbox
 
   \medskip
-  \begin{lemma}
+  \begin{lemma}<20>
   \label{lem:no-cell-inconsistent}
   Let $S_1, \ldots, S_r$ be a differential Thomas decomposition of
   $(A(c) \cup \mathcal{P}^=, \{Q(c)\})$, computed with a constant-lowest ranking,
@@ -2239,7 +2255,7 @@ However, the {\tt DifferentialDecompose} step is more computationally
 demanding, precisely because its input involves more polynomials.
 \end{comment}
 
-\begin{theorem}
+\begin{theorem}<21>
 \label{thm:correctness-consistency}
 Given an ansatz $A(c)$ and a target $(\mathcal{P}^=, \mathcal{P}^{\ne})$,
 their consistency locus $V_c$ is the union of the cells
@@ -2262,7 +2278,7 @@ We compute the consistency locus $V_c$ exactly
 as Theorem~\ref{thm:correctness-consistency} suggests: combine the target and the ansatz together,
 compute a differential Thomas decomposition, and read off the cell equations and inequations.
 
-\begin{algorithm}[ConsistencyLocus]
+\begin{algorithm}<22>[ConsistencyLocus]
 \label{alg:consistency-basic}
 \mbox{}
 
@@ -2365,7 +2381,7 @@ it, a $c^*$ lying in no cell would belong to every term of the intersection and
 be returned, although the ansatz is inconsistent there and so $c^* \notin V_m$.
 
 \medskip
-\begin{lemma}
+\begin{lemma}<23>
 \label{lem:saturation-cancellation}
 Let $S \subset R$ be a finite set of differential polynomials, let
 $H_S = I_S \cup S_S$ be its initials and separants, and let $q$ be their
@@ -2396,7 +2412,7 @@ therefore $P \in [S] : q^\infty$.
 \qedbox
 
 \medskip
-\begin{theorem}
+\begin{theorem}<24>
 \label{thm:completeness}
 Let $(S^=, S^{\ne})$ be a differentially simple system,
 computed with a constant-lowest ranking.
@@ -2495,7 +2511,7 @@ Theorem~\ref{thm:completeness} into a single constructible set for the whole
 system.
 
 \medskip
-\begin{corollary}
+\begin{corollary}<25>
 \label{cor:system-locus}
 Let $(S^=, S^{\ne})$ be a differentially simple system as in
 Theorem~\ref{thm:completeness}, and let $\mathcal{E} \subset R$ be a finite set
@@ -2534,7 +2550,7 @@ decomposition.
 
 \vfill\eject
 
-\begin{corollary}
+\begin{corollary}<26>
 \label{cor:assembly}
 Let $S_1, \ldots, S_r$ be the components of a differential Thomas decomposition
 of the ansatz, computed with a constant-lowest ranking, and let
@@ -2598,7 +2614,7 @@ the claim.
 
 \vfill\eject
 
-\begin{algorithm}[MembershipLocus]
+\begin{algorithm}<27>[MembershipLocus]
 \label{alg:core-basic}
 \mbox{}
 
@@ -2714,7 +2730,7 @@ processing the output of Algorithm~\ref{alg:consistency-basic}
 further to produce \cite{BrunatMontes}'s P-representation of
 a constructible set:
 
-\begin{definition}
+\begin{definition}<28>
 A {\it P-representation} of a non-empty locally closed set $S \subseteq \mathbb{C}^n$
 is a finite list of pairs
 \[
@@ -2797,7 +2813,7 @@ $\mathrm{Prep}$
 \end{tabularx}
 \end{center}
 
-\begin{algorithm}[PolishLocus]
+\begin{algorithm}<29>[PolishLocus]
 \label{alg:consistency-comp}
 \mbox{}
 
