@@ -1351,11 +1351,13 @@ include $\delta c$ for all derivations $\delta \in\Theta$.
 \label{def:parametric-ranking}
 A ranking $\prec$ is a {\it constant-lowest} ranking (with respect to some specified constants
 $c_1, \ldots, c_n$) if every constant ranks below every derivative of every
-non-constant indeterminate, the independent variables included:
+non-constant differential indeterminate, and below every independent variable:
 \[
-c_i \prec \theta u_j
-\qquad\text{for every constant } c_i, \text{ every non-constant } u_j,
-\text{ and every } \theta \in \Theta .
+\begin{alignedat}{2}
+c_i &\prec \theta u_j &\qquad& \text{for every constant } c_i, \text{ every non-constant } u_j,
+\text{ and every } \theta \in \Theta , \\
+c_i &\prec x_l && \text{for every constant } c_i \text{ and every independent variable } x_l .
+\end{alignedat}
 \]
 \end{definition}
 
