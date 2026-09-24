@@ -425,7 +425,7 @@ is the result of applying derivation $dx$ to $\Psi$.
 It is convenient to
 let each indeterminate introduce an infinite set of derivatives by pairing
 the indeterminate with all the elements of $\Theta$, so introducing $\Psi$
-also introduces $\Psi_x$, $\Psi_y$, $\Psi_{xy}$, $\Psi_{xxx}$, etc.
+also introduces the elements of $\Theta\Psi$: $\Psi$, $\Psi_x$, $\Psi_y$, $\Psi_{xy}$, $\Psi_{xxx}$, etc.
 
 For each derivation, there will typically exist in the differential ring an associated indeterminate,
 labeled with the same letter,
@@ -1349,7 +1349,7 @@ include $\delta c$ for all derivations $\delta \in\Theta$.
 \label{def:parametric-ranking}
 A ranking $\prec$ is a {\it constant-lowest} ranking (with respect to some specified constants
 $c_1, \ldots, c_n$) if every constant ranks below every derivative of every
-non-constant indeterminate:
+non-constant indeterminate, the independent variables included:
 \[
 c_i \prec \theta u_j
 \qquad\text{for every constant } c_i, \text{ every non-constant } u_j,
@@ -3219,6 +3219,9 @@ all other indeterminates, as required by the algorithm and recommended by experi
 \label{ranking}
 \Psi'' \succ \Psi' \succ \Psi \succ v \succ r \succ E \succ v_1 \succ v_2 \succ v_3 \succ v_4 \succ a_0 \succ a_1 \succ b_0 \succ b_1 \succ c_0 \succ c_1
 \end{equation}
+
+The BLAD libraries used by the software always rank the independent variables below all other indeterminates,
+so this is not, strictly speaking, a constant-lowest ranking.
 
 % \subsection{Differential Reduction Step}
 
