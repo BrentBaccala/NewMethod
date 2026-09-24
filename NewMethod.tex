@@ -609,7 +609,7 @@ They do require degree bounds on all of their constituent polynomials,
 in order to obtain a finite number of constant parameters.
 
 Algebraic extensions can also be included, but since
-they must be parameterized by a finite number of constants, they can not express
+they must be parameterized by a finite number of constants, they cannot express
 an arbitrary algebraic extension of indefinite degree.
 Note that if we limit our ansatz to linear ODEs, then any algebraic extensions need
 to be introduced explicitly; i.e, a linear ODE will not match algebraic extensions,
@@ -1299,8 +1299,13 @@ the differential ideal they generate is denoted $[g_1,...,g_n]$.
 We write $\sqrt{I} = \{p:\exists n\in Z^+, p^n \in I\}$ for the {\it radical} of a differential ideal $I$, the set of
 differential polynomials some power of which lies in~$I$.
 
-We write the {\it saturation} of an differential ideal as $I:S^\infty = \{p: \exists q \in S, qp\in I\}$.
-(fix this: saturation of a set and saturation of an equation)
+For a subset $S \subseteq R$, $S^\infty$ is the smallest subset of $R$ that contains $1$ and $S$ and
+is closed under multiplication.
+We write the {\it saturation} of a differential ideal with respect to a set $S$
+as $I:S^\infty = \{p: \exists h \in S^\infty, hp\in I\}$.
+For finite $S$, we can form the product $q$ of the elements of $S$ and write the saturation
+as $I:q^\infty = \{p: \exists n \in \mathbb{Z}^{+}, q^np \in I\}$.  Both constructions
+yield the same saturation.
 
 A differential ideal $I$ is {\it consistent} if $1 \notin I$; otherwise it is {\it inconsistent}.
 
@@ -1325,11 +1330,8 @@ A ranking on a differential ring $R$ is an ordering on the ring's differential v
 \end{aligned}
 \end{equation}
 
-The standard definition orders only the derivatives of the differential
-indeterminates.  We follow \cite{DifferentialAlgebra} in extending a ranking to
-the independent variables of the coefficient ring as well, placing them in the
-lowest block; nothing in the theory depends on this, but it lets a single
-ordering be written for every indeterminate the computation touches.
+We extend a ranking to the independent variables as well, treating them as indeterminates constrained by $\delta_i x_j = \delta_{ij}$ 
+(\cite{Boulier-Lemaire} \S1).
 
 A ranking is said to be {\it orderly} if meets the additional condition:
 
@@ -2901,7 +2903,8 @@ SageMath \cite{sage}, a computer algebra system that integrates dozens of open s
 a unified, Python-based framework, though stock Sage is generally lacking in differential algebra tools.  Therefore,
 the author used an AI coding assistant (Claude Opus) to prepare two additional Sage packages.
 
-The first is a Sage interface to Fran\c{c}ois Boulier's BLAD libraries, which is used for many fundamental differential algebra operations, such
+The first is a Sage interface to Fran\c{c}ois Boulier's BLAD libraries (\cite{DifferentialAlgebra}),
+which is used for many fundamental differential algebra operations, such
 as representing differential rings, polynomials and rankings, as well as Ritt reduction.
 The package is available here:
 
@@ -3209,21 +3212,17 @@ Use Cartesian coordinates.  Let $v$ be a linear polynomial in the coordinates an
 Reduce the input PDE \eqref{schrodinger} modulo differential ideal \eqref{ansatz 5}, obtaining
 \end{comment}
 
-We must now specify a ranking.  We use an orderly ranking that places the constants below
-all other indeterminates, as required by the algorithm and recommended by experience\footnote{Other permitted rankings tend to run slower and consume more memory}:
-
-% The {\tt DifferentialAlgebra} library \cite{DifferentialAlgebra} always ranks
-% indeterminates associated with derivations below everything else
+We must now specify a ranking.
+An orderly ranking is recommended by experience\footnote{Other permitted rankings tend to run slower and consume more memory.}.
+We would prefer to use a constant-lowest ranking, as required by the algorithm.
+However, the BLAD libraries used by the software always rank the independent variables below all other indeterminates,
+so we cannot construct a constant-lowest ranking.  We use
+the closest ranking BLAD permits, which places the constants below every other indeterminate except $x,y,z$:
 
 \begin{equation}
 \label{ranking}
 \Psi'' \succ \Psi' \succ \Psi \succ v \succ r \succ E \succ v_1 \succ v_2 \succ v_3 \succ v_4 \succ a_0 \succ a_1 \succ b_0 \succ b_1 \succ c_0 \succ c_1
 \end{equation}
-
-The BLAD libraries used by the software always rank the independent variables below all other indeterminates,
-so this is not, strictly speaking, a constant-lowest ranking.
-
-% \subsection{Differential Reduction Step}
 
 {\bf The Consistency Locus}
 
@@ -4027,7 +4026,7 @@ A PDE with no boundary conditions
 is likely to have a solution space that is not only infinite, but infinite
 dimensional, and probably not even with a countably infinite basis.
 In such an environment, differential Galois groups
-can not be represented as subgroups of $GL_n$.
+cannot be represented as subgroups of $GL_n$.
 
 % We'd have to characterize the solution we seek.  Conditions like lowest energy level don't seem
 % useful because they require evaluating a global integral.
@@ -4231,6 +4230,10 @@ D. Robertz, Formal Algorithmic Elimination for PDEs, Lecture Notes in Mathematic
 
 \bibitem{RobertzCIRM}
 D. Robertz, Formal methods for systems of partial differential equations, in: Journ\'ees Nationales de Calcul Formel, 22--26 January 2018, vol.~6 of Les cours du CIRM, no.~1, CIRM, Luminy, 2018, Course no.~III, pp.~1--37. \url{https://doi.org/10.5802/ccirm.28}.
+
+\bibitem{Boulier-Lemaire}
+F. Boulier, F. Lemaire, An introduction to differential algebra, lecture notes, 2023.
+\url{https://www.matem.unam.mx/~lara/cimpa23/francois/An-Introduction-to-Differential-Algebra.pdf}
 
 \bibitem{DifferentialAlgebra}
 F. Boulier, DifferentialAlgebra, version 5.3 [software], Codeberg, 2025. \url{https://codeberg.org/francois.boulier/DifferentialAlgebra} (accessed 29 May 2026).
