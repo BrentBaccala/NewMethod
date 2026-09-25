@@ -3,8 +3,13 @@
 \RequirePackage[normalem]{ulem}
 \RequirePackage[pdftex]{changebar}
 \RequirePackage{color}
-\providecommand{\DIFadd}[1]{\protect\cbstart{#1}\protect\cbend}
-\providecommand{\DIFdel}[1]{\protect\cbdelete{\sout{#1}}\protect\cbdelete}
+% No bars in math mode: a bar started inside an amsmath alignment cell is
+% typeset twice and never closed, so it runs on for the rest of the paper.
+% The leading \relax matters -- at the start of an alignment cell TeX
+% expands the first token *before* entering math mode, so a bare \ifmmode
+% there is false.  Removed math can't be struck out, so it's shown in grey.
+\providecommand{\DIFadd}[1]{\relax\ifmmode{#1}\else\protect\cbstart{#1}\protect\cbend\fi}
+\providecommand{\DIFdel}[1]{\relax\ifmmode{\color[gray]{0.6}#1}\else\protect\cbdelete{\sout{#1}}\protect\cbdelete\fi}
 %DIF SAFE PREAMBLE
 \providecommand{\DIFaddbegin}{}
 \providecommand{\DIFaddend}{}
