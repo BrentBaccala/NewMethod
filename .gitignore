@@ -41,3 +41,5 @@ current.output
 
 # ---------- make-diff.sh output ----------
 NewMethod-diff-*.tex
+*.cb
+*.cb2
