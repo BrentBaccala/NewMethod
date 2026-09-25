@@ -38,3 +38,6 @@ current.output
 # Every PDF here is a pdflatex product of a sibling .tex -- none is an
 # \includegraphics input.  Rebuild with: pdflatex <file>.tex
 *.pdf
+
+# ---------- make-diff.sh output ----------
+NewMethod-diff-*.tex

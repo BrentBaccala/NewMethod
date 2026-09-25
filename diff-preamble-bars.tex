@@ -1,0 +1,21 @@
+% latexdiff preamble for make-diff.sh: change bars, removed text struck out
+
+\RequirePackage[normalem]{ulem}
+\RequirePackage[pdftex]{changebar}
+\RequirePackage{color}
+\providecommand{\DIFadd}[1]{\protect\cbstart{#1}\protect\cbend}
+\providecommand{\DIFdel}[1]{\protect\cbdelete{\sout{#1}}\protect\cbdelete}
+%DIF SAFE PREAMBLE
+\providecommand{\DIFaddbegin}{}
+\providecommand{\DIFaddend}{}
+\providecommand{\DIFdelbegin}{}
+\providecommand{\DIFdelend}{}
+\providecommand{\DIFmodbegin}{}
+\providecommand{\DIFmodend}{}
+%DIF FLOATSAFE PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}}
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}}
+\providecommand{\DIFaddbeginFL}{}
+\providecommand{\DIFaddendFL}{}
+\providecommand{\DIFdelbeginFL}{}
+\providecommand{\DIFdelendFL}{}

@@ -1,0 +1,20 @@
+% latexdiff preamble for make-diff.sh: new text green, removed text red and struck out
+
+\RequirePackage[normalem]{ulem}
+\RequirePackage{xcolor}\definecolor{DIFgreen}{rgb}{0,0.55,0}
+\providecommand{\DIFadd}[1]{{\protect\color{DIFgreen}#1}}
+\providecommand{\DIFdel}[1]{{\protect\color{red}\sout{#1}}}
+%DIF SAFE PREAMBLE
+\providecommand{\DIFaddbegin}{}
+\providecommand{\DIFaddend}{}
+\providecommand{\DIFdelbegin}{}
+\providecommand{\DIFdelend}{}
+\providecommand{\DIFmodbegin}{}
+\providecommand{\DIFmodend}{}
+%DIF FLOATSAFE PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}}
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}}
+\providecommand{\DIFaddbeginFL}{}
+\providecommand{\DIFaddendFL}{}
+\providecommand{\DIFdelbeginFL}{}
+\providecommand{\DIFdelendFL}{}
