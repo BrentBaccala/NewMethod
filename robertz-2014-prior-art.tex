@@ -1,0 +1,272 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\hypersetup{colorlinks=true, linkcolor=blue!50!black, urlcolor=blue!50!black}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\QQ}{\mathbb{Q}}
+
+\title{Does Robertz (2014) anticipate \emph{A New Method of Solving PDEs}?\\
+       \large Prior-art note on \emph{Formal Algorithmic Elimination for PDEs}, LNM~2121}
+\author{}
+\date{25 September 2026}
+
+\emergencystretch=2em
+\begin{document}
+\maketitle
+
+\noindent
+A companion note to \emph{A New Method of Solving PDEs}. The question is
+whether D.~Robertz, \emph{Formal Algorithmic Elimination for PDEs}, Lecture
+Notes in Mathematics~2121 (Springer, 2014) --- which the paper already cites
+as \verb|\cite{RobertzLNM}|, but only for Props.~2.2.50 and~2.2.72 ---
+anticipates what the paper claims is new. Page numbers below are the printed
+page numbers of the book; every passage was read in the publisher's PDF text
+layer (\code{\textasciitilde/library/robertz-2014/}).
+
+\section*{Summary}
+
+\textbf{Partly.} Robertz anticipates the \emph{strategy}: adjoin to the PDE a
+system of differential equations whose solutions are exactly the functions
+of a prescribed special form, run Thomas' algorithm (or a Janet basis) on the
+combined system, and read off the solutions of that form. He presents this
+explicitly as a generalization of separation of variables, traces it to
+Olver--Rosenau (1986), and demonstrates it on the Laplace equation with
+Bessel functions, on KdV, and on incompressible Navier--Stokes using the Maple
+package \code{DifferentialThomas}.
+
+He does \textbf{not} anticipate the parts that make NewMethod an algorithm
+for \emph{finding} ans\"atze that work:
+\begin{enumerate}
+\item an ansatz carrying finitely many \emph{undetermined constants} ---
+  in the argument of the unknown function ($v = v_1x+v_2y+v_3z+v_4r$) and in
+  the coefficients of the ODE it satisfies --- with the output being the
+  \emph{locus of constants} (consistency / membership loci) for which the
+  ansatz solves the PDE;
+\item the completeness theorem over constant space
+  (the paper's Theorem \verb|thm:completeness|: no valid constants
+  missed, no spurious ones admitted);
+\item the computational route: constants kept in the coefficient field
+  $\QQ(c)$, Ritt reduction modulo the Thomas cells of the ansatz, projection
+  and a commutative minimal-prime decomposition (GTZ); and the ODE-extension
+  encoding in which $\Psi,\Psi',\dots$ and $v$ are indeterminates tied by the
+  chain rule.
+\end{enumerate}
+
+\noindent
+The practical consequence is for the paper's related-work positioning, not
+its results: the Conclusion currently places the method against separation
+of variables and the similarity-reduction methods only, and omits the
+side-condition tradition (Olver--Rosenau; Robertz \S\S3.2.5, 3.3.5) to which
+it most directly belongs. See \S\ref{sec:paper}.
+
+\section{What NewMethod claims}
+
+From the Introduction and Conclusion of \code{NewMethod.tex}:
+\begin{itemize}
+\item An algorithm ``that tests a system of differential equations \dots\
+  against a second such set (which I term an `ansatz'), parameterized by a
+  finite number of constants \dots\ and finds'' the constant values for which
+  the ansatz solves the system (Introduction, after the $J_0$ example).
+\item The core algorithm: Thomas decomposition of the ansatz, Ritt reduction
+  of each equation of the system modulo each component, projection onto the
+  space of constants; proved to return ``exactly what they claim, neither
+  missing valid constants nor admitting spurious ones''
+  (\S\,Organization of the Paper; Theorem \verb|thm:completeness|).
+\item Positioning (Conclusion, \code{NewMethod.tex} ll.~4126--4139): the
+  technique ``is complementary to separation of variables'' and to the
+  similarity-reduction methods (Lie, Clarkson--Kruskal, Bluman--Cole); its
+  reductions ``are instead organized around the differential-algebraic
+  structure of the ansatz \dots\ and they carry the completeness guarantee.''
+\end{itemize}
+
+\section{What Robertz already has}
+
+\subsection{The strategy, stated in general}
+
+Chapter~3 is about \emph{implicitization}: given a family of analytic
+functions of a prescribed form, compute polynomial PDEs (and inequations)
+whose analytic solutions are exactly that family. The families of \S3.2 are
+linear, $\sum_i f_i(\alpha_i(z))\,g_i(z)$; those of \S3.3 are multilinear,
+$p(f_1(\alpha_1(z)),\dots,f_k(\alpha_k(z)))$, where $p$ and the
+\emph{inner functions $\alpha_i$ are given} and the $f_i$ are arbitrary.
+
+The use of this for solving PDEs is stated three times:
+\begin{itemize}
+\item \textbf{Introduction, p.~2.} Adding a PDE system characterizing
+  functions of a special form to the system under study ``may allow to
+  extract explicit solutions of the prescribed type'' (citing \S3.3.5 and
+  Navier--Stokes). ``This approach generalizes the well-known method of
+  separation of variables.''
+\item \textbf{\S3.2.5, p.~189.} If solutions of a special form are wanted,
+  an implicit description of that form ``may be added to the given PDE
+  system,'' and Thomas' algorithm on the combined system ``may result in PDEs
+  that are easier to solve.''
+\item \textbf{\S3.3.5, pp.~221 and 228.} The technique ``can be understood as
+  a generalization of the method of separation of variables,'' citing
+  Olver--Rosenau \cite{OR86} ``where this approach was examined from the
+  symmetry point of view'' and Harrison--Estabrook \cite{HE71} for an
+  exterior-differential-forms version; on p.~228: applying Thomas' algorithm
+  to the combined system ``allows to decide whether there exist solutions of
+  the prescribed type.''
+\end{itemize}
+
+\subsection{The worked examples}
+
+\begin{description}
+\item[Ex.~3.2.51 (p.~191): Laplace in cylindrical coordinates, Bessel
+  functions.] This is the closest single example to the hydrogen
+  computation. To solve Laplace's equation ``in terms of Bessel functions,''
+  Robertz imposes on $u$ itself the Bessel equation in the $r$-direction,
+  $r^2u_{rr} + r u_r + (r^2-\nu^2)u = 0$, adjoins it to Laplace, and computes a
+  Janet basis. The consequences $u_{zz}=u$, $u_{\varphi\varphi}=-\nu^2u$ fall
+  out --- ``a separation of variables'' --- giving $e^{\pm z \pm i\nu\varphi}
+  J_{\pm\nu}(r)$. \\
+  \emph{Relation to NewMethod:} the move ``require the solution to satisfy a
+  chosen ODE, then eliminate'' is here. But the ODE is imposed on $u$ along a
+  \emph{fixed coordinate} $r$ (a multiplicative separation), not on an
+  unknown $\Psi$ composed with an argument $v$ to be determined; and $\nu$ is
+  a symbol carried through, not a constant solved for. Nothing in the example
+  would search the direction of the argument, which is what produces
+  $J_0(2\sqrt{x+r})$.
+
+\item[Ex.~3.3.49 (p.~229): KdV.] Product ansatz $u=f(t)g(x)$, encoded by the
+  $2\times2$ Wronskian-type condition $u\,u_{tx}-u_t u_x=0$ (Prop.~3.3.7);
+  Thomas decomposition of the combined system yields
+  $u = (x+c_1)/(-6t+c_2)$ and other solutions that Maple's \code{pdsolve}
+  misses.
+
+\item[Ex.~3.3.50 (pp.~230--231): incompressible Navier--Stokes.] Each velocity
+  component assumed to be a product of functions of $r$, $\varphi$, $z$
+  (cylindrical), arbitrary in $t$; implicit equations adjoined; the Thomas
+  decomposition is too large to finish, so simple systems are harvested one at
+  a time with \code{DifferentialThomas}'s stop-and-resume feature and passed to
+  \code{pdsolve}, giving an explicit solution family. \\
+  \emph{Relation to NewMethod:} the same pairing (a differential-algebraic
+  ansatz against Navier--Stokes, via Thomas) as the paper's
+  \S\,Example: Incompressible Navier--Stokes. That section is currently
+  switched off (\verb|\NSexamplefalse|, \code{NewMethod.tex} l.~126), but the
+  Conclusion still names Navier--Stokes as a target (l.~4141). If the section
+  is re-enabled, Ex.~3.3.50 should be cited there.
+
+\item[Alg.~3.3.45 (p.~226): recognizing products of analytic functions.]
+  Given a PDE system, decide whether its \emph{entire} solution set is of the
+  form $f_1(\alpha_1)\cdots f_k(\alpha_k)$ and, if so, \emph{compute the
+  linear arguments $\alpha_i$}: substitute $u=\exp(v)$, reduce to
+  constant-coefficient operators, primary-decompose (citing GTZ), and read the
+  $\alpha_i$ off the degree-one prime components. \\
+  \emph{Relation to NewMethod:} the only place in the book where an inner
+  argument is \emph{found} rather than given, and it uses GTZ to do it. But it
+  applies only when the whole solution set has product form and the operators
+  have constant coefficients; it does not search a parameterized ansatz for
+  the sub-families that solve an arbitrary PDE.
+
+\item[Ex.~3.2.49 (p.~190).] A Thomas decomposition shows that the
+  separated-variables answer \code{pdsolve} returns for a nonlinear PDE misses
+  solutions. ``Completeness'' here means \emph{completeness of a proposed
+  solution family}, decided by implicitization --- a different notion from
+  NewMethod's completeness over constant space.
+\end{description}
+
+\subsection{Encoding ``function of a given argument''}
+
+Lemma~3.2.6 (p.~163): the functions of the form $f(\alpha(z))$ are the
+analytic solutions of a system of first-order linear PDEs (annihilators of
+$\alpha$); Remark~3.3.3 uses this to build the implicitization as an
+elimination in $K\{F_1,\dots,F_k\}/Z$. NewMethod's ODE extension instead keeps
+$\Psi,\Psi',\dots,\Psi^{(n)}$ and $v$ as indeterminates and defines the
+$\Delta$-derivatives on them by the chain rule, so that the argument $v$ can
+itself carry undetermined constants. Different encoding; same underlying
+fact.
+
+\section{What Robertz does not have}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}p{3.3cm}XX@{}}
+\toprule
+ & Robertz 2014 (\S\S3.2.5, 3.3.5) & NewMethod \\
+\midrule
+Inner argument & given ($\alpha_i$ fixed; found only in Alg.~3.3.45's
+  constant-coefficient special case) & parameterized
+  ($v=\sum v_i x_i + v_4 r$), solved for \\
+Outer function & arbitrary, or a fixed ODE (Ex.~3.2.51) & satisfies an ODE
+  whose coefficients are undetermined constants \\
+Question answered & does the PDE have solutions of \emph{this} form, and what
+  are they & for \emph{which constants} does the ansatz solve the PDE \\
+Output & simple systems, then \code{pdsolve} / hand solution &
+  consistency and membership loci in constant space, as minimal primes \\
+Guarantee & Thomas partition of one fixed system & completeness theorem over
+  the constants (no missed, no spurious $c^*$) \\
+Computational route & Thomas / Janet on the combined system &
+  Thomas cells of the ansatz, Ritt reduction over $\QQ(c)$, projection, GTZ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The first row is the substantive difference. With fixed arguments the method
+can confirm or refute a guessed form; with parameterized arguments it
+\emph{discovers} the form, which is exactly how the hydrogen computation
+reaches the parabolic-coordinate solution without being told to look there.
+
+One point that is \emph{not} new and should not be claimed: modelling
+parameters as differential indeterminates with zero derivatives, ranked
+lowest, is already done by Lange-Hegermann and Robertz in the control-systems
+setting (\verb|\cite{LHRcontrol}|, noted in the June 2026 Thomas-completeness
+session). The novelty is the projection onto constant space and the
+completeness theorem, not the encoding of the constants.
+
+\section{Suggested changes to the paper}
+\label{sec:paper}
+
+\begin{enumerate}
+\item \textbf{Conclusion, related-work paragraph (ll.~4126--4139).} Add the
+  side-condition / differential-constraint tradition: Olver--Rosenau
+  \cite{OR86} and Robertz \verb|\cite{RobertzLNM}| \S\S3.2.5, 3.3.5. A
+  framing that is accurate and keeps the claim: \emph{Adjoining to a PDE the
+  differential equations characterizing functions of a prescribed form, and
+  computing the consequences by Thomas' algorithm, is an established way of
+  finding solutions of that form (Olver--Rosenau; Robertz). There the form is
+  fixed in advance. Here the ansatz carries finitely many undetermined
+  constants, the algorithm computes the locus of constants for which it solves
+  the system, and the completeness theorem guarantees that locus is
+  exact.}
+\item \textbf{Hydrogen section.} Consider citing Robertz Ex.~3.2.51 (Laplace,
+  Bessel functions via an imposed ODE) as the nearest precedent, and noting
+  that the argument there is a fixed coordinate.
+\item \textbf{Navier--Stokes section} (if \verb|\NSexampletrue| is restored):
+  cite Ex.~3.3.50 as a previous Thomas-decomposition attack on Navier--Stokes
+  with a product ansatz.
+\item \textbf{The phrase ``complementary to separation of variables.''}
+  Robertz presents the same strategy as a \emph{generalization} of separation
+  of variables. The sentence is defensible, but a referee who knows the book
+  will read it as overlooking \S3.3.5; the rewording in item~1 closes that.
+\end{enumerate}
+
+\noindent
+Bibliography entries to add (verified against Robertz's reference list):
+
+\begin{thebibliography}{9}
+\bibitem{OR86} P.~J.~Olver, P.~Rosenau, The construction of special
+  solutions to partial differential equations, \emph{Phys.\ Lett.\ A}
+  114(3) (1986) 107--112.
+\bibitem{HE71} B.~K.~Harrison, F.~B.~Estabrook, Geometric approach to
+  invariance groups and solution of partial differential systems,
+  \emph{J.\ Math.\ Phys.} 12 (1971) 653--666.
+\end{thebibliography}
+
+\noindent
+Robertz also cites, for separation of variables in this context,
+W.~Miller Jr., \emph{Symmetry and Separation of Variables} (1977);
+Johnson--Reinhart--Rubel, \emph{J.\ Differential Equations} 121 (1995) 42--66;
+and Gauchman--Rubel, \emph{Linear Algebra Appl.} 125 (1989) 19--63.
+DOIs for \cite{OR86} and \cite{HE71} were not checked for this note.
+
+\vfill
+\noindent\small\emph{/Claude Opus 5.5 --- prepared at the author's request;
+all page references checked against the publisher's PDF text layer.}
+
+\end{document}
