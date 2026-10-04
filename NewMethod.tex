@@ -1983,6 +1983,32 @@ will always be satisfied by $c^*$.
   higher-ranked equation, and by induction to a solution of the whole system,
   whose constant coordinates are $c^*$.
 
+  \cite{ThomasDecomp}, Remark~2.3, however, applies to {\it algebraic} systems,
+  where algebraic closure is all that is required to ensure that the polynomials have solutions.
+  To extend this to differential systems, we need to handle the case where
+  the leader of the d-polynomial being added is a proper derivative.
+  This paper's current concept of using Kolchin's universal field (Definition \ref{def:differential-Thomas-decomposition})
+  encounters a problem --- how do we use the existence of a solution in a subsystem
+  to guarantee existence of a solution in the larger system?  Different authors handle this in various ways:
+
+  \cite{RobertzLNM} works with analytic solutions, in some domain $\Omega$, somewhat vaguely defined (p. 97).
+  Remark 2.2.39 (p. 89) - invokes Taylor series expansions (just says
+  ``Taylor expansion translates the problem into algebraic equations and inequations
+  for the Taylor coefficients of a solution'') to just extending a solution
+  to the next-higher system.  Notes that ``differential consequences of S
+  must also be taken into account'' and cites Remark 2.1.67 (p. 51)
+  (which I've skimmed but haven't understood)
+
+  \cite{LHthesis} works over a differential field that is usually a field of meromorphic functions.
+  He constructs non-centered power series $E$ that would only become power series once a center is selected
+  and the field elements (meromorphic functions) are expanded out around that center (\S 1.4.2).  These solutions $\mathcal{Sol}_E$
+  can be embedded into Kolchin's universal field (p. 29).  Theorem 1.65 is the differential Nullstellensatz.
+  Its proof uses Lemma 1.47 that asserts that simple systems have solutions in $\mathcal{Sol}_E$.
+  We could use it to get from Lemma 18 (iii) to Lemma 14 (iii), but right now, we use Lemma 14 in Lemma 18.
+  % Of course, simple systems, by a theorem, extend solutions of subsystems,
+  % so this seems almost circular.  We need only establish that the lowest ranking (in)equation
+  % has a solution, then simplicity ensures that it extends if the initials and discriminants are not zero.
+
   (ii) $\Leftrightarrow$ (iii).
   Take either side of \eqref{eq:specialization-fibre} to be non-empty.
 
