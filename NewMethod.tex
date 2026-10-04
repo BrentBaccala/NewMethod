@@ -1938,6 +1938,16 @@ that lie in $\mathbb{Q}[c_1, \ldots, c_n]$.
 Note that, in the case where $c^*$ is in the system's cell, the system's equations and inequations in $\mathbb{Q}[c_1, \ldots, c_n]$
 will always be satisfied by $c^*$.
 
+\begin{lemma}
+\label{lem:specialization}
+      Given a differentially simple system $(S^=, S^{\ne})$ ranked according to a constant-lowest ranking
+      and a vector of constants $c^* \in \mathbb{C}^n$ that lies in the system's cell,
+      the specialized system $(S^=(c^*), S^{\ne}(c^*))$ is again differentially simple.
+\end{lemma}
+{\it Proof.}
+To be completed.
+\qedbox
+
       \medskip
       \begin{lemma}<14>
       \label{lem:cell-solution}
@@ -2133,15 +2143,10 @@ about constant vectors that lie outside of {\it any} cell.
 
 \medskip
   \begin{lemma}<18>
-  \label{lem:specialization}
+  \label{lem:specialized-q}
   Let $(S^=, S^{\ne})$ be a differentially simple system computed with a
   constant-lowest ranking and let $c^* \in \mathbb{C}^n$ lie in the system's
-  cell.  Then
-  \begin{enumerate}
-  \item[\rm(i)] the elements of $S^=$ that specialize to zero are exactly those
-      whose leader is a constant or a derivative of one; every other $p \in S^=$
-      and its specialization $p(c^*)$ have the same leader, to the same degree;
-  \item[\rm(ii)] the product $q_{S^=}$ of the initials and separants of the original system,
+  cell.  Then the product $q_{S^=}$ of the initials and separants of the original system,
 \[
   q_{S^=} = \prod_{p \in S^=} I_p \, s_p
 \]
@@ -2150,57 +2155,15 @@ about constant vectors that lie outside of {\it any} cell.
 \[
   q_{S^=(c^*)} = \prod_{p \in S^=(c^*)} I_p \, s_p
 \]
-  \item[\rm(iii)] $(S^=(c^*), S^{\ne}(c^*))$ is again differentially simple.
-  \end{enumerate}
   \end{lemma}
 
 {\it Proof.}
-  Because $c^*$ lies in the cell, by Lemma~\ref{lem:cell-solution}
-  there exist one or more solutions $\sigma$ of $(S^=, S^{\ne})$ whose
-  constant coordinates are $c^*$.  Let $p \in S^=$ have leader $u$, initial $I_p$, and separant $s_p$.
-
-  There are two ways the leader could change under specialization: either the initial could vanish,
-  or the leader itself could vanish.  In our case, the only leaders that vanish are the constants
-  and their derivatives.
-  The equations with constant leaders are in $\mathbb{Q}[c_1, \ldots, c_n]$ (as it's a constant-lowest ranking),
-  so these equations all specialize to zero because $c^*$ is in the system's cell.
-  The only equations with constant derivative leaders are the equations that set those
-  derivatives to zero (add and refer to a note somewhere that $\delta_i c_l = 0$ is implicitly included in these systems)
-  and by \condref{A1} and \condref{S3}, no other equation can have a constant derivative leader.
-  So these constant and constant-derivative equations lose their leaders and specialize to zero;
-  no other leaders vanish.
-
-  Nor can the leader change because the initial vanishes.
-  By \condref{A2}, $I_p$ does not vanish at any solution $\sigma$.
-  Hence $\deg_u p(c^*) = \deg_u p$, the leader of $p(c^*)$ is still
-  $u$, and its initial is $I_p(c^*)$.  Since the leader and its degree
-  are both unchanged, the separant of $p(c^*)$ is $s_p(c^*)$,
-  and this too is non-zero, by Lemma~\ref{lem:initials-and-separants-specialize}.
-
-  However, the product of the initials and separants of the original system includes
+  The product of the initials and separants of the original system includes
   the initials and separants of the constant equations in $\mathbb{Q}[c_1, \ldots, c_n]$.
   While they specialize to non-zero constants (Lemma~\ref{lem:initials-and-separants-specialize}),
   there is no corresponding equation
   in the specialized system to contribute to $q_{S^=(c^*)}$, and so this polynomial
   will differ from $q_{S^=}(c^*)$ by the product of the non-zero constants these initials and separants specialize to.
-  The initials and separants of the constant derivative equations (like $c_t=0$)
-  are trivially 1.
-
-Since the leaders do not change
-under specialization, except for equations that are dropped, \condref{A1} is preserved.
-Because the constants are ranked below every other indeterminate and conditions
-\condref{A2} and \condref{A3} of algebraic simplicity are quantified over solution sets that
-contain the whole cell, they are preserved over constants that solve the system.
-Therefore \condref{S1} persists.
-
-Janet's division's multiplicative/non-multiplicative split is computed from
-the leaders alone, so this also remains unchanged.  The reductions
-required by \condref{S2} remain unchanged, and if they are zero for generic
-constants $c$, they are zero for any specialization $c^*$.
-The minimality required by \condref{S3} is computed based on leaders
-and reductive derivations, which remain unchanged,
-and the reductions prohibited by \condref{S4} are also based on
-leaders and remain unchanged.
 \qedbox
 
   \medskip
@@ -2225,7 +2188,7 @@ leaders and remain unchanged.
   subsystems (\cite{ThomasDecomp}, Definition~3.5).  We check each of these requirements.
 
   {\it Simplicity.}  $S_i(c^*)$ is differentially simple by
-  Lemma~\ref{lem:specialization} (iii).
+  Lemma~\ref{lem:specialization}.
 
   {\it Disjointness.}
   A tuple $\tau$ of power
@@ -2491,7 +2454,7 @@ and remembering that $[S^=(c^*)] \subseteq [S^=(c^*)]:q(c^*)^\infty$, gives
 h(c^*) \cdot P - r(c^*) \in [S^=(c^*)]:q(c^*)^\infty
 \]
 %
-By hypothesis, $c^*$ lies in the system's cell, so Lemma~\ref{lem:specialization} (ii) tells us that $q(c^*)$
+By hypothesis, $c^*$ lies in the system's cell, so Lemma~\ref{lem:specialized-q} tells us that $q(c^*)$
 is, in fact, a constant multiple of the product of the initials and separants of $S^=(c^*)$, and
 Lemma~\ref{lem:saturation-cancellation} gives us
 %
@@ -2502,7 +2465,7 @@ P \in [S^=(c^*)]:q(c^*)^\infty
 \]
 %
 
-Since $r(c^*)$ is fully reduced w.r.t. $S^=(c^*)$, Lemma~\ref{lem:specialization} (iii) and Proposition~\ref{prop:simple-membership} gives
+Since $r(c^*)$ is fully reduced w.r.t. $S^=(c^*)$, Lemma~\ref{lem:specialization} and Proposition~\ref{prop:simple-membership} gives
 %
 \[
 r(c^*) = 0
@@ -2623,7 +2586,7 @@ $\mathcal{P}^= \subseteq \sqrt{[A(c^*)] : Q(c^*)^\infty}$.
 Apply Proposition~\ref{prop:decomposition-membership} to that decomposition.
 Its components are the $S_i(c^*)$ for $i \in \mathcal{I}(c^*)$, whose initials
 and separants are the specializations of those of $S_i$
-(Lemma~\ref{lem:specialization}~(ii)), so
+(Lemma~\ref{lem:specialized-q}), so
 %
 \[
 \sqrt{[A(c^*)] : Q(c^*)^\infty}
